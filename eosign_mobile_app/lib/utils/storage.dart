@@ -38,5 +38,5 @@ class Storage {
   }
 }
 
-//how to call a class
+//this is how to call a class
 //Storage mClass = new Storage(); //get back the singleton to you

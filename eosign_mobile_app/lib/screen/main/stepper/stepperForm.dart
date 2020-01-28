@@ -3,6 +3,7 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import "package:eosign_mobile_app/screen/main/stepper/stepper.dart";
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 
 class StepperForm extends StatefulWidget {
   final List<Step> steps;
@@ -19,14 +20,14 @@ class _StepperFormState extends State<StepperForm> {
 
   _StepperFormState({Key key, @required this.steps});
 
-  Widget buttonContinue() {
+  /*Widget buttonContinue() {
     return new RaisedButton(
       child: new Text(
           _isButtonDisabled ? "Hold on..." : "Increment"
       ),
       onPressed: _isButtonDisabled ? null : _incrementCounter,
     );
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +56,7 @@ class _StepperFormState extends State<StepperForm> {
                 //mainAxisSize: MainAxisSize.max,
                 //mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  RaisedButton(
+                  PlatformButton (
                     onPressed: onStepContinue,
                     child: const Text('Continue'),
                   )
