@@ -55,6 +55,10 @@ class MyApp extends StatelessWidget {
         //initialPlatform: initialPlatform,
         builder: (BuildContext context) => PlatformApp(
         title: 'Flutter Platform Widgets',
+        localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
+            DefaultMaterialLocalizations.delegate,
+            DefaultWidgetsLocalizations.delegate,
+        ],
         android: (_) => new MaterialAppData(theme: new ThemeData(primarySwatch: Colors.grey)),
         ios: (_) => new CupertinoAppData(theme: new CupertinoThemeData(primaryColor: Colors.grey,)),
         home:
@@ -70,12 +74,14 @@ class MyApp extends StatelessWidget {
           ),
         ],
       ),
-      body: BlocProvider(
+      body: Scaffold(
+          body:BlocProvider(
         create: (context) => StepperBloc(maxSteps: steps.length),
         child: StepperForm(steps: steps),
       )
     )
     )
+        )
     );
 
 
