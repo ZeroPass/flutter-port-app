@@ -1,10 +1,13 @@
 import 'package:eosign_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
+import 'package:eosign_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccountHeader/stepEnterAccountHeader.dart';
 import 'package:bloc/bloc.dart';
 import 'package:eosign_mobile_app/screen/main/stepper/stepper.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:equatable/equatable.dart';
+
+import 'package:eosign_mobile_app/utils/storage.dart';
 
 class StepDataEnterAccount extends StepData{
   String _accountID;
@@ -17,13 +20,17 @@ class StepDataEnterAccount extends StepData{
 
   set accountID(String value) {
     _accountID = value;
-  }
+    //data is written(to check when we need to read from database)
+    this.hasData = true;
+    //activate the button
+    this.isUnlocked = true;
+
+    }
 }
 
 class StepEnterAccountBloc extends Bloc<StepEnterAccountEvent, StepEnterAccountState> {
   //final int maxSteps;
   StepEnterAccountBloc(/*{@required this.maxSteps}*/);
-  
 
   var validatorText = '';
 
@@ -42,6 +49,10 @@ class StepEnterAccountBloc extends Bloc<StepEnterAccountEvent, StepEnterAccountS
 
 
     //next button locked
+    var storage = Storage();
+    StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
+    //Default value is false. If string passes all conditions then we change it on true
+    storageStepEnterAccount.isUnlocked = false;
 
     //check the length of account name
     if (value.length > 13) {
@@ -61,10 +72,12 @@ class StepEnterAccountBloc extends Bloc<StepEnterAccountEvent, StepEnterAccountS
       stepEnterAccountBloc.accountExists(value, 2).then((value) {
         if (!value) {
           validatorText = 'Account name not found on chain1.';
+          storageStepEnterAccount.isUnlocked = false;
           return true;
         }
         //unlock
         validatorText = '';
+        storageStepEnterAccount.isUnlocked = true;
         return false;
       }, onError: (error) {
         validatorText = 'There is a problem with connection on chain.';
@@ -72,8 +85,19 @@ class StepEnterAccountBloc extends Bloc<StepEnterAccountEvent, StepEnterAccountS
       });
     };
 
-    //final stepperBloc = BlocProvider.of<StepperBloc>(context);
+    //final stepEnterAccountHeaderBloc = BlocProvider.of<StepEnterAccountHeaderBloc>(context);
+    //stepEnterAccountHeaderBloc.
+
+    final stepEnterAccountHeader = BlocProvider.of<StepEnterAccountHeaderBloc>(context);
+    BlocProvider.of<StepEnterAccountHeaderBloc>(context).
+
     validatorText = '';
+    // passes all conditions - only length is not checked - lower bound
+    // make button disabled, but without warning
+    if (value.length > 4)
+      storageStepEnterAccount.isUnlocked = true;
+
+    //StepEnterAccountHeader().account = "testni";
     return false;
   }
 

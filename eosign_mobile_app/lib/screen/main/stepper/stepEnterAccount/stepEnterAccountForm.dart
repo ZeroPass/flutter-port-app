@@ -6,6 +6,7 @@ import "package:eosign_mobile_app/screen/main/stepper/stepEnterAccount/stepEnter
 import "package:eosign_mobile_app/screen/main/stepper/stepper.dart";
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:eosign_mobile_app/utils/storage.dart';
 
 class StepEnterAccountForm extends StatefulWidget {
   final int temp;
@@ -51,28 +52,7 @@ class _StepEnterAccountFormState extends State<StepEnterAccountForm> {
             //  WhitelistingTextInputFormatter(RegExp("[a-zA-Z0-5.]")),
             //],
             autofocus: true,
-            validator:  (value) => stepEnterAccountBloc.validatorFunction(value, context) ? stepEnterAccountBloc.validatorText : null/*(String value) {
-                if (RegExp("^[a-z1-5.]{0,12}[a-p]\$").hasMatch(value) == false){
-                  return 'You type not allowed character';
-                }
-                if (value.length > 12) {
-                  return 'Account name cannot be longer than 12 characters';
-                }
-                else if (value.length > 5){
-                  Future<bool> kvaje = stepEnterAccountBloc.accountExists(value);
-                  print(kvaje);
-                  kvaje.then((value) {
-                    print(value);
-                    return ("there si something");
-                  }, onError: (error) {
-                    print('completed with error $error');
-                  });
-                };
-                  //if (!stepEnterAccountBloc.accountExists(value).){
-                  //}
-                  final stepperBloc = BlocProvider.of<StepperBloc>(context);
-                return null;
-              }*/
+            validator:  (value) => stepEnterAccountBloc.validatorFunction(value, context) ? stepEnterAccountBloc.validatorText : null
             ,
             onChanged: (value) {
               if (accountTextController.text != value.toLowerCase())
@@ -86,4 +66,59 @@ class _StepEnterAccountFormState extends State<StepEnterAccountForm> {
   },
   );
 }
+}
+
+//header
+
+
+class StepEnterAccountHeader1 extends StatefulWidget {
+  String account;
+
+  StepEnterAccountHeader1({Key key, this.account}) : super(key:key);
+
+  @override
+  _StepEnterAccountHeaderForm1 createState() => _StepEnterAccountHeaderForm1();
+}
+
+
+class _StepEnterAccountHeaderForm1 extends State<StepEnterAccountHeader1> {
+  StepDataEnterAccount storageStepEnterAccount = Storage().getStorageData(0);
+  String accountID = '';
+
+  _StepEnterAccountHeaderForm1({Key key, this.accountID = ''});
+  //storageStepEnterAccount.
+
+  void changeAccountID({String account = ''}) {
+    setState(() {
+      this.accountID = account;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    //final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+    //final stepEnterAccountBloc = BlocProvider.of<StepEnterAccountBloc>(context);
+    print("a");
+    print (this.accountID);
+    print("b");
+    return Column(
+        children: <Widget>[
+      Container(
+      width: MediaQuery.of(context).size.width * 0.6,
+        alignment: Alignment.bottomRight,
+        child:Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Container(child: PlatformText("Account")),
+          Container(child: (this.accountID  != '' ) ? PlatformText(" ("+ this.accountID +") ") : PlatformText("")),
+          Container(
+              child: Align(
+              alignment: Alignment.bottomRight,
+              child:Icon(context.platformIcons.delete)))
+        ],
+        )
+    )
+        ]
+    );
+  }
 }

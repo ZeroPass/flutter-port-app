@@ -1,4 +1,5 @@
 import 'package:eosign_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
+import 'package:eosign_mobile_app/screen/main/stepper/stepScan/stepScan.dart';
 import 'package:eosign_mobile_app/screen/main/stepper/stepper.dart';
 
 int _NUM_OF_STEPS = 3;
@@ -8,35 +9,32 @@ class StorageData {
 
   StorageData(){
     this._steps = new List(_NUM_OF_STEPS);
+    //initialize every step
     this._steps[0] = StepDataEnterAccount();
+    this._steps[1] = StepDataScan();
+    // this._steps[2] =
+  }
+
+  StepData getStorageData(int index){
+    //out of array
+    if (index > _NUM_OF_STEPS)
+      return null;
+
+    return _steps[index];
   }
 
 }
 
 //singelton class
-class Storage {
+class Storage extends StorageData {
   static final Storage _singleton = new Storage._internal();
 
-  StorageData _sd;
-
   factory Storage(){
+    StorageData();
     return _singleton;
   }
 
   Storage._internal(){
     //initialization your logic here
-    _sd = new StorageData();
-  }
-
-  StorageData getStorageData(int index){
-    //out of array
-    if (index > _NUM_OF_STEPS)
-      return null;
-
-    //return _sd[index];
-
   }
 }
-
-//this is how to call a class
-//Storage mClass = new Storage(); //get back the singleton to you

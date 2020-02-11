@@ -49,18 +49,13 @@ class StepperBloc extends Bloc<StepperEvent, StepperState> {
 
   @override
   Stream<StepperState> mapEventToState(StepperEvent event) async* {
-    print("In stepper bloc map event to state");
     if (event is StepTapped) {
-      print("teststep");
       yield state.copyWith(step: event.step);
     } else if (event is StepCancelled) {
-      print("testCancel");
       yield state.copyWith(
         step: state.step - 1 >= 0 ? state.step - 1 : 0,
       );
     } else if (event is StepContinue) {
-      print("test continue");
-      print(state.toString());
       yield state.copyWith(
         step: state.step + 1 < maxSteps ? state.step + 1 : 0,
       );
