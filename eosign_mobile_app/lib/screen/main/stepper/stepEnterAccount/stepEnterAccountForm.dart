@@ -70,7 +70,7 @@ class _StepEnterAccountFormState extends State<StepEnterAccountForm> {
 
 //header
 
-
+/*
 class StepEnterAccountHeader1 extends StatefulWidget {
   String account;
 
@@ -121,4 +121,4 @@ class _StepEnterAccountHeaderForm1 extends State<StepEnterAccountHeader1> {
         ]
     );
   }
-}
+}*/

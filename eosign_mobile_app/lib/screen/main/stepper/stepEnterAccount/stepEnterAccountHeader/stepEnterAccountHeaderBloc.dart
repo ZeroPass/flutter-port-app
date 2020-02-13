@@ -8,24 +8,6 @@ import 'package:equatable/equatable.dart';
 
 import 'package:eosign_mobile_app/utils/storage.dart';
 
-class StepDataScan extends StepData{
-  String _accountID;
-
-  StepDataScan(){
-    _accountID = '';
-  }
-
-  String get accountID => _accountID;
-
-  set accountID(String value) {
-    _accountID = value;
-    //data is written(to check when we need to read from database)
-    this.hasData = true;
-    //activate the button
-    this.isUnlocked = true;
-
-    }
-}
 
 class StepEnterAccountHeaderBloc extends Bloc<StepEnterAccountHeaderEvent, StepEnterAccountHeaderState> {
   //final int maxSteps;
@@ -42,7 +24,7 @@ class StepEnterAccountHeaderBloc extends Bloc<StepEnterAccountHeaderEvent, StepE
     super.onTransition(transition);
     print(transition);
   }
-
+/*
   //separate function because of async function
   bool validatorFunction (String value, var context) {
 
@@ -57,10 +39,9 @@ class StepEnterAccountHeaderBloc extends Bloc<StepEnterAccountHeaderEvent, StepE
     }
 
   Future<bool> accountExists (String accountName, int delaySec) async{
-    //TODO: implement this function
     Future.delayed(Duration(seconds: delaySec), (){});
     return true;
-  }
+  }*/
 
   @override
   Stream<StepEnterAccountHeaderState> mapEventToState( StepEnterAccountHeaderEvent event) async* {

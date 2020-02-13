@@ -19,6 +19,28 @@ class _StepEnterAccountHeaderFormState extends State<StepEnterAccountHeaderForm>
 
   _StepEnterAccountHeaderFormState({Key key});
 
+
+  Widget deleteButton(var context,double size){
+    return SizedBox.fromSize(
+      size: Size(size, size), // button width and height
+      child: ClipOval(
+        child: Material(
+          color: Colors.orange, // button color
+          child: InkWell(
+            splashColor: Colors.green, // splash color
+            onTap: () {}, // button pressed
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Icon(context.platformIcons.delete),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final stepEnterAccountHeaderBloc = BlocProvider.of<StepEnterAccountHeaderBloc>(context);
@@ -36,11 +58,13 @@ class _StepEnterAccountHeaderFormState extends State<StepEnterAccountHeaderForm>
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       Container(child: PlatformText("Account")),
-                      Container(child:  state is AccountIDState? PlatformText(" ( ${state.accountID} ) "): PlatformText("empty")),
-                      Container(
-                          child: Align(
+                      Container(child:  state is AccountIDState? PlatformText(" ( ${state.accountID} ) ", style: TextStyle(fontStyle: FontStyle.italic)): PlatformText("")),
+                      if (state.showIconRemove)
+                        Container(child: Align(
                               alignment: Alignment.bottomRight,
-                              child:Icon(context.platformIcons.delete)))
+                              child:Icon(context.platformIcons.delete))),
+
+
                     ],
                   )
               )

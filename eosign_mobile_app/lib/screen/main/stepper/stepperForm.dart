@@ -36,7 +36,7 @@ class _StepperFormState extends State<StepperForm> {
     bool _isButtonNextEnabled = true;
 
     final stepperBloc = BlocProvider.of<StepperBloc>(context);
-    //final stepEnterAccountHeaderBloc = BlocProvider.of<StepEnterAccountHeaderBloc>(context);
+    final stepEnterAccountHeaderBloc = BlocProvider.of<StepEnterAccountHeaderBloc>(context);
     return BlocBuilder(
       bloc: stepperBloc,
       builder: (BuildContext context, StepperState state) {
@@ -46,12 +46,14 @@ class _StepperFormState extends State<StepperForm> {
                 steps: steps,
                 type: StepperType.vertical,
                 onStepTapped: (step) {
+                  stepperBloc.modifyHeader(state.step, step, context);
                   stepperBloc.add(StepTapped(step: step));
                 },
                 onStepCancel: () {
                   stepperBloc.add(StepCancelled());
                 },
                 onStepContinue: () {
+                  stepperBloc.modifyHeader(state.step, state.step + 1, context);
                   stepperBloc.add(StepContinue());
                 },
                 controlsBuilder: (BuildContext context,

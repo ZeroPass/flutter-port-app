@@ -23,3 +23,13 @@ class AccountConfirmed extends StepEnterAccountHeaderEvent{
   @override
   List<Object> get props => [accountID];
 }
+
+class OpenStep extends StepEnterAccountHeaderEvent {
+  OpenStep(){}
+
+  @override
+  List<Object> get props => [];
+
+  @override
+  String toString() => 'StepEnterAccountHeaderEvent:OpenStep';
+}

@@ -19,3 +19,7 @@ doc/api/
 *.js_
 *.js.deps
 *.js.map
+
+eosign_mobile_app/lib.rar
+
+EOSign_flutter/.vscode/
