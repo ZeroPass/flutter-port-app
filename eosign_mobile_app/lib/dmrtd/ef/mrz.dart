@@ -113,8 +113,21 @@ class MRZ {
     optionalData2  = _read(istream, 11);
     _parseExtendedDocumentNumber(cdDocNum);
 
-    final cdComposit = _readInt(istream, 1); // // TODO: calculate composite CD and assert on it
+    final cdComposit = _readInt(istream, 1); // TODO: calculate composite CD and assert on it
     _setNames(_readNameIdentifiers(istream, 30));
+
+    // Extract composite and calculate/verify its CD
+    istream.reset();
+    istream.skip(5);
+    var composite = _readWithPad(istream, 25);
+    composite += _readWithPad(istream, 7);
+    istream.skip(1);
+    composite += _readWithPad(istream, 7);
+    istream.skip(3);
+    composite += _readWithPad(istream, 11);
+    _assertCheckDigit(composite, cdComposit,
+      "Composit check digit mismatch"
+    );
   }
   
   void _parseTD2(InputStream istream) {
@@ -139,9 +152,19 @@ class MRZ {
     
     optionalData   = _read(istream, 7);
     _parseExtendedDocumentNumber(cdDocNum);
-    
+
     final cdComposit = _readInt(istream, 1);
-    // TODO: calculate composite CD and assert on it
+
+    // Extract composite and calculate/verify its CD
+    istream.rewind(36);
+    var composite = _readWithPad(istream, 10);
+    istream.skip(3);
+    composite += _readWithPad(istream, 7);
+    istream.skip(1);
+    composite += _readWithPad(istream, 14);
+    _assertCheckDigit(composite, cdComposit,
+      "Composit check digit mismatch"
+    );
   }
   
   void _parseTD3(InputStream istream) {
@@ -172,7 +195,17 @@ class MRZ {
     );
     
     final cdComposit = _readInt(istream, 1);
-    // TODO: calculate composite CD and assert on it
+
+    // Extract composite and calculate/verify its CD
+    istream.rewind(44);
+    var composite = _readWithPad(istream, 10);
+    istream.skip(3);
+    composite += _readWithPad(istream, 6);
+    istream.skip(2);
+    composite += _readWithPad(istream, 22);
+    _assertCheckDigit(composite, cdComposit,
+      "Composit check digit mismatch"
+    );
   }
   
   void _setNames(List<String> nameIds) {
