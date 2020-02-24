@@ -16,20 +16,20 @@ class MyApp extends StatelessWidget {
   final List<Step> steps = [
     Step(
       title: StepEnterAccountHeaderForm(),
-      content: BlocProvider<StepEnterAccountBloc>(
-          create: (context) => StepEnterAccountBloc(),
-          child: StepEnterAccountForm(temp: 1)),
+      //subtitle: Text("EOSIO Testnet", style: TextStyle(color: Color(0xFFa58157))),
+      content: StepEnterAccountForm(),
       isActive: true,
     ),
     Step(
-      title: Text("Step 22"),
+      title: Text("Scan"),
+      //subtitle: Text("here you can write something", style: TextStyle(color: Color(0xFFa5a057)),),
       content: BlocProvider<StepScanBloc>(
           create: (context) => StepScanBloc(), child: StepScanForm(temp: 1)),
       //state: StepState.ed iting,
       isActive: true,
     ),
     Step(
-      title: Text("Step 35"),
+      title: Text("Attestation"),
       content: Text("Hello World!"),
       isActive: true,
     ),
@@ -37,22 +37,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("application starts");
-    /* return CupertinoApp(
-      debugShowCheckedModeBanner: false,
-      localizationsDelegates: <LocalizationsDelegate<dynamic>>[
-        DefaultMaterialLocalizations.delegate,
-        DefaultWidgetsLocalizations.delegate,
-        DefaultCupertinoLocalizations.delegate,
-      ],
-      title: 'Flutter Demo',
-      theme: CupertinoThemeData(brightness: Brightness.light),
-      home: MaterialApp(*/
-    /*localizationsDelegates: [
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],*/
     return PlatformProvider(
         //initialPlatform: initialPlatform,
         builder: (BuildContext context) => PlatformApp(
@@ -71,7 +55,7 @@ class MyApp extends StatelessWidget {
             home: PlatformScaffold(
                 iosContentPadding: true,
                 appBar: PlatformAppBar(
-                  title: Text('EOSPass'),
+                  title: Text('PassID'),
                   trailingActions: <Widget>[
                     PlatformIconButton(
                       padding: EdgeInsets.zero,
@@ -86,16 +70,15 @@ class MyApp extends StatelessWidget {
                         BlocProvider<StepperBloc>(
                             create: (BuildContext context) => StepperBloc(maxSteps: steps.length)
                         ),
+                        BlocProvider<StepEnterAccountBloc>(
+                            create: (BuildContext context) => StepEnterAccountBloc()
+                        ),
                         BlocProvider<StepEnterAccountHeaderBloc>(
                             create: (BuildContext context) => StepEnterAccountHeaderBloc()
-                        )],
+                        )
+                        ],
                   child: StepperForm(steps: steps),
                 )))));
-                /*
-                * body: Scaffold(
-                    body: BlocProvider(
-                  create: (context) => StepperBloc(maxSteps: steps.length),
-                  child: StepperForm(steps: steps),
-                )))));*/
+
   }
 }
