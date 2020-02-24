@@ -36,6 +36,7 @@ class _StepScanFormState extends State<StepScanForm> {
       bloc: stepScanBloc,
       builder: (BuildContext context, StepScanState state) {
         return Form(
+
             key: _formKey,
             autovalidate: true,
             child: Column(children: <Widget>[
@@ -75,7 +76,7 @@ class _StepScanFormState extends State<StepScanForm> {
                           .copyWith(text: value.toLowerCase());
                   }),
 
-              TextFormField(
+            Padding(padding: EdgeInsets.only(bottom: 20), child:TextFormField(
                 //maxLength: 12,
                   controller: accountTextController,
                   decoration: InputDecoration(
@@ -91,9 +92,7 @@ class _StepScanFormState extends State<StepScanForm> {
                     if (accountTextController.text != value.toLowerCase())
                       accountTextController.value = accountTextController.value
                           .copyWith(text: value.toLowerCase());
-                  })
-
-
+                  }))
             ]));
       },
     );

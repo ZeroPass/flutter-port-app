@@ -30,9 +30,9 @@ abstract class Theme{
 
 class AndroidTheme extends Theme{
   ThemeData getLight() {
-    MaterialColor _primaryColor = CustomColor.createColor(83, 37, 153, 0xFF532599);
+    MaterialColor _primaryColor = CustomColor.createColor(83, 37, 153, 0xFF5768a5);
     return ThemeData(primarySwatch: _primaryColor,
-        buttonColor: Color(0x7c3bccdd)
+        buttonColor: Color(0xFFa58157)
     );
   }
 

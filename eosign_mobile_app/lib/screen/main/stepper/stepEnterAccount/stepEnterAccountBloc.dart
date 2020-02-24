@@ -3,9 +3,6 @@ import 'package:bloc/bloc.dart';
 import 'package:eosign_mobile_app/screen/main/stepper/stepper.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:async';
-import 'package:flutter/material.dart';
-import 'package:equatable/equatable.dart';
-
 import 'package:eosign_mobile_app/utils/storage.dart';
 
 class StepDataEnterAccount extends StepData{
@@ -23,18 +20,19 @@ class StepDataEnterAccount extends StepData{
     this.hasData = true;
     //activate the button
     this.isUnlocked = true;
-
     }
 }
 
 class StepEnterAccountBloc extends Bloc<StepEnterAccountEvent, StepEnterAccountState> {
-  //final int maxSteps;
-  StepEnterAccountBloc(/*{@required this.maxSteps}*/);
+  var _storage;
+  StepEnterAccountBloc(){
+    _storage = Storage();
+  }
 
   var validatorText = '';
 
   @override
-  StepEnterAccountState get initialState => EmptyState();
+  StepEnterAccountState get initialState => FullState('');
 
   @override
   void onTransition(Transition<StepEnterAccountEvent, StepEnterAccountState> transition) {
@@ -46,12 +44,11 @@ class StepEnterAccountBloc extends Bloc<StepEnterAccountEvent, StepEnterAccountS
   bool validatorFunction (String value, var context) {
     final stepEnterAccountBloc = BlocProvider.of<StepEnterAccountBloc>(context);
 
-
     //next button locked
     var storage = Storage();
     StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
     //write accountID value to storage - no matter if it is correct
-    storageStepEnterAccount.accountID = value;
+    //storageStepEnterAccount.accountID = value;
 
     //Default value is false. If string passes all conditions then we change it on true
     storageStepEnterAccount.isUnlocked = false;
@@ -93,6 +90,7 @@ class StepEnterAccountBloc extends Bloc<StepEnterAccountEvent, StepEnterAccountS
     // make button disabled, but without warning
     if (value.length > 4)
       storageStepEnterAccount.isUnlocked = true;
+
     return false;
   }
 
@@ -104,17 +102,19 @@ class StepEnterAccountBloc extends Bloc<StepEnterAccountEvent, StepEnterAccountS
 
   @override
   Stream<StepEnterAccountState> mapEventToState( StepEnterAccountEvent event) async* {
-    print("Step enter account bloc: mapEventToState");
     if (event is AccountConfirmation) {
-      print("AccountConfirmation");
-      yield FullState();
+      //change data in storage
+      StepDataEnterAccount storageStepEnterAccount = _storage.getStorageData(0);
+      storageStepEnterAccount.accountID = event.accountID;
+      yield FullState(event.accountID);
     } else if (event is AccountDelete) {
-      print("StepCancelled");
-      yield EmptyState();
+      //clear data in storage
+      StepDataEnterAccount storageStepEnterAccount = _storage.getStorageData(0);
+      yield DeletedState();
+      storageStepEnterAccount.accountID = '';
+      storageStepEnterAccount.isUnlocked = false;
+      yield FullState('');
     }
-    else {
-      print ("else event");
-      yield EmptyState();
-    }
+    else yield FullState('');
   }
 }

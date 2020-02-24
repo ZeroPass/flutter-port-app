@@ -3,8 +3,10 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/services.dart';
 import 'package:eosign_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccountHeader/stepEnterAccountHeader.dart';
+import 'package:eosign_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import "package:eosign_mobile_app/screen/main/stepper/stepper.dart";
 
 class StepEnterAccountHeaderForm extends StatefulWidget {
 
@@ -20,19 +22,27 @@ class _StepEnterAccountHeaderFormState extends State<StepEnterAccountHeaderForm>
   _StepEnterAccountHeaderFormState({Key key});
 
 
-  Widget deleteButton(var context,double size){
+  Widget deleteButton(BuildContext context, double size){
+    final stepperBloc = BlocProvider.of<StepperBloc>(context);
+    final stepEnterAccountHeaderBloc = BlocProvider.of<StepEnterAccountHeaderBloc>(context);
+    final stepEnterAccountBloc = BlocProvider.of<StepEnterAccountBloc>(context);
     return SizedBox.fromSize(
       size: Size(size, size), // button width and height
       child: ClipOval(
         child: Material(
-          color: Colors.orange, // button color
+          //color: Colors.white, // button color
           child: InkWell(
             splashColor: Colors.green, // splash color
-            onTap: () {}, // button pressed
+            onTap: () {
+              stepperBloc.add(StepTapped(step: 0));
+              stepEnterAccountBloc.add(AccountDelete());
+              stepEnterAccountHeaderBloc.add(AccountRemoved());
+            },
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Icon(context.platformIcons.delete),
+                Icon(Icons.remove_circle, color: Color(0xFFa58157)),
+                //PlatformText("Del", style: TextStyle(fontWeight: FontWeight.normal)),
               ],
             ),
           ),
@@ -57,14 +67,10 @@ class _StepEnterAccountHeaderFormState extends State<StepEnterAccountHeaderForm>
                   child:Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      Container(child: PlatformText("Account")),
-                      Container(child:  state is AccountIDState? PlatformText(" ( ${state.accountID} ) ", style: TextStyle(fontStyle: FontStyle.italic)): PlatformText("")),
-                      if (state.showIconRemove)
-                        Container(child: Align(
-                              alignment: Alignment.bottomRight,
-                              child:Icon(context.platformIcons.delete))),
-
-
+                      Container(child: Text("Account")),
+                      if (state is AccountIDState) Container(child: Text("  ${state.accountID}", style: TextStyle(fontStyle: FontStyle.italic, color: Color(0xFFa58157)))),
+                      //show only delete button when data is in the tab
+                      if (state.showIconRemove) deleteButton(context, 40)
                     ],
                   )
               )

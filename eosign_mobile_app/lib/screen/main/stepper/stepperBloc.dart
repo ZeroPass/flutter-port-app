@@ -36,10 +36,8 @@ abstract class StepData{
 
 class StepperBloc extends Bloc<StepperEvent, StepperState> {
   final int maxSteps;
-  List<StepData> _stepsDescription;
 
-  StepperBloc({@required this.maxSteps}){
-  }
+  StepperBloc({@required this.maxSteps}){}
 
   @override
   StepperState get initialState => StepperState(step: 0, maxSteps: maxSteps);
@@ -50,6 +48,10 @@ class StepperBloc extends Bloc<StepperEvent, StepperState> {
     print(transition);
   }
 
+  void modifyBody(int previousStep, int nextStep){
+
+  }
+
   bool modifyHeader (int previousStep, int nextStep, var context) {
     var storage = Storage();
 
@@ -57,6 +59,7 @@ class StepperBloc extends Bloc<StepperEvent, StepperState> {
       case 0: {
         //step 1
         final stepEnterAccountHeaderBloc = BlocProvider.of<StepEnterAccountHeaderBloc>(context);
+        //final stepEnterAccountBloc = BlocProvider.of<StepEnterAccountBloc>(context);
         StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
 
         //show data on header if there is valid value

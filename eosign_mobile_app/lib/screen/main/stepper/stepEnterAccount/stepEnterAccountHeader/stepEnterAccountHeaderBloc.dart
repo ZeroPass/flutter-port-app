@@ -47,15 +47,11 @@ class StepEnterAccountHeaderBloc extends Bloc<StepEnterAccountHeaderEvent, StepE
   Stream<StepEnterAccountHeaderState> mapEventToState( StepEnterAccountHeaderEvent event) async* {
     print("Step enter account bloc: mapEventToState");
     if (event is AccountConfirmed) {
-      print("full state");
-      print(event.accountID);
       yield AccountIDState(accountID: event.accountID);
     } else if (event is AccountRemoved) {
-      print("account removed");
       yield NoAccountIDState();
     }
     else {
-      print("default state");
       yield NoAccountIDState();
     }
   }

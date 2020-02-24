@@ -1,124 +1,139 @@
 import 'package:flutter/material.dart';
-import 'package:bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter/services.dart';
 import "package:eosign_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart";
-import "package:eosign_mobile_app/screen/main/stepper/stepper.dart";
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:eosign_mobile_app/utils/storage.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 
 class StepEnterAccountForm extends StatefulWidget {
-  final int temp;
-
-  StepEnterAccountForm({Key key, @required this.temp}) : super(key:key);
+  StepEnterAccountForm({Key key}) : super(key: key);
 
   @override
-  _StepEnterAccountFormState createState() => _StepEnterAccountFormState(temp: temp);
+  _StepEnterAccountFormState createState() => _StepEnterAccountFormState();
 }
 
 
 class _StepEnterAccountFormState extends State<StepEnterAccountForm> {
   //Stepper steps
-  final int temp;
+  TextEditingController _accountTextController; // = TextEditingController();
+  var _storage;
 
-  _StepEnterAccountFormState({Key key, @required this.temp});
+  _StepEnterAccountFormState({Key key}) {
+    this._accountTextController = TextEditingController();
+    this._storage = Storage();
+  }
 
+  //update fields in account form
+  void updateFields() {
+    var storage = Storage();
+    StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
+    _accountTextController = TextEditingController();
+    _accountTextController.text = storageStepEnterAccount.accountID;
+  }
 
-  @override
-  Widget build(BuildContext context) {
-    TimeOfDay _timeOfDay = new TimeOfDay(hour: 10, minute: 10);
+  //clear fields in account form
+  void emptyFields() {
+    _accountTextController = TextEditingController();
+    _accountTextController.text = "";
+  }
 
-    Function _updateTimeFunction;
-    print("_StepperEnterAccountFormState");
-    TextEditingController accountTextController = TextEditingController();
-    final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-    final stepEnterAccountBloc = BlocProvider.of<StepEnterAccountBloc>(context);
-
-    return BlocBuilder(
-        bloc: stepEnterAccountBloc,
-        builder: (BuildContext context, StepEnterAccountState state){
-        return Form(
-        key: _formKey,
-        autovalidate: true,
-        child: TextFormField(
-          //maxLength: 12,
-            controller: accountTextController,
-            decoration: InputDecoration(
-              //border: InputBorder.none,
-              labelText: 'Account name',
-            ),
-            //inputFormatters: [
-            //  WhitelistingTextInputFormatter(RegExp("[a-zA-Z0-5.]")),
-            //],
-            autofocus: true,
-            validator:  (value) => stepEnterAccountBloc.validatorFunction(value, context) ? stepEnterAccountBloc.validatorText : null
-            ,
-            onChanged: (value) {
-              if (accountTextController.text != value.toLowerCase())
-                accountTextController.value =
-                    accountTextController.value.copyWith(
-                        text: value.toLowerCase());
-            }
-        )
-
-    );
-  },
-  );
-}
-}
-
-//header
-
-/*
-class StepEnterAccountHeader1 extends StatefulWidget {
-  String account;
-
-  StepEnterAccountHeader1({Key key, this.account}) : super(key:key);
-
-  @override
-  _StepEnterAccountHeaderForm1 createState() => _StepEnterAccountHeaderForm1();
-}
-
-
-class _StepEnterAccountHeaderForm1 extends State<StepEnterAccountHeader1> {
-  StepDataEnterAccount storageStepEnterAccount = Storage().getStorageData(0);
-  String accountID = '';
-
-  _StepEnterAccountHeaderForm1({Key key, this.accountID = ''});
-  //storageStepEnterAccount.
-
-  void changeAccountID({String account = ''}) {
-    setState(() {
-      this.accountID = account;
+  void selectNetwork(var context){
+    showPlatformModalSheet(
+        context: context, builder: (_) => PopupMenuButton(
+      child: new ListTile(
+        title: new Text('11 or 22?'),
+        trailing: const Icon(Icons.more_vert),
+      ),
+      itemBuilder: (_) => <PopupMenuItem<String>>[
+        new PopupMenuItem<String>(
+            child: new Text('11'), value: '11'),
+        new PopupMenuItem<String>(
+            child: new Text('22'), value: '22'),
+      ],
+      onSelected: (value) => {} ,
+    )
+    )
+      .whenComplete(() {
+      print('Hey there, I\'m calling after hide bottomSheet');
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    //final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-    //final stepEnterAccountBloc = BlocProvider.of<StepEnterAccountBloc>(context);
-    print("a");
-    print (this.accountID);
-    print("b");
-    return Column(
-        children: <Widget>[
-      Container(
-      width: MediaQuery.of(context).size.width * 0.6,
-        alignment: Alignment.bottomRight,
-        child:Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Container(child: PlatformText("Account")),
-          Container(child: (this.accountID  != '' ) ? PlatformText(" ("+ this.accountID +") ") : PlatformText("")),
-          Container(
-              child: Align(
-              alignment: Alignment.bottomRight,
-              child:Icon(context.platformIcons.delete)))
-        ],
-        )
-    )
-        ]
+  Widget selectNetwork1(var context){
+   return PopupMenuButton(
+      child: new ListTile(
+        title: new Text('Select node'),
+        trailing: const Icon(Icons.account_balance),
+      ),
+      itemBuilder: (_) => <PopupMenuItem<String>>[
+        new PopupMenuItem<String>(
+            child: new Text('Mainnet'), value: 'Mainnet'),
+        new PopupMenuItem<String>(
+            child: new Text('EOS testnet'), value: 'eostestnet'),
+        new PopupMenuItem<String>(
+            child: new Text('Kylin'), value: 'Kylin'),
+      ],
+      onSelected: (value) => {} ,
     );
   }
-}*/
+
+  Widget body(BuildContext context, StepEnterAccountState state,
+      var stepEnterAccountBloc) {
+    if (state is DeletedState)
+      emptyFields();
+    if (state is FullState)
+      updateFields();
+
+    return Column(children:
+        <Widget>[
+          selectNetwork1(context)
+          /*RaisedButton(
+            child: Text("Test modal sheet"),
+            onPressed: () {
+              selectNetwork(context);
+            },
+            color: Colors.red,
+            textColor: Colors.yellow,
+            //padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+            splashColor: Colors.grey,
+          )*/,
+
+          TextFormField(
+        //maxLength: 12,
+        controller: _accountTextController,
+        //initialValue: state.accountID,
+
+        decoration: InputDecoration(labelText: 'Account name'),
+    autofocus: true,
+    validator: (value) => stepEnterAccountBloc.validatorFunction(value, context) ? stepEnterAccountBloc.validatorText : null,
+    onChanged: (value) {
+    if (_accountTextController.text != value.toLowerCase())
+    _accountTextController.value =
+    _accountTextController.value.copyWith(
+    text: value.toLowerCase());
+
+    //save to storage
+    StepDataEnterAccount storageStepEnterAccount = _storage.getStorageData(0);
+    storageStepEnterAccount.accountID = _accountTextController.text;
+    },
+    )
+
+    ]
+    );
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+    final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+    final stepEnterAccountBloc = BlocProvider.of<StepEnterAccountBloc>(context);
+    return Form(
+        key: _formKey,
+        autovalidate: true,
+        child: BlocBuilder(
+          bloc: stepEnterAccountBloc,
+          builder: (BuildContext context, StepEnterAccountState state) {
+            return body(context, state, stepEnterAccountBloc);
+          },
+        ));
+  }
+}

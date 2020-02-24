@@ -1,13 +1,45 @@
 import 'package:eosign_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
 import 'package:eosign_mobile_app/screen/main/stepper/stepScan/stepScan.dart';
 import 'package:eosign_mobile_app/screen/main/stepper/stepper.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:meta/meta.dart';
+import 'package:eosign_mobile_app/settings/settings.dart';
+
+class StorageNode {
+  String name;
+  String host;
+  int port;
+  NetworkType networkType;
+  String chainID;
+
+  StorageNode(
+      { @required this.name,
+        @required this.host,
+        @required this.port,
+        @required this.networkType,
+        this.chainID}) {
+        //use chainID from settings if user not declare it in the call
+        if (this.chainID == null) {
+          if (settings["chain_id"][this.networkType] == null)
+            throw new FormatException("Chain id is not defined");
+          this.chainID = settings["chain_id"][this.networkType];
+        }
+  }
+}
+
 
 int _NUM_OF_STEPS = 3;
 //data stored in the singelton class
 class StorageData {
+  StorageNode selectedNode;
+  List<StorageNode> _nodes;
   List<StepData> _steps;
 
+
   StorageData(){
+    this._nodes = new List();
+    this.selectedNode = null;
+
     this._steps = new List(_NUM_OF_STEPS);
     //initialize every step
     this._steps[0] = StepDataEnterAccount();
@@ -21,6 +53,28 @@ class StorageData {
       return null;
 
     return _steps[index];
+  }
+
+  //add so storage list
+  void addStorageNode(StorageNode sn){
+    this._nodes.add(sn);
+  }
+
+  //get list of nodes stored in storage; you can also filter by network type
+  List<StorageNode> storageNodes({networkType = null})
+  {
+    if (networkType == null)
+      return this._nodes;
+
+    List<StorageNode> selected = new List();
+    for (var item in this._nodes)
+      if (item.networkType == networkType)
+        selected.add(item);
+    return selected;
+  }
+
+  StorageNode getSelectedNode(){
+    return this.selectedNode;
   }
 
 }

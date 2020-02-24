@@ -5,18 +5,6 @@ abstract class StepEnterAccountEvent extends Equatable {
   StepEnterAccountEvent();
 }
 
-class NoAccount extends StepEnterAccountEvent {
-
-  NoAccount();
-
-  @override
-  List<Object> get props => [];
-
-  //@override
-  //String toString() =>
-  //    'LoginButtonPressed { username: $username, password: $password }';
-}
-
 class AccountConfirmation extends StepEnterAccountEvent{
   final String accountID;
 

@@ -37,12 +37,6 @@ class StepScanBloc extends Bloc<StepScanEvent, StepScanState> {
   @override
   StepScanState get initialState => EmptyState();
 
-  @override
-  void onTransition(Transition<StepScanEvent, StepScanState> transition) {
-    super.onTransition(transition);
-    print(transition);
-  }
-
   //separate function because of async function
   bool validatorFunction (String value, var context) {
     final stepScanBloc = BlocProvider.of<StepScanBloc>(context);
