@@ -1,9 +1,7 @@
 //  Created by smlu on 07/02/2020.
 //  Copyright © 2020 ZeroPass. All rights reserved.
 import 'dart:typed_data';
-import 'package:eosign_mobile_app/dmrtd/ef/mrz.dart';
 import 'package:flutter_test/flutter_test.dart';
-
 import 'package:eosign_mobile_app/dmrtd/ef/mrz.dart';
 
 void main() {
