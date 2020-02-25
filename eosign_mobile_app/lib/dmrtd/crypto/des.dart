@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:tripledes/tripledes.dart';
 import 'iso9797.dart';
 
-/// Represents DES encryption algorithm using CBC block cipher mode
+/// Implements DES encryption algorithm using CBC block cipher mode
 class DESCipher {
   static const blockSize = 8;
 
@@ -177,16 +177,16 @@ class DESCipher {
 
 
 
-/// Represents Triple DES encryption algorithm using CBC block cipher mode
-class TDESCipher extends DESCipher {
+/// Implements Triple DES encryption algorithm using CBC block cipher mode
+class DESedeCipher extends DESCipher {
 
   static const blockSize = DESCipher.blockSize;
 
-  /// Creates a [TDESCipher] with [key] and initial vector [iv].
+  /// Creates a [DESedeCipher] with [key] and initial vector [iv].
   ///
   /// [key] length must be 8, 16 or 24 bytes.
   /// [iv] length must be 8 bytes.
-  TDESCipher({final Uint8List key, final Uint8List iv}) : 
+  DESedeCipher({final Uint8List key, final Uint8List iv}) : 
     super(key: key, iv: iv);
 
   /// Sets new key. [key] length must be 8, 16 or 24 bytes.
@@ -233,8 +233,8 @@ class TDESCipher extends DESCipher {
 /// 
 /// The [data] if [padData] is set to false should be padded to the nearest multiple of 8.
 /// When [padData] is true, the [data] is padded according to the ISO/IEC 9797-1, padding method 2.
-Uint8List TDESEncrypt({ final Uint8List key, final Uint8List iv, final Uint8List data, bool padData = true}) {
-  return TDESCipher(key: key, iv: iv).encrypt(data, padData: padData);
+Uint8List DESedeEncrypt({ final Uint8List key, final Uint8List iv, final Uint8List data, bool padData = true}) {
+  return DESedeCipher(key: key, iv: iv).encrypt(data, padData: padData);
 }
 
 
@@ -242,6 +242,6 @@ Uint8List TDESEncrypt({ final Uint8List key, final Uint8List iv, final Uint8List
 /// 
 /// The [data] if [padData] is set to false should be padded to the nearest multiple of 8.
 /// When [padData] is true, the [data] is padded according to the ISO/IEC 9797-1, padding method 2.
-Uint8List TDESDecrypt({ final Uint8List key, final Uint8List iv, final Uint8List edata, bool paddedData = true}) {
-  return TDESCipher(key: key, iv: iv).decrypt(edata, paddedData: paddedData);
+Uint8List DESedeDecrypt({ final Uint8List key, final Uint8List iv, final Uint8List edata, bool paddedData = true}) {
+  return DESedeCipher(key: key, iv: iv).decrypt(edata, paddedData: paddedData);
 }
