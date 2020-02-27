@@ -1,5 +1,4 @@
 //  Copyright © 2020 ZeroPass. All rights reserved.
-import 'dart:ffi';
 import 'package:crypto/crypto.dart';
 import 'package:fixnum/fixnum.dart';
 import 'dart:typed_data';
