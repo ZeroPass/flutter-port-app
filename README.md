@@ -1,3 +1,3 @@
-# EOSign Mobile app
+# PassID Mobile app
 
 flutter(dart)
