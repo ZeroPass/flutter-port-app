@@ -3,9 +3,9 @@
 import 'package:test/test.dart';
 import 'dart:typed_data';
 
-import 'package:dmrtd/extension/datetime_apis.dart';
-import 'package:dmrtd/extension/string_apis.dart';
-import 'package:dmrtd/extension/uint8list_apis.dart';
+import 'package:dmrtd/src/extension/datetime_apis.dart';
+import 'package:dmrtd/src/extension/string_apis.dart';
+import 'package:dmrtd/src/extension/uint8list_apis.dart';
 
 void main() {
 
