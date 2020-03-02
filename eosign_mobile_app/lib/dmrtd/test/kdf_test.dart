@@ -1,8 +1,8 @@
 //  Copyright © 2020 ZeroPass. All rights reserved.
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 
-import '../../lib/dmrtd/crypto/kdf.dart';
-import '../../lib/dmrtd/extension/string_apis.dart';
+import 'package:dmrtd/crypto/kdf.dart';
+import 'package:dmrtd/extension/string_apis.dart';
 
 void main() {
 

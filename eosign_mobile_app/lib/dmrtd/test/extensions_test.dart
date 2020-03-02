@@ -1,11 +1,11 @@
 //  Created by smlu on 21/01/2020.
 //  Copyright © 2020 ZeroPass. All rights reserved.
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 import 'dart:typed_data';
 
-import '../../lib/dmrtd/extension/datetime_apis.dart';
-import '../../lib/dmrtd/extension/string_apis.dart';
-import '../../lib/dmrtd/extension/uint8list_apis.dart';
+import 'package:dmrtd/extension/datetime_apis.dart';
+import 'package:dmrtd/extension/string_apis.dart';
+import 'package:dmrtd/extension/uint8list_apis.dart';
 
 void main() {
 

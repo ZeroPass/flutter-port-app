@@ -2,10 +2,10 @@
 //  Copyright © 2020 ZeroPass. All rights reserved.
 
 import 'dart:typed_data';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 
-import '../../lib/dmrtd/crypto/des.dart';
-import '../../lib/dmrtd/extension/string_apis.dart';
+import 'package:dmrtd/crypto/des.dart';
+import 'package:dmrtd/extension/string_apis.dart';
 
 void main() {
   final zeroIV = Uint8List(DESedeCipher.blockSize);
@@ -19,7 +19,7 @@ void main() {
     expect( Eifd, tvEifd );
 
     final dS = DESedeCipher(key: tvKenc, iv: zeroIV).decrypt(Eifd, paddedData: false);
-    expect(dS, tvS);  
+    expect( dS, tvS );  
 
     // Test vectors from ICAO 9303 p11 - Appendix D to Part 11, section D.3
     final tvR   = "4608F91988702212781723860C06C2260B4F80323EB3191CB04970CB4052790B".parseHex();

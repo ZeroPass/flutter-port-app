@@ -1,11 +1,11 @@
 //  Created by smlu on 12/02/2020.
 //  Copyright © 2020 ZeroPass. All rights reserved.
 import 'dart:typed_data';
-import 'package:eosign_mobile_app/dmrtd/ef/mrz.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 
-import '../../lib/dmrtd/extension/string_apis.dart';
-import 'package:eosign_mobile_app/dmrtd/proto/bac_keyseed.dart';
+import 'package:dmrtd/ef/mrz.dart';
+import 'package:dmrtd/extension/string_apis.dart';
+import 'package:dmrtd/proto/bac_keyseed.dart';
 
 void main() {
   test('BAC key seed test', () {
