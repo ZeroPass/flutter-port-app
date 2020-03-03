@@ -8,6 +8,7 @@ import 'package:eosign_mobile_app/settings/settings.dart';
 class StorageNode {
   String name;
   String host;
+  bool isEncryptedEndpoint;
   int port;
   NetworkType networkType;
   String chainID;
@@ -16,8 +17,15 @@ class StorageNode {
       { @required this.name,
         @required this.host,
         @required this.port,
+        @required this.isEncryptedEndpoint,
         @required this.networkType,
         this.chainID}) {
+
+        //remove http(s) part of host
+        this.host = this.host.toLowerCase();
+        this.host = this.host.replaceFirst("https://", "");
+        this.host = this.host.replaceFirst("http://", "");
+
         //use chainID from settings if user not declare it in the call
         if (this.chainID == null) {
           if (settings["chain_id"][this.networkType] == null)
@@ -25,8 +33,73 @@ class StorageNode {
           this.chainID = settings["chain_id"][this.networkType];
         }
   }
+
+  static int hasEncryptedEndpoint(String host){
+    if (host.toLowerCase().contains("https://")) return 1;//encrypted endpoint
+    else if (host.toLowerCase().contains("http://")) return 0;//not encrypted endpoint
+    else return 2;//no http(s) beginning of string
+  }
+
+  //print url address
+  String toString(){
+    String prefix = (this.isEncryptedEndpoint)? "https://" : "http://";
+    String port = (this.port != null)? ":"+ this.port.toString() : "";
+    return prefix + this.host + port;
+  }
 }
 
+class StorageServer {
+  String name;
+  String host;
+  bool isEncryptedEndpoint;
+  int port;
+
+  StorageServer(
+      { @required this.name,
+        @required this.host,
+        @required this.port,
+        @required this.isEncryptedEndpoint
+        }) {
+    //remove http(s) part of host
+    this.host = this.host.toLowerCase();
+    this.host = this.host.replaceFirst("https://", "");
+    this.host = this.host.replaceFirst("http://", "");
+  }
+
+  static int hasEncryptedEndpoint(String host){
+    if (host.toLowerCase().contains("https://")) return 1;//encrypted endpoint
+    else if (host.toLowerCase().contains("http://")) return 0;//not encrypted endpoint
+    else return 2;//no http(s) beginning of string
+  }
+
+  //print url address
+  String toString(){
+    String prefix = (this.isEncryptedEndpoint)? "https://" : "http://";
+    String port = (this.port != null)? ":"+ this.port.toString() : "";
+    return prefix + this.host + port;
+  }
+}
+
+class StorageServerTemporary extends StorageServer{
+  String accountID;
+  String chainID;
+
+  StorageServerTemporary(
+      { @required name,
+        @required host,
+        @required port,
+        @required isEncryptedEndpoint,
+        @required accountID,
+        chainID
+      }) {
+    //remove http(s) part of host
+    this.host = this.host.toLowerCase();
+    this.host = this.host.replaceFirst("https://", "");
+    this.host = this.host.replaceFirst("http://", "");
+
+    this.chainID = (chainID != null? chainID: null);
+  }
+}
 
 int _NUM_OF_STEPS = 3;
 //data stored in the singelton class
@@ -34,11 +107,15 @@ class StorageData {
   StorageNode selectedNode;
   List<StorageNode> _nodes;
   List<StepData> _steps;
+  StorageServer _storageServer;
+  StorageServerTemporary _storageServerTemporary;
 
 
   StorageData(){
     this._nodes = new List();
     this.selectedNode = null;
+    this._storageServer = null;
+    this._storageServerTemporary = null;
 
     this._steps = new List(_NUM_OF_STEPS);
     //initialize every step

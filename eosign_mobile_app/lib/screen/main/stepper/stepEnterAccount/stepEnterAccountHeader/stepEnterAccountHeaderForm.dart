@@ -55,6 +55,8 @@ class _StepEnterAccountHeaderFormState extends State<StepEnterAccountHeaderForm>
   Widget build(BuildContext context) {
     final stepEnterAccountHeaderBloc = BlocProvider.of<StepEnterAccountHeaderBloc>(context);
     print("header form");
+    print("width");
+    print(MediaQuery.of(context).size.width);
     return BlocBuilder(
       bloc: stepEnterAccountHeaderBloc,
       builder: (BuildContext context, StepEnterAccountHeaderState state) {

@@ -1,3 +1,5 @@
+import 'package:eosign_mobile_app/settings/settings.dart';
+import 'package:eosign_mobile_app/utils/storage.dart';
 import 'package:flutter/material.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/cupertino.dart';
@@ -9,7 +11,33 @@ import 'package:eosign_mobile_app/screen/main/stepper/stepScan/stepScan.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:eosign_mobile_app/screen/theme.dart';
 
+
 void main() => runApp(MyApp());
+
+
+void fillDatabase()
+{
+  print("fill database");
+  Storage storage = new Storage();
+
+  //to call it just one time
+  if(storage.storageNodes().length > 0)
+    return;
+
+  print("---------------------------------------------------in fill datatbase");
+  List<StorageNode> nodes = storage.storageNodes();
+  StorageNode sn = new StorageNode(name: "Kylin testnet", host: "kylin.eosnode.io", port: 443, isEncryptedEndpoint: true, networkType: NetworkType.KYLIN, chainID: "abcedfdsaffdas");
+  nodes.add(sn);
+
+  sn = new StorageNode(name: "EOSIO testnet", host: "eosio.eosnode.io", port: 443, isEncryptedEndpoint: true, networkType: NetworkType.EOSIO_TESTNET, chainID: "fsadfsdafasdfasd");
+  nodes.add(sn);
+
+  sn = new StorageNode(name: "Mainnet", host: "mainenet.eosnode.io", port: 443, isEncryptedEndpoint: true, networkType: NetworkType.MAINNET, chainID: "abcedfdsdfgasfsdfasdfasdaffdas");
+  nodes.add(sn);
+
+  sn = new StorageNode(name: "My rivate chain", host: "456786.eosnode.io", port: 443, isEncryptedEndpoint: true, networkType: NetworkType.CUSTOM, chainID: "abce5435345dsaffdas");
+  nodes.add(sn);
+}
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -37,6 +65,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    fillDatabase();
     return PlatformProvider(
         //initialPlatform: initialPlatform,
         builder: (BuildContext context) => PlatformApp(

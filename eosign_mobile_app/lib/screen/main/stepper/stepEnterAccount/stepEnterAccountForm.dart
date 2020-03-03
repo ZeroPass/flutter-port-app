@@ -4,6 +4,7 @@ import "package:eosign_mobile_app/screen/main/stepper/stepEnterAccount/stepEnter
 import 'package:flutter/cupertino.dart';
 import 'package:eosign_mobile_app/utils/storage.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:eosign_mobile_app/screen/customBottomPicker.dart';
 
 class StepEnterAccountForm extends StatefulWidget {
   StepEnterAccountForm({Key key}) : super(key: key);
@@ -11,7 +12,6 @@ class StepEnterAccountForm extends StatefulWidget {
   @override
   _StepEnterAccountFormState createState() => _StepEnterAccountFormState();
 }
-
 
 class _StepEnterAccountFormState extends State<StepEnterAccountForm> {
   //Stepper steps
@@ -37,95 +37,257 @@ class _StepEnterAccountFormState extends State<StepEnterAccountForm> {
     _accountTextController.text = "";
   }
 
-  void selectNetwork(var context){
-    showPlatformModalSheet(
-        context: context, builder: (_) => PopupMenuButton(
-      child: new ListTile(
-        title: new Text('11 or 22?'),
-        trailing: const Icon(Icons.more_vert),
+  void selectNetwork(var context) {
+    var storage = Storage();
+    BottomPickerStructure bps = BottomPickerStructure();
+    bps.importStorageNodeList(storage.storageNodes(), storage.getSelectedNode());
+    CustomBottomPickerState cbps = CustomBottomPickerState(structure: bps);
+    cbps.showPicker(context);
+
+    return;
+    final items = <Widget>[
+      ListTile(
+        leading: Icon(Icons.radio_button_checked),
+        title: Text('Kylin'),
+        onTap: () {},
       ),
-      itemBuilder: (_) => <PopupMenuItem<String>>[
-        new PopupMenuItem<String>(
-            child: new Text('11'), value: '11'),
-        new PopupMenuItem<String>(
-            child: new Text('22'), value: '22'),
-      ],
-      onSelected: (value) => {} ,
-    )
-    )
-      .whenComplete(() {
+      ListTile(
+        leading: Icon(Icons.radio_button_unchecked),
+        title: Text('Select'),
+        onTap: () {},
+      ),
+      ListTile(
+        leading: Icon(Icons.radio_button_unchecked),
+        title: Text('Delete'),
+        onTap: () {},
+      ),
+      /*Divider(),
+      if (true)
+        ListTile(
+          title: Text('Cancel'),
+          onTap: () {},
+        ),*/
+    ];
+
+    final items1 = <Widget>[
+      CupertinoActionSheetAction(
+        child: Text('Camera'),
+        onPressed: () {},
+      ),
+      CupertinoActionSheetAction(
+        child: Text('Select'),
+        onPressed: () {},
+      ),
+      CupertinoActionSheetAction(
+        child: Text('Delete'),
+        onPressed: () {},
+      ),
+      Divider(),
+      if (true)
+        CupertinoActionSheetAction(
+          child: Text('Cancel'),
+          onPressed: () {},
+        ),
+    ];
+
+    //showPlatformModalSheet
+    /*showCupertinoModalPopup(
+        context: context,
+        builder: (BuildContext context) => CupertinoActionSheet(
+            title: const Text('Choose Options'),
+            message: const Text('Your options are '),
+            actions: <Widget>[
+              CupertinoActionSheetAction(
+                child: const Text('One'),
+                onPressed: () {
+                  Navigator.pop(context, 'One');
+                },
+              ),
+              CupertinoActionSheetAction(
+                child: const Text('Two'),
+                onPressed: () {
+                  Navigator.pop(context, 'Two');
+                },
+              )
+            ],
+            cancelButton: CupertinoActionSheetAction(
+              child: const Text('Cancel'),
+              isDefaultAction: true,
+              onPressed: () {
+                Navigator.pop(context, 'Cancel');
+              },
+            ))
+        ).whenComplete(() {
+      print('Hey there, I\'m calling after hide bottomSheet');
+    });*/
+
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext _) {
+        return Container(
+          child: Wrap(
+            children: items,
+          ),
+        );
+      },
+      isScrollControlled: true,
+    );
+  }
+
+  void selectNetworkOld(var context) {
+
+    showPlatformModalSheet(
+        context: context,
+        builder: (_) => PopupMenuButton(
+          //child: new ListTile(
+          //  title: new Text('11 or 22?'),
+          //  trailing: const Icon(Icons.more_vert),
+          //),
+          itemBuilder: (_) => <PopupMenuItem<String>>[
+            new PopupMenuItem<String>(child: new Text('11'), value: '11'),
+            new PopupMenuItem<String>(child: new Text('22'), value: '22'),
+          ],
+          onSelected: (value) => {},
+        )
+    ).whenComplete(() {
       print('Hey there, I\'m calling after hide bottomSheet');
     });
   }
 
-  Widget selectNetwork1(var context){
-   return PopupMenuButton(
-      child: new ListTile(
-        title: new Text('Select node'),
-        trailing: const Icon(Icons.account_balance),
+  Widget selectNetworkWithTile(var context, String _selection) {
+    Storage storage = new Storage();
+    var nodes = storage.storageNodes();
+    return PopupMenuButton<String>(
+      color: Colors.amber,
+      onSelected: (String value) {
+        setState(() {
+          print("select something:" + value);
+          print (_selection);
+          _selection = value;
+        });
+      },
+      child: Container(
+        color: Colors.red,
+            child:
+      ListTile(
+        dense: true,
+        contentPadding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
+        //title: Text('Title'),
+        title: /*Column(
+          children: <Widget>[
+            Text(_selection == null ? 'Nothing selected yet' : _selection.toString(),style: TextStyle(fontWeight: FontWeight.bold, )),
+          ],
+        )*/
+        Row(
+          children: <Widget>[
+            Icon(Icons.clear_all,color:Colors.black),
+            SizedBox(width: 8,),
+            Text('Network', style: TextStyle(fontWeight: FontWeight.bold, )),
+            SizedBox(width: 8,),
+            Container(
+                width:MediaQuery.of(context).size.width*0.45,
+                child: Align(alignment: Alignment.centerRight, child:Text(_selection == null ? 'Nothing selected yet' : _selection.toString())))
+          ],
+        ),
+
+        trailing: Icon(Icons.expand_more),
+      )
       ),
-      itemBuilder: (_) => <PopupMenuItem<String>>[
-        new PopupMenuItem<String>(
-            child: new Text('Mainnet'), value: 'Mainnet'),
-        new PopupMenuItem<String>(
-            child: new Text('EOS testnet'), value: 'eostestnet'),
-        new PopupMenuItem<String>(
-            child: new Text('Kylin'), value: 'Kylin'),
+      itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+        const PopupMenuItem<String>(
+          value: 'Value1',
+          child: Text('Choose value 1'),
+        ),
+        const PopupMenuItem<String>(
+          value: 'Value2',
+          child: Text('Choose value 2'),
+        ),
+        const PopupMenuItem<String>(
+          value: 'Value3',
+          child: Text('Choose value 3'),
+        ),
       ],
-      onSelected: (value) => {} ,
     );
+    /*ListTile(
+        dense: true,
+        title: Text("Select node", style: TextStyle(fontWeight: FontWeight.bold)),
+        //trailing: const Icon(Icons.expand_more),
+        leading: IconButton(
+          icon: Icon(Icons.add_alarm),
+          onPressed: () {
+            print('Hello world');
+          },
+        ),
+        subtitle:PopupMenuButton(
+          color: Colors.deepPurple,
+          /*child: new ListTile(
+            title: new Text('Select node'),
+            trailing: const Icon(Icons.expand_more),
+            leading: const Icon(Icons.arrow_right),
+          ),*/
+          itemBuilder: (_) => <PopupMenuItem<String>>[
+            for(var item in nodes)
+              PopupMenuItem<String>(
+                child: new Text(item.name + " (" + item.toString() + ")"),
+                value: item.name)
+          ],
+          onSelected: (value) => {},
+        )
+    );*/
   }
+
+
 
   Widget body(BuildContext context, StepEnterAccountState state,
       var stepEnterAccountBloc) {
-    if (state is DeletedState)
-      emptyFields();
-    if (state is FullState)
-      updateFields();
-
-    return Column(children:
-        <Widget>[
-          selectNetwork1(context)
-          /*RaisedButton(
-            child: Text("Test modal sheet"),
-            onPressed: () {
-              selectNetwork(context);
-            },
-            color: Colors.red,
-            textColor: Colors.yellow,
-            //padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
-            splashColor: Colors.grey,
-          )*/,
-
-          TextFormField(
-        //maxLength: 12,
+    if (state is DeletedState) emptyFields();
+    if (state is FullState) updateFields();
+    String selectedNode;
+    return Column(children: <Widget>[
+      //selectNetworkWithTile(context, selectedNode),
+      RaisedButton(child: Text("Rock & Roll"),
+        onPressed: () => selectNetwork(context),
+        color: Colors.red,
+        textColor: Colors.yellow,
+        padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+        splashColor: Colors.grey,
+      ),
+    /*ListTile(
+    dense: true,
+    title: Text(
+    "Account name",
+    style: TextStyle(fontWeight: FontWeight.bold),
+    ),
+    subtitle:*/ TextFormField(
         controller: _accountTextController,
-        //initialValue: state.accountID,
+        decoration: InputDecoration(labelText: 'Account name', ),
+        autofocus: true,
+        validator: (value) =>
+            stepEnterAccountBloc.validatorFunction(value, context)
+                ? stepEnterAccountBloc.validatorText
+                : null,
+        onChanged: (value) {
+          if (_accountTextController.text != value.toLowerCase())
+            _accountTextController.value = _accountTextController.value
+                .copyWith(text: value.toLowerCase());
 
-        decoration: InputDecoration(labelText: 'Account name'),
-    autofocus: true,
-    validator: (value) => stepEnterAccountBloc.validatorFunction(value, context) ? stepEnterAccountBloc.validatorText : null,
-    onChanged: (value) {
-    if (_accountTextController.text != value.toLowerCase())
-    _accountTextController.value =
-    _accountTextController.value.copyWith(
-    text: value.toLowerCase());
-
-    //save to storage
-    StepDataEnterAccount storageStepEnterAccount = _storage.getStorageData(0);
-    storageStepEnterAccount.accountID = _accountTextController.text;
-    },
-    )
-
+          //save to storage
+          StepDataEnterAccount storageStepEnterAccount =
+              _storage.getStorageData(0);
+          storageStepEnterAccount.accountID = _accountTextController.text;
+        },
+      )
+    //)
     ]
     );
   }
-
 
   @override
   Widget build(BuildContext context) {
     final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
     final stepEnterAccountBloc = BlocProvider.of<StepEnterAccountBloc>(context);
+    print("width");
+    print(MediaQuery.of(context).size.width);
     return Form(
         key: _formKey,
         autovalidate: true,
