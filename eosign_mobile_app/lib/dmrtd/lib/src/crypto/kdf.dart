@@ -1,4 +1,4 @@
-//  Copyright © 2020 ZeroPass. All rights reserved.
+//  Created by smlu, copyright © 2020 ZeroPass. All rights reserved.
 import 'package:crypto/crypto.dart';
 import 'package:fixnum/fixnum.dart';
 import 'dart:typed_data';
@@ -94,7 +94,7 @@ class DeriveKey {
     switch(keyType) {
       case DeriveKeyType.DESede:
       case DeriveKeyType.ISO9797MacAlg3: {
-        final key = KDF(sha1, keySeed, mode).sublist(0,16); // use only 128 bits = 8 * 16;
+        final key = KDF(sha1, keySeed, mode).sublist(0, 16); // use only 128 bits = 8 * 16;
 
         // Adjust even parity bits
         for (int i = 0; i < key.length; i++) {
@@ -111,7 +111,7 @@ class DeriveKey {
       }
       case DeriveKeyType.AES128:
       case DeriveKeyType.CMAC128: {
-        return KDF(sha1, keySeed, mode).sublist(0,16); // use only 128 bits = 8 * 16;
+        return KDF(sha1, keySeed, mode).sublist(0, 16); // use only 128 bits = 8 * 16;
       }
       case DeriveKeyType.AES192:
       case DeriveKeyType.AES256:
