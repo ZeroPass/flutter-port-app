@@ -85,8 +85,8 @@ class StatusWord {
   }
 
   const StatusWord({ @required this.sw1, @required this.sw2 }) : 
-    assert(sw1 < 255), 
-    assert(sw2 < 255);
+    assert(sw1 < 256), 
+    assert(sw2 < 256);
 
   static StatusWord fromBytes(Uint8List data, [int offset = 0]) {
     if(data.length < 2 ) {
