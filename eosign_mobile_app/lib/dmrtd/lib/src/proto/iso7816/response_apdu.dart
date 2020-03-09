@@ -104,6 +104,9 @@ class StatusWord {
     return sw1 == rhs?.sw1 && sw2 == rhs?.sw2;
   }
 
+  @override
+  get hashCode => (sw1 << 8) + sw2;
+
   String toString() {
     return 'sw:${value.toRadixString(16)}';
   }
