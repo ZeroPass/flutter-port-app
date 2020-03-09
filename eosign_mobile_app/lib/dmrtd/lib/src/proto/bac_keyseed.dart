@@ -17,6 +17,12 @@ class BACKeySeed {
       _dob     = dateOfBirth.formatYYMMDD();
       _doe     = dateOfExpiry.formatYYMMDD();
     }
+
+    BACKeySeed.fromMRZ(MRZ mrz) {
+      _mrtdNum = mrz.documentNumber;
+      _dob     = mrz.dateOfBirth.formatYYMMDD();
+      _doe     = mrz.dateOfExpiry.formatYYMMDD();
+    }
     
     String mrtdNumber() {
       return _mrtdNum;
