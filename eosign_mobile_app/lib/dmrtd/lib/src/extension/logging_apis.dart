@@ -1,4 +1,4 @@
-//  Copyright © 2020 ZeroPass. All rights reserved.
+//  Created by smlu, copyright © 2020 ZeroPass. All rights reserved.
 import 'package:logging/logging.dart';
 
 extension LogAlias on Logger {
