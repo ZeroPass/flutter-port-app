@@ -4,7 +4,7 @@ import 'dart:typed_data';
 
 class Utils {
 
-  /// Returns number of bits in integer [n].
+  /// Returns number of bits to represent integer [n].
   /// [n] must be positive integer number.
   static int bitCount(final int n) {
     if(n < 0) {
@@ -16,7 +16,7 @@ class Utils {
     return n == 0 ? 0 : (log(n) / log(2)).floor() + 1;
   }
 
-  /// Returns number of bytes in integer [n].
+  /// Returns number of bytes to represent integer [n].
   /// [n] must be positive integer number.
   static int byteCount(final int n) {
     return (bitCount(n) / 8).ceil();
