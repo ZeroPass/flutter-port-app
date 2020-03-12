@@ -120,13 +120,15 @@ class CommandAPDU {
     return le;
   }
 
+  /// Returns serialized header bytes.
+  Uint8List rawHeader() {
+    return Uint8List.fromList([_cla, _ins, _p1, _p2]);
+  }
+
   /// Returns serialized command APDU.
   Uint8List toBytes() {
     final lc = _getLc();
     final le = _getLe();
-
-    final rawAPDU = Uint8List(4 + lc.length + (_data?.length ?? 0) + le.length);
-    final rv = ByteData.view(rawAPDU.buffer);
-    return Uint8List.fromList([_cla, _ins, _p1, _p2, ...lc, ...?_data, ...le]);
+    return Uint8List.fromList(rawHeader() + [ ...lc, ...?_data, ...le]);
   }
 }
