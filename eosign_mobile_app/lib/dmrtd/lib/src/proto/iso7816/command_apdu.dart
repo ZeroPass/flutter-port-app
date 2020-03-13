@@ -14,10 +14,10 @@ class CommandAPDU {
   /// Required parameters are [cla], [ins], [p1], [p2].
   /// 
   /// [data] represents additional command data and is optional.
-  /// Max [data] length is 355535.
+  /// Max [data] length is 65535.
   /// 
   /// [ne] is optional and represents expected response length.
-  /// Max [ne] is 35536.
+  /// Max [ne] is 65536.
   /// If [ne] is set to 0, [ne] won't be serialized and send with the command.
   /// If [ne] is set to 256 or 35536 [ne] will be encoded as 0x00, which means arbitrary long data is expected in the response. 
   CommandAPDU({ @required int cla, @required int ins, @required int p1, @required int p2, final Uint8List data, int ne = 0}) {
@@ -79,7 +79,7 @@ class CommandAPDU {
 
   int get ne => _ne;
   set ne(int ne) {
-    if(ne >= 0 && ne <= 35536) {
+    if(ne >= 0 && ne <= 65536) {
       _ne = ne;
     }
     else {
