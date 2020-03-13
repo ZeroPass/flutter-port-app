@@ -19,7 +19,7 @@ class CommandAPDU {
   /// [ne] is optional and represents expected response length.
   /// Max [ne] is 65536.
   /// If [ne] is set to 0, [ne] won't be serialized and send with the command.
-  /// If [ne] is set to 256 or 35536 [ne] will be encoded as 0x00, which means arbitrary long data is expected in the response. 
+  /// If [ne] is set to 256 or 65536 [ne] will be encoded as 0x00, which means arbitrary long data is expected in the response. 
   CommandAPDU({ @required int cla, @required int ins, @required int p1, @required int p2, final Uint8List data, int ne = 0}) {
     this.cla  = cla;
     this.ins  = ins;
@@ -92,11 +92,12 @@ class CommandAPDU {
       return Uint8List(0);
     }
 
-    final lc  = Uint8List( _data.length < 256 ? 1 : 3);
+    final bool extended = _data.length > 255 || _ne > 256;
+    final lc  = Uint8List(extended ? 3 : 1);
     final lcv = ByteData.view(lc.buffer);
-    if(_data.length < 256 ) {
+    if(!extended) { // case 3s
       lcv.setUint8(0, _data.length);
-    } else { // extended
+    } else { // extended - case 3e/4e
       lcv.setUint16(1, _data.length, Endian.big);
     }
 
@@ -108,14 +109,15 @@ class CommandAPDU {
       return Uint8List(0);
     }
 
+    final bool extended = ne > 256 || (_data?.length ?? 0) > 255;
   	final addByte = (_data?.isEmpty ?? true) ? 1 : 0;
-    final le  = Uint8List(ne <= 256 ? 1 : 2 + addByte);
+    final le  = Uint8List(extended ? 2 + addByte : 1);
     final lev = ByteData.view(le.buffer);
-    if(ne <= 256 ) {
+    if(!extended) { // case 2s or 4s
       lev.setUint8(0, ne == 256 ? 0 : ne); // 256 is encoded as 0x00 e.g. variable long 
     } 
-    else { // extended 
-      lev.setUint16(addByte, ne == 35536 ? 0 : ne, Endian.big); //35536 is encoded as 0x00 0x00
+    else { // extended, case 2e or 4e
+      lev.setUint16(addByte, (ne == 256 || ne == 65536) ? 0 : ne, Endian.big); // 256 and 65536 are encoded as 0x00 0x00
     }
     return le;
   }
