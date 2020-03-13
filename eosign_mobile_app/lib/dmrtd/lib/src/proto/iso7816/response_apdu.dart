@@ -11,7 +11,9 @@ class ResponseAPDU {
     StatusWord get status => _sw;
     Uint8List get data => _data;
 
-    ResponseAPDU(final Uint8List apduBytes) {
+    ResponseAPDU(this._sw, this._data);
+
+    ResponseAPDU.fromBytes(final Uint8List apduBytes) {
       if(apduBytes == null) {
         throw ArgumentError.notNull('apduBytes');
       }
