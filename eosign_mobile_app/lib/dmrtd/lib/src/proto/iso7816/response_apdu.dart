@@ -28,6 +28,7 @@ class ResponseAPDU {
       _sw = StatusWord.fromBytes(apduBytes, apduBytes.length - 2);
     }
 
+    Uint8List toBytes() => Uint8List.fromList((_data ?? Uint8List(0))  + _sw.toBytes());
     String toString() => '$status data:${_data?.hex()}';
 }
 
@@ -82,7 +83,7 @@ class StatusWord {
 
   int get value {
     return ByteData.view(
-      Uint8List.fromList([sw1, sw2]).buffer
+      toBytes().buffer
     ).getUint16(0);
   }
 
@@ -108,6 +109,10 @@ class StatusWord {
 
   @override
   get hashCode => (sw1 << 8) + sw2;
+
+  Uint8List toBytes() {
+    return Uint8List.fromList([sw1, sw2]);
+  }
 
   String toString() {
     return 'sw:${value.toRadixString(16)}';
