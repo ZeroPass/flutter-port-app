@@ -40,11 +40,9 @@ class SSC {
                        .padLeft(padLen , '0');
     return hexSSC.parseHex();
   }
-
-
 }
 
-class DESedeSCC extends SSC {
-  DESedeSCC(Uint8List ssc) : 
+class DESedeSSC extends SSC {
+  DESedeSSC(Uint8List ssc) : 
     super(ssc, DESedeCipher.blockSize * 8);
 }
