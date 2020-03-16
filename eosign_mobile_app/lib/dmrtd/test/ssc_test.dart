@@ -74,7 +74,7 @@ void main() {
     // Test case 11
     // Test vectors from section Appendix D.4 to the part 11 of ICAO 9303 p11
     // ref: https://www.icao.int/publications/Documents/9303_p11_cons_en.pdf
-    tvSSC = DESedeSCC('887022120C06C226'.parseHex());
+    tvSSC = DESedeSSC('887022120C06C226'.parseHex());
     expect( tvSSC.toBytes(), '887022120C06C226'.parseHex() );
 
     tvSSC.increment();
