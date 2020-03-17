@@ -29,7 +29,7 @@ class ResponseAPDU {
     }
 
     Uint8List toBytes() => Uint8List.fromList((_data ?? Uint8List(0))  + _sw.toBytes());
-    String toString() => '$status data:${_data?.hex()}';
+    String toString() => '$status data=${_data?.hex()}';
 }
 
 
@@ -115,7 +115,7 @@ class StatusWord {
   }
 
   String toString() {
-    return 'sw:${value.toRadixString(16)}';
+    return 'sw=${value.toRadixString(16)}';
   }
 
   String description() {
