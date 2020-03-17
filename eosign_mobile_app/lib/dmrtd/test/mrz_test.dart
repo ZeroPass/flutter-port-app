@@ -2,7 +2,7 @@
 //  Copyright © 2020 ZeroPass. All rights reserved.
 import 'dart:typed_data';
 import 'package:test/test.dart';
-import 'package:dmrtd/src/ef/mrz.dart';
+import 'package:dmrtd/src/lds/mrz.dart';
 
 void main() {
   test('Check digit test', () {

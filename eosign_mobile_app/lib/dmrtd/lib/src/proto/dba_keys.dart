@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 
 import '../crypto/kdf.dart';
-import '../ef/mrz.dart';
+import '../lds/mrz.dart';
 import '../extension/datetime_apis.dart';
 import '../extension/string_apis.dart';
 

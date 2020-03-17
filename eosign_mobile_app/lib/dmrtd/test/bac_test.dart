@@ -3,7 +3,7 @@
 import 'dart:typed_data';
 import 'package:test/test.dart';
 
-import 'package:dmrtd/src/ef/mrz.dart';
+import 'package:dmrtd/src/lds/mrz.dart';
 import 'package:dmrtd/src/extension/string_apis.dart';
 import 'package:dmrtd/src/proto/dba_keys.dart';
 
