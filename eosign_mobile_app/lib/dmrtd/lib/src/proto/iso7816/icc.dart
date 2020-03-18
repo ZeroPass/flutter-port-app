@@ -1,4 +1,5 @@
 //  Created by smlu, copyright © 2020 ZeroPass. All rights reserved.
+import 'dart:math';
 import 'dart:typed_data';
 import 'package:dmrtd/extensions.dart';
 import 'package:dmrtd/src/com/com_provider.dart';
@@ -82,13 +83,13 @@ class ICC {
   }
 
   /// Sends READ BINARY command to ICC.
-  /// It returns [ne] long chunk of data of a file at [offset].
-  /// Max [offset] can be 32 767. [ne] must not overlap 32 767 offset.
+  /// It returns [ne] long chunk of data at [offset].
+  /// Max [offset] can be 32 766. [ne] must not overlap offset 32 767.
   /// Can throw [ICCError] or [ComProviderError].
   /// 
   /// Note: Use [readBinaryExt] to read data chunks at offsets greater than 32 767.
-  Future<Uint8List> readBinary({ @required int offset, @required int ne, int cla: ISO7816_CLA.NO_SM}) async {
-    if(offset >  32767) {
+  Future<ResponseAPDU> readBinary({ @required int offset, @required int ne, int cla: ISO7816_CLA.NO_SM }) async {
+    if(offset > 32766) {
       throw ArgumentError.value(offset, null, "Max read binary offset can be 32 767 bytes");
     }
 
@@ -96,21 +97,17 @@ class ICC {
     final p1 = rawOffset[0];
     final p2 = rawOffset[1];
 
-    final rapdu = await _transceive(
+    return await _readBinary(
       CommandAPDU(cla: cla, ins: ISO7816_INS.READ_BINARY, p1: p1, p2: p2, ne: ne)
     );
-    if(rapdu.status != StatusWord.success) {
-      throw ICCError("Read binary failed", rapdu.status);
-    }
-    return rapdu.data;
   }
 
   /// Sends READ BINARY command to ICC.
   /// It returns file's [ne] long chunk of data at [offset].
   /// File is identified by [sfi].
-  /// Max [offset] can be  256 bytes.
+  /// Max [offset] can be 255.
   /// Can throw [ICCError] or [ComProviderError].
-  Future<Uint8List> readBinaryBySFI({ @required int sfi, @required int offset, @required int ne, int cla: ISO7816_CLA.NO_SM}) async {
+  Future<ResponseAPDU> readBinaryBySFI({ @required int sfi, @required int offset, @required int ne, int cla: ISO7816_CLA.NO_SM}) async {
     if(offset >  255) {
       throw ArgumentError.value(offset, null, "readBinaryBySFI: Max offset can be 256 bytes");
     }
@@ -118,32 +115,32 @@ class ICC {
       throw ArgumentError.value(offset, null, "readBinaryBySFI: Invalid SFI identifier");
     }
 
-    final rapdu = await _transceive(
+    return await _readBinary(
       CommandAPDU(cla: cla, ins: ISO7816_INS.READ_BINARY, p1: sfi, p2: offset, ne: ne)
     );
-    if(rapdu.status != StatusWord.success) {
-      throw ICCError("Read read binary by SFI", rapdu.status);
-    }
-    return rapdu.data;
   }
 
-  /// Sends Extended READ BINARY command to ICC.
-  /// It returns [ne] long chunk of data of a file at [offset].
-  /// [offset] must be 32 768 or greater.
+  /// Sends Extended READ BINARY (odd ins 'B1') command to ICC.
+  /// It returns [ne] long chunk of data at [offset].
+  /// [offset] can be greater than 32 767.
   /// Can throw [ICCError] or [ComProviderError].
-  Future<Uint8List> readBinaryExt({ @required int offset, @required int ne, int cla: ISO7816_CLA.NO_SM}) async {
-    if(offset < 0x8000) {
-      throw ArgumentError.value(offset, null, "readBinaryExt: Invalid offset");
-    }
-
+  Future<ResponseAPDU> readBinaryExt({ @required int offset, @required int ne, int cla: ISO7816_CLA.NO_SM}) async {
+    // Returned data will be encoded in BER-TLV with tag 0x53.
+    // We add additional bytes to ne for this extra data.
+    final enNeLen  = TLV.encodeLength(ne).length;
+    final addBytes =  1 /*byte = tag*/ + enNeLen;
+		ne = ne <= 256 ? min(256, ne + addBytes) : ne + addBytes;
+    
     final data  =  TLV.encodeIntValue(0x54, offset);
-    final rapdu = await _transceive(
+    final rapdu = await _readBinary(
       CommandAPDU(cla: cla, ins: ISO7816_INS.READ_BINARY_EXT, p1: 0x00, p2: 0x00, data: data, ne: ne)
     );
-    if(rapdu.status != StatusWord.success) {
-      throw ICCError("Read binary failed", rapdu.status);
+
+    final rtlv = TLV.fromBytes(rapdu.data);
+    if(rtlv.tag != 0x53) {
+      throw ICCError("readBinaryExt failed. Received invalid BER-TLV encoded data with tag=0x${rtlv.tag.toRadixString(16)}, expected tag=0x53", rapdu.status);
     }
-    return rapdu.data;
+    return ResponseAPDU(rapdu.status, rtlv.value);
   }
 
   /// Sends SELECT FILE command to ICC.
@@ -199,7 +196,19 @@ class ICC {
   }
 
 
-  /// Can throw [ICCError].
+  /// Can throw [ICCError]
+  Future<ResponseAPDU> _readBinary(final CommandAPDU cmd) async {
+    assert(cmd.ins == ISO7816_INS.READ_BINARY_EXT ||
+           cmd.ins == ISO7816_INS.READ_BINARY);
+    
+    final rapdu = await _transceive(cmd);
+    if(((rapdu.data?.isEmpty ?? true) && rapdu.status != StatusWord.success)) {
+      /// Should probably happen when SM errors (0x6987 & 0x6988) are received.
+      throw ICCError("Read binary failed", rapdu.status);
+    }
+    return rapdu;
+  }
+
   Future<ResponseAPDU> _transceive(final CommandAPDU cmd) async {
     final rawCmd = _wrap(cmd).toBytes();
     _log.verbose("Sending bytes to ICC: len=${rawCmd.length} data='${rawCmd.hex()}'");
