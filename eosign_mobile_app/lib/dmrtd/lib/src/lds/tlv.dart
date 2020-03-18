@@ -1,6 +1,6 @@
 //  Created by smlu, copyright © 2020 ZeroPass. All rights reserved.
 import 'dart:typed_data';
-import 'utils.dart';
+import '../utils.dart';
 
 /// Decoded tag
 class DecodedTag {

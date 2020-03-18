@@ -3,7 +3,7 @@ import 'dart:math';
 import 'dart:typed_data';
 import 'package:dmrtd/extensions.dart';
 import 'package:dmrtd/src/com/com_provider.dart';
-import 'package:dmrtd/src/tlv.dart';
+import 'package:dmrtd/src/lds/tlv.dart';
 import 'package:dmrtd/src/utils.dart';
 import 'package:logging/logging.dart';
 import 'package:meta/meta.dart';

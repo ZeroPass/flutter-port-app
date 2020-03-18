@@ -1,6 +1,6 @@
 // Created by smlu, copyright © 2020 ZeroPass. All rights reserved.
 import 'dart:typed_data';
-import '../../tlv.dart';
+import '../../lds/tlv.dart';
 import '../../utils.dart';
 
 import 'command_apdu.dart';
