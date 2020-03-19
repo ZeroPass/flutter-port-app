@@ -8,6 +8,7 @@ class ISO7816_CLA {
   static const int PROPRIETARY_SM     = 0x04;
   static const int SM_NO_HEADER_AUTHN = 0x08;
   static const int SM_HEADER_AUTHN    = 0x0C;
+  static const int COMMAND_CHAINING   = 0x10;
 }
 
 
