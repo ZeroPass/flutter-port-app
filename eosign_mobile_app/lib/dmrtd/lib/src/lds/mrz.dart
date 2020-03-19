@@ -200,8 +200,8 @@ class MRZ {
     istream.rewind(44);
     var composite = _readWithPad(istream, 10);
     istream.skip(3);
-    composite += _readWithPad(istream, 6);
-    istream.skip(2);
+    composite += _readWithPad(istream, 7);
+    istream.skip(1);
     composite += _readWithPad(istream, 22);
     _assertCheckDigit(composite, cdComposit,
       "Composit check digit mismatch"
