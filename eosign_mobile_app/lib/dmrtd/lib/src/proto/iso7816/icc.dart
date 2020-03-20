@@ -211,11 +211,11 @@ class ICC {
 
   Future<ResponseAPDU> _transceive(final CommandAPDU cmd) async {
     final rawCmd = _wrap(cmd).toBytes();
-    _log.verbose("Sending bytes to ICC: len=${rawCmd.length} data='${rawCmd.hex()}'");
+    _log.debug("Sending bytes to ICC: len=${rawCmd.length} data='${rawCmd.hex()}'");
     Uint8List rawResp = await _com.transceive(rawCmd);
 
     final rapdu = _unwrap(ResponseAPDU.fromBytes(rawResp));
-    _log.verbose("Received response from ICC: $rapdu");
+    _log.debug("Received response from ICC: $rapdu");
     return rapdu;
   }
 
