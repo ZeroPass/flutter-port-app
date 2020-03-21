@@ -13,7 +13,15 @@ dependencies:
   fixnum: ^0.10.11
   logging: ^0.11.4
   meta: ^1.1.6
+  flutter_nfc_kit: ^1.0.2
   tripledes: ^2.1.0
 
 dev_dependencies:
-  test: ^1.12.0
+  flutter_test: # needed for flutter_nfc_kit
+    sdk: flutter
+  flutter:      # needed for flutter_nfc_kit
+    sdk: flutter
+  test: ^1.14.1
+
+dependency_overrides:
+  test_api: ^ 0.2.14
