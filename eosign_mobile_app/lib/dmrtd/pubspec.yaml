@@ -13,7 +13,11 @@ dependencies:
   fixnum: ^0.10.11
   logging: ^0.11.4
   meta: ^1.1.6
-  flutter_nfc_kit: ^1.0.2
+  flutter_nfc_kit:
+    git:
+      url: https://github.com/smlu/flutter_nfc_kit.git
+      ref: patch-ios-alert-msg
+
   tripledes: ^2.1.0
 
 dev_dependencies:
