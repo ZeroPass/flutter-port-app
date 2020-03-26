@@ -6,21 +6,19 @@ import "package:eosio_passid_mobile_app/screen/main/stepper/stepScan/stepScan.da
 import "package:eosio_passid_mobile_app/screen/main/stepper/stepper.dart";
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:eosio_passid_mobile_app/screen/customDatePicker.dart';
 
 class StepScanForm extends StatefulWidget {
-  final int temp;
-
-  StepScanForm({Key key, @required this.temp}) : super(key: key);
+  StepScanForm({Key key}) : super(key: key);
 
   @override
-  _StepScanFormState createState() => _StepScanFormState(temp: temp);
+  _StepScanFormState createState() => _StepScanFormState();
 }
 
 class _StepScanFormState extends State<StepScanForm> {
   //Stepper steps
-  final int temp;
 
-  _StepScanFormState({Key key, @required this.temp});
+  _StepScanFormState({Key key});
 
   @override
   Widget build(BuildContext context) {
@@ -40,6 +38,8 @@ class _StepScanFormState extends State<StepScanForm> {
             key: _formKey,
             autovalidate: true,
             child: Column(children: <Widget>[
+              CustomDatePicker(),
+
               TextFormField(
                   //maxLength: 12,
                   controller: accountTextController,

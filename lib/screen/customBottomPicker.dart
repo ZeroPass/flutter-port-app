@@ -47,13 +47,18 @@ class CustomBottomPickerState{ //extends State<CustomBottomPicker> {
   CustomBottomPickerState({@required this.structure});
 
 
-  Widget showIosBottomPicker(BuildContext context)
+  BottomPickerElement showIosBottomPicker(BuildContext context, Function function)
   {
     final items = <Widget>[
       for (var item in this.structure.elements)
       CupertinoActionSheetAction(
         child: Text(item.name),
-        onPressed: () {},
+        onPressed: () {
+          {
+            function(item);
+            Navigator.pop(context);
+          }
+        },
       )
     ];
 
@@ -76,14 +81,17 @@ class CustomBottomPickerState{ //extends State<CustomBottomPicker> {
     });
   }
 
-  void showAndroidBottomPicker(BuildContext context)
+  BottomPickerElement showAndroidBottomPicker(BuildContext context, Function function)
   {
     final items = <Widget>[
       for (var item in this.structure.elements)
         ListTile(
           leading: (item.isSelected?Icon(Icons.radio_button_checked):Icon(Icons.radio_button_unchecked)),
           title: Text(item.name),
-          onTap: () {},
+          onTap: () {
+            function(item);
+            Navigator.pop(context);
+          }
         )
         ];
 
@@ -102,16 +110,17 @@ class CustomBottomPickerState{ //extends State<CustomBottomPicker> {
 
 
   //@override
-   void showPicker(BuildContext context) {
+   BottomPickerElement showPicker(BuildContext context, Function function) {
     if (Platform.isAndroid)
       {
-        this.showAndroidBottomPicker(context);
+        return this.showIosBottomPicker(context, function);
+        //this.showAndroidBottomPicker(context, function);
       }
     else if (Platform.isIOS)
       {
-        this.showIosBottomPicker(context);
+        return this.showIosBottomPicker(context, function);
       }
     else
-      return;
+      return null;
   }
 }

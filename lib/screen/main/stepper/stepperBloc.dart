@@ -5,11 +5,10 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:equatable/equatable.dart';
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
 
 
-//every step should extend this class to handel if step is correctly filled
+//every step should extend this class to handle if step is filled correctly
 //we are going to use this class to save data for later use
 abstract class StepData{
   bool _isUnlocked;
@@ -47,12 +46,46 @@ class StepperBloc extends Bloc<StepperEvent, StepperState> {
     super.onTransition(transition);
     print(transition);
   }
-
   void modifyBody(int previousStep, int nextStep){
 
   }
 
-  bool modifyHeader (int previousStep, int nextStep, var context) {
+  bool liveModifyHeader (int step, var context) {
+    var storage = Storage();
+    switch (step) {
+      case 0:
+        {
+          //step 1
+          final stepEnterAccountHeaderBloc = BlocProvider.of<StepEnterAccountHeaderBloc>(context);
+          StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
+          //show data on header if there is valid value
+          if (storageStepEnterAccount.accountID == "")
+            stepEnterAccountHeaderBloc.add(WithoutAccountIDEvent(network: storage.getSelectedNode(), server: storage.getStorageServer()));
+          else {
+            stepEnterAccountHeaderBloc.add(WithAccountIDEvent(
+                accountID: storageStepEnterAccount.accountID,
+                server: storage.getStorageServer(),
+                network: storage.getSelectedNode()));
+
+          }
+          }
+        break;
+
+      case 1:
+        {
+          //statements;
+        }
+        break;
+
+      default:
+        {
+          //statements;
+        }
+        break;
+    }
+  }
+
+  /*bool modifyHeader (int previousStep, int nextStep, var context) {
     var storage = Storage();
 
     switch(previousStep) {
@@ -63,10 +96,10 @@ class StepperBloc extends Bloc<StepperEvent, StepperState> {
         StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
 
         //show data on header if there is valid value
-        if(storageStepEnterAccount.isUnlocked)
-          stepEnterAccountHeaderBloc.add(AccountConfirmed(accountID: storageStepEnterAccount.accountID));
+        if(storageStepEnterAccount.accountID.length != 0)
+          stepEnterAccountHeaderBloc.add(WithAccountIDEvent(accountID: storageStepEnterAccount.accountID));
         else
-          stepEnterAccountHeaderBloc.add(AccountRemoved());
+          stepEnterAccountHeaderBloc.add(WithoutAccountIDEvent(network: storage.selectedNode));
       }
       break;
 
@@ -84,11 +117,11 @@ class StepperBloc extends Bloc<StepperEvent, StepperState> {
     switch(nextStep){
       case 0:{
         final stepEnterAccountHeaderBloc = BlocProvider.of<StepEnterAccountHeaderBloc>(context);
-        stepEnterAccountHeaderBloc.add(OpenStep());
+        stepEnterAccountHeaderBloc.add(OpenStep(network: "aja"));
       }
     }
 
-  }
+  }*/
 
   @override
   Stream<StepperState> mapEventToState(StepperEvent event) async* {

@@ -1,25 +1,30 @@
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
+//import "package:eosio_passid_mobile_app/screen/main/stepper/StepEnterAccount/StepEnterAccountHeader/StepEnterAccountHeader.dart" as SEAHB;
 import 'package:bloc/bloc.dart';
+import 'package:eosio_passid_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccountHeader/stepEnterAccountHeader.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepper.dart';
+import 'package:eosio_passid_mobile_app/settings/settings.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:async';
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
+import 'package:meta/meta.dart';
 
 class StepDataEnterAccount extends StepData{
   String _accountID;
 
   StepDataEnterAccount(){
-    _accountID = '';
+    this._accountID = "";
   }
 
   String get accountID => _accountID;
 
   set accountID(String value) {
-    _accountID = value;
+
+    this._accountID = value;
     //data is written(to check when we need to read from database)
-    this.hasData = true;
+    this.hasData = (value == "" ? false : true);
     //activate the button
-    this.isUnlocked = true;
+    this.isUnlocked = (value.length <= 4 ? false : true);
     }
 }
 
@@ -37,11 +42,19 @@ class StepEnterAccountBloc extends Bloc<StepEnterAccountEvent, StepEnterAccountS
   @override
   void onTransition(Transition<StepEnterAccountEvent, StepEnterAccountState> transition) {
     super.onTransition(transition);
-    print(transition);
   }
+
+  /*void updateHeader (var text, var context) {
+    var _storage = Storage();
+    StepDataEnterAccount storageStepEnterAccount =
+    _storage.getStorageData(0);
+    storageStepEnterAccount.accountID = text;
+  }*/
+
 
   //separate function because of async function
   bool validatorFunction (String value, var context) {
+    print("in validator");
     final stepEnterAccountBloc = BlocProvider.of<StepEnterAccountBloc>(context);
 
     //next button locked
@@ -91,6 +104,7 @@ class StepEnterAccountBloc extends Bloc<StepEnterAccountEvent, StepEnterAccountS
     if (value.length > 4)
       storageStepEnterAccount.isUnlocked = true;
 
+    storageStepEnterAccount.accountID = value;
     return false;
   }
 
@@ -110,11 +124,11 @@ class StepEnterAccountBloc extends Bloc<StepEnterAccountEvent, StepEnterAccountS
     } else if (event is AccountDelete) {
       //clear data in storage
       StepDataEnterAccount storageStepEnterAccount = _storage.getStorageData(0);
-      yield DeletedState();
+      //yield DeletedState();
       storageStepEnterAccount.accountID = '';
       storageStepEnterAccount.isUnlocked = false;
-      yield FullState('');
+      yield FullState(storageStepEnterAccount.accountID);
     }
-    else yield FullState('');
+    else yield DeletedState();
   }
 }

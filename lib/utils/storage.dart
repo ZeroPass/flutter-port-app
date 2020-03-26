@@ -102,9 +102,10 @@ class StorageServerTemporary extends StorageServer{
 }
 
 int _NUM_OF_STEPS = 3;
-//data stored in the singelton class
+//data stored in the singleton class
 class StorageData {
   StorageNode selectedNode;
+  StorageNode defaultNode;
   List<StorageNode> _nodes;
   List<StepData> _steps;
   StorageServer _storageServer;
@@ -114,6 +115,7 @@ class StorageData {
   StorageData(){
     this._nodes = new List();
     this.selectedNode = null;
+    this.defaultNode = null;
     this._storageServer = null;
     this._storageServerTemporary = null;
 
@@ -153,6 +155,16 @@ class StorageData {
   StorageNode getSelectedNode(){
     return this.selectedNode;
   }
+
+  StorageNode getDefaultNode(){
+    return this.defaultNode;
+  }
+
+  StorageServer getStorageServer(){
+    return this._storageServer;
+  }
+
+
 
 }
 

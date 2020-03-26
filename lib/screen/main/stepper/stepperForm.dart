@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import "package:eosio_passid_mobile_app/screen/main/stepper/stepper.dart";
+import 'package:eosio_passid_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccountHeader/stepEnterAccountHeader.dart';
+import 'package:eosio_passid_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
+import 'package:eosio_passid_mobile_app/screen/theme.dart';
 
 class StepperForm extends StatefulWidget {
   final List<Step> steps;
@@ -20,6 +23,71 @@ class _StepperFormState extends State<StepperForm> {
 
   _StepperFormState({Key key, @required this.steps});
 
+  String onButtonNextPressed(BuildContext context, int currentStep){
+    var storage = Storage();
+    switch (currentStep) {
+      case 0:
+        {
+          //step 1
+          final stepEnterAccountHeaderBloc = BlocProvider.of<StepEnterAccountHeaderBloc>(context);
+          StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
+          if (storageStepEnterAccount.isUnlocked == false)
+            return "Account is not valid.";
+          return "";
+
+        }
+        break;
+
+      case 1:
+        {
+          //return "No 'Valid from' value. \nForm 'Valid to' needs to be in future." ;
+          //statements;
+        }
+        break;
+
+      default:
+        {
+          //statements;
+        }
+        break;
+    }
+  }
+
+  Widget showButtonNext(BuildContext context, int currentStep, Function functionOnStepContinue){
+    return Row(
+      //mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[Padding(padding: EdgeInsets.only(top: 40), child:
+      PlatformButton (
+        child:Text('Continue',style: TextStyle(color: Colors.white)),
+        onPressed: () {
+          String errors = onButtonNextPressed(context, currentStep);
+          //is button 'next' unlocked
+          if (errors == ""){
+            functionOnStepContinue();
+          }
+          else {
+            showPlatformDialog(
+              context: context,
+              builder: (_) => PlatformAlertDialog(
+                title: Text('Cannot continue'),
+                content: Text(errors + '\nPlease fill the form with valid data.'),
+                actions: <Widget>[
+                  PlatformDialogAction(
+                      child: PlatformText('OK', style: TextStyle(color: AndroidThemeST().getValues().themeValues["STEPPER"]["STEPPER_MANIPULATOR"]["COLOR_TEXT"])),
+                      onPressed: () => Navigator.pop(context)
+                  )
+                ],
+              ),
+            );
+          }
+        },/**/
+      ))
+      ],
+    );
+  }
+
+
   @override
   Widget build(BuildContext context) {
     final stepperBloc = BlocProvider.of<StepperBloc>(context);
@@ -32,58 +100,26 @@ class _StepperFormState extends State<StepperForm> {
                 steps: steps,
                 type: StepperType.vertical,
                 onStepTapped: (step) {
-                  stepperBloc.modifyHeader(state.step, step, context);
+                  //stepperBloc.modifyHeader(state.step, step, context);
                   stepperBloc.add(StepTapped(step: step));
                 },
                 onStepCancel: () {
                   stepperBloc.add(StepCancelled());
                 },
                 onStepContinue: () {
-                  stepperBloc.modifyHeader(state.step, state.step + 1, context);
+                  //stepperBloc.modifyHeader(state.step, state.step + 1, context);
                   stepperBloc.add(StepContinue());
                 },
                 controlsBuilder: (BuildContext context,
                     {VoidCallback onStepContinue, VoidCallback onStepCancel}) {
-                  return Row(
-                    //mainAxisSize: MainAxisSize.max,
-                    //mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     children: <Widget>[
-                      PlatformButton (
+                      showButtonNext(context, state.step, onStepContinue)
+                  ],);
 
-                        onPressed: () {
-                          Storage s = Storage();
-                          //is button 'next' unlocked
-                          if (s.getStorageData(state.step).isUnlocked){
-                            //stepperBloc.
-                            onStepContinue();
-                          }
-                          else {
-                            showPlatformDialog(
-                              context: context,
-                              builder: (_) => PlatformAlertDialog(
-                                title: Text('Cannot continue'),
-                                content: Text('Please fill the form with valid data'),
-                                actions: <Widget>[
-                                  PlatformDialogAction(
-                                    child: PlatformText('OK'),
-                                    onPressed: () => Navigator.pop(context)
-                                  )
-                                ],
-                              ),
-                            );
-                          }
-                        },
-                        child:Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    const Text('Continue',style: TextStyle(color: Colors.white)),
-                  ]
-                  )
 
-                      )
-                    ],
-                  );
                 }
         );
       },

@@ -1,42 +1,139 @@
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:eosio_passid_mobile_app/utils/color.dart';
 
 /*
-class ThemeForm extends StatefulWidget {
-  //final List<Step> steps;
+ Make sure to fill all values
+*/
+Map light = {
+  "STEPPER":
+  {
+    "BUTTON_NEXT":
+    {
+      "COLOR_BACKGROUND": Color(0xFFa58157),
+      "COLOR_TEXT": Colors.white
+    },
+    "BUTTON_DELETE":
+    {
+      "COLOR_BACKGROUND": Color(0xFFa58157),
+    },
+    "CHIP":
+    {
+      "SIZE_TEXT":17.0,
+      "COLOR_TEXT":Color(0xFFa55900),
+      "COLOR_BACKGROUND":Color(0xFFfce4c7)
+    },
+    "STEPPER_MANIPULATOR":
+    {
+      "SIZE_TEXT":17.0,
+      "COLOR_TEXT":Color(0xFFa58157)
+    }
+  },
+  "TILE_BAR":
+  {
+    "SIZE_TEXT": 17.0,
+    "COLOR_TEXT":  Color(0xFFa58157),
+    "COLOR_BACKGROUND":Color(0xFFa58157)
+  }
+};
+//the same valus for now
+ThemeValues DARK_VALUES= ThemeValues(themeValues: light);
+ThemeValues LIGHT_VALUES = ThemeValues(themeValues: light);
 
-  ThemeForm({Key key}) : super(key: key);
 
-  @override
-  _ThemeFormState createState() => _ThemeFormState();
+
+class ThemeValues{
+  ThemeValues({@required Map themeValues})
+  {
+    this._themeValues = themeValues;
+  }
+
+  Map _themeValues=
+  {
+    "STEPPER":
+    {
+      "BUTTON_NEXT":
+      {
+        "COLOR_BACKGROUND": null,
+        "COLOR_TEX": null
+      },
+      "BUTTON_DELETE":
+      {
+        "COLOR_BACKGROUND": null,
+      },
+      "CHIP":
+      {
+        "SIZE_TEXT":null,
+        "COLOR_TEXT":null,
+        "COLOR_BACKGROUND":null
+      },
+      "STEPPER_MANIPULATOR":
+      {
+        "SIZE_TEXT":null,
+        "COLOR_TEXT":null
+      }
+    },
+    "TILE_BAR":
+    {
+      "SIZE_TEXT": null,
+      "COLOR_TEXT": null,
+      "COLOR_BACKGROUND":null
+    }
+  };
+
+  get themeValues => _themeValues;
+
+  set themeValues(value) {
+    _themeValues = value;
+  }
 }
 
-class _ThemeFormState extends State<ThemeForm> {
+abstract class CustomTheme{
+  //0 = black theme, 1 = light theme
+  int selectedTheme;
 
-  _ThemeFormState({Key key});
+  //fil the values of theme od the top of this file
+  ThemeValues lightTheme = LIGHT_VALUES;
+  ThemeValues darkTheme = DARK_VALUES;
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialAppData(theme: ThemeData(primarySwatch: Colors.purle));
+  ThemeValues getValues()
+  {
+    return (this.selectedTheme == 1? this.lightTheme: this.darkTheme);
   }
-}*/
 
-abstract class Theme{
+  CustomTheme({this.selectedTheme = 1});
   ThemeData getLight();
   ThemeData getDark();
 }
 
-class AndroidTheme extends Theme{
+class AndroidTheme extends CustomTheme{
+
+  AndroidTheme(){
+    this.selectedTheme = 1;//default theme is light
+  }
+
   ThemeData getLight() {
+    this.selectedTheme = 1;
     MaterialColor _primaryColor = CustomColor.createColor(83, 37, 153, 0xFF5768a5);
     return ThemeData(primarySwatch: _primaryColor,
-        buttonColor: Color(0xFFa58157)
+        buttonColor: Color(0xFFa58157),
+      /*chipTheme: ChipThemeData(
+        backgroundColor: Color(0xFFa58157),
+          selectedColor: Color(0xFFa58157),
+          secondarySelectedColor: Color(0xFFa58157),
+          //labelPadding,
+          //padding,
+          //shape,
+          //labelStyle,
+          //secondaryLabelStyle,
+          //brightness,
+
+      )*/
     );
   }
 
   ThemeData getDark(){
+    this.selectedTheme = 0;
     var _primaryColor = CustomColor.createColor(83, 37, 153, 0xFF532599);
     return ThemeData(primarySwatch: _primaryColor,
         buttonColor: Color(0xFF7c3bcc)
@@ -44,7 +141,22 @@ class AndroidTheme extends Theme{
   }
 }
 
-class IOSTheme extends Theme{
+//singelton class of android theme
+class AndroidThemeST extends AndroidTheme {
+  static final AndroidThemeST _singleton = new AndroidThemeST._internal();
+
+  factory AndroidThemeST(){
+    AndroidTheme();
+    return _singleton;
+  }
+
+  AndroidThemeST._internal(){
+    //initialization your logic here
+  }
+}
+
+
+class IOSTheme extends CustomTheme{
   ThemeData getLight() {
 
   }

@@ -1,9 +1,9 @@
 import 'package:equatable/equatable.dart';
 
-abstract class StepEnterAccountState extends Equatable {
+abstract class StepEnterAccountState /*extends Equatable*/ {
   var accountID;
 
-  StepEnterAccountState({this.accountID = 'abc'});
+  StepEnterAccountState({this.accountID = ''});
 
   @override
   List<Object> get props => [];

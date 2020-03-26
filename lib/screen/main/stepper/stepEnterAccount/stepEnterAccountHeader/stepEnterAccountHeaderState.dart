@@ -1,42 +1,41 @@
-import 'package:eosio_passid_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccountHeader/stepEnterAccountHeader.dart';
-import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
+import 'package:eosio_passid_mobile_app/utils/storage.dart';
 
 
-abstract class StepEnterAccountHeaderState extends Equatable {
-  var showIconRemove;
+abstract class StepEnterAccountHeaderState /*extends Equatable*/ {
+  //show network name in header
+  StorageNode network;
+  //show one time server icon on header
+  StorageServer server;
 
-  StepEnterAccountHeaderState({this.showIconRemove = false});
+  StepEnterAccountHeaderState({this.network, this.server = null});
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => [network, server];
 }
 
-class OpenStepState extends StepEnterAccountHeaderState {
+class WithoutAccountIDState extends StepEnterAccountHeaderState {
 
-  OpenStepState(): super();
+  WithoutAccountIDState({@required StorageNode network, StorageServer server = null}) : super(network: network, server: server);
 
   @override
-  String toString() => 'StepEnterAccountHeaderState:OpenStepState { showIconRemove: $showIconRemove }';
+  List<Object> get props => [network, server];
+
+  @override
+  String toString() => 'StepEnterAccountHeaderState:WithoutAccountIDState { network: $network }';
 }
 
-class NoAccountIDState extends StepEnterAccountHeaderState {
+class WithAccountIDState extends StepEnterAccountHeaderState {
+  //show accountID in header
+  String accountID;
 
-  NoAccountIDState(): super();
+  WithAccountIDState({@required StorageNode network, @required String this.accountID, StorageServer server = null}) : super(network: network, server: server){}
+
+  String getAccountID(){return this.accountID;}
 
   @override
-  String toString() => 'StepEnterAccountHeaderState:EmptyState { showIconRemove: $showIconRemove }';
+  List<Object> get props => [accountID, network, server];
+
+  @override
+  String toString() => 'StepEnterAccountHeaderState:WithAccountIDState { network: $network, accoundID: $accountID }';
 }
-
-class AccountIDState extends StepEnterAccountHeaderState {
-  final String accountID;
-
-  AccountIDState({@required this.accountID}){super.showIconRemove = true;}
-
-  @override
-  List<Object> get props => [accountID];
-
-  @override
-  String toString() => 'StepEnterAccountHeaderState:FullState { accoundID: $accountID, showIconRemove: $showIconRemove }';
-}
-
