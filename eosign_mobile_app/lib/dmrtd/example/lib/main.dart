@@ -77,9 +77,9 @@ String formatProgressMsg(String message, int percentProgress) {
 
 void main() {
   Logger.root.level = Level.ALL;
-    /*Logger.root.onRecord.listen((record) {
+    Logger.root.onRecord.listen((record) {
       print('${record.loggerName} ${record.level.name}: ${record.time}: ${record.message}');
-    });*/
+    });
   runApp(MrtdEgApp());
 }
 
