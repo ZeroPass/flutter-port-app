@@ -5,31 +5,29 @@ abstract class StepScanEvent extends Equatable {
   StepScanEvent();
 }
 
-class NoAccount extends StepScanEvent {
+class NoDataScan extends StepScanEvent {
 
-  NoAccount();
-
-  @override
-  List<Object> get props => [];
-
-  //@override
-  //String toString() =>
-  //    'LoginButtonPressed { username: $username, password: $password }';
-}
-
-class AccountConfirmation extends StepScanEvent{
-  final String accountID;
-
-  AccountConfirmation({@required this.accountID});
-
-  @override
-  List<Object> get props => [accountID];
-}
-
-class AccountDelete extends StepScanEvent{
-
-  AccountDelete();
+  NoDataScan();
 
   @override
   List<Object> get props => [];
+
+  @override
+  String toString() =>
+      'NoDataScan ';
+}
+
+class WithDataScan extends StepScanEvent{
+  //not in use
+  //show documentID on header
+  String documentID;
+  //show birth on header
+  DateTime birth;
+  //show valid until on header
+  DateTime validUntil;
+
+  WithDataScan({@required this.documentID, @required this.birth, @required this.validUntil });
+
+  @override
+  List<Object> get props => [documentID, birth, validUntil];
 }

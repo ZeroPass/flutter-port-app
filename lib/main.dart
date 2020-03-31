@@ -8,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepper.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccountHeader/stepEnterAccountHeader.dart';
+import 'package:eosio_passid_mobile_app/screen/main/stepper/stepScan/stepScanHeader/stepScanHeader.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepScan/stepScan.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:eosio_passid_mobile_app/screen/theme.dart';
@@ -94,6 +95,7 @@ class MyApp extends StatelessWidget {
                   primaryColor: Colors.grey,
                 )),
             home: PlatformScaffold(
+
                 iosContentPadding: true,
                 appBar: PlatformAppBar(
                   title: Text('PassID'),
@@ -105,13 +107,20 @@ class MyApp extends StatelessWidget {
                     ),
                   ],
                 ),
+
                     body: MultiBlocProvider(
                       providers:[
                         BlocProvider<StepEnterAccountHeaderBloc>(
                             create: (BuildContext context) => StepEnterAccountHeaderBloc()
                         ),
+                        BlocProvider<StepScanHeaderBloc>(
+                            create: (BuildContext context) => StepScanHeaderBloc()
+                        ),
                         BlocProvider<StepEnterAccountBloc>(
-                            create: (BuildContext context) => StepEnterAccountBloc(/*stepEnterAccountHeaderObj: BlocProvider.of<StepEnterAccountHeaderBloc>(context)*/)
+                            create: (BuildContext context) => StepEnterAccountBloc()
+                        ),
+                        BlocProvider<StepScanBloc>(
+                            create: (BuildContext context) => StepScanBloc()
                         ),
                         BlocProvider<StepperBloc>(
                             create: (BuildContext context) => StepperBloc(maxSteps: 3)
@@ -122,39 +131,14 @@ class MyApp extends StatelessWidget {
                   [
                     Step(
                       title: StepEnterAccountHeaderForm(),
-                  /*Container(
-                    width: double.infinity ,
-                  child: IntrinsicWidth(
-
-                    child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: <Widget>[
-                      RaisedButton(
-                        onPressed: () {},
-                        child: Text('Short'),
-                      ),
-                      RaisedButton(
-                        onPressed: () {},
-                        child: Text('A bit Longer'),
-                      ),
-                      RaisedButton(
-                        onPressed: () {},
-                        child: Text('The Longest text button'),
-                      ),
-                    ],
-                  ),
-                  ),
-                    ),*/
-
                       //subtitle: Text("EOSIO Testnet", style: TextStyle(color: Color(0xFFa58157))),
                       content: StepEnterAccountForm(/*stepEnterAccountHeaderObj: StepEnterAccountHeaderBloc()*/),
                       //isActive: true,
                     ),
                     Step(
-                      title: Text("Scan"),
+                      title: StepScanHeaderForm(),
                       //subtitle: Text("here you can write something", style: TextStyle(color: Color(0xFFa5a057)),),
-                      content: BlocProvider<StepScanBloc>(
-                          create: (context) => StepScanBloc(), child: StepScanForm()),
+                      content:  StepScanForm(),
                       //state: StepState.ed iting,
                       //isActive: true,
                     ),

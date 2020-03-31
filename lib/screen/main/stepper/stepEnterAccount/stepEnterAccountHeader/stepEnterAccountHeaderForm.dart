@@ -79,16 +79,22 @@ class _StepEnterAccountHeaderFormState
                 children: <Widget>[
                   Row(children: <Widget>[
                     Text("Account"),
-                    Container(child: CustomChip([state.network.name])),
+                    Transform(
+                        alignment: Alignment.centerRight,
+                        transform: new Matrix4.identity()..scale(0.8),
+                        child: Container(child: CustomChip([state.network.name]), margin: EdgeInsets.only(left: 3.0))
+                    ),
                   ]),
                   Row(children: <Widget>[
-                    if (state is WithAccountIDState)
-                      Container(child: CustomChip([state.accountID])),
-                    if (state.server != null)
-                      Align(
-                          alignment: Alignment.centerRight,
-                          child:
-                          Container(child: CustomChip(["SERVER"]))),
+                    Transform(
+                        alignment: Alignment.centerRight,
+                        transform: new Matrix4.identity()..scale(0.8),
+                        child: Row(children: <Widget>[
+                                if (state is WithAccountIDState)
+                                  Container(child: CustomChip([state.accountID]), margin: EdgeInsets.only(left: 3.0)),
+                                if (state.server != null)
+                                  Container(child: CustomChip(["SERVER"]), margin: EdgeInsets.only(left: 3.0)),
+                                ])),
                     if (state is WithAccountIDState)
                       Align(
                           alignment: Alignment.centerRight,

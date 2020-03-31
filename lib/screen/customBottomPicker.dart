@@ -113,8 +113,8 @@ class CustomBottomPickerState{ //extends State<CustomBottomPicker> {
    BottomPickerElement showPicker(BuildContext context, Function function) {
     if (Platform.isAndroid)
       {
-        return this.showIosBottomPicker(context, function);
-        //this.showAndroidBottomPicker(context, function);
+        //return this.showIosBottomPicker(context, function);
+        this.showAndroidBottomPicker(context, function);
       }
     else if (Platform.isIOS)
       {

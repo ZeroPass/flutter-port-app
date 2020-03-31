@@ -17,7 +17,7 @@ class StepEnterAccountForm extends StatefulWidget {
 }
 
 class _StepEnterAccountFormState extends State<StepEnterAccountForm> {
-  TextEditingController _accountTextController; // = TextEditingController();
+  TextEditingController _accountTextController;
   var _storage;
 
   _StepEnterAccountFormState() {
@@ -109,25 +109,26 @@ class _StepEnterAccountFormState extends State<StepEnterAccountForm> {
     );
   }
 
-  Widget body(BuildContext context, StepEnterAccountState state,
-      var stepEnterAccountBloc) {
+  Widget body(BuildContext context, StepEnterAccountState state, var stepEnterAccountBloc) {
     if (state is DeletedState) emptyFields();
     if (state is FullState) updateFields();
 
     final stepperBloc = BlocProvider.of<StepperBloc>(context);
-
-    return Column(children: <Widget>[
+    final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+    return Form(
+        key: _formKey,
+        autovalidate: true,
+        child: Column(children: <Widget>[
       selectNetworkWithTile(context, state, stepEnterAccountBloc),
       TextFormField(
         controller: _accountTextController,
         decoration: InputDecoration(
           labelText: 'Account name',
         ),
-        autofocus: true,
-        validator: (value) => value.isEmpty ? 'Email cannot be blank' : 'test',/*(value) =>
+        validator: (value) =>
             stepEnterAccountBloc.validatorFunction(value, context)
                 ? stepEnterAccountBloc.validatorText
-                : null,*/
+                : null,
 
         onChanged: (value) {
           if (_accountTextController.text != value.toLowerCase())
@@ -143,7 +144,8 @@ class _StepEnterAccountFormState extends State<StepEnterAccountForm> {
         },
       )
       //)
-    ]);
+    ])
+    );
   }
 
   @override

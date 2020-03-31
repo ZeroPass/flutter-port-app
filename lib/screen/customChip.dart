@@ -17,16 +17,15 @@ class _CustomChipState extends State<CustomChip> {
   @override
   Widget build(BuildContext context) {
 
-    return Transform(
-        alignment: Alignment.center,
-        transform: new Matrix4.identity()..scale(0.8),
-    child: Wrap(
+    return Wrap(
       alignment: WrapAlignment.center,
-      spacing: 3.0,
+      spacing: 0.0,
 
       children: <Widget>[
         for (var item in widget.titles)
         FilterChip(
+          padding: EdgeInsets.only(left: 0.0),
+
           backgroundColor: AndroidThemeST().getValues().themeValues["STEPPER"]["CHIP"]["COLOR_BACKGROUND"],
           selectedColor: AndroidThemeST().getValues().themeValues["STEPPER"]["CHIP"]["COLOR_BACKGROUND"],
 
@@ -36,7 +35,6 @@ class _CustomChipState extends State<CustomChip> {
           selected: false,
         ),
       ],
-    )
     );
   }
 }

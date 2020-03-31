@@ -1,5 +1,7 @@
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepper.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccountHeader/stepEnterAccountHeader.dart';
+import 'package:eosio_passid_mobile_app/screen/main/stepper/stepScan/stepScan.dart';
+import 'package:eosio_passid_mobile_app/screen/main/stepper/stepScan/stepScanHeader/stepScanHeader.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -51,6 +53,7 @@ class StepperBloc extends Bloc<StepperEvent, StepperState> {
   }
 
   bool liveModifyHeader (int step, var context) {
+    print("inn live modify header");
     var storage = Storage();
     switch (step) {
       case 0:
@@ -66,13 +69,24 @@ class StepperBloc extends Bloc<StepperEvent, StepperState> {
                 accountID: storageStepEnterAccount.accountID,
                 server: storage.getStorageServer(),
                 network: storage.getSelectedNode()));
-
           }
           }
         break;
 
       case 1:
         {
+          final stepScanHeaderBloc = BlocProvider.of<StepScanHeaderBloc>(context);
+          StepDataScan storageStepScan = storage.getStorageData(1);
+          //show data on header if there is valid value
+          if (storageStepScan.documentID == null && storageStepScan.birth == null && storageStepScan.validUntil == null)
+            stepScanHeaderBloc.add(NoDataEvent());
+          else {
+            stepScanHeaderBloc.add(WithDataEvent(
+                documentID: storageStepScan.documentID,
+                birth: storageStepScan.birth,
+                validUntil: storageStepScan.validUntil));
+
+          }
           //statements;
         }
         break;
@@ -84,44 +98,6 @@ class StepperBloc extends Bloc<StepperEvent, StepperState> {
         break;
     }
   }
-
-  /*bool modifyHeader (int previousStep, int nextStep, var context) {
-    var storage = Storage();
-
-    switch(previousStep) {
-      case 0: {
-        //step 1
-        final stepEnterAccountHeaderBloc = BlocProvider.of<StepEnterAccountHeaderBloc>(context);
-        //final stepEnterAccountBloc = BlocProvider.of<StepEnterAccountBloc>(context);
-        StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
-
-        //show data on header if there is valid value
-        if(storageStepEnterAccount.accountID.length != 0)
-          stepEnterAccountHeaderBloc.add(WithAccountIDEvent(accountID: storageStepEnterAccount.accountID));
-        else
-          stepEnterAccountHeaderBloc.add(WithoutAccountIDEvent(network: storage.selectedNode));
-      }
-      break;
-
-      case 1: {
-        //statements;
-      }
-      break;
-
-      default: {
-        //statements;
-      }
-      break;
-    }
-
-    switch(nextStep){
-      case 0:{
-        final stepEnterAccountHeaderBloc = BlocProvider.of<StepEnterAccountHeaderBloc>(context);
-        stepEnterAccountHeaderBloc.add(OpenStep(network: "aja"));
-      }
-    }
-
-  }*/
 
   @override
   Stream<StepperState> mapEventToState(StepperEvent event) async* {

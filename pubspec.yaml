@@ -22,6 +22,7 @@ environment:
 
 dependencies:
   flutter_cupertino_localizations: ^1.0.1
+  flutter_cupertino_date_picker: ^1.0.12
   flutter_platform_widgets: ^0.32.4
   flutter:
     sdk: flutter
@@ -31,6 +32,7 @@ dependencies:
   equatable: ^1.1.1
   flutter_svg: ^0.16.1
   flutter_nfc_kit: ^0.0.6
+  date_format: ^1.0.8
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

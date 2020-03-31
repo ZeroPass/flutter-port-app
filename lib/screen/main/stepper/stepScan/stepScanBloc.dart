@@ -9,22 +9,33 @@ import 'package:equatable/equatable.dart';
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
 
 class StepDataScan extends StepData{
-  String _accountID;
+  String _documentID;
+  DateTime _validUntil;
+  DateTime _birth;
 
   StepDataScan(){
-    _accountID = '';
+    _documentID = null;
+    _validUntil = null;
+    _birth = null;
   }
 
-  String get accountID => _accountID;
+  String get documentID => _documentID;
 
-  set accountID(String value) {
-    _accountID = value;
-    //data is written(to check when we need to read from database)
-    this.hasData = true;
-    //activate the button
-    this.isUnlocked = true;
+  set documentID(String value) {
+    _documentID = value;
+  }
 
-    }
+  DateTime get validUntil => _validUntil;
+
+  set validUntil(DateTime value) {
+    _validUntil = value;
+  }
+
+  DateTime get birth => _birth;
+
+  set birth(DateTime value) {
+    _birth = value;
+  }
 }
 
 class StepScanBloc extends Bloc<StepScanEvent, StepScanState> {
@@ -35,13 +46,10 @@ class StepScanBloc extends Bloc<StepScanEvent, StepScanState> {
   var validatorText = '';
 
   @override
-  StepScanState get initialState => EmptyState();
+  StepScanState get initialState => StateScan();
 
   //separate function because of async function
   bool validatorFunction (String value, var context) {
-    final stepScanBloc = BlocProvider.of<StepScanBloc>(context);
-
-
     //next button locked
     var storage = Storage();
     StepDataScan storageStepScan = storage.getStorageData(1);
@@ -60,17 +68,18 @@ class StepScanBloc extends Bloc<StepScanEvent, StepScanState> {
 
   @override
   Stream<StepScanState> mapEventToState( StepScanEvent event) async* {
-    print("Step enter account bloc: mapEventToState");
-    if (event is AccountConfirmation) {
-      print("AccountConfirmation");
-      yield FullState();
-    } else if (event is AccountDelete) {
+    print("Step Scan bloc mapEventToState");
+    print(state.toString());
+    if (event is WithDataScan) {
+      print("With data");
+      yield FullState(documentID: event.documentID, birth: event.birth, validUntil: event.validUntil);
+    } else if (event is NoDataScan) {
       print("StepCancelled");
-      yield EmptyState();
+      yield StateScan();
     }
     else {
       print ("else event");
-      yield EmptyState();
+      yield StateScan();
     }
   }
 }
