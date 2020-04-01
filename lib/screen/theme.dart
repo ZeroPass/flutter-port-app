@@ -34,6 +34,12 @@ Map light = {
     "SIZE_TEXT": 17.0,
     "COLOR_TEXT":  Color(0xFFa58157),
     "COLOR_BACKGROUND":Color(0xFFa58157)
+  },
+  "APP_DATA":
+  {
+    "VERSION": "0.0.1",
+    "YEAR_LAST_UPDATE": 2020,
+    "COMPANY_NAME": "ZeroPass"
   }
 };
 //the same valus for now
@@ -78,6 +84,12 @@ class ThemeValues{
       "SIZE_TEXT": null,
       "COLOR_TEXT": null,
       "COLOR_BACKGROUND":null
+    },
+    "APP_DATA":
+    {
+      "VERSION": "0.0.1",
+      "YEAR_LAST_UPDATE": 2020,
+      "COMPANY_NAME": "ZeroPass"
     }
   };
 

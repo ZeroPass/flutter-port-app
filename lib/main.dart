@@ -1,8 +1,6 @@
 import 'package:eosio_passid_mobile_app/settings/settings.dart';
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
-import 'package:eosio_passid_mobile_app/utils/size.dart';
 import 'package:flutter/material.dart';
-import 'package:bloc/bloc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepper.dart';
@@ -12,6 +10,7 @@ import 'package:eosio_passid_mobile_app/screen/main/stepper/stepScan/stepScanHea
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepScan/stepScan.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:eosio_passid_mobile_app/screen/theme.dart';
+import 'package:eosio_passid_mobile_app/screen/settings/settings.dart';
 
 
 
@@ -82,7 +81,7 @@ class MyApp extends StatelessWidget {
     return PlatformProvider(
         //initialPlatform: initialPlatform,
         builder: (BuildContext context) => PlatformApp(
-            title: 'Flutter Platform Widgets',
+            title: 'PassID',
             localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
               DefaultMaterialLocalizations.delegate,
               DefaultWidgetsLocalizations.delegate,
@@ -96,9 +95,44 @@ class MyApp extends StatelessWidget {
                 )),
             home: PlatformScaffold(
 
+
+              /*
+
+              Builder(
+                builder: (context) => RaisedButton(
+                      onPressed: () {
+                        Navigator.push(context,
+                            MaterialPageRoute(
+                                builder: (context) => SelectUserType()));
+                      },
+                      child: Text('Registrese'),
+                    ),
+              ),
+               */
                 iosContentPadding: true,
                 appBar: PlatformAppBar(
-                  title: Text('PassID'),
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                    Builder( builder: (context) =>
+                        InkWell(
+                          onTap: () {
+                            //open settings panel
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (context) => Settings()));
+                          },
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: <Widget>[
+                              Icon(Icons.menu, )
+                            ],
+                          ),
+                        )),
+                      Text(" PassID")
+                    ],
+                  ),
+
+
                   trailingActions: <Widget>[
                     PlatformIconButton(
                       padding: EdgeInsets.zero,
