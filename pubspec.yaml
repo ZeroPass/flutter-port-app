@@ -24,6 +24,8 @@ dependencies:
   bloc: ^3.0.0
   cupertino_icons: ^0.1.2
   date_format: ^1.0.8
+  dmrtd:
+    path: lib/dmrtd
   equatable: ^1.1.1
   flutter:
     sdk: flutter
