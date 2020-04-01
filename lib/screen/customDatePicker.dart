@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:eosio_passid_mobile_app/screen/theme.dart';
-import 'package:eosio_passid_mobile_app/submodules/flutter_holo_date_picker/lib/flutter_holo_date_picker.dart';
-import 'package:flutter_cupertino_date_picker/flutter_cupertino_date_picker.dart' as CupertinoDatePicker;
+import 'package:flutter_holo_date_picker/flutter_holo_date_picker.dart';
 import 'package:date_format/date_format.dart';
 import "dart:io" show Platform;
 import "package:intl/intl.dart";
@@ -78,7 +77,7 @@ class _CustomDatePicker extends State<CustomDatePicker> {
         controller: widget.textEditingController,
         decoration: InputDecoration(labelText: widget.text),
         onTap: () async{
-          new DatePickerWidget(
+          DatePickerWidget(
             initialDate: widget.initialDate,
             firstDate: widget.firstDate,
             lastDate: widget.lastDate,

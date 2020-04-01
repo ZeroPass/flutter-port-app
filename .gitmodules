@@ -1,9 +1,0 @@
-[submodule "./submoduls/flutter_holo_date_picker"]
-	path = ./submoduls/flutter_holo_date_picker
-	url = https://github.com/kfiross/flutter_holo_date_picker
-[submodule "submodules\\flutter_holo_date_picker"]
-	path = submodules\\flutter_holo_date_picker
-	url = https://github.com/kfiross/flutter_holo_date_picker
-[submodule "lib/submodules/flutter_holo_date_picker"]
-	path = lib/submodules/flutter_holo_date_picker
-	url = https://github.com/kfiross/flutter_holo_date_picker
