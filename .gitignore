@@ -40,5 +40,3 @@ build/
 .ios/
 .flutter-plugins
 .flutter-plugins-dependencies
-
-submoduls/flutter_holo_date_picker
