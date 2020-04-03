@@ -1,0 +1,20 @@
+name: passid
+description: PassID protocol.
+version: 1.0.0
+
+environment:
+  sdk: '>=2.7.0 <3.0.0'
+
+dependencies:
+  dmrtd:
+    path: ../dmrtd
+  flutter:
+    sdk: flutter
+  logging: ^0.11.4
+  pointycastle:
+    git: https://github.com/bcgit/pc-dart.git
+  uuid: ^2.0.4
+
+dev_dependencies:
+  pedantic: ^1.8.0
+  test: ^1.6.0
