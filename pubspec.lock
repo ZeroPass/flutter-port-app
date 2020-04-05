@@ -36,6 +36,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.5"
+  card_settings:
+    dependency: "direct main"
+    description:
+      name: card_settings
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.8.0"
   charcode:
     dependency: transitive
     description:
@@ -81,7 +88,7 @@ packages:
   dmrtd:
     dependency: "direct main"
     description:
-      path: "lib/dmrtd"
+      path: "lib\\dmrtd"
       relative: true
     source: path
     version: "1.0.0+1"
@@ -117,7 +124,7 @@ packages:
       name: flutter_colorpicker
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.2"
+    version: "0.2.6"
   flutter_cupertino_date_picker:
     dependency: "direct main"
     description:
@@ -125,13 +132,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.12"
-  flutter_cupertino_localizations:
-    dependency: "direct main"
+  flutter_cupertino_settings:
+    dependency: transitive
     description:
-      name: flutter_cupertino_localizations
+      name: flutter_cupertino_settings
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.1"
+    version: "0.3.0"
   flutter_holo_date_picker:
     dependency: "direct main"
     description:
@@ -141,11 +148,20 @@ packages:
       url: "https://github.com/kfiross/flutter_holo_date_picker.git"
     source: git
     version: "0.1.2+6"
-  flutter_localizations:
+  flutter_masked_text:
     dependency: transitive
-    description: flutter
-    source: sdk
-    version: "0.0.0"
+    description:
+      name: flutter_masked_text
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.8.0"
+  flutter_material_pickers:
+    dependency: transitive
+    description:
+      name: flutter_material_pickers
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.2.0"
   flutter_nfc_kit:
     dependency: transitive
     description:
@@ -178,11 +194,6 @@ packages:
     version: "0.4.8"
   flutter_test:
     dependency: "direct dev"
-    description: flutter
-    source: sdk
-    version: "0.0.0"
-  flutter_web_plugins:
-    dependency: transitive
     description: flutter
     source: sdk
     version: "0.0.0"
@@ -256,6 +267,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.4"
+  pedantic:
+    dependency: transitive
+    description:
+      name: pedantic
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.8.0+1"
   petitparser:
     dependency: transitive
     description:
@@ -284,41 +302,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.23.1"
-  shared_preferences:
-    dependency: transitive
-    description:
-      name: shared_preferences
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.5.6+3"
-  shared_preferences_macos:
-    dependency: transitive
-    description:
-      name: shared_preferences_macos
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.1+6"
-  shared_preferences_platform_interface:
-    dependency: transitive
-    description:
-      name: shared_preferences_platform_interface
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.3"
-  shared_preferences_settings:
-    dependency: "direct main"
-    description:
-      name: shared_preferences_settings
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.2.0"
-  shared_preferences_web:
-    dependency: transitive
-    description:
-      name: shared_preferences_web
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.1.2+4"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -365,7 +348,7 @@ packages:
       name: test_api
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.15"
+    version: "0.2.11"
   tripledes:
     dependency: transitive
     description:
@@ -396,4 +379,4 @@ packages:
     version: "3.5.0"
 sdks:
   dart: ">=2.6.0 <3.0.0"
-  flutter: ">=1.12.13+hotfix.4 <2.0.0"
+  flutter: ">=1.12.13+hotfix.2 <2.0.0"

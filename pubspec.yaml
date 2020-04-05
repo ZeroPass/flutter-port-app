@@ -27,12 +27,12 @@ dependencies:
   dmrtd:
     path: lib/dmrtd
   equatable: ^1.1.1
-  shared_preferences_settings: ^1.2.0
-  flutter_platform_widgets: ^0.32.4
+  #shared_preferences_settings: ^1.2.0
+  card_settings: ^1.8.0
   flutter:
     sdk: flutter
   flutter_bloc: ^3.2.0
-  flutter_cupertino_localizations: ^1.0.1
+  #flutter_cupertino_localizations: ^1.0.1
   flutter_cupertino_date_picker: ^1.0.12
   flutter_holo_date_picker:
     git: 'https://github.com/kfiross/flutter_holo_date_picker.git'

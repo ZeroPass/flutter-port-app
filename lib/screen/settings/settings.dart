@@ -1,7 +1,131 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences_settings/shared_preferences_settings.dart';
+//import 'package:shared_preferences_settings/shared_preferences_settings.dart';
 import 'package:eosio_passid_mobile_app/screen/theme.dart';
 import 'package:eosio_passid_mobile_app/screen/settings/network/network.dart';
+import 'package:card_settings/card_settings.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+
+/*
+class Settings extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Text("kva je");
+  }
+}
+*/
+
+
+class Settings extends StatelessWidget {
+
+  //final _ponyModel = PonyModel();
+
+  // once the form submits, this is flipped to true, and fields can then go into autovalidate mode.
+  bool _autoValidate = false;
+
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  // control state only works if the field order never changes.
+  // to support orientation changes, we assign a unique key to each field
+  // if you only have one orientation, the _formKey is sufficient
+  final GlobalKey<FormState> _nameKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _typeKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _ageKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _descriptionlKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _hobbiesKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _coatKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _maneKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _hasSpotsKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _spotKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _heightKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _weightKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _dateKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _timeKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _priceKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _phoneKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _emailKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _passwordKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _sliderKey = GlobalKey<FormState>();
+
+  bool _showMaterialonIOS = true;
+
+  @override
+  Widget build(BuildContext context) {
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Settings"),
+      ),
+        body:SettingsScreen()
+      );
+  }
+}
+
+class SettingsScreen extends StatefulWidget {
+  @override
+  _SettingsScreenState createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  String title = "Spheria";
+  String author = "Cody Leet";
+  String url = "http://www.codyleet.com/spheria";
+
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(child:
+    Form(
+      key: _formKey,
+      child: CardSettings(
+        padding: 0,
+        children: <Widget>[
+          CardSettingsHeader(label: 'Network'),
+          ListTile(
+              leading: Icon(Icons.cloud),
+              title: Text("Node management"),
+              onTap: () {
+                //open 'update network' panel
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => SettingsNetwork()));
+              }
+          ),
+          ListTile(
+              leading: Icon(Icons.cloud),
+              title: Text("Server management"),
+              onTap: () {
+                //function(item);
+                // Navigator.pop(context);
+              }
+          ),
+          CardSettingsHeader(label: 'About'),
+          ListTile(
+              leading: Icon(Icons.info),
+              title: Text("PassID"),
+              subtitle: Text(AndroidThemeST().getValues().themeValues["APP_DATA"]["COMPANY_NAME"] +
+                  ' ('+ AndroidThemeST().getValues().themeValues["APP_DATA"]["YEAR_LAST_UPDATE"].toString() +  '), version:' +
+                  AndroidThemeST().getValues().themeValues["APP_DATA"]["VERSION"]),
+              onTap: () {
+                //function(item);
+                // Navigator.pop(context);
+              }
+          ),
+
+
+        ],
+      ),
+    )
+    );
+
+  }
+}
+
+
+
 /*class CustomSettings extends StatefulWidget {
 
   CustomSettings();
@@ -20,7 +144,7 @@ class _CustomSettingsState extends State<CustomSettings> {
     );
   }
 }*/
-
+/*
 class Settings extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -52,7 +176,7 @@ class Settings extends StatelessWidget {
             ),
 
         ]
-    );
+    );*/
 
     //working comment
     /*return SettingsScreen(
@@ -473,7 +597,7 @@ class Settings extends StatelessWidget {
           )
         ],
       ),
-    );*/
+    );
 
   }
-}
+}*/

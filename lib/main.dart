@@ -13,7 +13,6 @@ import 'package:eosio_passid_mobile_app/screen/theme.dart';
 import 'package:eosio_passid_mobile_app/screen/settings/settings.dart';
 
 
-
 void main() => runApp(MyApp());
 
 

@@ -1,17 +1,47 @@
 import 'package:eosio_passid_mobile_app/screen/settings/network/updateNetwork.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences_settings/shared_preferences_settings.dart';
+//import 'package:shared_preferences_settings/shared_preferences_settings.dart';
 import 'package:eosio_passid_mobile_app/screen/settings/network/network.dart';
 import 'package:eosio_passid_mobile_app/screen/theme.dart';
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
 
 class SettingsNetwork extends StatelessWidget {
 
-
-
   @override
   Widget build(BuildContext context) {
     var storage = Storage();
+    final items = <Widget>[
+    for (StorageNode item in storage.storageNodes())
+      ListTile(
+          leading: Icon(Icons.cloud),
+          title: Text(item.name),
+          subtitle: Text(item.networkType.toString()),
+          onTap: () {
+            //open 'update network' panel
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => SettingsNetworkUpdate(storageNode: item)));
+          }
+        )
+        ];
+
+
+    return Scaffold(
+        appBar: AppBar(
+          title: Text("Select network"),
+        ),
+        body:ListView(
+          children:ListTile.divideTiles(
+          context: context,
+          tiles: items
+        ).toList()
+        )
+    );
+  }
+}
+
+
+
+/*var storage = Storage();
 
     final items = <Widget>[
       for (StorageNode item in storage.storageNodes())
@@ -26,6 +56,4 @@ class SettingsNetwork extends StatelessWidget {
     return SettingsScreen(
         title: "Network",
         children: items
-    );
-  }
-}
+    );*/
