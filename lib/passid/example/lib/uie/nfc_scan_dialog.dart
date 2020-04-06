@@ -1,6 +1,4 @@
 //  Created by smlu, copyright © 2020 ZeroPass. All rights reserved.
-import 'package:dmrtd/dmrtd.dart';
-import 'package:dmrtd/extensions.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flare_flutter/provider/asset_flare.dart';
 import 'package:flutter/cupertino.dart';
@@ -141,9 +139,9 @@ class NfcScanDialog {
             _iconAnimation = _IconAnimations.animSuccess;
           }
         });
+
         _sheetSetter = null;
-        // Delay closing dialog to display message
-        if (delayClosing != null) {
+        if (delayClosing != null) { // Delay closing dialog to display message
           await Future.delayed(delayClosing);
         }
       } else {
@@ -156,10 +154,10 @@ class NfcScanDialog {
 }
 
 class _IconAnimations {
-  static final file = /*'assets/anim/nfc.flr'; */ AssetFlare(
-      bundle: rootBundle, name: 'assets/anim/nfc.flr');
-  static const animWaiting = 'nfc';
+  static final file =
+      AssetFlare(bundle: rootBundle, name: 'assets/anim/nfc.flr');
+  static const animWaiting  = 'nfc';
   static const animScanning = 'nfc';
-  static const animSuccess = 'checkmark';
-  static const animError = 'nfc';
+  static const animSuccess  = 'checkmark';
+  static const animError    = 'nfc';
 }
