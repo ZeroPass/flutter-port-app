@@ -72,7 +72,7 @@ class PassIdClient {
     await _retriableCall(_getNewChallenge);
 
     final data = await callback(_challenge);
-    _throwIfMissingSessionData(data);
+    _throwIfMissingRequiredAuthnData(data);
 
     final uid = UserId.fromDG15(data.dg15);
     _session = await _retriableCallEx((error) async {
@@ -107,7 +107,7 @@ class PassIdClient {
     await _retriableCall(_getNewChallenge);
 
     final data = await callback(_challenge);
-    _throwIfMissingSessionData(data);
+    _throwIfMissingRequiredAuthnData(data);
     if(data.sod == null) {
       throw throw PassIdError(-32602, 'Missing proto data to establish session');
     }
@@ -176,11 +176,11 @@ class PassIdClient {
 
   /// Session data is data needed to establish PassID proto session
   /// e.g: dg15 (AA public key) and csig.
-  void _throwIfMissingSessionData(final AuthnData data) {
+  void _throwIfMissingRequiredAuthnData(final AuthnData data) {
     if(data.dg15 == null ||
       (data.dg15.aaPublicKey.type == AAPublicKeyType.EC && data.dg14 == null) ||
       data.csig == null || data.csig.isEmpty){
-        throw PassIdError(-32602, 'Missing proto data to establish session');
+        throw PassIdError(-32602, 'Missing required authentication data to establish session');
     }
   }
 }
