@@ -45,7 +45,7 @@ class PassIdClient {
 
   /// Callback invoked when signing up via login method and
   /// server requested DG1 file (data from MRZ) in order to establish login session.
-  /// If [callback] returns true the DG1 file will be send to the server.
+  /// If [callback] returns true the EfDG1 file will be send to the server.
   set onDG1FileRequested(Future<bool> Function(EfDG1 dg1) callback) =>
     _onDG1FileRequest = callback;
 
@@ -59,8 +59,9 @@ class PassIdClient {
   }
 
   /// Establishes session by calling passID login API using [AuthnData] returned via [callback].
-  /// [AuthnData] should have assigned fields: [csig], [sod] and
-  /// [dg1] in case server request it.
+  /// [AuthnData] should have assigned fields: [csig], [sod] and [dg1] in case server request it.
+  /// If argument [sendEfDG1] is true then file EfDG1 will be sent to server in any case without
+  /// server requesting it first.
   ///
   /// Note: If login fails due to server requested EF.DG1 file this request
   ///       is handled via callback [onDG1FileRequested]. If not [PassIdError] is thrown.
@@ -68,7 +69,7 @@ class PassIdClient {
   /// Throws [SocketException] on connection error if not handled by [onConnectionError] callback.
   /// Throws [PassIdError] when required data returned by [callback] is missing or
   /// when provided data is invalid e.g. verification of challenge signature fails.
-  Future<void> login(Future<AuthnData> Function(ProtoChallenge challenge) callback) async {
+  Future<void> login(Future<AuthnData> Function(ProtoChallenge challenge) callback, {bool sendEfDG1 = false}) async {
     await _retriableCall(_getNewChallenge);
 
     final data = await callback(_challenge);
@@ -76,14 +77,15 @@ class PassIdClient {
 
     final uid = UserId.fromDG15(data.dg15);
     _session = await _retriableCallEx((error) async {
-      EfDG1 dg1;
       if(error != null) {
+        // Handle request for EfDG1 file
         if(!error.isDG1Required() || data.dg1 == null ||
            !(await _onDG1FileRequest?.call(data.dg1) ?? false)) {
           throw _RethrowPassidError(error);
         }
-        dg1 = data.dg1;
+        sendEfDG1 = true;
       }
+      final dg1 = sendEfDG1 ? data.dg1 : null;
       return _api.login(uid, _challenge.id, data.csig, dg1: dg1);
     });
 
