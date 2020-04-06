@@ -1,4 +1,7 @@
 //  Created by smlu, copyright © 2020 ZeroPass. All rights reserved.
+import 'dart:io';
+
+import 'package:dmrtd/dmrtd.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -8,7 +11,7 @@ import 'package:flutter/services.dart';
 
 import 'uie/authn_screen.dart';
 import 'uie/home_page.dart';
-
+import 'uie/uiutils.dart';
 import 'srv_sec_ctx.dart';
 
 void main() async {
@@ -75,6 +78,7 @@ class _PassIdeWidgetState extends State<PassIdeWidget>
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
+    _checkNfcIsSupported();
   }
 
   void gotoLogin() {
@@ -95,8 +99,33 @@ class _PassIdeWidgetState extends State<PassIdeWidget>
     );
   }
 
-  PageController _controller =
-      PageController(initialPage: 1, viewportFraction: 1.0);
+  void _checkNfcIsSupported() {
+    NfcProvider.nfcStatus.then((status) {
+      if(status == NfcStatus.notSupported ||
+        (Platform.isIOS && status == NfcStatus.disabled)) {
+        showAlert(context,
+          Text('NFC not supported'),
+          Text("This device doesn't support NFC.\nNFC is required to use this app."),
+          [
+            FlatButton(
+              child: Text('EXIT',
+                  style: TextStyle(
+                      color: Theme.of(context).errorColor,
+                      fontWeight: FontWeight.bold)),
+              onPressed: () {
+                if(Platform.isIOS) {
+                  exit(0);
+                }
+                else {
+                  SystemNavigator.pop(animated: true);
+                }
+              }
+            )
+          ]
+        );
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
