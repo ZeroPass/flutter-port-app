@@ -18,6 +18,15 @@ class SuccessScreen extends StatelessWidget {
 
   SuccessScreen(this.action, this.uid, this.serverMsg);
 
+  void _goToMain(BuildContext context) {
+    Navigator.popUntil(context, (route) {
+      if(route.settings.name == '/') {
+        return true;
+      }
+      return false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,7 +75,7 @@ class SuccessScreen extends StatelessWidget {
                         makeButton(
                             context: context,
                             text: 'MAIN MENU',
-                            onPressed: () => Navigator.maybePop(context)
+                            onPressed: () => _goToMain(context)
                         ),
                         const SizedBox(height: 20),
                                             Row(children: <Widget>[
