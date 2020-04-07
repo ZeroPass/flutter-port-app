@@ -121,12 +121,15 @@ class _StepperFormState extends State<StepperForm> {
                 },
                 controlsBuilder: (BuildContext context,
                     {VoidCallback onStepContinue, VoidCallback onStepCancel}) {
-                  return Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: <Widget>[
-                      showButtonNext(context, state.step, onStepContinue)
-                  ],);
+                  if (state.step != 2)
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: <Widget>[
+                        showButtonNext(context, state.step, onStepContinue)
+                    ],);
+                  else
+                    return Text("");
 
 
                 }

@@ -9,6 +9,12 @@
       <excludeFolder url="file://$MODULE_DIR$/.idea" />
       <excludeFolder url="file://$MODULE_DIR$/.pub" />
       <excludeFolder url="file://$MODULE_DIR$/build" />
+      <excludeFolder url="file://$MODULE_DIR$/lib/dmrtd/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/lib/dmrtd/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/lib/dmrtd/build" />
+      <excludeFolder url="file://$MODULE_DIR$/lib/dmrtd/example/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/lib/dmrtd/example/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/lib/dmrtd/example/build" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Dart SDK" level="project" />

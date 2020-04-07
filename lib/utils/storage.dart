@@ -1,9 +1,14 @@
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepScan/stepScan.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepper.dart';
+import 'package:dmrtd/src/extension/string_apis.dart';
+import 'package:dmrtd/src/extension/datetime_apis.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:meta/meta.dart';
 import 'package:eosio_passid_mobile_app/settings/settings.dart';
+import 'package:dmrtd/src/proto/dba_keys.dart';
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class StorageNode {
   String name;
@@ -53,12 +58,14 @@ class StorageServer {
   String host;
   bool isEncryptedEndpoint;
   int port;
+  int timeoutInSeconds;
 
   StorageServer(
       { @required this.name,
         @required this.host,
         @required this.port,
-        @required this.isEncryptedEndpoint
+        @required this.isEncryptedEndpoint,
+        this.timeoutInSeconds = 5
         }) {
     //remove http(s) part of host
     this.host = this.host.toLowerCase();
@@ -101,6 +108,40 @@ class StorageServerTemporary extends StorageServer{
   }
 }
 
+class DBAkeyStorage {
+  static SharedPreferences prefs;
+
+  void init() async{
+    if(prefs == null) {
+      prefs = await SharedPreferences.getInstance();
+    }
+  }
+
+  DBAKeys getDBAKeys() {
+    final data = prefs.getString("dbaKeys");
+    if(data == null) {
+      return null;
+    }
+    final jkeys = jsonDecode(data);
+    return DBAKeys(
+        jkeys['mrtd_num'],
+        (jkeys['dob'] as String).parseDateYYMMDD(),
+        (jkeys['doe'] as String).parseDateYYMMDD()
+    );
+  }
+
+  Future<bool> setDBAKeys(final DBAKeys keys) {
+    final data = jsonEncode({
+      'mrtd_num' : keys.mrtdNumber,
+      'dob'      : keys.dateOfBirth.formatYYMMDD(),
+      'doe'      : keys.dateOfExpiry.formatYYMMDD()
+    });
+    return prefs.setString("dbaKeys", data);
+  }
+
+}
+
+
 int _NUM_OF_STEPS = 3;
 //data stored in the singleton class
 class StorageData {
@@ -108,16 +149,21 @@ class StorageData {
   StorageNode defaultNode;
   List<StorageNode> _nodes;
   List<StepData> _steps;
-  StorageServer _storageServer;
+  StorageServer storageServer;
   StorageServerTemporary _storageServerTemporary;
+
+  DBAkeyStorage dbAkeyStorage;
 
 
   StorageData(){
     this._nodes = new List();
     this.selectedNode = null;
     this.defaultNode = null;
-    this._storageServer = null;
+    this.storageServer = null;
     this._storageServerTemporary = null;
+
+    this.dbAkeyStorage = DBAkeyStorage();
+    this.dbAkeyStorage.init();
 
     this._steps = new List(_NUM_OF_STEPS);
     //initialize every step
@@ -161,7 +207,11 @@ class StorageData {
   }
 
   StorageServer getStorageServer(){
-    return this._storageServer;
+    return this.storageServer;
+  }
+
+  DBAkeyStorage getDBAkeyStorage(){
+    return this.dbAkeyStorage;
   }
 
 

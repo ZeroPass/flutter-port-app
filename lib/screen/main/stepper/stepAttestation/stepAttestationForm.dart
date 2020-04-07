@@ -4,19 +4,20 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
 import "package:eosio_passid_mobile_app/screen/main/stepper/stepper.dart";
 import 'package:flutter/cupertino.dart';
+import 'package:eosio_passid_mobile_app/screen/nfc/authn.dart';
 import 'package:eosio_passid_mobile_app/screen/customAlertDialog.dart';
 
-class StepScanForm extends StatefulWidget {
-  StepScanForm({Key key}) : super(key: key);
+class StepAttestationForm extends StatefulWidget {
+  StepAttestationForm({Key key}) : super(key: key);
 
   @override
-  _StepScanFormState createState() => _StepScanFormState();
+  _StepAttestationFormState createState() => _StepAttestationFormState();
 }
 
-class _StepScanFormState extends State<StepScanForm> {
+class _StepAttestationFormState extends State<StepAttestationForm> {
   //Stepper steps
 
-  _StepScanFormState({Key key}){}
+  _StepAttestationFormState({Key key}){}
 
 
   @override
@@ -34,7 +35,7 @@ class _StepScanFormState extends State<StepScanForm> {
         return Form(
             key: _formKey,
             autovalidate: true,
-            child: Text("Test"));
+            child: Authn());
       },
     );
   }

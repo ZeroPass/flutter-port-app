@@ -8,16 +8,21 @@ import 'package:eosio_passid_mobile_app/screen/main/stepper/stepEnterAccount/ste
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccountHeader/stepEnterAccountHeader.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepScan/stepScanHeader/stepScanHeader.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepScan/stepScan.dart';
+import 'package:eosio_passid_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:eosio_passid_mobile_app/screen/theme.dart';
 import 'package:eosio_passid_mobile_app/screen/settings/settings.dart';
-
-
+import 'package:logging/logging.dart';
 void main() => runApp(MyApp());
 
 
 void fillDatabase()
 {
+  Logger.root.level = Level.ALL;
+  Logger.root.onRecord.listen((record) {
+    print('${record.loggerName} ${record.level.name}: ${record.time}: ${record.message}');
+  });
+
   print("fill database");
   Storage storage = new Storage();
 
@@ -40,8 +45,17 @@ void fillDatabase()
 
   sn = new StorageNode(name: "Jungle", host: "456786.eosnode.io", port: 443, isEncryptedEndpoint: true, networkType: NetworkType.CUSTOM, chainID: "abce5435345dsaffdas");
   nodes.add(sn);
+  
+  StorageServer ss = new StorageServer(name: "mainServer", host: "51.15.224.168", port: 443, isEncryptedEndpoint: true);
+  storage.storageServer = ss;
 
+  StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
+  storageStepEnterAccount.isUnlocked = true;
 
+  StepDataScan storageStepScan = storage.getStorageData(1);
+  storageStepScan.documentID = "";
+  storageStepScan.birth = DateTime(2000, 1,1);
+  storageStepScan.validUntil = DateTime(2100, 1,1);
 }
 
 class MyApp extends StatelessWidget {
@@ -155,6 +169,9 @@ class MyApp extends StatelessWidget {
                         BlocProvider<StepScanBloc>(
                             create: (BuildContext context) => StepScanBloc()
                         ),
+                        BlocProvider<StepAttestationBloc>(
+                            create: (BuildContext context) => StepAttestationBloc()
+                        ),
                         BlocProvider<StepperBloc>(
                             create: (BuildContext context) => StepperBloc(maxSteps: 3)
                         )
@@ -177,7 +194,7 @@ class MyApp extends StatelessWidget {
                     ),
                     Step(
                       title: Text("Attestation"),
-                      content: Text("Hello World!"),
+                      content: StepAttestationForm(),
                       //isActive: true,
                     ),
                   ]
