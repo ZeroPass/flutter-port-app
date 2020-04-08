@@ -201,12 +201,16 @@ class PassportScanner {
     return _call(() =>_nfc.connect(iosAlertMessage: alertMessage));
   }
 
-  Future<void> _disconnect({String alertMessage, String errorMessage}) {
+   Future<void> _disconnect({String alertMessage, String errorMessage}) {
     if (!Platform.isIOS) {
       return _scanDialog.hide(
-          message: alertMessage, errorMessage: errorMessage);
+          message: alertMessage,
+          errorMessage: errorMessage,
+          delayClosing:
+              Duration(milliseconds: (errorMessage != null ? 3500 : 2500)));
     }
-    return _nfc.disconnect(iosAlertMessage: alertMessage, iosErrorMessage: errorMessage);
+    return _nfc.disconnect(
+        iosAlertMessage: alertMessage, iosErrorMessage: errorMessage);
   }
 
   void _setAlertMessage(final String msg) {
