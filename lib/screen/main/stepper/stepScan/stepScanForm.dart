@@ -6,6 +6,7 @@ import "package:eosio_passid_mobile_app/screen/main/stepper/stepper.dart";
 import 'package:flutter/cupertino.dart';
 import 'package:eosio_passid_mobile_app/screen/customDatePicker.dart';
 import 'package:eosio_passid_mobile_app/screen/customAlertDialog.dart';
+import 'package:eosio_passid_mobile_app/screen/theme.dart';
 
 class StepScanForm extends StatefulWidget {
   StepScanForm({Key key}) : super(key: key);
@@ -64,6 +65,12 @@ class _StepScanFormState extends State<StepScanForm> {
             key: _formKey,
             autovalidate: true,
             child: Column(children: <Widget>[
+              //const AndroidThemeST().getValues().themeValues["STEPPER"]["STEP_SCAN"]["COLOR_TEXT"]
+              Text(
+                'This data is only used to establish secure communication between your device and passport.',
+                style: TextStyle(color: AndroidThemeST().getValues().themeValues["STEPPER"]["STEP_SCAN"]["COLOR_TEXT"]),
+              ),
+
               TextFormField(
                 controller: _passportIdTextController,
                 decoration: InputDecoration(

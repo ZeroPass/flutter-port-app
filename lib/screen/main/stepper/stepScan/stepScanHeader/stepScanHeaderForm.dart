@@ -80,7 +80,7 @@ class _StepScanHeaderFormState
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                    Text("Scan"),
+                    Text("Passport Info"),
                     Row(children: <Widget>[
                       Transform(
                         alignment: Alignment.centerRight,

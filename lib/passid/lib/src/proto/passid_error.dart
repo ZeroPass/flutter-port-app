@@ -21,7 +21,7 @@ class PassIdError implements Exception{
   String toString() => 'PassIdError(code=$code, error=$message)';
 
   bool isDG1Required() {
-    return code == PassIdError.preconditionRequired &&
-      message.toLowerCase().contains('dg1 required');
+    return this.code == PassIdError.preconditionRequired &&
+      this.message.toLowerCase().contains('dg1 required');
   }
 }

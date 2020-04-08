@@ -30,6 +30,7 @@ class AuthnScreen extends StatefulWidget {
   _AuthnScreenState createState() => _AuthnScreenState(_action);
 }
 
+
 class _AuthnScreenState extends State<AuthnScreen>
     with WidgetsBindingObserver {
   _AuthnScreenState(this._action);

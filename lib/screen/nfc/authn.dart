@@ -27,9 +27,9 @@ import 'package:eosio_passid_mobile_app/screen/theme.dart';
 import 'package:eosio_passid_mobile_app/screen/customBottomPicker.dart';
 
 Map AUTHENTICATOR_ACTIONS = {
-  "ATTESTAION_REQUEST": {"NAME":"Attestation Request", "DATA": ["Country (SOD)", "Passport Public Key (DG15)", "Passport Signature"]},
-  "PERSONAL_INFORMATION_REQUEST": {"NAME":"Personal Inf. Request", "DATA": ["Personal Information (DG1))", "Passport Signature)"]},
-  "PERSONAL_INFORMATION_REQUEST_FALSIFIED": {"NAME":"Personal Inf. Request - Falsified", "DATA": ["Personal Information (DG1))", "Passport Signature)"]},
+  "ATTESTAION_REQUEST": {"NAME":"Attestation", "DATA": ["Country (SOD)", "Passport Public Key (DG15)", "Passport Signature"]},
+  "PERSONAL_INFORMATION_REQUEST": {"NAME":"Personal Information", "DATA": ["Personal Information (DG1))", "Passport Signature)"]},
+  "PERSONAL_INFORMATION_REQUEST_FALSIFIED": {"NAME":"Personal Information - Falsified", "DATA": ["Personal Information (DG1))", "Passport Signature)"]},
   };
 
 class ServerSecurityContext  {
@@ -150,30 +150,27 @@ class _AuthnState extends State<Authn> {
   }
 
 
-  Future<AuthnData>  _getAuthnData(final ProtoChallenge challenge, String passportID, DateTime birthDate, DateTime validUntil) async {
+  Future<AuthnData>  _getAuthnData(final ProtoChallenge challenge, AuthnAction action, String passportID, DateTime birthDate, DateTime validUntil) async {
     //_challenge = challenge;
-    scanPassport(challenge, passportID, birthDate, validUntil);
+    scanPassport(challenge, action,  passportID, birthDate, validUntil);
     return _authnData.future;
   }
 
 
-  Future<void> scanPassport(ProtoChallenge challenge, String passportID, DateTime birthDate, DateTime validUntilDate) async {
+  Future<void> scanPassport(ProtoChallenge challenge, AuthnAction action, String passportID, DateTime birthDate, DateTime validUntilDate) async {
     assert(challenge != null);
     try {
       final dbaKeys = DBAKeys(passportID, birthDate, validUntilDate);
       final data = await PassportScanner(
           context: context,
           challenge: challenge,
-          action:  AuthnAction.register//_action
+          action:  action
       ).scan(dbaKeys);
       Storage storage = Storage();
       await storage.getDBAkeyStorage().setDBAKeys(dbaKeys);
       //await Preferences.setDBAKeys(dbaKeys);  // Save MRZ data
       _authnData.complete(data);
-    } catch(e) {
-      print("scanPassport error catched");
-      print (e);
-    } // ignore: empty_catches
+    } catch(e) {} // ignore: empty_catches
     finally {
       setState(() {
         //_isScanningMrtd = false;
@@ -232,7 +229,7 @@ class _AuthnState extends State<Authn> {
       if (action == AuthnAction.register)
         await _client.register((challenge) async {
           StepDataScan storageStepScan = storage.getStorageData(1);
-          return await _getAuthnData(challenge, storageStepScan.documentID, storageStepScan.birth, storageStepScan.validUntil).then((data) {
+          return await _getAuthnData(challenge, AuthnAction.register, storageStepScan.documentID, storageStepScan.birth, storageStepScan.validUntil).then((data) {
             return data;
           });
         }
@@ -240,7 +237,7 @@ class _AuthnState extends State<Authn> {
       else
         await _client.login((challenge) async {
           StepDataScan storageStepScan = storage.getStorageData(1);
-          return await _getAuthnData(challenge, storageStepScan.documentID, storageStepScan.birth, storageStepScan.validUntil).then((data) {
+          return await _getAuthnData(challenge, AuthnAction.login, storageStepScan.documentID, storageStepScan.birth, storageStepScan.validUntil).then((data) {
             return data;
           });
         },
