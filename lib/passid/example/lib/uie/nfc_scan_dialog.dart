@@ -75,7 +75,9 @@ class NfcScanDialog {
           return StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {
             _sheetSetter = setState;
-            return Container(
+            return WillPopScope(
+              onWillPop: () async => false,
+              child: Container(
                 height: MediaQuery.of(context).size.width,
                 child: Padding(
                     padding: EdgeInsets.all(30.0),
@@ -120,7 +122,7 @@ class NfcScanDialog {
                               })
                         ],
                       ),
-                    )));
+                    ))));
           });
         });
   }
@@ -148,7 +150,7 @@ class NfcScanDialog {
         _sheetSetter = null;
       }
 
-      await Navigator.maybePop(context);
+      Navigator.pop(context);
     }
   }
 }
