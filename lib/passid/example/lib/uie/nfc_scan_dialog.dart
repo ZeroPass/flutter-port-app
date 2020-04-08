@@ -161,5 +161,5 @@ class _IconAnimations {
   static const animWaiting  = 'nfc';
   static const animScanning = 'nfc';
   static const animSuccess  = 'checkmark';
-  static const animError    = 'nfc';
+  static const animError    = 'error';
 }
