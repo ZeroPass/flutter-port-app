@@ -101,28 +101,27 @@ class _PassIdeWidgetState extends State<PassIdeWidget>
 
   void _checkNfcIsSupported() {
     NfcProvider.nfcStatus.then((status) {
-      if(status == NfcStatus.notSupported ||
-        (Platform.isIOS && status == NfcStatus.disabled)) {
-        showAlert(context,
-          Text('NFC not supported'),
-          Text("This device doesn't support NFC.\nNFC is required to use this app."),
-          [
-            FlatButton(
-              child: Text('EXIT',
-                  style: TextStyle(
-                      color: Theme.of(context).errorColor,
-                      fontWeight: FontWeight.bold)),
-              onPressed: () {
-                if(Platform.isIOS) {
-                  exit(0);
-                }
-                else {
-                  SystemNavigator.pop(animated: true);
-                }
-              }
-            )
-          ]
-        );
+      if (status == NfcStatus.notSupported ||
+          (Platform.isIOS && status == NfcStatus.disabled)) {
+        showAlert(
+            context,
+            Text('NFC not supported'),
+            Text(
+                "This device doesn't support NFC.\nNFC is required to use this app."),
+            [
+              FlatButton(
+                  child: Text('EXIT',
+                      style: TextStyle(
+                          color: Theme.of(context).errorColor,
+                          fontWeight: FontWeight.bold)),
+                  onPressed: () {
+                    if (Platform.isIOS) {
+                      exit(0);
+                    } else {
+                      SystemNavigator.pop(animated: true);
+                    }
+                  })
+            ]);
       }
     });
   }
