@@ -32,6 +32,7 @@ dependencies:
 
   equatable: ^1.1.1
   connectivity: ^0.4.8+2
+  dart_countries_states: ^0.0.8
   #shared_preferences_settings: ^1.2.0
   card_settings: ^1.8.0
   flutter:
@@ -47,6 +48,11 @@ dependencies:
   flutter_tags: ^0.4.7
   meta: ^1.1.6
 
+
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/passid_icon.jpg"
 
 dev_dependencies:
   flutter_test:

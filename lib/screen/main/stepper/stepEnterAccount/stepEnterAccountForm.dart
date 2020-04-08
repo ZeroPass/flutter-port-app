@@ -110,8 +110,13 @@ class _StepEnterAccountFormState extends State<StepEnterAccountForm> {
   }
 
   Widget body(BuildContext context, StepEnterAccountState state, var stepEnterAccountBloc) {
+    var storage = Storage();
+    StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
+
     if (state is DeletedState) emptyFields();
     if (state is FullState) updateFields();
+
+
 
     final stepperBloc = BlocProvider.of<StepperBloc>(context);
     final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -120,7 +125,8 @@ class _StepEnterAccountFormState extends State<StepEnterAccountForm> {
         autovalidate: true,
         child: Column(children: <Widget>[
       selectNetworkWithTile(context, state, stepEnterAccountBloc),
-      TextFormField(
+      if (storage.selectedNode.name != "ZeroPass Server")
+          TextFormField(
         controller: _accountTextController,
         decoration: InputDecoration(
           labelText: 'Account name',

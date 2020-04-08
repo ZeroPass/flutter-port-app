@@ -80,7 +80,6 @@ class _StepScanFormState extends State<StepScanForm> {
                 validator: (value) => RegExp(r"^[a-zA-Z0-9]*$").hasMatch(value) ? null : "Special characters not allowed.",
 
                 onChanged: (value) {
-                  print("value changed");
                   if (_passportIdTextController.text != value.toUpperCase())
                     _passportIdTextController.value = _passportIdTextController.value
                         .copyWith(text: value.toUpperCase());

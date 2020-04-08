@@ -13,6 +13,7 @@ import 'package:passid/src/proto/proto_challenge.dart';
 import "package:eosio_passid_mobile_app/screen/nfc/passport_scanner.dart";
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepScan/stepScan.dart';
+import 'package:eosio_passid_mobile_app/screen/nfc/uie/efdg1.dart';
 import 'package:passid/src/authn_data.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -28,8 +29,9 @@ import 'package:eosio_passid_mobile_app/screen/customBottomPicker.dart';
 
 Map AUTHENTICATOR_ACTIONS = {
   "ATTESTAION_REQUEST": {"NAME":"Attestation", "DATA": ["Country (SOD)", "Passport Public Key (DG15)", "Passport Signature"]},
-  "PERSONAL_INFORMATION_REQUEST": {"NAME":"Personal Information", "DATA": ["Personal Information (DG1))", "Passport Signature)"]},
-  "PERSONAL_INFORMATION_REQUEST_FALSIFIED": {"NAME":"Personal Information - Falsified", "DATA": ["Personal Information (DG1))", "Passport Signature)"]},
+  "PERSONAL_INFORMATION_REQUEST": {"NAME":"Personal Information", "DATA": ["Personal Information (DG1))", "Passport Signature"]},
+  "PERSONAL_INFORMATION_REQUEST_FALSIFIED": {"NAME":"Personal Information - Falsified", "DATA": ["Personal Information (DG1)", "Passport Signature)"]},
+  "LOGIN": {"NAME":"Login", "DATA": ["Passport Signature"]},
   };
 
 class ServerSecurityContext  {
@@ -111,7 +113,155 @@ class _AuthnState extends State<Authn> {
     );
   }
 
+  Future<bool> showDG1(final EfDG1 dg1) async{
+   return showAlert<bool>(context,
+       Text('DG1'),
 
+       Container(
+           height: MediaQuery.of(context).size.height - 50,
+           child: Padding(
+               padding: EdgeInsets.all(16.0),
+               child: Column(children: <Widget>[
+                 const SizedBox(height: 10),
+                 const SizedBox(height: 20),
+                 SingleChildScrollView(
+                     child: Card(
+                         child: Padding(
+                             padding: EdgeInsets.all(16.0),
+                             child: Column(
+                                 crossAxisAlignment: CrossAxisAlignment.center,
+                                 children: <Widget>[
+                                   Text(
+                                     'Passport Data',
+                                     style: TextStyle(
+                                         fontWeight: FontWeight.bold,
+                                         fontSize: 18),
+                                   ),
+                                   const SizedBox(height: 5),
+                                   Row(children: <Widget>[
+                                     Expanded(
+                                         child: Text(
+                                           'Passport type:',
+                                           style: TextStyle(fontSize: 16),
+                                         )),
+                                     Expanded(
+                                         child: Text(dg1.mrz.documentCode,
+                                             style: TextStyle(fontSize: 16)))
+                                   ]),
+                                   Row(
+                                       mainAxisAlignment:
+                                       MainAxisAlignment.spaceBetween,
+                                       children: <Widget>[
+                                         Expanded(
+                                             child: Text('Passport no.:',
+                                                 style: TextStyle(fontSize: 16))),
+                                         Expanded(
+                                             child: Text(dg1.mrz.documentNumber,
+                                                 style: TextStyle(fontSize: 16))),
+                                       ]),
+                                   Row(children: <Widget>[
+                                     Expanded(
+                                         child: Text('Date of Expiry:',
+                                             style: TextStyle(fontSize: 16))),
+                                     Expanded(
+                                         child: Text(
+                                                 dg1.mrz.dateOfExpiry.toIso8601String(),
+                                             style: TextStyle(fontSize: 16)))
+                                   ]),
+                                   Row(children: <Widget>[
+                                     Expanded(
+                                         child: Text('Issuing Country:',
+                                             style: TextStyle(fontSize: 16))),
+                                     Expanded(
+                                         child: Text(dg1.mrz.country,
+                                             style: TextStyle(fontSize: 16)))
+                                   ]),
+                                   const SizedBox(height: 30),
+                                   Text(
+                                     'Personal Data',
+                                     style: TextStyle(
+                                         fontWeight: FontWeight.bold,
+                                         fontSize: 18),
+                                   ),
+                                   const SizedBox(height: 5),
+                                   Row(children: <Widget>[
+                                     Expanded(
+                                         child: Text('Name:',
+                                             style: TextStyle(fontSize: 16))),
+                                     Expanded(
+                                         child: Text(dg1.mrz.firstName,
+                                             style: TextStyle(fontSize: 16))),
+                                   ]),
+                                   Row(
+                                     children: <Widget>[
+                                       Expanded(
+                                           child: Text('Last Name',
+                                               style: TextStyle(fontSize: 16))),
+                                       Expanded(
+                                           child: Text(
+                                               dg1.mrz.lastName,
+                                               style: TextStyle(fontSize: 16))),
+                                     ],
+                                   ),
+                                   Row(children: <Widget>[
+                                     Expanded(
+                                         child: Text('Date of Birth:',
+                                             style: TextStyle(fontSize: 16))),
+                                     Expanded(
+                                         child: Text(dg1.mrz.dateOfBirth.toIso8601String(),
+                                             style: TextStyle(fontSize: 16))),
+                                   ]),
+                                   Row(children: <Widget>[
+                                     Expanded(
+                                         child: Text('Sex:',
+                                             style: TextStyle(fontSize: 16))),
+                                     Expanded(
+                                       child: Text(
+                                           dg1.mrz.sex.isEmpty
+                                               ? '/'
+                                               : dg1.mrz.sex == 'M'
+                                               ? 'Male'
+                                               : 'Female',
+                                           style: TextStyle(fontSize: 16)),
+                                     )
+                                   ]),
+                                   Row(children: <Widget>[
+                                     Expanded(
+                                         child: Text('Nationality:',
+                                             style: TextStyle(fontSize: 16))),
+                                     Expanded(
+                                         child: Text(dg1.mrz.country,
+                                             style: TextStyle(fontSize: 16))),
+                                   ]),
+                                   Row(children: <Widget>[
+                                     Text('Additional Data:',
+                                         style: TextStyle(fontSize: 16)),
+                                     Spacer(),
+                                     Text(dg1.mrz.optionalData,
+                                         style: TextStyle(fontSize: 16)),
+                                     Spacer()
+                                   ]),
+                                 ])))),
+                 Spacer(flex: 60),
+                 /*Wrap(
+                     direction: Axis.horizontal,
+                     runSpacing: 10,
+                     spacing: 10,
+                     children: <Widget>[...actions])*/
+               ]))),
+
+
+       [
+         FlatButton(
+             child: const Text(
+               'OK',
+               style: TextStyle(fontWeight: FontWeight.bold),
+             ),
+             onPressed: () => Navigator.pop(context, true)
+         )
+       ]
+   );
+ }
 
   Future<bool> _handleDG1Request(final EfDG1 dg1) async {
     return showAlert<bool>(context,
@@ -131,12 +281,13 @@ class _AuthnState extends State<Authn> {
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               onPressed: () {
-                print("---> you should call EfDG1View(dg1)");
+                showDG1(dg1);
                 /*return Navigator.push(
-                  context,
-                  CupertinoPageRoute (
-                      builder: (context) => EfDG1View(dg1), fullscreenDialog: true),
-                );*/
+                              context,
+                              CupertinoPageRoute (
+                                  builder: (context) => EfDG1View(dg1), fullscreenDialog: true),
+                            */
+
               }),
           FlatButton(
               child: const Text(
@@ -197,7 +348,7 @@ class _AuthnState extends State<Authn> {
     return missingValuesText;
   }
 
-  void startAction(BuildContext context, AuthnAction action) async {
+  void startAction(BuildContext context, AuthnAction action, [bool sendDG1 = false]) async {
     Storage storage = Storage();
     String checkedValues = checkValuesInStorage();
     if (checkedValues != "") {
@@ -241,7 +392,7 @@ class _AuthnState extends State<Authn> {
             return data;
           });
         },
-        sendEfDG1: true
+        sendEfDG1: sendDG1
         );
 
       final srvMsgGreeting = await _client.requestGreeting();
@@ -389,8 +540,10 @@ class _AuthnState extends State<Authn> {
             if (widget._selectedAction == "ATTESTAION_REQUEST")
                 startAction(context, AuthnAction.register);
             else if (widget._selectedAction == "PERSONAL_INFORMATION_REQUEST")
-              startAction(context, AuthnAction.login);
+              startAction(context, AuthnAction.login, true);
             else if (widget._selectedAction == "PERSONAL_INFORMATION_REQUEST_FALSIFIED")
+              startAction(context, AuthnAction.login, true);
+            else if (widget._selectedAction == "LOGIN")
               startAction(context, AuthnAction.login);
 
         },/**/
@@ -407,19 +560,6 @@ class _AuthnState extends State<Authn> {
             selectModeWithTile(context),
             dataDescription(context),
             buttonScan(context)
-            /*
-         FlatButton(
-          child: Text('Register'),
-          color: Colors.blueAccent,
-          textColor: Colors.white,
-          onPressed : () => startAction(context, AuthnAction.register)
-        ),
-            FlatButton(
-                child: Text('Login'),
-                color: Colors.blueAccent,
-                textColor: Colors.white,
-                onPressed : () => startAction(context, AuthnAction.login)
-            )*/
         ],)
       );
     }

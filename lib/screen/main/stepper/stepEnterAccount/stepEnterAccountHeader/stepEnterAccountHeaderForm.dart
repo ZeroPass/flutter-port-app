@@ -92,8 +92,8 @@ class _StepEnterAccountHeaderFormState
                         child: Row(children: <Widget>[
                                 if (state is WithAccountIDState)
                                   Container(child: CustomChip([state.accountID]), margin: EdgeInsets.only(left: 3.0)),
-                                if (state.server != null)
-                                  Container(child: CustomChip(["SERVER"]), margin: EdgeInsets.only(left: 3.0)),
+                                //if (state.server != null)
+                                //  Container(child: CustomChip(["SERVER"]), margin: EdgeInsets.only(left: 3.0)),
                                 ])),
                     if (state is WithAccountIDState)
                       Align(
