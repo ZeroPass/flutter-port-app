@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:dmrtd/dmrtd.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:dmrtd/extensions.dart';
+import 'package:eosio_passid_mobile_app/screen/customChip.dart';
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +22,15 @@ import 'package:eosio_passid_mobile_app/screen/customAlert.dart';
 import 'package:eosio_passid_mobile_app/utils/structure.dart';
 import 'package:passid/passid.dart';
 import 'package:logging/logging.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:eosio_passid_mobile_app/screen/theme.dart';
+import 'package:eosio_passid_mobile_app/screen/customBottomPicker.dart';
 
+Map AUTHENTICATOR_ACTIONS = {
+  "ATTESTAION_REQUEST": {"NAME":"Attestation Request", "DATA": ["Country (SOD)", "Passport Public Key (DG15)", "Passport Signature"]},
+  "PERSONAL_INFORMATION_REQUEST": {"NAME":"Personal Inf. Request", "DATA": ["Personal Information (DG1))", "Passport Signature)"]},
+  "PERSONAL_INFORMATION_REQUEST_FALSIFIED": {"NAME":"Personal Inf. Request - Falsified", "DATA": ["Personal Information (DG1))", "Passport Signature)"]},
+  };
 
 class ServerSecurityContext  {
   static SecurityContext _ctx;
@@ -48,6 +57,8 @@ enum AuthnAction { register, login }
 
 
 class Authn extends StatefulWidget {
+  String _selectedAction = "ATTESTAION_REQUEST";
+
   Authn({Key key});
 
   _AuthnState createState() => _AuthnState();
@@ -56,6 +67,7 @@ class Authn extends StatefulWidget {
 class _AuthnState extends State<Authn> {
   PassIdClient _client;
   final _log = Logger('authn.screen');
+
   //ProtoChallenge _challenge;
 
   var _authnData = Completer<AuthnData>();
@@ -231,7 +243,8 @@ class _AuthnState extends State<Authn> {
           return await _getAuthnData(challenge, storageStepScan.documentID, storageStepScan.birth, storageStepScan.validUntil).then((data) {
             return data;
           });
-        }
+        },
+        sendEfDG1: true
         );
 
       final srvMsgGreeting = await _client.requestGreeting();
@@ -313,12 +326,91 @@ class _AuthnState extends State<Authn> {
 
   }
 
+  void selectNetwork(var context) {
+    BottomPickerStructure bps = BottomPickerStructure();
+    bps.importActionTypesList(AUTHENTICATOR_ACTIONS, "ATTESTAION_REQUEST",
+        "Select validation", "Please select type of validation");
+    CustomBottomPickerState cbps = CustomBottomPickerState(structure: bps);
+    cbps.showPicker(context,
+        //callback function to manage user click action on selection
+            (BottomPickerElement returnedItem){
+              setState(() {
+                widget._selectedAction = returnedItem.key;
+              });
+        }
+    );
+  }
+
+  Widget selectModeWithTile(var context) {
+    return ListTile(
+      dense: true,
+      contentPadding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 8.0),
+      title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Text(
+              'Request',
+              style: TextStyle(fontSize: AndroidThemeST().getValues().themeValues["STEPPER"]["STEP_TAP"]["SIZE_TEXT"]),
+            ),
+            Text(
+                AUTHENTICATOR_ACTIONS[widget._selectedAction]['NAME'],
+                style:
+                TextStyle(fontSize: AndroidThemeST().getValues().themeValues["STEPPER"]["STEP_TAP"]["SIZE_TEXT"],
+                    color:  AndroidThemeST().getValues().themeValues["TILE_BAR"]["COLOR_TEXT"]))
+          ]),
+      //subtitle: Text("to see what is going to be sent"),
+      trailing: Icon(Icons.expand_more),
+      onTap: () => selectNetwork(context),
+    );
+  }
+  Widget dataDescription(var context) {
+    return Container(
+      alignment: Alignment.centerLeft,
+        child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+              Container(child: Text('Data Sent', style: TextStyle(/*fontWeight: FontWeight.bold,*/ fontSize: AndroidThemeST().getValues().themeValues["STEPPER"]["STEP_TAP"]["SIZE_TEXT"])), margin: EdgeInsets.only(bottom: 10.0)),
+              for (var item in AUTHENTICATOR_ACTIONS[widget._selectedAction]["DATA"])
+                Container(child:
+                  Text('  • ' +item, style:
+                        TextStyle(fontSize: AndroidThemeST().getValues().themeValues["STEPPER"]["STEP_TAP"]["SIZE_TEXT"] - 2,
+                                  color: AndroidThemeST().getValues().themeValues["STEPPER"]["STEP_TAP"]["COLOR_TEXT"])),
+                          margin: EdgeInsets.only(left: 0.0))
+          //AndroidThemeST().getValues().themeValues["STEPPER"]["STEPPER_MANIPULATOR"]["COLOR_TEXT"])
+          ]
+          ));
+  }
+  Widget buttonScan(var context){
+    return Row(
+      //mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[Padding(padding: EdgeInsets.only(top: 40), child:
+      PlatformButton (
+        child:Text('Attest and Send',style: TextStyle(color: Colors.white)),
+        onPressed: () {
+            if (widget._selectedAction == "ATTESTAION_REQUEST")
+                startAction(context, AuthnAction.register);
+            else if (widget._selectedAction == "PERSONAL_INFORMATION_REQUEST")
+              startAction(context, AuthnAction.login);
+            else if (widget._selectedAction == "PERSONAL_INFORMATION_REQUEST_FALSIFIED")
+              startAction(context, AuthnAction.login);
+
+        },/**/
+      ))
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
 
       return Container(
-          margin: EdgeInsets.all(20),
-          child: Row(children: <Widget>[
+          child: Column(children: <Widget>[
+            selectModeWithTile(context),
+            dataDescription(context),
+            buttonScan(context)
+            /*
          FlatButton(
           child: Text('Register'),
           color: Colors.blueAccent,
@@ -330,7 +422,7 @@ class _AuthnState extends State<Authn> {
                 color: Colors.blueAccent,
                 textColor: Colors.white,
                 onPressed : () => startAction(context, AuthnAction.login)
-            )
+            )*/
         ],)
       );
     }

@@ -80,7 +80,7 @@ class _StepEnterAccountHeaderFormState
                   Row(children: <Widget>[
                     Text("Account"),
                     Transform(
-                        alignment: Alignment.centerRight,
+                        alignment: Alignment.centerLeft,
                         transform: new Matrix4.identity()..scale(0.8),
                         child: Container(child: CustomChip([state.network.name]), margin: EdgeInsets.only(left: 3.0))
                     ),

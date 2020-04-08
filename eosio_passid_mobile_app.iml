@@ -15,6 +15,12 @@
       <excludeFolder url="file://$MODULE_DIR$/lib/dmrtd/example/.dart_tool" />
       <excludeFolder url="file://$MODULE_DIR$/lib/dmrtd/example/.pub" />
       <excludeFolder url="file://$MODULE_DIR$/lib/dmrtd/example/build" />
+      <excludeFolder url="file://$MODULE_DIR$/lib/passid/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/lib/passid/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/lib/passid/build" />
+      <excludeFolder url="file://$MODULE_DIR$/lib/passid/example/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/lib/passid/example/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/lib/passid/example/build" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Dart SDK" level="project" />

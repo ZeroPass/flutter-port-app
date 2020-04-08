@@ -27,6 +27,11 @@ Map light = {
     {
       "SIZE_TEXT":17.0,
       "COLOR_TEXT":Color(0xFFa58157)
+    },
+    "STEP_TAP":
+    {
+      "SIZE_TEXT":17.0,
+      "COLOR_TEXT":Color(0xFF646464)
     }
   },
   "TILE_BAR":
@@ -77,6 +82,11 @@ class ThemeValues{
       {
         "SIZE_TEXT":null,
         "COLOR_TEXT":null
+      },
+      "STEP_TAP":
+      {
+        "SIZE_TEXT":null,
+        "COLOR_TEXT":null
       }
     },
     "TILE_BAR":
@@ -90,7 +100,7 @@ class ThemeValues{
       "VERSION": "0.0.1",
       "YEAR_LAST_UPDATE": 2020,
       "COMPANY_NAME": "ZeroPass"
-    }
+    },
   };
 
   get themeValues => _themeValues;

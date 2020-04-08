@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
 import "package:eosio_passid_mobile_app/screen/main/stepper/stepper.dart";
 import 'package:flutter/cupertino.dart';
+import 'package:eosio_passid_mobile_app/utils/size.dart';
 import 'package:eosio_passid_mobile_app/screen/nfc/authn.dart';
 import 'package:eosio_passid_mobile_app/screen/customAlertDialog.dart';
 
@@ -32,10 +33,13 @@ class _StepAttestationFormState extends State<StepAttestationForm> {
       bloc: stepAttestiationBloc,
       builder: (BuildContext context, StepAttestationState state) {
 
-        return Form(
-            key: _formKey,
-            autovalidate: true,
-            child: Authn());
+        return Container(
+            width: CustomSize.getMaxWidth(context, STEPPER_ICON_PADDING),
+            child:Form(
+                key: _formKey,
+                autovalidate: true,
+                child: Authn())
+        );
       },
     );
   }

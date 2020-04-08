@@ -28,7 +28,7 @@ dependencies:
     path: lib/dmrtd
   flare_flutter: ^2.0.1
   passid:
-    path: ../../passid
+    path: lib/passid
 
   equatable: ^1.1.1
   connectivity: ^0.4.8+2

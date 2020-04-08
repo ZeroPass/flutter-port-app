@@ -289,7 +289,7 @@ packages:
   passid:
     dependency: "direct main"
     description:
-      path: "..\\..\\passid"
+      path: "lib\\passid"
       relative: true
     source: path
     version: "1.0.0"

@@ -6,10 +6,15 @@ import 'package:flutter/foundation.dart';
 import "dart:io" show Platform;
 
 class BottomPickerElement{
+  String key;
   String name;
   bool isSelected;
 
-  BottomPickerElement({@required this.name, @required this.isSelected});
+  BottomPickerElement({@required this.name, @required this.isSelected, this.key  = null})
+  {
+    if(this.key == null)
+      this.key = this.name;
+  }
 }
 
 
@@ -38,6 +43,21 @@ class BottomPickerStructure{
     for(var item in nodes)
       this.elements.add(BottomPickerElement(name: item.name,
           isSelected: (selectedServer != null && item.name == selectedServer.name?true:false)));
+  }
+
+
+
+  void importActionTypesList(Map actions, [String selectedAction = null, String title = null, String message = null]){
+    this.isValid = true;
+    this.title = (title == null ? "" : title);
+    this.message = (message == null ? "" : message);
+
+    for (var item in actions.keys) {
+          this.elements.add(BottomPickerElement(name: actions[item]["NAME"],
+              isSelected: (selectedAction != null && item == selectedAction?true:false),
+          key: item));
+      //print("Key : $k, value : ${numMap[k]}");
+    }
   }
 }
 
@@ -113,7 +133,6 @@ class CustomBottomPickerState{ //extends State<CustomBottomPicker> {
    BottomPickerElement showPicker(BuildContext context, Function function) {
     if (Platform.isAndroid)
       {
-        //return this.showIosBottomPicker(context, function);
         this.showAndroidBottomPicker(context, function);
       }
     else if (Platform.isIOS)
