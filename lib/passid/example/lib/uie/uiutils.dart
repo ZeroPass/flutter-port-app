@@ -24,6 +24,7 @@ Container makeButton(
     bool disabled = false,
     bool visible = true,
     Function onPressed,
+    Color color,
     padding = const EdgeInsets.all(20.0),
     margin = const EdgeInsets.only(left: 30.0, right: 30.0)}) {
   return !visible
@@ -37,7 +38,7 @@ Container makeButton(
                 child: FlatButton(
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30.0)),
-                    color: Theme.of(context).accentColor,
+                    color: color ?? Theme.of(context).accentColor,
                     textColor: Theme.of(context).cardColor,
                     disabledTextColor: Theme.of(context).disabledColor,
                     padding: padding,
