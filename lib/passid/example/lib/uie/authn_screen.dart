@@ -17,7 +17,7 @@ import '../passport_scanner.dart';
 import '../preferences.dart';
 import '../srv_sec_ctx.dart';
 import '../utils.dart';
-import 'efdg1_view.dart';
+import 'efdg1_dialog.dart';
 import 'success_screen.dart';
 import 'uiutils.dart';
 
@@ -466,36 +466,26 @@ class _AuthnScreenState extends State<AuthnScreen>
   // otherwise false.
   Future<bool> _handleDG1Request(final EfDG1 dg1) async {
     _log.debug('Handling request for file EfDG1');
-    return showAlert<bool>(context,
-      Text('Data Required'),
-      Text('Server requested your personal data from passport in order to login.\n\nSend personal data to server?'),
-      [
-        FlatButton(
-          child: Text('MAIN MENU',
-            style: TextStyle(
-                color: Theme.of(context).errorColor,
-                fontWeight: FontWeight.bold)),
-          onPressed: () => Navigator.pop(context, false)
-        ),
-        FlatButton(
-            child: const Text(
-            'VIEW',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-         onPressed: () {
-          return Navigator.push(
-            context,
-            CupertinoPageRoute (
-                builder: (context) => EfDG1View(dg1), fullscreenDialog: true),
-          );
+    return showEfDG1Dialog(
+      context,
+      dg1,
+      message: 'Server requested additional data',
+      actions: [
+        makeButton(
+          context: context,
+          text: 'SEND',
+          margin: null,
+          onPressed: () {
+            Navigator.pop(context, true);
         }),
-        FlatButton(
-          child: const Text(
-            'SEND',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          onPressed: () => Navigator.pop(context, true)
-        )
+        makeButton(
+          context: context,
+          text: 'LOG OUT',
+          color: Theme.of(context).errorColor,
+          margin: null,
+          onPressed: () {
+            Navigator.pop(context, false);
+        }),
       ]
     );
   }
