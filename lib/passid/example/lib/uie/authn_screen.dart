@@ -479,14 +479,36 @@ class _AuthnScreenState extends State<AuthnScreen>
           onPressed: () {
             Navigator.pop(context, true);
         }),
-        makeButton(
-          context: context,
-          text: 'LOG OUT',
-          color: Theme.of(context).errorColor,
-          margin: null,
-          onPressed: () {
-            Navigator.pop(context, false);
-        }),
+        OutlineButton(
+          onPressed: () => Navigator.pop(context, false),
+          borderSide: BorderSide(
+            width: 1,
+            color: Theme.of(context).primaryColor,
+          ),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(30.0)),
+          highlightedBorderColor: Theme.of(context).primaryColor,
+          child: Container(
+            padding: const EdgeInsets.symmetric(
+              vertical: 20.0,
+              horizontal: 20.0,
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Expanded(
+                  child: Text(
+                    'LOG OUT',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: Theme.of(context).primaryColor,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        )
       ]
     );
   }
@@ -509,7 +531,7 @@ class _AuthnScreenState extends State<AuthnScreen>
     }
   }
 
-  Future<bool> _showNfcAlert() async {
+  Future<void> _showNfcAlert() async {
     if (_keyNfcAlert.currentContext == null) {
       await showAlert(context,
         Text('NFC disabled'),
