@@ -52,6 +52,8 @@ void fillDatabase()
   StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
   storageStepEnterAccount.isUnlocked = true;
 
+
+  //TODO:write your passport data - debug mode
   StepDataScan storageStepScan = storage.getStorageData(1);
   storageStepScan.documentID = "";
   storageStepScan.birth = DateTime(2000, 1,1);
