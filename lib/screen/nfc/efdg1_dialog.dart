@@ -6,8 +6,8 @@ import 'package:dart_countries_states/models/country.dart';
 import 'package:flutter/material.dart';
 import 'package:dmrtd/dmrtd.dart';
 
-//import '../utils.dart';
-import 'uiutils.dart';
+import '../../utils/structure.dart';
+import 'uie/uiutils.dart';
 
 // Dialog displays MRZ data stored in file EF.DG1
 Future<T> showEfDG1Dialog<T>(BuildContext context, EfDG1 dg1,
@@ -85,9 +85,9 @@ class EfDG1Dialog {
         builder: (BuildContext context) {
           return StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {
-                _sheetSetter = setState;
-                return _build(context);
-              });
+            _sheetSetter = setState;
+            return _build(context);
+          });
         });
   }
 
@@ -120,16 +120,16 @@ class EfDG1Dialog {
                                 Row(children: <Widget>[
                                   Expanded(
                                       child: Text(
-                                        'Passport type:',
-                                        style: TextStyle(fontSize: 16),
-                                      )),
+                                    'Passport type:',
+                                    style: TextStyle(fontSize: 16),
+                                  )),
                                   Expanded(
                                       child: Text(dg1.mrz.documentCode,
                                           style: TextStyle(fontSize: 16)))
                                 ]),
                                 Row(
                                     mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                        MainAxisAlignment.spaceBetween,
                                     children: <Widget>[
                                       Expanded(
                                           child: Text('Passport no.:',
@@ -169,7 +169,7 @@ class EfDG1Dialog {
                                       child: Text('Name:',
                                           style: TextStyle(fontSize: 16))),
                                   Expanded(
-                                      child: Text(dg1.mrz.firstName,
+                                      child: Text(capitalize(dg1.mrz.firstName),
                                           style: TextStyle(fontSize: 16))),
                                 ]),
                                 Row(
@@ -179,7 +179,7 @@ class EfDG1Dialog {
                                             style: TextStyle(fontSize: 16))),
                                     Expanded(
                                         child: Text(
-                                            dg1.mrz.lastName,
+                                            capitalize(dg1.mrz.lastName),
                                             style: TextStyle(fontSize: 16))),
                                   ],
                                 ),
@@ -202,8 +202,8 @@ class EfDG1Dialog {
                                         dg1.mrz.sex.isEmpty
                                             ? '/'
                                             : dg1.mrz.sex == 'M'
-                                            ? 'Male'
-                                            : 'Female',
+                                                ? 'Male'
+                                                : 'Female',
                                         style: TextStyle(fontSize: 16)),
                                   )
                                 ]),
