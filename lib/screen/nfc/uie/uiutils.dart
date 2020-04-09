@@ -85,7 +85,7 @@ Future<void> showBusyDialog(BuildContext context, GlobalKey key,
                       SizedBox(
                         height: 10,
                       ),
-                      Text(msg)
+                      Text(msg, style: TextStyle(color: Colors.grey),)
                     ]),
                   )
                 ]));
