@@ -1,5 +1,6 @@
 import 'package:eosio_passid_mobile_app/settings/settings.dart';
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
@@ -13,6 +14,7 @@ import 'package:eosio_passid_mobile_app/screen/main/stepper/stepAttestation/step
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:eosio_passid_mobile_app/screen/theme.dart';
 import 'package:eosio_passid_mobile_app/screen/settings/settings.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:logging/logging.dart';
 
 void main() {
@@ -49,7 +51,7 @@ void fillDatabase()
   sn = new StorageNode(name: "ZeroPass Server", host: "mainenet.eosnode.io", port: 443, isEncryptedEndpoint: true, networkType: NetworkType.MAINNET, chainID: "abcedfdsdfgasfsdfasdfasdaffdas");
   nodes.add(sn);
 
-  StorageServer ss = new StorageServer(name: "mainServer", host: "192.168.1.4", port: 443, isEncryptedEndpoint: true);
+  StorageServer ss = new StorageServer(name: "mainServer", host: "51.15.224.168", port: 443, isEncryptedEndpoint: true);
   storage.storageServer = ss;
 
   StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
@@ -99,7 +101,7 @@ class PassId extends StatelessWidget {
             title: 'PassID',
             localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
               DefaultMaterialLocalizations.delegate,
-              DefaultWidgetsLocalizations.delegate,
+              DefaultWidgetsLocalizations.delegate
             ],
             android: (_) => new MaterialAppData(
                 theme: new AndroidTheme().getLight(),
@@ -122,6 +124,7 @@ class _PassIdWidgetState extends State<PassIdWidget>
   @override
   void initState() {
     super.initState();
+    initializeDateFormatting();
     SystemChrome.setEnabledSystemUIOverlays([]); // hide status bar
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
