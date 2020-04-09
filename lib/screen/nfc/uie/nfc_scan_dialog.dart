@@ -1,6 +1,4 @@
 //  Created by smlu, copyright © 2020 ZeroPass. All rights reserved.
-import 'package:dmrtd/dmrtd.dart';
-import 'package:dmrtd/extensions.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flare_flutter/provider/asset_flare.dart';
 import 'package:flutter/cupertino.dart';
@@ -60,7 +58,7 @@ class NfcScanDialog {
   }
 
   Future<T> _showBottomSheet<T>(String msg) {
-    if(_sheetSetter != null) {
+    if (_sheetSetter != null) {
       return null;
     }
 
@@ -77,7 +75,9 @@ class NfcScanDialog {
           return StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {
             _sheetSetter = setState;
-            return Container(
+            return WillPopScope(
+              onWillPop: () async => false,
+              child: Container(
                 height: MediaQuery.of(context).size.width,
                 child: Padding(
                     padding: EdgeInsets.all(30.0),
@@ -122,17 +122,13 @@ class NfcScanDialog {
                               })
                         ],
                       ),
-                    )));
+                    ))));
           });
         });
   }
 
   Future<void> _closeBottomSheet(
       {String message, String errorMessage, Duration delayClosing}) async {
-    // TODO: _sheetSetter should be synchronized via some sort of mutex because
-    //        this function can be called from different threads at the same time,
-    //        causing to close route not related to the bottom sheet dialog.
-    //        e.g.: NFC tag was some reason removed from the reader and user pressed cancel button at the same time.
     if (_sheetSetter != null) {
       if ((message != null || errorMessage != null)) {
         _sheetSetter(() {
@@ -145,23 +141,23 @@ class NfcScanDialog {
             _iconAnimation = _IconAnimations.animSuccess;
           }
         });
-        // Delay closing dialog to display message
-        if(delayClosing != null) {
+
+        _sheetSetter = null;
+        if (delayClosing != null) { // Delay closing dialog to display message
           await Future.delayed(delayClosing);
         }
+      } else {
+        _sheetSetter = null;
       }
 
-      if (_sheetSetter != null) {
-        await Navigator.maybePop(context);
-      }
-      //await Future.delayed(Duration(seconds: 1)); // sync
+      Navigator.pop(context);
     }
-    _sheetSetter = null;
   }
 }
 
 class _IconAnimations {
-  static final file         = /*'assets/anim/nfc.flr'; */ AssetFlare(bundle: rootBundle, name: 'assets/anim/nfc.flr');
+  static final file =
+      AssetFlare(bundle: rootBundle, name: 'assets/anim/nfc.flr');
   static const animWaiting  = 'nfc';
   static const animScanning = 'nfc';
   static const animSuccess  = 'checkmark';
