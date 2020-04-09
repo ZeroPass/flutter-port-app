@@ -13,13 +13,11 @@ import 'package:passid/src/proto/proto_challenge.dart';
 import "package:eosio_passid_mobile_app/screen/nfc/passport_scanner.dart";
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepScan/stepScan.dart';
-import 'package:eosio_passid_mobile_app/screen/nfc/uie/efdg1.dart';
 import 'package:passid/src/authn_data.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
 //import 'package:open_settings/open_settings.dart';
-import 'package:eosio_passid_mobile_app/screen/customAlert.dart';
 import 'package:eosio_passid_mobile_app/utils/structure.dart';
 import 'package:passid/passid.dart';
 import 'package:logging/logging.dart';
@@ -27,14 +25,33 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:eosio_passid_mobile_app/screen/theme.dart';
 import 'package:eosio_passid_mobile_app/screen/customBottomPicker.dart';
 
-Map AUTHENTICATOR_ACTIONS = {
-  "ATTESTAION_REQUEST": {"NAME":"Attestation", "DATA": ["Country (SOD)", "Passport Public Key (DG15)", "Passport Signature"]},
-  "PERSONAL_INFORMATION_REQUEST": {"NAME":"Personal Information", "DATA": ["Personal Information (DG1))", "Passport Signature"]},
-  "PERSONAL_INFORMATION_REQUEST_FALSIFIED": {"NAME":"Personal Information - Falsified", "DATA": ["Personal Information (DG1)", "Passport Signature)"]},
-  "LOGIN": {"NAME":"Login", "DATA": ["Passport Signature"]},
-  };
+import 'uie/uiutils.dart';
+import 'efdg1_dialog.dart';
 
-class ServerSecurityContext  {
+Map AUTHENTICATOR_ACTIONS = {
+  "ATTESTAION_REQUEST": {
+    "NAME": "Attestation",
+    "DATA": [
+      "Country (SOD)",
+      "Passport Public Key (DG15)",
+      "Passport Signature"
+    ]
+  },
+  "PERSONAL_INFORMATION_REQUEST": {
+    "NAME": "Personal Info",
+    "DATA": ["Personal Information (DG1))", "Passport Signature"]
+  },
+  "PERSONAL_INFORMATION_REQUEST_FALSIFIED": {
+    "NAME": "Fake Personal Info",
+    "DATA": ["Personal Information (DG1)", "Passport Signature)"]
+  },
+  "LOGIN": {
+    "NAME": "Login",
+    "DATA": ["Passport Signature"]
+  },
+};
+
+class ServerSecurityContext {
   static SecurityContext _ctx;
 
   /// 'Globally' init ctx using server certificate (.cer) bytes.
@@ -48,7 +65,7 @@ class ServerSecurityContext  {
 
   static HttpClient getHttpClient({Duration timeout}) {
     final c = HttpClient(context: _ctx);
-    if(timeout != null) {
+    if (timeout != null) {
       c.connectionTimeout = timeout;
     }
     return c;
@@ -56,7 +73,6 @@ class ServerSecurityContext  {
 }
 
 enum AuthnAction { register, login }
-
 
 class Authn extends StatefulWidget {
   String _selectedAction = "ATTESTAION_REQUEST";
@@ -69,13 +85,11 @@ class Authn extends StatefulWidget {
 class _AuthnState extends State<Authn> {
   PassIdClient _client;
   final _log = Logger('authn.screen');
+  final String _fakeName = "Larimer Daniel";
 
   //ProtoChallenge _challenge;
 
-  var _authnData = Completer<AuthnData>();
-
-  _AuthnState()
-  {
+  _AuthnState() {
     print("start of test-test");
 
     print("end of test-test");
@@ -88,193 +102,193 @@ class _AuthnState extends State<Authn> {
     if (connectivityResult == ConnectivityResult.none ||
         !await testConnection()) {
       title = 'No Internet connection';
-      msg   = 'Internet connection is required in order to '
+      msg = 'Internet connection is required in order to '
           "${AuthnAction.register == AuthnAction.register ? "sign up" : "login"}.";
-    }
-    else {
+    } else {
       //settingsAction = () => _settingsButton.onPressed();
       title = 'Connection error';
-      msg   = 'Failed to connect to server.\n'
+      msg = 'Failed to connect to server.\n'
           'Check server connection settings.';
     }
 
-    return showAlert<bool>(context,
-        Text(title),
-        Text(msg),
-        [
-          FlatButton(
-              child: Text('OK',
-                  style: TextStyle(
-                      color: Theme.of(context).errorColor,
-                      fontWeight: FontWeight.bold)),
-              onPressed: () => Navigator.pop(context, false)
-          )
-        ]
-    );
+    return showAlert<bool>(context, Text(title), Text(msg), [
+      FlatButton(
+          child: Text('OK',
+              style: TextStyle(
+                  color: Theme.of(context).errorColor,
+                  fontWeight: FontWeight.bold)),
+          onPressed: () => Navigator.pop(context, false))
+    ]);
   }
 
-  Future<bool> showDG1(final EfDG1 dg1) async{
-   return showAlert<bool>(context,
-       Text('DG1'),
-
-       Container(
-           height: MediaQuery.of(context).size.height - 50,
-           child: Padding(
-               padding: EdgeInsets.all(16.0),
-               child: Column(children: <Widget>[
-                 const SizedBox(height: 10),
-                 const SizedBox(height: 20),
-                 SingleChildScrollView(
-                     child: Card(
-                         child: Padding(
-                             padding: EdgeInsets.all(16.0),
-                             child: Column(
-                                 crossAxisAlignment: CrossAxisAlignment.center,
-                                 children: <Widget>[
-                                   Text(
-                                     'Passport Data',
-                                     style: TextStyle(
-                                         fontWeight: FontWeight.bold,
-                                         fontSize: 18),
-                                   ),
-                                   const SizedBox(height: 5),
-                                   Row(children: <Widget>[
-                                     Expanded(
-                                         child: Text(
-                                           'Passport type:',
-                                           style: TextStyle(fontSize: 16),
-                                         )),
-                                     Expanded(
-                                         child: Text(dg1.mrz.documentCode,
-                                             style: TextStyle(fontSize: 16)))
-                                   ]),
-                                   Row(
-                                       mainAxisAlignment:
-                                       MainAxisAlignment.spaceBetween,
-                                       children: <Widget>[
-                                         Expanded(
-                                             child: Text('Passport no.:',
-                                                 style: TextStyle(fontSize: 16))),
-                                         Expanded(
-                                             child: Text(dg1.mrz.documentNumber,
-                                                 style: TextStyle(fontSize: 16))),
-                                       ]),
-                                   Row(children: <Widget>[
-                                     Expanded(
-                                         child: Text('Date of Expiry:',
-                                             style: TextStyle(fontSize: 16))),
-                                     Expanded(
-                                         child: Text(
-                                                 dg1.mrz.dateOfExpiry.toIso8601String(),
-                                             style: TextStyle(fontSize: 16)))
-                                   ]),
-                                   Row(children: <Widget>[
-                                     Expanded(
-                                         child: Text('Issuing Country:',
-                                             style: TextStyle(fontSize: 16))),
-                                     Expanded(
-                                         child: Text(dg1.mrz.country,
-                                             style: TextStyle(fontSize: 16)))
-                                   ]),
-                                   const SizedBox(height: 30),
-                                   Text(
-                                     'Personal Data',
-                                     style: TextStyle(
-                                         fontWeight: FontWeight.bold,
-                                         fontSize: 18),
-                                   ),
-                                   const SizedBox(height: 5),
-                                   Row(children: <Widget>[
-                                     Expanded(
-                                         child: Text('Name:',
-                                             style: TextStyle(fontSize: 16))),
-                                     Expanded(
-                                         child: Text(dg1.mrz.firstName,
-                                             style: TextStyle(fontSize: 16))),
-                                   ]),
-                                   Row(
-                                     children: <Widget>[
-                                       Expanded(
-                                           child: Text('Last Name',
-                                               style: TextStyle(fontSize: 16))),
-                                       Expanded(
-                                           child: Text(
-                                               dg1.mrz.lastName,
-                                               style: TextStyle(fontSize: 16))),
-                                     ],
-                                   ),
-                                   Row(children: <Widget>[
-                                     Expanded(
-                                         child: Text('Date of Birth:',
-                                             style: TextStyle(fontSize: 16))),
-                                     Expanded(
-                                         child: Text(dg1.mrz.dateOfBirth.toIso8601String(),
-                                             style: TextStyle(fontSize: 16))),
-                                   ]),
-                                   Row(children: <Widget>[
-                                     Expanded(
-                                         child: Text('Sex:',
-                                             style: TextStyle(fontSize: 16))),
-                                     Expanded(
-                                       child: Text(
-                                           dg1.mrz.sex.isEmpty
-                                               ? '/'
-                                               : dg1.mrz.sex == 'M'
-                                               ? 'Male'
-                                               : 'Female',
-                                           style: TextStyle(fontSize: 16)),
-                                     )
-                                   ]),
-                                   Row(children: <Widget>[
-                                     Expanded(
-                                         child: Text('Nationality:',
-                                             style: TextStyle(fontSize: 16))),
-                                     Expanded(
-                                         child: Text(dg1.mrz.country,
-                                             style: TextStyle(fontSize: 16))),
-                                   ]),
-                                   Row(children: <Widget>[
-                                     Text('Additional Data:',
-                                         style: TextStyle(fontSize: 16)),
-                                     Spacer(),
-                                     Text(dg1.mrz.optionalData,
-                                         style: TextStyle(fontSize: 16)),
-                                     Spacer()
-                                   ]),
-                                 ])))),
-                 Spacer(flex: 60),
-                 /*Wrap(
+  Future<bool> showDG1(final EfDG1 dg1) async {
+    return _showDG1Dialog(dg1, msg: 'Server requested additional data');
+    /*return showAlert<bool>(
+        context,
+        Text('DG1'),
+        Container(
+            height: MediaQuery.of(context).size.height - 50,
+            child: Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Column(children: <Widget>[
+                  const SizedBox(height: 10),
+                  const SizedBox(height: 20),
+                  SingleChildScrollView(
+                      child: Card(
+                          child: Padding(
+                              padding: EdgeInsets.all(16.0),
+                              child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: <Widget>[
+                                    Text(
+                                      'Passport Data',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18),
+                                    ),
+                                    const SizedBox(height: 5),
+                                    Row(children: <Widget>[
+                                      Expanded(
+                                          child: Text(
+                                        'Passport type:',
+                                        style: TextStyle(fontSize: 16),
+                                      )),
+                                      Expanded(
+                                          child: Text(dg1.mrz.documentCode,
+                                              style: TextStyle(fontSize: 16)))
+                                    ]),
+                                    Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: <Widget>[
+                                          Expanded(
+                                              child: Text('Passport no.:',
+                                                  style:
+                                                      TextStyle(fontSize: 16))),
+                                          Expanded(
+                                              child: Text(
+                                                  dg1.mrz.documentNumber,
+                                                  style:
+                                                      TextStyle(fontSize: 16))),
+                                        ]),
+                                    Row(children: <Widget>[
+                                      Expanded(
+                                          child: Text('Date of Expiry:',
+                                              style: TextStyle(fontSize: 16))),
+                                      Expanded(
+                                          child: Text(
+                                              dg1.mrz.dateOfExpiry
+                                                  .toIso8601String(),
+                                              style: TextStyle(fontSize: 16)))
+                                    ]),
+                                    Row(children: <Widget>[
+                                      Expanded(
+                                          child: Text('Issuing Country:',
+                                              style: TextStyle(fontSize: 16))),
+                                      Expanded(
+                                          child: Text(dg1.mrz.country,
+                                              style: TextStyle(fontSize: 16)))
+                                    ]),
+                                    const SizedBox(height: 30),
+                                    Text(
+                                      'Personal Data',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18),
+                                    ),
+                                    const SizedBox(height: 5),
+                                    Row(children: <Widget>[
+                                      Expanded(
+                                          child: Text('Name:',
+                                              style: TextStyle(fontSize: 16))),
+                                      Expanded(
+                                          child: Text(dg1.mrz.firstName,
+                                              style: TextStyle(fontSize: 16))),
+                                    ]),
+                                    Row(
+                                      children: <Widget>[
+                                        Expanded(
+                                            child: Text('Last Name',
+                                                style:
+                                                    TextStyle(fontSize: 16))),
+                                        Expanded(
+                                            child: Text(dg1.mrz.lastName,
+                                                style:
+                                                    TextStyle(fontSize: 16))),
+                                      ],
+                                    ),
+                                    Row(children: <Widget>[
+                                      Expanded(
+                                          child: Text('Date of Birth:',
+                                              style: TextStyle(fontSize: 16))),
+                                      Expanded(
+                                          child: Text(
+                                              dg1.mrz.dateOfBirth
+                                                  .toIso8601String(),
+                                              style: TextStyle(fontSize: 16))),
+                                    ]),
+                                    Row(children: <Widget>[
+                                      Expanded(
+                                          child: Text('Sex:',
+                                              style: TextStyle(fontSize: 16))),
+                                      Expanded(
+                                        child: Text(
+                                            dg1.mrz.sex.isEmpty
+                                                ? '/'
+                                                : dg1.mrz.sex == 'M'
+                                                    ? 'Male'
+                                                    : 'Female',
+                                            style: TextStyle(fontSize: 16)),
+                                      )
+                                    ]),
+                                    Row(children: <Widget>[
+                                      Expanded(
+                                          child: Text('Nationality:',
+                                              style: TextStyle(fontSize: 16))),
+                                      Expanded(
+                                          child: Text(dg1.mrz.country,
+                                              style: TextStyle(fontSize: 16))),
+                                    ]),
+                                    Row(children: <Widget>[
+                                      Text('Additional Data:',
+                                          style: TextStyle(fontSize: 16)),
+                                      Spacer(),
+                                      Text(dg1.mrz.optionalData,
+                                          style: TextStyle(fontSize: 16)),
+                                      Spacer()
+                                    ]),
+                                  ])))),
+                  Spacer(flex: 60),
+                  /*Wrap(
                      direction: Axis.horizontal,
                      runSpacing: 10,
                      spacing: 10,
                      children: <Widget>[...actions])*/
-               ]))),
-
-
-       [
-         FlatButton(
-             child: const Text(
-               'OK',
-               style: TextStyle(fontWeight: FontWeight.bold),
-             ),
-             onPressed: () => Navigator.pop(context, true)
-         )
-       ]
-   );
- }
+                ]))),
+        [
+          FlatButton(
+              child: const Text(
+                'OK',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              onPressed: () => Navigator.pop(context, true))
+        ]);*/
+  }
 
   Future<bool> _handleDG1Request(final EfDG1 dg1) async {
-    return showAlert<bool>(context,
+    return _showDG1Dialog(dg1, msg: 'Server requested additional data');
+    /*return showAlert<bool>(
+        context,
         Text('Data Required'),
-        Text('Server requested your personal data from passport in order to login.\n\nSend personal data to server?'),
+        Text(
+            'Server requested your personal data from passport in order to login.\n\nSend personal data to server?'),
         [
           FlatButton(
               child: Text('Cancel',
                   style: TextStyle(
                       color: Theme.of(context).errorColor,
                       fontWeight: FontWeight.bold)),
-              onPressed: () => Navigator.pop(context, false)
-          ),
+              onPressed: () => Navigator.pop(context, false)),
           FlatButton(
               child: const Text(
                 'View',
@@ -287,55 +301,46 @@ class _AuthnState extends State<Authn> {
                               CupertinoPageRoute (
                                   builder: (context) => EfDG1View(dg1), fullscreenDialog: true),
                             */
-
               }),
           FlatButton(
               child: const Text(
                 'Send',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
-              onPressed: () => Navigator.pop(context, true)
-          )
-        ]
-    );
+              onPressed: () => Navigator.pop(context, true))
+        ]);*/
   }
 
-
-  Future<AuthnData>  _getAuthnData(final ProtoChallenge challenge, AuthnAction action, String passportID, DateTime birthDate, DateTime validUntil) async {
-    //_challenge = challenge;
-    scanPassport(challenge, action,  passportID, birthDate, validUntil);
-    return _authnData.future;
+  Future<AuthnData> _getAuthnData(
+      final ProtoChallenge challenge,
+      AuthnAction action,
+      String passportID,
+      DateTime birthDate,
+      DateTime validUntil) async {
+    return scanPassport(challenge, action, passportID, birthDate, validUntil);
   }
 
-
-  Future<void> scanPassport(ProtoChallenge challenge, AuthnAction action, String passportID, DateTime birthDate, DateTime validUntilDate) async {
+  Future<AuthnData> scanPassport(ProtoChallenge challenge, AuthnAction action,
+      String passportID, DateTime birthDate, DateTime validUntilDate) async {
     assert(challenge != null);
-    try {
-      final dbaKeys = DBAKeys(passportID, birthDate, validUntilDate);
-      final data = await PassportScanner(
-          context: context,
-          challenge: challenge,
-          action:  action
-      ).scan(dbaKeys);
-      Storage storage = Storage();
-      await storage.getDBAkeyStorage().setDBAKeys(dbaKeys);
-      //await Preferences.setDBAKeys(dbaKeys);  // Save MRZ data
-      _authnData.complete(data);
-    } catch(e) {} // ignore: empty_catches
-    finally {
-      setState(() {
-        //_isScanningMrtd = false;
-      });
-    }
-  }
+    final dbaKeys = DBAKeys(passportID, birthDate, validUntilDate);
+    final data = await PassportScanner(
+            context: context, challenge: challenge, action: action)
+        .scan(dbaKeys);
 
+    Storage storage = Storage();
+    await storage.getDBAkeyStorage().setDBAKeys(dbaKeys);
+    //await Preferences.setDBAKeys(dbaKeys);  // Save MRZ data
+    return data;
+  }
 
   String checkValuesInStorage() {
     String missingValuesText = '';
     Storage storage = Storage();
     StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
     if (storageStepEnterAccount.isUnlocked == false)
-      missingValuesText +=  "Account name (Step 'Enter account') is not valid.\n";
+      missingValuesText +=
+          "Account name (Step 'Enter account') is not valid.\n";
 
     StepDataScan storageStepScan = storage.getStorageData(1);
     if (storageStepScan.documentID == null)
@@ -348,108 +353,149 @@ class _AuthnState extends State<Authn> {
     return missingValuesText;
   }
 
-  void startAction(BuildContext context, AuthnAction action, [bool sendDG1 = false]) async {
+  void startAction(BuildContext context, AuthnAction action,
+      {bool fakeAuthnData = false, bool sendDG1 = false}) async {
     Storage storage = Storage();
     String checkedValues = checkValuesInStorage();
     if (checkedValues != "") {
-      showAlert<bool>(context,
-          Text('Warning'),
-          Text(checkedValues +
-              "Update values before passport validation."),
-          [
-            FlatButton(
-                child: const Text(
-                  'OK',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                onPressed: () => Navigator.pop(context, true)
-            )
-          ]
-      );
+      showAlert<bool>(context, Text('Warning'),
+          Text(checkedValues + "Invalid passport information."), [
+        FlatButton(
+            child: const Text(
+              'OK',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            onPressed: () => Navigator.pop(context, true))
+      ]);
       return;
     }
     try {
-      final httpClient = ServerSecurityContext
-          .getHttpClient(timeout: Duration(seconds:storage.storageServer.timeoutInSeconds))
+      _showBusyIndicator();
+      final httpClient = ServerSecurityContext.getHttpClient(
+          timeout: Duration(seconds: storage.storageServer.timeoutInSeconds))
         ..badCertificateCallback = badCertificateHostCheck;
 
-      _client = PassIdClient(Uri.parse(storage.storageServer.toString()), httpClient: httpClient);
-      _client.onConnectionError  = _handleConnectionError;
+      _client = PassIdClient(Uri.parse(storage.storageServer.toString()),
+          httpClient: httpClient);
+      _client.onConnectionError = _handleConnectionError;
       _client.onDG1FileRequested = _handleDG1Request;
 
       if (action == AuthnAction.register)
         await _client.register((challenge) async {
           StepDataScan storageStepScan = storage.getStorageData(1);
-          return await _getAuthnData(challenge, AuthnAction.register, storageStepScan.documentID, storageStepScan.birth, storageStepScan.validUntil).then((data) {
+          _hideBusyIndicator();
+          return _getAuthnData(
+                  challenge,
+                  AuthnAction.register,
+                  storageStepScan.documentID,
+                  storageStepScan.birth,
+                  storageStepScan.validUntil)
+              .then((data) async {
+            await _showBusyIndicator();
             return data;
           });
-        }
-        );
+        });
       else
         await _client.login((challenge) async {
           StepDataScan storageStepScan = storage.getStorageData(1);
-          return await _getAuthnData(challenge, AuthnAction.login, storageStepScan.documentID, storageStepScan.birth, storageStepScan.validUntil).then((data) {
+          await _hideBusyIndicator();
+          return _getAuthnData(
+                  challenge,
+                  AuthnAction.login,
+                  storageStepScan.documentID,
+                  storageStepScan.birth,
+                  storageStepScan.validUntil)
+              .then((data) async {
+            if (fakeAuthnData) {
+              data = _fakeData(data);
+            }
+            if (sendDG1) {
+              if (!await _showDG1Dialog(data.dg1)) {
+                // User said no
+                // Throw an exception which will not show error dialog
+                // just to get us out of this scope.
+                throw PassportScannerError('Get me out');
+              }
+            }
+
+            await _showBusyIndicator();
             return data;
           });
-        },
-        sendEfDG1: sendDG1
-        );
+        }, sendEfDG1: sendDG1);
 
       final srvMsgGreeting = await _client.requestGreeting();
-      showAlert<bool>(context,
-          Text('Greetings from server'),
-          Text(srvMsgGreeting),
-          [
-            FlatButton(
-                child: Text('OK',
-                    style: TextStyle(
-                        color: Theme.of(context).errorColor,
-                        fontWeight: FontWeight.bold)),
-                onPressed: () => Navigator.pop(context, false)
-            ),
-          ]
-      );
-      _authnData = Completer<AuthnData>();
-      storage.getDBAkeyStorage().init();
+      await _hideBusyIndicator(syncWait: Duration(microseconds: 0));
 
-    } catch(e) {
+      showAlert<bool>(context, Text('Attestation Succeeded'),
+          Text(_fromatAttestationSuccess(srvMsgGreeting)), [
+        FlatButton(
+            child: Text('OK',
+                style: TextStyle(
+                    color: Theme.of(context).errorColor,
+                    fontWeight: FontWeight.bold)),
+            onPressed: () => Navigator.pop(context, false)),
+      ]);
+
+      //storage.getDBAkeyStorage().init();
+    } catch (e) {
       String alertTitle;
       String alertMsg;
-      if (e is SocketException) {} // should be already handled through _handleConnectionError callback
-      if(e is PassIdError) {
-        if(!e.isDG1Required()) { // DG1 required error should be handled through _handleDG1Request callback
-          _log.error('An unhandled passId exception, closing this screen.\n error=$e');
+      if (e is PassportScannerError) {
+      } // should be already handled in PassportScanner
+      else if (e is SocketException) {
+      } // should be already handled through _handleConnectionError callback
+      else if (e is PassIdError) {
+        if (!e.isDG1Required()) {
+          // DG1 required error should be handled through _handleDG1Request callback
+          _log.error(
+              'An unhandled passId exception, closing this screen.\n error=$e');
           alertTitle = 'PassID Error';
-          switch(e.code){
-            case 401: alertMsg = 'Authorization failed!'; break;
-          //case 404: // TODO: parse message and translate it to system language
-            case 406: {
-              alertMsg = 'Passport verification failed!';
-              final msg = e.message.toLowerCase();
-              if(msg.contains('invalid dg1 file')) {
-                alertMsg = 'Server refused to accept sent personal data!';
+          final msg = e.message.toLowerCase();
+          switch (e.code) {
+            case 401:
+              alertMsg = 'Attestation failed!';
+              break;
+            //case 404: // TODO: parse message and translate it to system language
+            case 406:
+              {
+                alertMsg = 'Passport verification failed!';
+
+                if (msg.contains('invalid dg1 file')) {
+                  alertMsg = 'Server refused to accept sent personal data!';
+                } else if (msg.contains('invalid dg15 file')) {
+                  alertMsg = "Server refused to accept passport's public key!";
+                }
               }
-              else if(msg.contains('invalid dg15 file')) {
-                alertMsg = "Server refused to accept passport's public key!";
+              break;
+            case 409:
+              alertMsg = 'Account already exists!';
+              break;
+            case 412:
+              alertTitle = 'Attestation failed';
+              alertMsg = 'Passport trust chain verification failed!';
+              if (msg.contains('invalid')) {
+                alertMsg = 'Invalid passport data';
+                if (fakeAuthnData) {
+                  alertMsg = "Could not attest you as $_fakeName";
+                }
               }
-            } break;
-            case 409: alertMsg = 'Account already exists!'; break;
-            case 412: alertMsg = 'Passport trust chain verification failed!'; break;
-            case 498: {
-              final msg = e.message.toLowerCase();
-              if(msg.contains('account has expired')) {
-                alertMsg = 'Account has expired, please register again!';
-                break;
+              break;
+            case 498:
+              {
+                if (msg.contains('account has expired')) {
+                  alertMsg = 'Account has expired, please register again!';
+                  break;
+                }
               }
-            } continue dflt;
+              continue dflt;
             dflt:
             default:
               alertMsg = 'Server returned error:\n\n${e.message}';
           }
         }
-      }
-      else {
-        _log.error('An unhandled exception was encountered, closing this screen.\n error=$e');
+      } else {
+        _log.error(
+            'An unhandled exception was encountered, closing this screen.\n error=$e');
         alertTitle = 'Error';
         alertMsg = (e is Exception)
             ? e.toString().split('Exception: ').first
@@ -457,21 +503,43 @@ class _AuthnState extends State<Authn> {
       }
 
       // Show alert dialog
-      if(alertMsg != null && alertTitle != null) {
+      await _hideBusyIndicator(syncWait: Duration(microseconds: 100));
+      if (alertMsg != null && alertTitle != null) {
         await showAlert(context, Text(alertTitle), Text(alertMsg), [
           FlatButton(
               onPressed: () => Navigator.pop(context),
               child: Text(
-                'OK',
+                'CLOSE',
                 style: TextStyle(
                     color: Theme.of(context).errorColor,
                     fontWeight: FontWeight.bold),
               ))
         ]);
       }
-      _authnData = Completer<AuthnData>();
     }
+  }
 
+  AuthnData _fakeData(AuthnData data) {
+    // Fake passport owner name
+    final rawDG1 = data.dg1.toBytes();
+    final name = _fakeName.replaceAll(' ', '<<');
+    print('name');
+    for (int i = 0; i < 39; i++) {
+      int b = '<'.codeUnitAt(0);
+      if (i < name.length) {
+        b = name[i].codeUnitAt(0);
+      }
+      rawDG1[i + 10] = b;
+    }
+    print("${rawDG1.hex()}");
+    final dg1 = EfDG1.fromBytes(rawDG1);
+    return AuthnData(dg15: data.dg15, csig: data.csig, dg1: dg1);
+  }
+
+  String _fromatAttestationSuccess(String greeting) {
+    var names = greeting.replaceAll('Hi, ', '');
+    names = names.replaceAll('!', '');
+    return "You're attested as $names";
   }
 
   void selectNetwork(var context) {
@@ -481,12 +549,11 @@ class _AuthnState extends State<Authn> {
     CustomBottomPickerState cbps = CustomBottomPickerState(structure: bps);
     cbps.showPicker(context,
         //callback function to manage user click action on selection
-            (BottomPickerElement returnedItem){
-              setState(() {
-                widget._selectedAction = returnedItem.key;
-              });
-        }
-    );
+        (BottomPickerElement returnedItem) {
+      setState(() {
+        widget._selectedAction = returnedItem.key;
+      });
+    });
   }
 
   Widget selectModeWithTile(var context) {
@@ -498,69 +565,161 @@ class _AuthnState extends State<Authn> {
           children: <Widget>[
             Text(
               'Request',
-              style: TextStyle(fontSize: AndroidThemeST().getValues().themeValues["STEPPER"]["STEP_TAP"]["SIZE_TEXT"]),
+              style: TextStyle(
+                  fontSize: AndroidThemeST().getValues().themeValues["STEPPER"]
+                      ["STEP_TAP"]["SIZE_TEXT"]),
             ),
-            Text(
-                AUTHENTICATOR_ACTIONS[widget._selectedAction]['NAME'],
-                style:
-                TextStyle(fontSize: AndroidThemeST().getValues().themeValues["STEPPER"]["STEP_TAP"]["SIZE_TEXT"],
-                    color:  AndroidThemeST().getValues().themeValues["TILE_BAR"]["COLOR_TEXT"]))
+            Text(AUTHENTICATOR_ACTIONS[widget._selectedAction]['NAME'],
+                style: TextStyle(
+                    fontSize: AndroidThemeST()
+                        .getValues()
+                        .themeValues["STEPPER"]["STEP_TAP"]["SIZE_TEXT"],
+                    color: AndroidThemeST().getValues().themeValues["TILE_BAR"]
+                        ["COLOR_TEXT"]))
           ]),
       //subtitle: Text("to see what is going to be sent"),
       trailing: Icon(Icons.expand_more),
       onTap: () => selectNetwork(context),
     );
   }
+
   Widget dataDescription(var context) {
     return Container(
-      alignment: Alignment.centerLeft,
+        alignment: Alignment.centerLeft,
         child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-              Container(child: Text('Data Sent', style: TextStyle(/*fontWeight: FontWeight.bold,*/ fontSize: AndroidThemeST().getValues().themeValues["STEPPER"]["STEP_TAP"]["SIZE_TEXT"])), margin: EdgeInsets.only(bottom: 10.0)),
-              for (var item in AUTHENTICATOR_ACTIONS[widget._selectedAction]["DATA"])
-                Container(child:
-                  Text('  • ' +item, style:
-                        TextStyle(fontSize: AndroidThemeST().getValues().themeValues["STEPPER"]["STEP_TAP"]["SIZE_TEXT"] - 2,
-                                  color: AndroidThemeST().getValues().themeValues["STEPPER"]["STEP_TAP"]["COLOR_TEXT"])),
-                          margin: EdgeInsets.only(left: 0.0))
-          //AndroidThemeST().getValues().themeValues["STEPPER"]["STEPPER_MANIPULATOR"]["COLOR_TEXT"])
-          ]
-          ));
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Container(
+                  child: Text('Data Sent',
+                      style: TextStyle(
+                          /*fontWeight: FontWeight.bold,*/ fontSize:
+                              AndroidThemeST()
+                                      .getValues()
+                                      .themeValues["STEPPER"]["STEP_TAP"]
+                                  ["SIZE_TEXT"])),
+                  margin: EdgeInsets.only(bottom: 10.0)),
+              for (var item in AUTHENTICATOR_ACTIONS[widget._selectedAction]
+                  ["DATA"])
+                Container(
+                    child: Text('  • ' + item,
+                        style: TextStyle(
+                            fontSize: AndroidThemeST()
+                                        .getValues()
+                                        .themeValues["STEPPER"]["STEP_TAP"]
+                                    ["SIZE_TEXT"] -
+                                2,
+                            color: AndroidThemeST()
+                                    .getValues()
+                                    .themeValues["STEPPER"]["STEP_TAP"]
+                                ["COLOR_TEXT"])),
+                    margin: EdgeInsets.only(left: 0.0))
+              //AndroidThemeST().getValues().themeValues["STEPPER"]["STEPPER_MANIPULATOR"]["COLOR_TEXT"])
+            ]));
   }
-  Widget buttonScan(var context){
+
+  Widget buttonScan(var context) {
     return Row(
       //mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.start,
-      children: <Widget>[Padding(padding: EdgeInsets.only(top: 40), child:
-      PlatformButton (
-        child:Text('Attest and Send',style: TextStyle(color: Colors.white)),
-        onPressed: () {
-            if (widget._selectedAction == "ATTESTAION_REQUEST")
-                startAction(context, AuthnAction.register);
-            else if (widget._selectedAction == "PERSONAL_INFORMATION_REQUEST")
-              startAction(context, AuthnAction.login, true);
-            else if (widget._selectedAction == "PERSONAL_INFORMATION_REQUEST_FALSIFIED")
-              startAction(context, AuthnAction.login, true);
-            else if (widget._selectedAction == "LOGIN")
-              startAction(context, AuthnAction.login);
-
-        },/**/
-      ))
+      children: <Widget>[
+        Padding(
+            padding: EdgeInsets.only(top: 40),
+            child: PlatformButton(
+              child: Text('Attest and Send',
+                  style: TextStyle(color: Colors.white)),
+              onPressed: () {
+                if (widget._selectedAction == "ATTESTAION_REQUEST")
+                  startAction(context, AuthnAction.register);
+                else if (widget._selectedAction ==
+                    "PERSONAL_INFORMATION_REQUEST")
+                  startAction(context, AuthnAction.login, sendDG1: true);
+                else if (widget._selectedAction ==
+                    "PERSONAL_INFORMATION_REQUEST_FALSIFIED")
+                  startAction(context, AuthnAction.login,
+                      fakeAuthnData: true, sendDG1: true);
+                else if (widget._selectedAction == "LOGIN")
+                  startAction(context, AuthnAction.login);
+              }, /**/
+            ))
       ],
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
+  bool _isBusyIndicatorVisible = false;
+  final GlobalKey<State> _keyBusyIndicator =
+      GlobalKey<State>(debugLabel: 'key_authn_busy_indicator');
+  Future<void> _showBusyIndicator({String msg = 'Please Wait ....'}) async {
+    await _hideBusyIndicator();
+    await showBusyDialog(context, _keyBusyIndicator, msg: msg);
+    _isBusyIndicatorVisible = true;
+  }
 
-      return Container(
-          child: Column(children: <Widget>[
-            selectModeWithTile(context),
-            dataDescription(context),
-            buttonScan(context)
-        ],)
-      );
+  Future<void> _hideBusyIndicator(
+      {Duration syncWait = const Duration(milliseconds: 200)}) async {
+    if (_keyBusyIndicator.currentContext != null) {
+      await hideBusyDialog(_keyBusyIndicator, syncWait: syncWait);
+      _isBusyIndicatorVisible = false;
+    } else if (_isBusyIndicatorVisible) {
+      await Future.delayed(const Duration(milliseconds: 200), () async {
+        await _hideBusyIndicator();
+      });
     }
   }
+
+  Future<bool> _showDG1Dialog(final EfDG1 dg1,
+      {String msg = 'Data to be sent'}) async {
+    _log.debug('Showing EfDG1 dialog');
+    return showEfDG1Dialog(context, dg1, message: msg, actions: [
+      makeButton(
+          context: context,
+          text: 'SEND',
+          margin: null,
+          onPressed: () {
+            Navigator.pop(context, true);
+          }),
+      OutlineButton(
+        onPressed: () => Navigator.pop(context, false),
+        borderSide: BorderSide(
+          width: 1,
+          color: Theme.of(context).primaryColor,
+        ),
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
+        highlightedBorderColor: Theme.of(context).primaryColor,
+        child: Container(
+          padding: const EdgeInsets.symmetric(
+            vertical: 20.0,
+            horizontal: 20.0,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Expanded(
+                child: Text(
+                  'CANCEL',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: Theme.of(context).primaryColor,
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+          ),
+        ),
+      )
+    ]);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        child: Column(
+      children: <Widget>[
+        selectModeWithTile(context),
+        dataDescription(context),
+        buttonScan(context)
+      ],
+    ));
+  }
+}
