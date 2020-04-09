@@ -4,16 +4,15 @@ import 'dart:io';
 import 'package:async/async.dart';
 import 'package:dmrtd/dmrtd.dart';
 import 'package:dmrtd/extensions.dart';
+import 'package:eosio_passid_mobile_app/utils/structure.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:passid/passid.dart';
-import 'package:eosio_passid_mobile_app/utils/structure.dart';
-import 'package:eosio_passid_mobile_app/screen/nfc/authn.dart';
-//import 'uie/authn_screen.dart';
+
+import 'authn.dart';
 import 'uie/nfc_scan_dialog.dart';
 import 'uie/uiutils.dart';
-import 'package:eosio_passid_mobile_app/utils/structure.dart';
 
 class PassportScannerError implements Exception {
   final String message;
@@ -34,6 +33,7 @@ class PassportScanner {
   PassportScanner(
       {@required this.context, this.challenge, @required this.action}) {
         _scanDialog = NfcScanDialog(context, onCancel: () async {
+          _log.info('Scanning canceled by user');
           await _cancel();
         });
       }
@@ -201,12 +201,16 @@ class PassportScanner {
     return _call(() =>_nfc.connect(iosAlertMessage: alertMessage));
   }
 
-  Future<void> _disconnect({String alertMessage, String errorMessage}) {
+   Future<void> _disconnect({String alertMessage, String errorMessage}) {
     if (!Platform.isIOS) {
       return _scanDialog.hide(
-          message: alertMessage, errorMessage: errorMessage);
+          message: alertMessage,
+          errorMessage: errorMessage,
+          delayClosing:
+              Duration(milliseconds: (errorMessage != null ? 3500 : 2500)));
     }
-    return _nfc.connect(iosAlertMessage: alertMessage);
+    return _nfc.disconnect(
+        iosAlertMessage: alertMessage, iosErrorMessage: errorMessage);
   }
 
   void _setAlertMessage(final String msg) {
