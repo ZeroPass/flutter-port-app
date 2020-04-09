@@ -158,7 +158,7 @@ packages:
   dmrtd:
     dependency: "direct main"
     description:
-      path: "lib\\dmrtd"
+      path: "lib/dmrtd"
       relative: true
     source: path
     version: "1.0.0+1"
@@ -228,10 +228,10 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "3efc4ca2553e31a9a44cbc9f8133a52c740b4059"
+      resolved-ref: "71e8dc9dd9cb409c7f06fce3772e4d746ad4f4f5"
       url: "https://github.com/kfiross/flutter_holo_date_picker.git"
     source: git
-    version: "0.1.3"
+    version: "0.1.3+1"
   flutter_masked_text:
     dependency: transitive
     description:
@@ -426,17 +426,10 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.9.3"
-  package_resolver:
-    dependency: transitive
-    description:
-      name: package_resolver
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.10"
   passid:
     dependency: "direct main"
     description:
-      path: "lib\\passid"
+      path: "lib/passid"
       relative: true
     source: path
     version: "1.0.0"
@@ -467,7 +460,7 @@ packages:
       name: pedantic
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.8.0+1"
+    version: "1.9.0"
   petitparser:
     dependency: transitive
     description:
@@ -567,7 +560,7 @@ packages:
       name: shelf_packages_handler
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.4"
+    version: "2.0.0"
   shelf_static:
     dependency: transitive
     description:
@@ -593,7 +586,7 @@ packages:
       name: source_map_stack_trace
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.1.5"
+    version: "2.0.0"
   source_maps:
     dependency: transitive
     description:
@@ -642,21 +635,21 @@ packages:
       name: test
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.9.4"
+    version: "1.14.2"
   test_api:
     dependency: transitive
     description:
       name: test_api
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.11"
+    version: "0.2.15"
   test_core:
     dependency: transitive
     description:
       name: test_core
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.15"
+    version: "0.3.3"
   tripledes:
     dependency: transitive
     description:
@@ -691,7 +684,7 @@ packages:
       name: vm_service
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.3.1"
+    version: "4.0.0"
   watcher:
     dependency: transitive
     description:
@@ -706,6 +699,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.0"
+  webkit_inspection_protocol:
+    dependency: transitive
+    description:
+      name: webkit_inspection_protocol
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.5.0+1"
   xml:
     dependency: transitive
     description:
