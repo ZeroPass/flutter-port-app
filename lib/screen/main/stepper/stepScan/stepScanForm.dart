@@ -1,5 +1,6 @@
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import "package:eosio_passid_mobile_app/screen/main/stepper/stepScan/stepScan.dart";
 import "package:eosio_passid_mobile_app/screen/main/stepper/stepper.dart";
@@ -21,7 +22,7 @@ class _StepScanFormState extends State<StepScanForm> {
   TextEditingController _validUntilTextController = TextEditingController();
   //Stepper steps
 
-  _StepScanFormState({Key key}){
+  _StepScanFormState({Key key}) {
     _passportIdTextController = TextEditingController();
     _birthTextController = TextEditingController();
     _validUntilTextController = TextEditingController();
@@ -58,7 +59,6 @@ class _StepScanFormState extends State<StepScanForm> {
     return BlocBuilder(
       bloc: stepScanBloc,
       builder: (BuildContext context, StepScanState state) {
-
         if (state is StateScan) emptyFields();
         if (state is FullState) updateFields();
 
@@ -69,7 +69,9 @@ class _StepScanFormState extends State<StepScanForm> {
               //const AndroidThemeST().getValues().themeValues["STEPPER"]["STEP_SCAN"]["COLOR_TEXT"]
               Text(
                 'This data is only used to establish secure communication between your device and passport.',
-                style: TextStyle(color: AndroidThemeST().getValues().themeValues["STEPPER"]["STEP_SCAN"]["COLOR_TEXT"]),
+                style: TextStyle(
+                    color: AndroidThemeST().getValues().themeValues["STEPPER"]
+                        ["STEP_SCAN"]["COLOR_TEXT"]),
               ),
 
               TextFormField(
@@ -78,11 +80,20 @@ class _StepScanFormState extends State<StepScanForm> {
                   labelText: 'Passport No.',
                 ),
                 //autofocus: true,
-                validator: (value) => RegExp(r"^[a-zA-Z0-9]*$").hasMatch(value) ? null : "Special characters not allowed.",
+                inputFormatters: <TextInputFormatter>[
+                  WhitelistingTextInputFormatter(RegExp(r'[A-Z0-9]+')),
+                  LengthLimitingTextInputFormatter(14)
+                ],
+                textInputAction: TextInputAction.done,
+                textCapitalization: TextCapitalization.characters,
+                validator: (value) => RegExp(r"^[a-zA-Z0-9]*$").hasMatch(value)
+                    ? null
+                    : "Special characters not allowed.",
 
                 onChanged: (value) {
                   if (_passportIdTextController.text != value.toUpperCase())
-                    _passportIdTextController.value = _passportIdTextController.value
+                    _passportIdTextController.value = _passportIdTextController
+                        .value
                         .copyWith(text: value.toUpperCase());
 
                   //save to storage
@@ -92,35 +103,37 @@ class _StepScanFormState extends State<StepScanForm> {
                 },
               ),
               SizedBox(height: 17),
-              CustomDatePicker("Date of Birth",
-                      DateTime(1950),
-                      DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day),
-                      /*callback*/(selectedDate){
-                        /*if (DateTime.now().difference(selectedDate).inDays < 0 ) {
+              CustomDatePicker(
+                  "Date of Birth",
+                  DateTime(1930),
+                  DateTime(DateTime.now().year - 10, DateTime.now().month,
+                      DateTime.now().day),
+                  /*callback*/ (selectedDate) {
+                /*if (DateTime.now().difference(selectedDate).inDays < 0 ) {
                           _birthTextController.text = null;
                           CustomAlertDialog(context, "Date of birth cannot be in the future.");
                         }*/
-                      //save to storage
-                      storageStepScan.birth = selectedDate;
-                      //update header
-                      stepperBloc.liveModifyHeader(1, context);
-                      },
-                  _birthTextController),
+                //save to storage
+                storageStepScan.birth = selectedDate;
+                //update header
+                stepperBloc.liveModifyHeader(1, context);
+              }, _birthTextController),
               SizedBox(height: 17),
-              CustomDatePicker("Date of Expiration",
-                  DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day),
-                  DateTime(2100),
-                      /*callback*/(selectedDate){
-                      /*if (DateTime.now().difference(selectedDate).inDays > 0 ) {
+              CustomDatePicker(
+                  "Date of Expiry",
+                  DateTime(DateTime.now().year, DateTime.now().month,
+                      DateTime.now().day + 1),
+                  DateTime(2030),
+                  /*callback*/ (selectedDate) {
+                /*if (DateTime.now().difference(selectedDate).inDays > 0 ) {
                         _birthTextController.text = null;
                         CustomAlertDialog(context, "Date of Expiration should not be in the past.");
                       }*/
-                      //save to storage
-                      storageStepScan.validUntil = selectedDate;
-                      //update header
-                      stepperBloc.liveModifyHeader(1, context);
-                      },
-                      _validUntilTextController)
+                //save to storage
+                storageStepScan.validUntil = selectedDate;
+                //update header
+                stepperBloc.liveModifyHeader(1, context);
+              }, _validUntilTextController)
             ]));
       },
     );
