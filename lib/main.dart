@@ -2,6 +2,7 @@ import 'package:eosio_passid_mobile_app/settings/settings.dart';
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepper.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
@@ -13,16 +14,18 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:eosio_passid_mobile_app/screen/theme.dart';
 import 'package:eosio_passid_mobile_app/screen/settings/settings.dart';
 import 'package:logging/logging.dart';
-void main() => runApp(MyApp());
 
+void main() {
+  Logger.root.level = Level.ALL;
+  Logger.root.onRecord.listen((record) {
+    print(
+        '${record.loggerName} ${record.level.name}: ${record.time}: ${record.message}');
+  });
+  runApp(PassId());
+}
 
 void fillDatabase()
 {
-  Logger.root.level = Level.ALL;
-  Logger.root.onRecord.listen((record) {
-    print('${record.loggerName} ${record.level.name}: ${record.time}: ${record.message}');
-  });
-
   print("fill database");
   Storage storage = new Storage();
 
@@ -46,7 +49,7 @@ void fillDatabase()
   sn = new StorageNode(name: "ZeroPass Server", host: "mainenet.eosnode.io", port: 443, isEncryptedEndpoint: true, networkType: NetworkType.MAINNET, chainID: "abcedfdsdfgasfsdfasdfasdaffdas");
   nodes.add(sn);
 
-  StorageServer ss = new StorageServer(name: "mainServer", host: "51.15.224.168", port: 443, isEncryptedEndpoint: true);
+  StorageServer ss = new StorageServer(name: "mainServer", host: "192.168.1.4", port: 443, isEncryptedEndpoint: true);
   storage.storageServer = ss;
 
   StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
@@ -60,8 +63,7 @@ void fillDatabase()
   storageStepScan.validUntil = DateTime(2100, 1,1);
 }
 
-class MyApp extends StatelessWidget {
-
+class PassId extends StatelessWidget {
   //StepEnterAccountHeaderForm temp = StepEnterAccountHeaderForm();
   //final stepEnterAccountHeaderBloc = BlocProvider.of<StepEnterAccountHeaderBloc>(context);
 
@@ -91,8 +93,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     fillDatabase();
-
-
     return PlatformProvider(
         //initialPlatform: initialPlatform,
         builder: (BuildContext context) => PlatformApp(
@@ -108,10 +108,32 @@ class MyApp extends StatelessWidget {
                     theme: new CupertinoThemeData(
                   primaryColor: Colors.grey,
                 )),
-            home: PlatformScaffold(
+            home: PassIdWidget()));
+  }
+}
 
+class PassIdWidget extends StatefulWidget {
+  @override
+  _PassIdWidgetState createState() => _PassIdWidgetState();
+}
 
-              /*
+class _PassIdWidgetState extends State<PassIdWidget>
+    with TickerProviderStateMixin {
+  @override
+  void initState() {
+    super.initState();
+    SystemChrome.setEnabledSystemUIOverlays([]); // hide status bar
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return PlatformScaffold(
+
+        /*
 
               Builder(
                 builder: (context) => RaisedButton(
@@ -124,85 +146,77 @@ class MyApp extends StatelessWidget {
                     ),
               ),
                */
-                iosContentPadding: true,
-                appBar: PlatformAppBar(
-                  title: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                    Builder( builder: (context) =>
-                        InkWell(
-                          onTap: () {
-                            //open settings panel
-                            Navigator.push(context,
-                                MaterialPageRoute(builder: (context) => Settings()));
-                          },
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: <Widget>[
-                              Icon(Icons.menu, )
-                            ],
-                          ),
-                        )),
-                      Text(" PassID")
-                    ],
-                  ),
-
-
-                  trailingActions: <Widget>[
-                    PlatformIconButton(
-                      padding: EdgeInsets.zero,
-                      icon: Icon(context.platformIcons.share),
-                      onPressed: () {},
-                    ),
-                  ],
-                ),
-
-                    body: MultiBlocProvider(
-                      providers:[
-                        BlocProvider<StepEnterAccountHeaderBloc>(
-                            create: (BuildContext context) => StepEnterAccountHeaderBloc()
+        iosContentPadding: true,
+        appBar: PlatformAppBar(
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Builder(
+                  builder: (context) => InkWell(
+                        onTap: () {
+                          //open settings panel
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => Settings()));
+                        },
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: <Widget>[
+                            Icon(
+                              Icons.menu,
+                            )
+                          ],
                         ),
-                        BlocProvider<StepScanHeaderBloc>(
-                            create: (BuildContext context) => StepScanHeaderBloc()
-                        ),
-                        BlocProvider<StepEnterAccountBloc>(
-                            create: (BuildContext context) => StepEnterAccountBloc()
-                        ),
-                        BlocProvider<StepScanBloc>(
-                            create: (BuildContext context) => StepScanBloc()
-                        ),
-                        BlocProvider<StepAttestationBloc>(
-                            create: (BuildContext context) => StepAttestationBloc()
-                        ),
-                        BlocProvider<StepperBloc>(
-                            create: (BuildContext context) => StepperBloc(maxSteps: 3)
-                        )
-                        ],
-                  child: Scaffold(body:StepperForm(steps:
-
-                  [
-                    Step(
-                      title: StepEnterAccountHeaderForm(),
-                      //subtitle: Text("EOSIO Testnet", style: TextStyle(color: Color(0xFFa58157))),
-                      content: StepEnterAccountForm(/*stepEnterAccountHeaderObj: StepEnterAccountHeaderBloc()*/),
-                      //isActive: true,
-                    ),
-                    Step(
-                      title: StepScanHeaderForm(),
-                      //subtitle: Text("here you can write something", style: TextStyle(color: Color(0xFFa5a057)),),
-                      content:  StepScanForm(),
-                      //state: StepState.ed iting,
-                      //isActive: true,
-                    ),
-                    Step(
-                      title: Text("Attestation"),
-                      content: StepAttestationForm(),
-                      //isActive: true,
-                    ),
-                  ]
-
-                  )),
-                ))));
-
+                      )),
+              Text(" PassID")
+            ],
+          ),
+          trailingActions: <Widget>[
+            PlatformIconButton(
+              padding: EdgeInsets.zero,
+              icon: Icon(context.platformIcons.share),
+              onPressed: () {},
+            ),
+          ],
+        ),
+        body: MultiBlocProvider(
+          providers: [
+            BlocProvider<StepEnterAccountHeaderBloc>(
+                create: (BuildContext context) => StepEnterAccountHeaderBloc()),
+            BlocProvider<StepScanHeaderBloc>(
+                create: (BuildContext context) => StepScanHeaderBloc()),
+            BlocProvider<StepEnterAccountBloc>(
+                create: (BuildContext context) => StepEnterAccountBloc()),
+            BlocProvider<StepScanBloc>(
+                create: (BuildContext context) => StepScanBloc()),
+            BlocProvider<StepAttestationBloc>(
+                create: (BuildContext context) => StepAttestationBloc()),
+            BlocProvider<StepperBloc>(
+                create: (BuildContext context) => StepperBloc(maxSteps: 3))
+          ],
+          child: Scaffold(
+              body: StepperForm(steps: [
+            Step(
+              title: StepEnterAccountHeaderForm(),
+              //subtitle: Text("EOSIO Testnet", style: TextStyle(color: Color(0xFFa58157))),
+              content: StepEnterAccountForm(
+                  /*stepEnterAccountHeaderObj: StepEnterAccountHeaderBloc()*/),
+              //isActive: true,
+            ),
+            Step(
+              title: StepScanHeaderForm(),
+              //subtitle: Text("here you can write something", style: TextStyle(color: Color(0xFFa5a057)),),
+              content: StepScanForm(),
+              //state: StepState.ed iting,
+              //isActive: true,
+            ),
+            Step(
+              title: Text("Attestation"),
+              content: StepAttestationForm(),
+              //isActive: true,
+            ),
+          ])),
+        ));
   }
 }
