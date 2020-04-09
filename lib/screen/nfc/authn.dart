@@ -427,7 +427,7 @@ class _AuthnState extends State<Authn> {
       await _hideBusyIndicator(syncWait: Duration(microseconds: 0));
 
       showAlert<bool>(context, Text('Attestation Succeeded'),
-          Text(_fromatAttestationSuccess(srvMsgGreeting)), [
+          Text(_formatAttestationSuccess(srvMsgGreeting)), [
         FlatButton(
             child: Text('OK',
                 style: TextStyle(
@@ -536,7 +536,7 @@ class _AuthnState extends State<Authn> {
     return AuthnData(dg15: data.dg15, csig: data.csig, dg1: dg1);
   }
 
-  String _fromatAttestationSuccess(String greeting) {
+  String _formatAttestationSuccess(String greeting) {
     var names = greeting.replaceAll('Hi, ', '');
     names = names.replaceAll('!', '');
     return "You're attested as $names";
