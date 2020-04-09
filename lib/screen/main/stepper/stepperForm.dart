@@ -49,9 +49,9 @@ class _StepperFormState extends State<StepperForm> {
           if (storageStepScan.documentID == null || storageStepScan.documentID == "")
             errorMessage +="'Passport No.' is not valid.\n";
           if (storageStepScan.birth == null)
-            errorMessage +="'Date of birth' is empty.\n";
+            errorMessage +="'Date of Birth' is empty.\n";
           if (storageStepScan.validUntil == null)
-            errorMessage +="Date of expiration' is empty.\n";
+            errorMessage +="Date of Expiry' is empty.\n";
           return errorMessage;
         }
         break;
