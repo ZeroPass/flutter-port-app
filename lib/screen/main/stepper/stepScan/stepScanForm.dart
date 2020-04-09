@@ -32,9 +32,10 @@ class _StepScanFormState extends State<StepScanForm> {
     var storage = Storage();
     StepDataScan storageStepScan = storage.getStorageData(1);
     _passportIdTextController.text = storageStepScan.documentID;
-    _birthTextController.text = CustomDatePicker.customizeDate(storageStepScan.birth);
-    _validUntilTextController.text = CustomDatePicker.customizeDate(storageStepScan.validUntil);
-
+    _birthTextController.text =
+        CustomDatePicker.formatDate(storageStepScan.birth);
+    _validUntilTextController.text =
+        CustomDatePicker.formatDate(storageStepScan.validUntil);
   }
 
   //clear fields in account form
