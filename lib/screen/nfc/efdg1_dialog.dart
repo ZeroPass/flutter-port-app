@@ -93,7 +93,7 @@ class EfDG1Dialog {
 
   Widget _build(BuildContext context) {
     return Container(
-        height: MediaQuery.of(context).size.height - 50,
+        height: MediaQuery.of(context).size.height - 210,
         child: Padding(
             padding: EdgeInsets.all(16.0),
             child: Column(children: <Widget>[

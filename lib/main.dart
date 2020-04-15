@@ -16,6 +16,8 @@ import 'package:eosio_passid_mobile_app/screen/theme.dart';
 import 'package:eosio_passid_mobile_app/screen/settings/settings.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:logging/logging.dart';
+import 'package:flare_flutter/flare_actor.dart';
+import 'package:flare_flutter/provider/asset_flare.dart';
 
 void main() {
   Logger.root.level = Level.ALL;
@@ -57,8 +59,6 @@ void fillDatabase()
   StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
   storageStepEnterAccount.isUnlocked = true;
 
-
-  //TODO:write your passport data - debug mode
   StepDataScan storageStepScan = storage.getStorageData(1);
   storageStepScan.documentID = "";
   storageStepScan.birth = DateTime(2000, 1,1);
@@ -136,51 +136,37 @@ class _PassIdWidgetState extends State<PassIdWidget>
   Widget build(BuildContext context) {
     return PlatformScaffold(
 
-        /*
-
-              Builder(
-                builder: (context) => RaisedButton(
-                      onPressed: () {
-                        Navigator.push(context,
-                            MaterialPageRoute(
-                                builder: (context) => SelectUserType()));
-                      },
-                      child: Text('Registrese'),
-                    ),
-              ),
-               */
         iosContentPadding: true,
         appBar: PlatformAppBar(
           title: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-              Builder(
-                  builder: (context) => InkWell(
-                        onTap: () {
-                          //open settings panel
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => Settings()));
-                        },
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: <Widget>[
-                            Icon(
-                              Icons.menu,
-                            )
-                          ],
-                        ),
-                      )),
-              Text(" PassID")
+              Container(
+                  width: 35,
+                  height: 35,
+                  child: Image(image: AssetImage('assets/images/passid.png')))
+              ,
+
+              Text("  Pass"), Text("ID", style: TextStyle(fontWeight: FontWeight.bold))
             ],
           ),
           trailingActions: <Widget>[
-            PlatformIconButton(
-              padding: EdgeInsets.zero,
-              icon: Icon(context.platformIcons.share),
-              onPressed: () {},
-            ),
+            Builder(
+                builder: (context) => InkWell(
+                  onTap: () {
+                    //open settings panel
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => Settings()));
+                  },
+                  child: /*Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      */Icon(Icons.menu , size: 40.0,)
+                    //],
+                  //),
+                )),
           ],
         ),
         body: MultiBlocProvider(

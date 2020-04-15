@@ -338,9 +338,8 @@ class _AuthnState extends State<Authn> {
     String missingValuesText = '';
     Storage storage = Storage();
     StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
-    if (storageStepEnterAccount.isUnlocked == false)
-      missingValuesText +=
-          "Account name (Step 'Enter account') is not valid.\n";
+    if (storageStepEnterAccount.isUnlocked == false && storage.selectedNode.name != "ZeroPass Server")
+      missingValuesText +=  "Account name (Step 'Enter account') is not valid.\n";
 
     StepDataScan storageStepScan = storage.getStorageData(1);
     if (storageStepScan.documentID == null)

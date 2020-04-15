@@ -33,6 +33,7 @@ dependencies:
   equatable: ^1.1.1
   connectivity: ^0.4.8+2
   dart_countries_states: ^0.0.8
+
   #shared_preferences_settings: ^1.2.0
   card_settings: ^1.8.0
   flutter:
@@ -50,11 +51,15 @@ dependencies:
 
 
 flutter_icons:
-  android: "launcher_icon"
   ios: true
-  image_path: "assets/images/passid_icon.jpg"
+  android: true
+  image_path_ios: "assets/images/passid_icon.png"
+  image_path_android: "assets/images/passid_icon.png"
+  adaptive_icon_background: "assets/images/passid_icon_background.png"
+  adaptive_icon_foreground: "assets/images/passid_icon_foreground.png"
 
 dev_dependencies:
+  flutter_launcher_icons: "^0.7.0"
   flutter_test:
     sdk: flutter
 
@@ -105,6 +110,9 @@ flutter:
     - assets/certs/passid_srv.cer
     - assets/images/mountains.jpg
     - assets/images/passid.png
+    - assets/images/passid_icon.png
+    - assets/images/passid_icon_background.png
+    - assets/images/passid_icon_foreground.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

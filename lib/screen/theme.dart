@@ -146,7 +146,10 @@ class AndroidTheme extends CustomTheme{
 
   ThemeData getLight() {
     this.selectedTheme = 1;
-    MaterialColor _primaryColor = CustomColor.createColor(83, 37, 153, 0xFF5768a5);
+    //CustomColor.createColor(165, 129, 87, 0xFFa58157);
+    //MaterialColor _primaryColor = CustomColor.createColor(83, 37, 153, 0xFF5768a5);
+    //MaterialColor _primaryColor = CustomColor.createColor(87, 104, 165, 0xFF5768a5);
+    MaterialColor _primaryColor = CustomColor.createColor(165, 129, 87, 0xFF5768a5);
     return ThemeData(primarySwatch: _primaryColor,
         buttonColor: Color(0xFFa58157),
       /*chipTheme: ChipThemeData(
@@ -168,7 +171,7 @@ class AndroidTheme extends CustomTheme{
     this.selectedTheme = 0;
     var _primaryColor = CustomColor.createColor(83, 37, 153, 0xFF532599);
     return ThemeData(primarySwatch: _primaryColor,
-        buttonColor: Color(0xFF7c3bcc)
+        buttonColor: Color(0xFFa58157)
     );
   }
 }
