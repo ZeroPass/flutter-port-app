@@ -1,6 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:eosio_passid_mobile_app/screen/theme.dart';
-import 'package:flutter_holo_date_picker/flutter_holo_date_picker.dart';
+//import 'package:flutter_holo_date_picker/flutter_holo_date_picker.dart';
 import 'package:date_format/date_format.dart';
 import "dart:io" show Platform;
 import "package:intl/intl.dart";
@@ -38,78 +40,106 @@ class CustomDatePicker extends StatefulWidget {
 class _CustomDatePicker extends State<CustomDatePicker> {
   _CustomDatePicker();
 
-
   Widget showAndroidDatePicker(BuildContext context){
-      return TextFormField(
-              controller: widget.textEditingController,
-              decoration: InputDecoration(labelText: widget.text),
-              onTap: () async{
+    return TextFormField(
+      controller: widget.textEditingController,
+      decoration: InputDecoration(labelText: widget.text),
+      onTap: () async {
+        FocusScope.of(context).requestFocus(new FocusNode());
+        if(widget.textEditingController.text.isNotEmpty) {
+          // Set init date to previously selected date
+          widget.initialDate = CustomDatePicker.parseDate(widget.textEditingController.text);
+        } else {
+          widget.initialDate = new DateTime(DateTime.now().year, 1, 1);//January 1st, current year
+          if(widget.initialDate.isBefore(widget.firstDate)) {
+            widget.initialDate = widget.firstDate;
+          }
+          else if(widget.initialDate.isAfter(widget.lastDate)) {
+            widget.initialDate = widget.lastDate;
+          }
+        }
 
-                FocusScope.of(context).requestFocus(new FocusNode());
-                if(widget.textEditingController.text.isNotEmpty) {
-                  // Set init date to previously selected date
-                  widget.initialDate = CustomDatePicker.parseDate(widget.textEditingController.text);
-                } else {
-                  widget.initialDate = new DateTime(DateTime.now().year, 1, 1);//January 1st, current year
-                  if(widget.initialDate.isBefore(widget.firstDate)) {
-                    widget.initialDate = widget.firstDate;
-                  }
-                  else if(widget.initialDate.isAfter(widget.lastDate)) {
-                    widget.initialDate = widget.lastDate;
-                  }
-                }
 
+        final pickedDate = await pickDate(context, widget.firstDate, widget.initialDate, widget.lastDate);
+        /*var datePicked = await DatePicker.showSimpleDatePicker(
+          context,
+          initialDate: widget.initialDate,
+          firstDate: widget.firstDate,
+          lastDate: widget.lastDate,
+          dateFormat: "dd-MMMM-yyyy",
+          locale: DateTimePickerLocale.en_us,
+        );*/
+        //var t = DateFormat.yMMMd().
+        if (pickedDate != null) {
+          widget.textEditingController.text = CustomDatePicker.formatDate(pickedDate);
+        }
 
-                final pickedDate = await pickDate(context, widget.firstDate, widget.initialDate, widget.lastDate);
-                /*var datePicked = await DatePicker.showSimpleDatePicker(
-                  context,
-                  initialDate: widget.initialDate,
-                  firstDate: widget.firstDate,
-                  lastDate: widget.lastDate,
-                  dateFormat: "dd-MMMM-yyyy",
-                  locale: DateTimePickerLocale.en_us,
-                );*/
-                //var t = DateFormat.yMMMd().
-                if (pickedDate != null)
-                  widget.textEditingController.text = CustomDatePicker.formatDate(pickedDate);
+        //return to function on call
+        if (widget.callbackOnDatePicked != null && pickedDate != null) {
+          widget.callbackOnDatePicked(pickedDate);
+        }
+    });
+  }
 
-                //return to function on call
-                if (widget.callbackOnDatePicked != null && pickedDate != null)
-                  widget.callbackOnDatePicked(pickedDate);
-              });
+  Future<DateTime> _pickDate(BuildContext context, {@required DateTime initDate, @required DateTime firstDate, @required DateTime lastDate}) async {
+    // iOS style date picker
+    DateTime date = initDate;
+    return showCupertinoModalPopup(
+      context: context,
+      builder: (context) => Container(
+        height: 300,
+        color: Theme.of(context).dialogBackgroundColor,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: <Widget>[
+            PlatformDialogAction(
+              child: PlatformText('Done'),
+              onPressed: () => Navigator.pop(context, date)
+            ),
+            Expanded(
+              child: CupertinoDatePicker(
+                mode: CupertinoDatePickerMode.date,
+                initialDateTime: date,
+                minimumDate: firstDate,
+                maximumDate: lastDate,
+                onDateTimeChanged: (d) => date = d
+            )),
+            const SizedBox(height: 20)
+      ])),
+      useRootNavigator: true
+    );
   }
 
   Widget showIosDatePicker(BuildContext context){
-    //TODO:implement this function
-    /*DatePickerWidget({
-      DateTime minDateTime,
-      DateTime maxDateTime,
-      DateTime initialDateTime,
-      String dateFormat: DATETIME_PICKER_DATE_FORMAT,
-      DateTimePickerLocale locale: DATETIME_PICKER_LOCALE_DEFAULT,
-      DateTimePickerTheme pickerTheme: DatePickerTheme.Default,
-      DateVoidCallback onCancel,
-      DateValueCallback onChange,
-      DateValueCallback onConfirm,
-    })*/
-    print("show ios picker");
     return TextFormField(
-        controller: widget.textEditingController,
-        decoration: InputDecoration(labelText: widget.text),
-        onTap: () async{
-          DatePickerWidget(
-            initialDate: widget.initialDate,
-            firstDate: widget.firstDate,
-            lastDate: widget.lastDate,
-            dateFormat: "dd-MMMM-yyyy",
-            onConfirm: (DateTime dt, List<int> values){
-              print(dt);
-              print(values);
-            }
-            );
-            }
-    );
+      controller: widget.textEditingController,
+      decoration: InputDecoration(labelText: widget.text),
+      onTap: () async {
+        FocusScope.of(context).requestFocus(new FocusNode());
+        if(widget.textEditingController.text.isNotEmpty) {
+          // Set init date to previously selected date
+          widget.initialDate = CustomDatePicker.parseDate(widget.textEditingController.text);
+        } else {
+          widget.initialDate = new DateTime(DateTime.now().year, 1, 1);//January 1st, current year
+          if(widget.initialDate.isBefore(widget.firstDate)) {
+            widget.initialDate = widget.firstDate;
+          }
+          else if(widget.initialDate.isAfter(widget.lastDate)) {
+            widget.initialDate = widget.lastDate;
+          }
+        }
 
+        final pickedDate = await _pickDate(context, initDate: widget.initialDate, firstDate: widget.firstDate, lastDate: widget.lastDate);
+        if (pickedDate != null) {
+          widget.textEditingController.text = CustomDatePicker.formatDate(pickedDate);
+        }
+
+        //return to function on call
+        if (widget.callbackOnDatePicked != null && pickedDate != null) {
+          widget.callbackOnDatePicked(pickedDate);
+        }
+    });
   }
 
   @override
