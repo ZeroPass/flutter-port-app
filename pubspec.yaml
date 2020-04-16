@@ -59,7 +59,7 @@ flutter_icons:
   adaptive_icon_foreground: "assets/images/passid_icon_foreground.png"
 
 dev_dependencies:
-  flutter_launcher_icons: "^0.7.0"
+  flutter_launcher_icons: "^0.7.4"
   flutter_test:
     sdk: flutter
 
@@ -108,7 +108,6 @@ flutter:
     - assets/anim/success_check.flr
     - assets/anim/nfc.flr
     - assets/certs/passid_srv.cer
-    - assets/images/mountains.jpg
     - assets/images/passid.png
     - assets/images/passid_icon.png
     - assets/images/passid_icon_background.png
