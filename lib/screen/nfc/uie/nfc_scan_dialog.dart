@@ -69,8 +69,8 @@ class NfcScanDialog {
         //backgroundColor: Colors.white,
         isDismissible: false,
         useRootNavigator: true,
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.0)),
+        /*shape:RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(25.0)),*/
         builder: (BuildContext context) {
           return StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {

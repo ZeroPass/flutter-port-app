@@ -39,6 +39,12 @@ Map light = {
       "COLOR_TEXT":Color(0xFF646464)
     }
   },
+  "BUTTON":
+  {
+    "COLOR": Colors.white,
+    "COLOR_BACKGROUND":Color(0xFFa58157),
+    "SIZE_TEXT": 17.0
+  },
   "TILE_BAR":
   {
     "SIZE_TEXT": 17.0,
@@ -99,6 +105,12 @@ class ThemeValues{
         "COLOR_TEXT":null
       }
     },
+    "BUTTON":
+    {
+      "COLOR": null,
+      "COLOR_BACKGROUND":null,
+      "SIZE_TEXT": null
+    },
     "TILE_BAR":
     {
       "SIZE_TEXT": null,
@@ -146,24 +158,9 @@ class AndroidTheme extends CustomTheme{
 
   ThemeData getLight() {
     this.selectedTheme = 1;
-    //CustomColor.createColor(165, 129, 87, 0xFFa58157);
-    //MaterialColor _primaryColor = CustomColor.createColor(83, 37, 153, 0xFF5768a5);
-    //MaterialColor _primaryColor = CustomColor.createColor(87, 104, 165, 0xFF5768a5);
     MaterialColor _primaryColor = CustomColor.createColor(165, 129, 87, 0xFF5768a5);
     return ThemeData(primarySwatch: _primaryColor,
         buttonColor: Color(0xFFa58157),
-      /*chipTheme: ChipThemeData(
-        backgroundColor: Color(0xFFa58157),
-          selectedColor: Color(0xFFa58157),
-          secondarySelectedColor: Color(0xFFa58157),
-          //labelPadding,
-          //padding,
-          //shape,
-          //labelStyle,
-          //secondaryLabelStyle,
-          //brightness,
-
-      )*/
     );
   }
 

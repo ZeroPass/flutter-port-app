@@ -543,7 +543,7 @@ class _AuthnState extends State<Authn> {
 
   void selectNetwork(var context) {
     BottomPickerStructure bps = BottomPickerStructure();
-    bps.importActionTypesList(AUTHENTICATOR_ACTIONS, "ATTESTAION_REQUEST",
+    bps.importActionTypesList(AUTHENTICATOR_ACTIONS, widget._selectedAction,
         "Select validation", "Please select type of validation");
     CustomBottomPickerState cbps = CustomBottomPickerState(structure: bps);
     cbps.showPicker(context,

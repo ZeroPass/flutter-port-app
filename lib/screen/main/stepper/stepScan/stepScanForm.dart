@@ -8,6 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:eosio_passid_mobile_app/screen/customDatePicker.dart';
 import 'package:eosio_passid_mobile_app/screen/customAlertDialog.dart';
 import 'package:eosio_passid_mobile_app/screen/theme.dart';
+import 'package:eosio_passid_mobile_app/screen/customButton.dart';
 
 class StepScanForm extends StatefulWidget {
   StepScanForm({Key key}) : super(key: key);

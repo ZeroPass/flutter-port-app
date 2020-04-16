@@ -9,6 +9,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
 import 'package:eosio_passid_mobile_app/screen/theme.dart';
+import 'package:eosio_passid_mobile_app/screen/customAlertDialog.dart';
 
 class StepperForm extends StatefulWidget {
   final List<Step> steps;
@@ -78,7 +79,8 @@ class _StepperFormState extends State<StepperForm> {
             functionOnStepContinue();
           }
           else {
-            showPlatformDialog(
+            CustomAlertDialog(context, "Cannot continue", errors + '\nPlease fill the form with valid data.', (){print("button pressed");} );
+            /*showPlatformDialog(
               context: context,
               builder: (_) => PlatformAlertDialog(
                 title: Text('Cannot continue'),
@@ -90,7 +92,7 @@ class _StepperFormState extends State<StepperForm> {
                   )
                 ],
               ),
-            );
+            );*/
           }
         },/**/
       ))

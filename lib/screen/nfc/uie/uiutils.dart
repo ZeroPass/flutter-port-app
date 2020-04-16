@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import 'load_indicator.dart';
-import 'settings_screen.dart';
+import 'package:eosio_passid_mobile_app/screen/customButton.dart';
 
 String formatDate(DateTime date, {Locale locale}) {
   String strDate;
@@ -34,7 +34,9 @@ Container makeButton(
           alignment: Alignment.center,
           child: Row(children: <Widget>[
             Expanded(
-                child: FlatButton(
+                child: CustomButton(text, disabled ? null : onPressed)
+
+                /*FlatButton(
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30.0)),
                     color: Theme.of(context).accentColor,
@@ -45,7 +47,7 @@ Container makeButton(
                       text,
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    onPressed: disabled ? null : onPressed))
+                    onPressed: disabled ? null : onPressed)*/)
           ]));
 }
 
