@@ -59,10 +59,10 @@ void fillDatabase()
   StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
   storageStepEnterAccount.isUnlocked = true;
 
-  StepDataScan storageStepScan = storage.getStorageData(1);
-  storageStepScan.documentID = "";
-  storageStepScan.birth = DateTime(2000, 1,1);
-  storageStepScan.validUntil = DateTime(2100, 1,1);
+  //StepDataScan storageStepScan = storage.getStorageData(1);
+  //storageStepScan.documentID = "";
+  //storageStepScan.birth = DateTime(2000, 1,1);
+  //storageStepScan.validUntil = DateTime(2100, 1,1);
 }
 
 class PassId extends StatelessWidget {
