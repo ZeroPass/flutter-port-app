@@ -1,10 +1,27 @@
+## PassID Library
+Dart implementation of PassID PoC client.
 
 ## Usage
-
-A simple usage example:
+ 1) Include `passid` library in your project's `pubspec.yaml` file:  
+```
+dependencies:
+  passid:
+    path: '<path_to_passid_folder>'
+```
+ 2) Run 
+ ```
+ flutter pub get
+ ```
+ 
+**Example:**  
+*Note: See also [example](example) app*
 
 ```dart
 import 'package:passid/passid.dart';
+
+AuthnData getAuthnData(final ProtoChallenge challenge) async {
+  return // data from passport
+}
 
 main() {
   try {
@@ -26,9 +43,3 @@ main() {
   }
 }
 ```
-
-## Features and bugs
-
-Please file feature requests and bugs at the [issue tracker][tracker].
-
-[tracker]: http://example.com/issues/replaceme
