@@ -1,10 +1,22 @@
 # EOSIO PassID Mobile App
 
+## Installation
+
+* Android Studio - Follow instructions [here](https://developer.android.com/studio).  *or install any other IDE (Visual Studio, Xcode)
+
+* Flutter - Follow instructions [here](https://flutter.dev/docs/get-started/install).
+
 ## Usage
 
-Make sure you have Flutter installed on your local machine. For more instructions on how to install flutter, look [here](https://flutter.io/docs/get-started/install).
+* Download(git clone) the project
+
+* In all directories that contains pubspec.yaml (main project with subprojects) call:
 ```
-git clone https://github.com/ZeroPass/eosio-passid-mobile-app.git
-cd eosio-passid-mobile-app
-flutter run
+flutter packages get
 ```
+
+* Run the project from your IDE
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
