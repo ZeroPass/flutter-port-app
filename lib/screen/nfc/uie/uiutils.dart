@@ -34,7 +34,8 @@ Container makeButton(
           alignment: Alignment.center,
           child: Row(children: <Widget>[
             Expanded(
-                child: CustomButton(text, disabled ? null : onPressed)
+                child: CustomButton(title:text,
+                    callbackOnPressed: disabled ? null : onPressed)
 
                 /*FlatButton(
                     shape: RoundedRectangleBorder(

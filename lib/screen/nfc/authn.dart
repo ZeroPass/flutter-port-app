@@ -24,6 +24,7 @@ import 'package:logging/logging.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:eosio_passid_mobile_app/screen/theme.dart';
 import 'package:eosio_passid_mobile_app/screen/customBottomPicker.dart';
+import 'package:eosio_passid_mobile_app/screen/customButton.dart';
 
 import 'uie/uiutils.dart';
 import 'efdg1_dialog.dart';
@@ -670,14 +671,32 @@ class _AuthnState extends State<Authn> {
       {String msg = 'Data to be sent'}) async {
     _log.debug('Showing EfDG1 dialog');
     return showEfDG1Dialog(context, dg1, message: msg, actions: [
-      makeButton(
+      /*makeButton(
           context: context,
           text: 'SEND',
           margin: null,
           onPressed: () {
             Navigator.pop(context, true);
-          }),
-      OutlineButton(
+          }),*/
+      Center(child:
+      CustomButton(title:"Send",
+          fontColor: Colors.white,
+          backgroundColor: Colors.blue,
+          //minWidth: MediaQuery.of(context).size.width,
+          callbackOnPressed: ()  {
+            Navigator.pop(context, true);
+          })),
+
+      Center(child:
+      CustomButton(title:"Cancel",
+          fontColor: Colors.blue,
+          backgroundColor: Colors.white,
+          //minWidth: MediaQuery.of(context).size.width-100,
+          callbackOnPressed: ()  {
+            Navigator.pop(context, false);
+          })),
+
+      /*OutlineButton(
         onPressed: () => Navigator.pop(context, false),
         borderSide: BorderSide(
           width: 1,
@@ -706,7 +725,7 @@ class _AuthnState extends State<Authn> {
             ],
           ),
         ),
-      )
+      )*/
     ]);
   }
 

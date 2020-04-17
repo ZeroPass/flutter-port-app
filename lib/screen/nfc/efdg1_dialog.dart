@@ -78,10 +78,10 @@ class EfDG1Dialog {
         isDismissible: false,
         useRootNavigator: true,
         isScrollControlled: true,
-        shape: RoundedRectangleBorder(
+        /*shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(25.0),
-                topRight: Radius.circular(25.0))),
+                topRight: Radius.circular(25.0))),*/
         builder: (BuildContext context) {
           return StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {

@@ -163,7 +163,7 @@ class _PassIdWidgetState extends State<PassIdWidget>
                   child: /*Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      */Icon(Icons.menu , size: 40.0,)
+                      */Icon(Icons.menu , size: 35.0,)
                     //],
                   //),
                 )),

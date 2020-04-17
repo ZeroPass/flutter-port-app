@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'uiutils.dart';
+import 'package:eosio_passid_mobile_app/screen/customButton.dart';
 
 /// Class displays BottomSheet dialog which
 /// shows to the user NFC scanning state via [message].
@@ -109,17 +110,34 @@ class NfcScanDialog {
                                         style: TextStyle(fontSize: 16)))
                               ])),
                           const SizedBox(height: 10),
-                          makeButton(
-                              visible: _showCancelButton,
-                              context: context,
-                              text: 'CANCEL',
+
+                          Container(
+                              width: MediaQuery.of(context).size.width,
                               margin: null,
-                              onPressed: () async {
-                                await _closeBottomSheet();
-                                if (_onCancel != null) {
-                                  return await _onCancel();
-                                }
-                              })
+                              alignment: Alignment.center,
+                              child: Row(children: <Widget>[
+                                Expanded(
+                                    child: CustomButton(title:"Cancel",
+                                        fontColor: Colors.blue,
+                                        backgroundColor: Colors.white,
+                                        callbackOnPressed: () async {
+                                              await _closeBottomSheet();
+                                              if (_onCancel != null) {
+                                                return await _onCancel();
+                                              }
+                                        }))
+                              ]))
+                              /*makeButton(
+                                  visible: _showCancelButton,
+                                  context: context,
+                                  text: 'cancel',
+                                  margin: null,
+                                  onPressed: () async {
+                                    await _closeBottomSheet();
+                                    if (_onCancel != null) {
+                                      return await _onCancel();
+                                    }
+                                  })*/
                         ],
                       ),
                     ))));

@@ -20,13 +20,16 @@ class CustomAlertDialog {
         actions: <Widget>[
           PlatformDialogAction(
               child: Center(child:
-              CustomButton("OK", (){
+              CustomButton(title:"ok",
+                  backgroundColor: Colors.white,
+                  fontColor: Colors.blue,
+                  callbackOnPressed: (){
                 callbackOnPressed();
                 Navigator.pop(context);
               }))
           )
         ],
-      ),
+      )
     );
   }
 }
