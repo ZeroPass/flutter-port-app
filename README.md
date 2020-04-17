@@ -15,6 +15,9 @@
 flutter packages get
 ```
 
+* Fill the data in this [function](/lib/main.dart#L31)
+  - configure EOS nodes like [here](/lib/main.dart#L47-L48)
+  - set [StorageServer](/lib/main.dart#L56-L57) (IP address, port and encryption connection check)
 * Run the project from your IDE
 
 ## License
