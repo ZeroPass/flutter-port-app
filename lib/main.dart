@@ -66,31 +66,6 @@ void fillDatabase()
 }
 
 class PassId extends StatelessWidget {
-  //StepEnterAccountHeaderForm temp = StepEnterAccountHeaderForm();
-  //final stepEnterAccountHeaderBloc = BlocProvider.of<StepEnterAccountHeaderBloc>(context);
-
-  // This widget is the root of your application.
-  /*final List<Step> steps = [
-    Step(
-      title: StepEnterAccountHeaderForm(),
-      //subtitle: Text("EOSIO Testnet", style: TextStyle(color: Color(0xFFa58157))),
-      content: StepEnterAccountForm(),
-      isActive: true,
-    ),
-    Step(
-      title: Text("Scan"),
-      //subtitle: Text("here you can write something", style: TextStyle(color: Color(0xFFa5a057)),),
-      content: BlocProvider<StepScanBloc>(
-          create: (context) => StepScanBloc(), child: StepScanForm(temp: 1)),
-      //state: StepState.ed iting,
-      isActive: true,
-    ),
-    Step(
-      title: Text("Attestation"),
-      content: Text("Hello World!"),
-      isActive: true,
-    ),
-  ];*/
 
   @override
   Widget build(BuildContext context) {
@@ -103,13 +78,9 @@ class PassId extends StatelessWidget {
               DefaultMaterialLocalizations.delegate,
               DefaultWidgetsLocalizations.delegate
             ],
-            android: (_) => new MaterialAppData(
-                theme: new AndroidTheme().getLight(),
-                darkTheme: new AndroidTheme().getDark()),
-            ios: (_) => new CupertinoAppData(
-                    theme: new CupertinoThemeData(
-                  primaryColor: Colors.grey,
-                )),
+            android: (_) => MaterialAppData(
+                theme: AndroidTheme().getLight(),
+                darkTheme: AndroidTheme().getDark()),
             home: PassIdWidget()));
   }
 }
@@ -134,39 +105,29 @@ class _PassIdWidgetState extends State<PassIdWidget>
 
   @override
   Widget build(BuildContext context) {
-    return PlatformScaffold(
-
-        iosContentPadding: true,
-        appBar: PlatformAppBar(
+    return Scaffold( // TODO: return to PlatformScaffold
+        appBar: AppBar( //TODO: return to PlatformAppBar
           title: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               Container(
                   width: 35,
                   height: 35,
-                  child: Image(image: AssetImage('assets/images/passid.png')))
-              ,
-
+                  child: Image(image: AssetImage('assets/images/passid.png'))),
               Text("  Pass"), Text("ID", style: TextStyle(fontWeight: FontWeight.bold))
             ],
           ),
-          trailingActions: <Widget>[
-            Builder(
-                builder: (context) => InkWell(
-                  onTap: () {
-                    //open settings panel
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => Settings()));
-                  },
-                  child: /*Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      */Icon(Icons.menu , size: 35.0,)
-                    //],
-                  //),
-                )),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.menu, size: 35.0),
+              tooltip: 'Settings',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Settings()));
+              }
+            )
           ],
         ),
         body: MultiBlocProvider(
