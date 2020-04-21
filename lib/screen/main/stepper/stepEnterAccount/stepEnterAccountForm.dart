@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import "package:eosio_passid_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart";
 import "package:eosio_passid_mobile_app/screen/main/stepper/stepper.dart";
@@ -46,8 +47,8 @@ class _StepEnterAccountFormState extends State<StepEnterAccountForm> {
               //  trailing: const Icon(Icons.more_vert),
               //),
               itemBuilder: (_) => <PopupMenuItem<String>>[
-                new PopupMenuItem<String>(child: new Text('11'), value: '11'),
-                new PopupMenuItem<String>(child: new Text('22'), value: '22'),
+                PopupMenuItem<String>(child: Text('11'), value: '11'),
+                PopupMenuItem<String>(child: Text('22'), value: '22'),
               ],
               onSelected: (value) => {},
             )).whenComplete(() {
@@ -55,7 +56,8 @@ class _StepEnterAccountFormState extends State<StepEnterAccountForm> {
     });
   }
 
-  void selectNetwork(var context, StepEnterAccountState state, var stepEnterAccountBloc) {
+  void selectNetwork(
+      var context, StepEnterAccountState state, var stepEnterAccountBloc) {
     var storage = Storage();
     StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
     BottomPickerStructure bps = BottomPickerStructure();
@@ -63,30 +65,29 @@ class _StepEnterAccountFormState extends State<StepEnterAccountForm> {
         "Select node", "Please select the node");
     CustomBottomPickerState cbps = CustomBottomPickerState(structure: bps);
     cbps.showPicker(context,
-                      //callback function to manage user click action on selection
-                      (BottomPickerElement returnedStorageNode){
-                        //find the node with the same name as returned name
-                        for (StorageNode item in storage.storageNodes()) {
-                          //the same name found -  set selected node as found item
-                          if (item.name == returnedStorageNode.name) {
-                            storage.selectedNode = item;
-                            if (state is FullState) {
-                              stepEnterAccountBloc.add(AccountConfirmation(
-                                  accountID: storageStepEnterAccount
-                                      .accountID));
-                            }
-                            if (state is DeletedState) {
-                              stepEnterAccountBloc.add(AccountDelete());
-                            }
-                            final stepperBloc = BlocProvider.of<StepperBloc>(context);
-                            stepperBloc.liveModifyHeader(0, context);
-                          }
-                        }
-                      }
-                      );
+        //callback function to manage user click action on selection
+        (BottomPickerElement returnedStorageNode) {
+      //find the node with the same name as returned name
+      for (StorageNode item in storage.storageNodes()) {
+        //the same name found -  set selected node as found item
+        if (item.name == returnedStorageNode.name) {
+          storage.selectedNode = item;
+          if (state is FullState) {
+            stepEnterAccountBloc.add(AccountConfirmation(
+                accountID: storageStepEnterAccount.accountID));
+          }
+          if (state is DeletedState) {
+            stepEnterAccountBloc.add(AccountDelete());
+          }
+          final stepperBloc = BlocProvider.of<StepperBloc>(context);
+          stepperBloc.liveModifyHeader(0, context);
+        }
+      }
+    });
   }
 
-  Widget selectNetworkWithTile(var context,StepEnterAccountState state, var stepEnterAccountBloc) {
+  Widget selectNetworkWithTile(
+      var context, StepEnterAccountState state, var stepEnterAccountBloc) {
     var storage = Storage();
     return ListTile(
       dense: true,
@@ -96,62 +97,60 @@ class _StepEnterAccountFormState extends State<StepEnterAccountForm> {
           children: <Widget>[
             Text(
               'Network',
-              style: TextStyle(fontSize: AndroidThemeST().getValues().themeValues["TILE_BAR"]["SIZE_TEXT"]),
+              style: TextStyle(
+                  fontSize: AndroidThemeST().getValues().themeValues["TILE_BAR"]
+                      ["SIZE_TEXT"]),
             ),
-            Text(
-                storage.selectedNode.name,
-                style:
-                TextStyle(fontSize: AndroidThemeST().getValues().themeValues["TILE_BAR"]["SIZE_TEXT"],
-                          color: AndroidThemeST().getValues().themeValues["TILE_BAR"]["COLOR_TEXT"]))
+            Text(storage.selectedNode.name,
+                style: TextStyle(
+                    fontSize: AndroidThemeST()
+                        .getValues()
+                        .themeValues["TILE_BAR"]["SIZE_TEXT"],
+                    color: AndroidThemeST().getValues().themeValues["TILE_BAR"]
+                        ["COLOR_TEXT"]))
           ]),
       trailing: Icon(Icons.expand_more),
       onTap: () => selectNetwork(context, state, stepEnterAccountBloc),
     );
   }
 
-  Widget body(BuildContext context, StepEnterAccountState state, var stepEnterAccountBloc) {
+  Widget body(BuildContext context, StepEnterAccountState state,
+      var stepEnterAccountBloc) {
     var storage = Storage();
     StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
 
     if (state is DeletedState) emptyFields();
     if (state is FullState) updateFields();
 
-
-
     final stepperBloc = BlocProvider.of<StepperBloc>(context);
-    final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
     return Form(
-        key: _formKey,
         autovalidate: true,
         child: Column(children: <Widget>[
-      selectNetworkWithTile(context, state, stepEnterAccountBloc),
-      if (storage.selectedNode.name != "ZeroPass Server")
-          TextFormField(
-        controller: _accountTextController,
-        decoration: InputDecoration(
-          labelText: 'Account name',
-        ),
-        validator: (value) =>
-            stepEnterAccountBloc.validatorFunction(value, context)
-                ? stepEnterAccountBloc.validatorText
-                : null,
+          selectNetworkWithTile(context, state, stepEnterAccountBloc),
+          if (storage.selectedNode.name != "ZeroPass Server")
+            TextFormField(
+              controller: _accountTextController,
+              decoration: InputDecoration(
+                labelText: 'Account name',
+              ),
+              inputFormatters: <TextInputFormatter>[
+                WhitelistingTextInputFormatter(RegExp(r'\b[a-z1-5.]+')),
+                LengthLimitingTextInputFormatter(13)
+              ],
+              validator: (value) =>
+                  stepEnterAccountBloc.validatorFunction(value, context)
+                      ? stepEnterAccountBloc.validatorText
+                      : null,
+              onChanged: (value) {
+                //save to storage
+                StepDataEnterAccount storageStepEnterAccount =
+                    _storage.getStorageData(0);
+                storageStepEnterAccount.accountID = _accountTextController.text;
 
-        onChanged: (value) {
-          if (_accountTextController.text != value.toLowerCase())
-            _accountTextController.value = _accountTextController.value
-                .copyWith(text: value.toLowerCase());
-
-          //save to storage
-          StepDataEnterAccount storageStepEnterAccount =
-              _storage.getStorageData(0);
-          storageStepEnterAccount.accountID = _accountTextController.text;
-
-          stepperBloc.liveModifyHeader(0, context);
-        },
-      )
-      //)
-    ])
-    );
+                stepperBloc.liveModifyHeader(0, context);
+              },
+            )
+        ]));
   }
 
   @override
