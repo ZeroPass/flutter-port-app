@@ -73,12 +73,11 @@ class StepEnterAccountBloc extends Bloc<StepEnterAccountEvent, StepEnterAccountS
     }
 
     //is EOS account name correct
-    if (RegExp("^[a-z0-5.]{0,12}[a-p0-5]?\$").hasMatch(value) == false) {
+    if (RegExp("^[a-z1-5.]{0,12}[a-j1-5]?\$").hasMatch(value) == false) {
       print("in reg");
       validatorText = 'Not allowed character. Allowed characters a-z and (\'.\') dot.';
       return true;
     }
-
 
     //when user type 5 or more characters, we check if account exists on chain after fixed time
     if (value.length > 4){
