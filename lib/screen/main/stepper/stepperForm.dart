@@ -26,19 +26,18 @@ class _StepperFormState extends State<StepperForm> {
 
   _StepperFormState({Key key, @required this.steps});
 
-  String onButtonNextPressed(BuildContext context, int currentStep){
+  String onButtonNextPressed(int currentStep) {
     var storage = Storage();
     switch (currentStep) {
       case 0:
         {
           //step 1(Account Name)
-          StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
-          if  (storage.selectedNode.name == "ZeroPass Server")
-            return "";
+          StepDataEnterAccount storageStepEnterAccount =
+              storage.getStorageData(0);
+          if (storage.selectedNode.name == "ZeroPass Server") return "";
           if (storageStepEnterAccount.isUnlocked == false)
             return "Account is not valid.";
           return "";
-
         }
         break;
 
@@ -47,40 +46,43 @@ class _StepperFormState extends State<StepperForm> {
           //step 2(Scan)
           StepDataScan storageStepScan = storage.getStorageData(1);
           String errorMessage = "";
-          if (storageStepScan.documentID == null || storageStepScan.documentID == "")
-            errorMessage +="'Passport No.' is not valid.\n";
+          if (storageStepScan.documentID == null ||
+              storageStepScan.documentID == "")
+            errorMessage += "Passport No. is not valid.\n";
           if (storageStepScan.birth == null)
-            errorMessage +="'Date of Birth' is empty.\n";
+            errorMessage += "Date of Birth is empty.\n";
           if (storageStepScan.validUntil == null)
-            errorMessage +="Date of Expiry' is empty.\n";
+            errorMessage += "Date of Expiry' is empty.\n";
           return errorMessage;
         }
         break;
 
       default:
-        {
-          //statements;
-        }
-        break;
+        FocusScope.of(context).requestFocus(FocusNode());
     }
   }
 
-  Widget showButtonNext(BuildContext context, int currentStep, Function functionOnStepContinue){
+  Widget showButtonNext(
+      BuildContext context, int currentStep, Function functionOnStepContinue) {
     return Row(
       //mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.start,
-      children: <Widget>[Padding(padding: EdgeInsets.only(top: 40), child:
-      PlatformButton (
-        child:Text('Continue',style: TextStyle(color: Colors.white)),
-        onPressed: () {
-          String errors = onButtonNextPressed(context, currentStep);
-          //is button 'next' unlocked
-          if (errors == ""){
-            functionOnStepContinue();
-          }
-          else {
-            CustomAlertDialog(context, "Cannot continue", errors + '\nPlease fill the form with valid data.', (){print("button pressed");} );
-            /*showPlatformDialog(
+      children: <Widget>[
+        Padding(
+            padding: EdgeInsets.only(top: 40),
+            child: PlatformButton(
+              child: Text('Continue', style: TextStyle(color: Colors.white)),
+              onPressed: () {
+                String errors = onButtonNextPressed(currentStep);
+                //is button 'next' unlocked
+                if (errors.isEmpty) {
+                  functionOnStepContinue();
+                } else {
+                  CustomAlertDialog(context, "Cannot continue",
+                      errors + '\nPlease fill the form with valid data.', () {
+                    print("button pressed");
+                  });
+                  /*showPlatformDialog(
               context: context,
               builder: (_) => PlatformAlertDialog(
                 title: Text('Cannot continue'),
@@ -93,13 +95,12 @@ class _StepperFormState extends State<StepperForm> {
                 ],
               ),
             );*/
-          }
-        },/**/
-      ))
+                }
+              }, /**/
+            ))
       ],
     );
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -109,35 +110,33 @@ class _StepperFormState extends State<StepperForm> {
       builder: (BuildContext context, StepperState state) {
         print(MaterialLocalizations.of(context));
         return Stepper(
-                currentStep: state.step,
-                steps: steps,
-                type: StepperType.vertical,
-                onStepTapped: (step) {
-                  //stepperBloc.modifyHeader(state.step, step, context);
-                  stepperBloc.add(StepTapped(step: step));
-                },
-                onStepCancel: () {
-                  stepperBloc.add(StepCancelled());
-                },
-                onStepContinue: () {
-                  //stepperBloc.modifyHeader(state.step, state.step + 1, context);
-                  stepperBloc.add(StepContinue());
-                },
-                controlsBuilder: (BuildContext context,
-                    {VoidCallback onStepContinue, VoidCallback onStepCancel}) {
-                  if (state.step != 2)
-                    return Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: <Widget>[
-                        showButtonNext(context, state.step, onStepContinue)
-                    ],);
-                  else
-                    return Text("");
-
-
-                }
-        );
+            currentStep: state.step,
+            steps: steps,
+            type: StepperType.vertical,
+            onStepTapped: (step) {
+              //stepperBloc.modifyHeader(state.step, step, context);
+              stepperBloc.add(StepTapped(step: step));
+            },
+            onStepCancel: () {
+              stepperBloc.add(StepCancelled());
+            },
+            onStepContinue: () {
+              //stepperBloc.modifyHeader(state.step, state.step + 1, context);
+              stepperBloc.add(StepContinue());
+            },
+            controlsBuilder: (BuildContext context,
+                {VoidCallback onStepContinue, VoidCallback onStepCancel}) {
+              if (state.step != 2)
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: <Widget>[
+                    showButtonNext(context, state.step, onStepContinue)
+                  ],
+                );
+              else
+                return Text("");
+            });
       },
     );
   }
