@@ -103,8 +103,7 @@ class _AuthnState extends State<Authn> {
     if (connectivityResult == ConnectivityResult.none ||
         !await testConnection()) {
       title = 'No Internet connection';
-      msg = 'Internet connection is required in order to '
-          "${AuthnAction.register == AuthnAction.register ? "sign up" : "login"}.";
+      msg = 'An internet connection is required!';
     } else {
       //settingsAction = () => _settingsButton.onPressed();
       title = 'Connection error';
@@ -124,192 +123,10 @@ class _AuthnState extends State<Authn> {
 
   Future<bool> showDG1(final EfDG1 dg1) async {
     return _showDG1Dialog(dg1, msg: 'Server requested additional data');
-    /*return showAlert<bool>(
-        context,
-        Text('DG1'),
-        Container(
-            height: MediaQuery.of(context).size.height - 50,
-            child: Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Column(children: <Widget>[
-                  const SizedBox(height: 10),
-                  const SizedBox(height: 20),
-                  SingleChildScrollView(
-                      child: Card(
-                          child: Padding(
-                              padding: EdgeInsets.all(16.0),
-                              child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: <Widget>[
-                                    Text(
-                                      'Passport Data',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 18),
-                                    ),
-                                    const SizedBox(height: 5),
-                                    Row(children: <Widget>[
-                                      Expanded(
-                                          child: Text(
-                                        'Passport type:',
-                                        style: TextStyle(fontSize: 16),
-                                      )),
-                                      Expanded(
-                                          child: Text(dg1.mrz.documentCode,
-                                              style: TextStyle(fontSize: 16)))
-                                    ]),
-                                    Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: <Widget>[
-                                          Expanded(
-                                              child: Text('Passport no.:',
-                                                  style:
-                                                      TextStyle(fontSize: 16))),
-                                          Expanded(
-                                              child: Text(
-                                                  dg1.mrz.documentNumber,
-                                                  style:
-                                                      TextStyle(fontSize: 16))),
-                                        ]),
-                                    Row(children: <Widget>[
-                                      Expanded(
-                                          child: Text('Date of Expiry:',
-                                              style: TextStyle(fontSize: 16))),
-                                      Expanded(
-                                          child: Text(
-                                              dg1.mrz.dateOfExpiry
-                                                  .toIso8601String(),
-                                              style: TextStyle(fontSize: 16)))
-                                    ]),
-                                    Row(children: <Widget>[
-                                      Expanded(
-                                          child: Text('Issuing Country:',
-                                              style: TextStyle(fontSize: 16))),
-                                      Expanded(
-                                          child: Text(dg1.mrz.country,
-                                              style: TextStyle(fontSize: 16)))
-                                    ]),
-                                    const SizedBox(height: 30),
-                                    Text(
-                                      'Personal Data',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 18),
-                                    ),
-                                    const SizedBox(height: 5),
-                                    Row(children: <Widget>[
-                                      Expanded(
-                                          child: Text('Name:',
-                                              style: TextStyle(fontSize: 16))),
-                                      Expanded(
-                                          child: Text(dg1.mrz.firstName,
-                                              style: TextStyle(fontSize: 16))),
-                                    ]),
-                                    Row(
-                                      children: <Widget>[
-                                        Expanded(
-                                            child: Text('Last Name',
-                                                style:
-                                                    TextStyle(fontSize: 16))),
-                                        Expanded(
-                                            child: Text(dg1.mrz.lastName,
-                                                style:
-                                                    TextStyle(fontSize: 16))),
-                                      ],
-                                    ),
-                                    Row(children: <Widget>[
-                                      Expanded(
-                                          child: Text('Date of Birth:',
-                                              style: TextStyle(fontSize: 16))),
-                                      Expanded(
-                                          child: Text(
-                                              dg1.mrz.dateOfBirth
-                                                  .toIso8601String(),
-                                              style: TextStyle(fontSize: 16))),
-                                    ]),
-                                    Row(children: <Widget>[
-                                      Expanded(
-                                          child: Text('Sex:',
-                                              style: TextStyle(fontSize: 16))),
-                                      Expanded(
-                                        child: Text(
-                                            dg1.mrz.sex.isEmpty
-                                                ? '/'
-                                                : dg1.mrz.sex == 'M'
-                                                    ? 'Male'
-                                                    : 'Female',
-                                            style: TextStyle(fontSize: 16)),
-                                      )
-                                    ]),
-                                    Row(children: <Widget>[
-                                      Expanded(
-                                          child: Text('Nationality:',
-                                              style: TextStyle(fontSize: 16))),
-                                      Expanded(
-                                          child: Text(dg1.mrz.country,
-                                              style: TextStyle(fontSize: 16))),
-                                    ]),
-                                    Row(children: <Widget>[
-                                      Text('Additional Data:',
-                                          style: TextStyle(fontSize: 16)),
-                                      Spacer(),
-                                      Text(dg1.mrz.optionalData,
-                                          style: TextStyle(fontSize: 16)),
-                                      Spacer()
-                                    ]),
-                                  ])))),
-                  Spacer(flex: 60),
-                  /*Wrap(
-                     direction: Axis.horizontal,
-                     runSpacing: 10,
-                     spacing: 10,
-                     children: <Widget>[...actions])*/
-                ]))),
-        [
-          FlatButton(
-              child: const Text(
-                'OK',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              onPressed: () => Navigator.pop(context, true))
-        ]);*/
   }
 
   Future<bool> _handleDG1Request(final EfDG1 dg1) async {
     return _showDG1Dialog(dg1, msg: 'Server requested additional data');
-    /*return showAlert<bool>(
-        context,
-        Text('Data Required'),
-        Text(
-            'Server requested your personal data from passport in order to login.\n\nSend personal data to server?'),
-        [
-          FlatButton(
-              child: Text('Cancel',
-                  style: TextStyle(
-                      color: Theme.of(context).errorColor,
-                      fontWeight: FontWeight.bold)),
-              onPressed: () => Navigator.pop(context, false)),
-          FlatButton(
-              child: const Text(
-                'View',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              onPressed: () {
-                showDG1(dg1);
-                /*return Navigator.push(
-                              context,
-                              CupertinoPageRoute (
-                                  builder: (context) => EfDG1View(dg1), fullscreenDialog: true),
-                            */
-              }),
-          FlatButton(
-              child: const Text(
-                'Send',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              onPressed: () => Navigator.pop(context, true))
-        ]);*/
   }
 
   Future<AuthnData> _getAuthnData(
@@ -344,12 +161,11 @@ class _AuthnState extends State<Authn> {
 
     StepDataScan storageStepScan = storage.getStorageData(1);
     if (storageStepScan.documentID == null)
-      missingValuesText += "Passport Number(Step 'Scan') is not valid.\n";
+      missingValuesText += "Passport Number (Step 'Passport Info') is not valid.\n";
     if (storageStepScan.birth == null)
-      missingValuesText += "Date of birth (Step 'Scan') is not valid.\n";
+      missingValuesText += "Date of Birth (Step 'Passport Info') is not valid.\n";
     if (storageStepScan.validUntil == null)
-      missingValuesText += "Date of Expiratio (Step 'Scan') is not valid.\n";
-
+      missingValuesText += "Date of Expiration (Step 'Passport Info') is not valid.\n";
     return missingValuesText;
   }
 
@@ -411,9 +227,9 @@ class _AuthnState extends State<Authn> {
             }
             if (sendDG1) {
               if (!await _showDG1Dialog(data.dg1)) {
-                // User said no
-                // Throw an exception which will not show error dialog
-                // just to get us out of this scope.
+                // User said no.
+                // Throw an exception just to get us out of this scope.
+                // An exception should not show any error dialog to user.
                 throw PassportScannerError('Get me out');
               }
             }
@@ -640,7 +456,7 @@ class _AuthnState extends State<Authn> {
                       fakeAuthnData: true, sendDG1: true);
                 else if (widget._selectedAction == "LOGIN")
                   startAction(context, AuthnAction.login);
-              }, /**/
+              },
             ))
       ],
     );
@@ -671,13 +487,6 @@ class _AuthnState extends State<Authn> {
       {String msg = 'Data to be sent'}) async {
     _log.debug('Showing EfDG1 dialog');
     return showEfDG1Dialog(context, dg1, message: msg, actions: [
-      /*makeButton(
-          context: context,
-          text: 'SEND',
-          margin: null,
-          onPressed: () {
-            Navigator.pop(context, true);
-          }),*/
       Center(child:
       CustomButton(title:"Send",
           fontColor: Colors.white,
@@ -695,37 +504,6 @@ class _AuthnState extends State<Authn> {
           callbackOnPressed: ()  {
             Navigator.pop(context, false);
           })),
-
-      /*OutlineButton(
-        onPressed: () => Navigator.pop(context, false),
-        borderSide: BorderSide(
-          width: 1,
-          color: Theme.of(context).primaryColor,
-        ),
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
-        highlightedBorderColor: Theme.of(context).primaryColor,
-        child: Container(
-          padding: const EdgeInsets.symmetric(
-            vertical: 20.0,
-            horizontal: 20.0,
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Expanded(
-                child: Text(
-                  'CANCEL',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      color: Theme.of(context).primaryColor,
-                      fontWeight: FontWeight.bold),
-                ),
-              ),
-            ],
-          ),
-        ),
-      )*/
     ]);
   }
 
