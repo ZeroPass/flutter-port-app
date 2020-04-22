@@ -204,7 +204,7 @@ class _AuthnState extends State<Authn> {
       if (action == AuthnAction.register)
         await _client.register((challenge) async {
           StepDataScan storageStepScan = storage.getStorageData(1);
-          _hideBusyIndicator();
+          await _hideBusyIndicator();
           return _getAuthnData(
                   challenge,
                   AuthnAction.register,
@@ -245,8 +245,7 @@ class _AuthnState extends State<Authn> {
         }, sendEfDG1: sendDG1);
 
       final srvMsgGreeting = await _client.requestGreeting();
-      await _hideBusyIndicator(syncWait: Duration(microseconds: 0));
-
+      await _hideBusyIndicator();
       showAlert<bool>(context, Text('Attestation Succeeded'),
           Text(_formatAttestationSuccess(srvMsgGreeting)), [
         FlatButton(
@@ -324,7 +323,7 @@ class _AuthnState extends State<Authn> {
       }
 
       // Show alert dialog
-      await _hideBusyIndicator(syncWait: Duration(microseconds: 100));
+      await _hideBusyIndicator();
       if (alertMsg != null && alertTitle != null) {
         await showAlert(context, Text(alertTitle), Text(alertMsg), [
           FlatButton(
