@@ -135,10 +135,10 @@ class _AuthnState extends State<Authn> {
       String passportID,
       DateTime birthDate,
       DateTime validUntil) async {
-    return scanPassport(challenge, action, passportID, birthDate, validUntil);
+    return _scanPassport(challenge, action, passportID, birthDate, validUntil);
   }
 
-  Future<AuthnData> scanPassport(ProtoChallenge challenge, AuthnAction action,
+  Future<AuthnData> _scanPassport(ProtoChallenge challenge, AuthnAction action,
       String passportID, DateTime birthDate, DateTime validUntilDate) async {
     assert(challenge != null);
     final dbaKeys = DBAKeys(passportID, birthDate, validUntilDate);
@@ -156,16 +156,21 @@ class _AuthnState extends State<Authn> {
     String missingValuesText = '';
     Storage storage = Storage();
     StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
-    if (storageStepEnterAccount.isUnlocked == false && storage.selectedNode.name != "ZeroPass Server")
-      missingValuesText +=  "Account name (Step 'Enter account') is not valid.\n";
+    if (storageStepEnterAccount.isUnlocked == false &&
+        storage.selectedNode.name != "ZeroPass Server")
+      missingValuesText +=
+          "Account name (Step 'Enter account') is not valid.\n";
 
     StepDataScan storageStepScan = storage.getStorageData(1);
     if (storageStepScan.documentID == null)
-      missingValuesText += "Passport Number (Step 'Passport Info') is not valid.\n";
+      missingValuesText +=
+          "Passport Number (Step 'Passport Info') is not valid.\n";
     if (storageStepScan.birth == null)
-      missingValuesText += "Date of Birth (Step 'Passport Info') is not valid.\n";
+      missingValuesText +=
+          "Date of Birth (Step 'Passport Info') is not valid.\n";
     if (storageStepScan.validUntil == null)
-      missingValuesText += "Date of Expiration (Step 'Passport Info') is not valid.\n";
+      missingValuesText +=
+          "Date of Expiration (Step 'Passport Info') is not valid.\n";
     return missingValuesText;
   }
 
@@ -487,23 +492,24 @@ class _AuthnState extends State<Authn> {
       {String msg = 'Data to be sent'}) async {
     _log.debug('Showing EfDG1 dialog');
     return showEfDG1Dialog(context, dg1, message: msg, actions: [
-      Center(child:
-      CustomButton(title:"Send",
-          fontColor: Colors.white,
-          backgroundColor: Colors.blue,
-          //minWidth: MediaQuery.of(context).size.width,
-          callbackOnPressed: ()  {
-            Navigator.pop(context, true);
-          })),
-
-      Center(child:
-      CustomButton(title:"Cancel",
-          fontColor: Colors.blue,
-          backgroundColor: Colors.white,
-          //minWidth: MediaQuery.of(context).size.width-100,
-          callbackOnPressed: ()  {
-            Navigator.pop(context, false);
-          })),
+      Center(
+          child: CustomButton(
+              title: "Send",
+              fontColor: Colors.white,
+              backgroundColor: Colors.blue,
+              //minWidth: MediaQuery.of(context).size.width,
+              callbackOnPressed: () {
+                Navigator.pop(context, true);
+              })),
+      Center(
+          child: CustomButton(
+              title: "Cancel",
+              fontColor: Colors.blue,
+              backgroundColor: Colors.white,
+              //minWidth: MediaQuery.of(context).size.width-100,
+              callbackOnPressed: () {
+                Navigator.pop(context, false);
+              })),
     ]);
   }
 
