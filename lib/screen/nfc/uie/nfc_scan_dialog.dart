@@ -19,8 +19,8 @@ class NfcScanDialog {
   /// Constructs new [NfcScanDialog] using [context] and optionally
   /// [onCancel] callback which is called when user presses cancel button.
   /// If callback [onCancel] is not provided or null the cancel button will be hidden.
-  NfcScanDialog(this.context, {Function() onCancel}) : _onCancel = onCancel {
-    _showCancelButton = _onCancel != null;
+  NfcScanDialog(this.context, {Function() onCancel}) : _onCancelCB = onCancel {
+    _showCancelButton = _onCancelCB != null;
   }
 
   /// Shows bottom dialog with optionally [message] string.
@@ -43,7 +43,7 @@ class NfcScanDialog {
 
   String _msg;
   String _iconAnimation = _IconAnimations.animWaiting;
-  final Function _onCancel;
+  final Function _onCancelCB;
   StateSetter _sheetSetter;
   bool _showCancelButton;
 
@@ -63,6 +63,7 @@ class NfcScanDialog {
       return null;
     }
 
+    _showCancelButton = _onCancelCB != null;
     _iconAnimation = _IconAnimations.animWaiting;
     _msg = msg ?? '';
     return showModalBottomSheet(
@@ -77,56 +78,52 @@ class NfcScanDialog {
               builder: (BuildContext context, StateSetter setState) {
             _sheetSetter = setState;
             return WillPopScope(
-              onWillPop: () async => false,
-              child: Container(
-                height: MediaQuery.of(context).size.width,
-                child: Padding(
-                    padding: EdgeInsets.all(30.0),
-                    child: Center(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.max,
-                        children: <Widget>[
-                          Text('Ready to Scan',
-                              style:
-                                  TextStyle(fontSize: 25, color: Colors.grey)),
-                          const SizedBox(height: 30),
-                          Container(
-                              width: 100,
-                              height: 100,
-                              child: FlareActor.asset(
-                                _IconAnimations.file,
-                                alignment: Alignment.center,
-                                fit: BoxFit.cover,
-                                animation: _iconAnimation,
-                              )),
-                          const SizedBox(height: 15),
-                          Container(
-                              height: 60,
-                              child: Row(children: <Widget>[
-                                Expanded(
-                                    child: Text(_msg,
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(fontSize: 16)))
-                              ])),
-                          const SizedBox(height: 10),
-
-                          Container(
-                              width: MediaQuery.of(context).size.width,
-                              margin: null,
-                              alignment: Alignment.center,
-                              child: Row(children: <Widget>[
-                                Expanded(
-                                    child: CustomButton(title:"Cancel",
-                                        fontColor: Colors.blue,
-                                        backgroundColor: Colors.white,
-                                        callbackOnPressed: () async {
-                                              await _closeBottomSheet();
-                                              if (_onCancel != null) {
-                                                return await _onCancel();
-                                              }
-                                        }))
-                              ]))
+                onWillPop: () async => false,
+                child: Container(
+                    height: MediaQuery.of(context).size.width,
+                    child: Padding(
+                        padding: EdgeInsets.all(30.0),
+                        child: Center(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.max,
+                            children: <Widget>[
+                              Text('Ready to Scan',
+                                  style: TextStyle(
+                                      fontSize: 25, color: Colors.grey)),
+                              const SizedBox(height: 30),
+                              Container(
+                                  width: 100,
+                                  height: 100,
+                                  child: FlareActor.asset(
+                                    _IconAnimations.file,
+                                    alignment: Alignment.center,
+                                    fit: BoxFit.cover,
+                                    animation: _iconAnimation,
+                                  )),
+                              const SizedBox(height: 15),
+                              Container(
+                                  height: 60,
+                                  child: Row(children: <Widget>[
+                                    Expanded(
+                                        child: Text(_msg,
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(fontSize: 16)))
+                                  ])),
+                              const SizedBox(height: 10),
+                              if(_showCancelButton)
+                              Container(
+                                  width: MediaQuery.of(context).size.width,
+                                  margin: null,
+                                  alignment: Alignment.center,
+                                  child: Row(children: <Widget>[
+                                    Expanded(
+                                        child: CustomButton(
+                                            title: "Cancel",
+                                            fontColor: Colors.blue,
+                                            backgroundColor: Colors.white,
+                                            callbackOnPressed: _onCancel))
+                                  ]))
                               /*makeButton(
                                   visible: _showCancelButton,
                                   context: context,
@@ -138,9 +135,9 @@ class NfcScanDialog {
                                       return await _onCancel();
                                     }
                                   })*/
-                        ],
-                      ),
-                    ))));
+                            ],
+                          ),
+                        ))));
           });
         });
   }
@@ -161,7 +158,8 @@ class NfcScanDialog {
         });
 
         _sheetSetter = null;
-        if (delayClosing != null) { // Delay closing dialog to display message
+        if (delayClosing != null) {
+          // Delay closing dialog to display message
           await Future.delayed(delayClosing);
         }
       } else {
@@ -169,6 +167,13 @@ class NfcScanDialog {
       }
 
       Navigator.pop(context);
+    }
+  }
+
+  Future<void> _onCancel() async {
+    await _closeBottomSheet();
+    if (_onCancelCB != null) {
+      return await _onCancelCB();
     }
   }
 }
