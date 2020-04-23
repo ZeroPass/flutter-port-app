@@ -1,4 +1,5 @@
 //  Created by smlu, copyright © 2020 ZeroPass. All rights reserved.
+import 'package:async/async.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flare_flutter/provider/asset_flare.dart';
 import 'package:flutter/cupertino.dart';
@@ -27,7 +28,8 @@ class NfcScanDialog {
   Future<T> show<T>({String message}) {
     final f = _showBottomSheet<T>(message);
     f.then((value) async {
-      if (_sheetSetter != null) { // dialog was closed without user clicking cancel button
+      if (_sheetSetter != null) {
+        // dialog was closed without user clicking cancel button
         _sheetSetter = null;
         await _onCancel();
       }
@@ -51,8 +53,10 @@ class NfcScanDialog {
 
   String _msg;
   String _iconAnimation = _IconAnimations.animWaiting;
-  final Function _onCancelCB;
   StateSetter _sheetSetter;
+
+  CancelableOperation _closingOperation;
+  final Function _onCancelCB;
   bool _showCancelButton;
 
   void _setMessage(final String msg) {
@@ -119,26 +123,26 @@ class NfcScanDialog {
                                             style: TextStyle(fontSize: 16)))
                                   ])),
                               const SizedBox(height: 10),
-                              if(_showCancelButton)
-                              Container(
-                                  width: MediaQuery.of(context).size.width,
-                                  margin: null,
-                                  alignment: Alignment.center,
-                                  child: Row(children: <Widget>[
-                                    Expanded(
-                                        child: CustomButton(
-                                            title: "Cancel",
-                                            fontColor: Colors.blue,
-                                            backgroundColor: Colors.white,
-                                            callbackOnPressed: _onCancel))
-                                  ]))
+                              if (_showCancelButton)
+                                Container(
+                                    width: MediaQuery.of(context).size.width,
+                                    margin: null,
+                                    alignment: Alignment.center,
+                                    child: Row(children: <Widget>[
+                                      Expanded(
+                                          child: CustomButton(
+                                              title: "Cancel",
+                                              fontColor: Colors.blue,
+                                              backgroundColor: Colors.white,
+                                              callbackOnPressed: _onCancel))
+                                    ]))
                               /*makeButton(
                                   visible: _showCancelButton,
                                   context: context,
                                   text: 'cancel',
                                   margin: null,
                                   onPressed: () async {
-                                    await _closeBottomSheet();
+                                    await _onCancel;
                                     if (_onCancel != null) {
                                       return await _onCancel();
                                     }
@@ -151,7 +155,12 @@ class NfcScanDialog {
   }
 
   Future<void> _closeBottomSheet(
-      {String message, String errorMessage, Duration delayClosing}) async {
+      {String message, String errorMessage, Duration delayClosing}) {
+    if(_closingOperation != null) {
+      _closingOperation.cancel();
+      _closingOperation = null;
+    }
+
     if (_sheetSetter != null) {
       if ((message != null || errorMessage != null)) {
         _sheetSetter(() {
@@ -165,23 +174,35 @@ class NfcScanDialog {
           }
         });
 
-        _sheetSetter = null;
         if (delayClosing != null) {
           // Delay closing dialog to display message
-          await Future.delayed(delayClosing);
+          _sheetSetter = null;
+          _closingOperation = CancelableOperation.fromFuture(
+              Future.delayed(delayClosing)
+          ).then((value) {
+            if (_sheetSetter != null) {
+              _sheetSetter = null;
+              Navigator.pop(context);
+            }
+          });
+          return _closingOperation.valueOrCancellation();
         }
-      } else {
-        _sheetSetter = null;
       }
-
+      _sheetSetter = null;
       Navigator.pop(context);
     }
   }
 
   Future<void> _onCancel() async {
-    await _closeBottomSheet();
-    if (_onCancelCB != null) {
-      return await _onCancelCB();
+    if (_closingOperation != null) {
+      await _closingOperation.cancel();
+      _closingOperation = null;
+      _sheetSetter = null;
+    } else {
+      await _closeBottomSheet();
+      if (_onCancelCB != null) {
+        return await _onCancelCB();
+      }
     }
   }
 }
