@@ -25,7 +25,15 @@ class NfcScanDialog {
 
   /// Shows bottom dialog with optionally [message] string.
   Future<T> show<T>({String message}) {
-    return _showBottomSheet(message);
+    final f = _showBottomSheet<T>(message);
+    f.then((value) async {
+      if (_sheetSetter != null) { // dialog was closed without user clicking cancel button
+        _sheetSetter = null;
+        await _onCancel();
+      }
+      return value;
+    });
+    return Future.value(f);
   }
 
   /// Hides dialog.
