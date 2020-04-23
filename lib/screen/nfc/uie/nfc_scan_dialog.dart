@@ -26,16 +26,18 @@ class NfcScanDialog {
 
   /// Shows bottom dialog with optionally [message] string.
   Future<T> show<T>({String message}) {
-    final f = _showBottomSheet<T>(message);
-    f.then((value) async {
-      if (_sheetSetter != null) {
+    return _showBottomSheet<T>(message).then((value) async {
+      if (_closingOperation != null) {
+        await _closingOperation.cancel();
+        _closingOperation = null;
+      }
+      else if (_sheetSetter != null) {
         // dialog was closed without user clicking cancel button
         _sheetSetter = null;
         await _onCancel();
       }
       return value;
     });
-    return Future.value(f);
   }
 
   /// Hides dialog.
@@ -156,12 +158,12 @@ class NfcScanDialog {
 
   Future<void> _closeBottomSheet(
       {String message, String errorMessage, Duration delayClosing}) {
-    if(_closingOperation != null) {
-      _closingOperation.cancel();
-      _closingOperation = null;
-    }
-
     if (_sheetSetter != null) {
+      if(_closingOperation != null) {
+        _closingOperation.cancel();
+        _closingOperation = null;
+      }
+
       if ((message != null || errorMessage != null)) {
         _sheetSetter(() {
           _showCancelButton = false;
@@ -176,7 +178,6 @@ class NfcScanDialog {
 
         if (delayClosing != null) {
           // Delay closing dialog to display message
-          _sheetSetter = null;
           _closingOperation = CancelableOperation.fromFuture(
               Future.delayed(delayClosing)
           ).then((value) {
@@ -194,15 +195,9 @@ class NfcScanDialog {
   }
 
   Future<void> _onCancel() async {
-    if (_closingOperation != null) {
-      await _closingOperation.cancel();
-      _closingOperation = null;
-      _sheetSetter = null;
-    } else {
-      await _closeBottomSheet();
-      if (_onCancelCB != null) {
-        return await _onCancelCB();
-      }
+    await _closeBottomSheet();
+    if (_onCancelCB != null) {
+      return await _onCancelCB();
     }
   }
 }
