@@ -33,6 +33,8 @@ dependencies:
   equatable: ^1.1.1
   connectivity: ^0.4.8+2
   dart_countries_states: ^0.0.8
+  json_serializable: ^3.3.0
+  flutter_secure_storage: ^3.3.3
 
   #shared_preferences_settings: ^1.2.0
   card_settings: ^1.8.0

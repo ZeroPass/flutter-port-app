@@ -108,7 +108,6 @@ class _StepperFormState extends State<StepperForm> {
     return BlocBuilder(
       bloc: stepperBloc,
       builder: (BuildContext context, StepperState state) {
-        print(MaterialLocalizations.of(context));
         return Stepper(
             currentStep: state.step,
             steps: steps,

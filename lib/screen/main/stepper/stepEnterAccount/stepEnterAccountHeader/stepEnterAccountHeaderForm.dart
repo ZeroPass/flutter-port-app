@@ -39,13 +39,20 @@ class _StepEnterAccountHeaderFormState
           focusColor: Colors.green,
           highlightColor: Colors.green,
           onTap: () {
-            //change state on stepper
-            stepperBloc.add(StepTapped(step: 0));
+            //change state on stepper - action removed
+            //stepperBloc.add(StepTapped(step: 0));
+
             //change state on step main window
-            stepEnterAccountBloc.add(AccountDelete());
+            stepEnterAccountBloc.add(AccountDelete(network: storage.getNode()));
 
             //update selected node in storage
             storage.selectedNode = storage.getDefaultNode();
+
+            StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
+            storageStepEnterAccount.accountID = null;
+
+            //save
+            storage.save();
 
             //change state on step header
             stepEnterAccountHeaderBloc.add(WithoutAccountIDEvent(
@@ -67,7 +74,6 @@ class _StepEnterAccountHeaderFormState
   Widget build(BuildContext context) {
     final stepEnterAccountHeaderBloc =
         BlocProvider.of<StepEnterAccountHeaderBloc>(context);
-    //final stepEnterAccountBloc = BlocProvider.of<StepEnterAccountBloc>(context);
     return BlocBuilder(
       bloc: stepEnterAccountHeaderBloc,
       builder: (BuildContext context, StepEnterAccountHeaderState state) {

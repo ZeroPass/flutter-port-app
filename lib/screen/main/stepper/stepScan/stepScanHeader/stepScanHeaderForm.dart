@@ -48,6 +48,9 @@ class _StepScanHeaderFormState
             storageStepScan.validUntil = null;
             storageStepScan.birth = null;
 
+            //save storage
+            storage.save();
+
             //change state on step main window
             stepScanBloc.add(NoDataScan());
 
@@ -86,7 +89,7 @@ class _StepScanHeaderFormState
                         alignment: Alignment.centerRight,
                         transform: new Matrix4.identity()..scale(0.8),
                         child: Row(children: <Widget>[
-                          if (state is WithDataState && state.documentID != null)
+                          if (state is WithDataState && state.documentID != null && state.documentID.length > 0)
                             Container(child: CustomChip(['No.']), margin: EdgeInsets.only(left: 3.0)),
                           if (state is WithDataState && state.birth != null)
                             Container(child: CustomChip(['Birth']), margin: EdgeInsets.only(left: 3.0)),

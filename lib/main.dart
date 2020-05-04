@@ -58,18 +58,40 @@ void fillDatabase()
 
   StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
   storageStepEnterAccount.isUnlocked = true;
+  /*
+  storage.save(callback:
+      (isValid){
+        print(isValid);
+      });
 
-  //StepDataScan storageStepScan = storage.getStorageData(1);
-  //storageStepScan.documentID = "";
-  //storageStepScan.birth = DateTime(2000, 1,1);
-  //storageStepScan.validUntil = DateTime(2100, 1,1);
+  storage.load(callback:
+  (isValid, object){
+    print(isValid);
+    print(object);
+  });
+  */
+}
+
+/*
+* To load from disc previously stored values
+*/
+void loadDatabase({Function callbackStatus})
+{
+  Storage storage = new Storage();
+  storage.load(callback: (isAlreadyUpdated, isValid){
+    if (callbackStatus != null)
+      callbackStatus(isAlreadyUpdated, isValid);
+  });
 }
 
 class PassId extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     fillDatabase();
+    loadDatabase();
+
     return PlatformProvider(
         //initialPlatform: initialPlatform,
         builder: (BuildContext context) => PlatformApp(
@@ -145,7 +167,9 @@ class _PassIdWidgetState extends State<PassIdWidget>
             BlocProvider<StepperBloc>(
                 create: (BuildContext context) => StepperBloc(maxSteps: 3))
           ],
-          child: Scaffold(
+          child:
+
+          Scaffold(
               body: StepperForm(steps: [
             Step(
               title: StepEnterAccountHeaderForm(),

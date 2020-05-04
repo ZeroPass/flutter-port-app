@@ -9,7 +9,16 @@ import 'package:eosio_passid_mobile_app/settings/settings.dart';
 import 'package:dmrtd/src/proto/dba_keys.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:json_annotation/json_annotation.dart';
+import 'package:eosio_passid_mobile_app/utils/storageSave.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+
+/*
+ * StorageNode
+ */
+
+@JsonSerializable(nullable: false)
 class StorageNode {
   String name;
   String host;
@@ -39,6 +48,9 @@ class StorageNode {
         }
   }
 
+  factory StorageNode.fromJson(Map<String, dynamic> json) => _$StorageNodeFromJson(json);
+  Map<String, dynamic> toJson() => _$StorageNodeToJson(this);
+
   static int hasEncryptedEndpoint(String host){
     if (host.toLowerCase().contains("https://")) return 1;//encrypted endpoint
     else if (host.toLowerCase().contains("http://")) return 0;//not encrypted endpoint
@@ -53,6 +65,32 @@ class StorageNode {
   }
 }
 
+StorageNode _$StorageNodeFromJson(Map<String, dynamic> json) {
+  return StorageNode(
+    name: json['name'] as String,
+    host: json['host'] as String,
+    isEncryptedEndpoint: json['isEncryptedEndpoint'] as bool,
+    port: json['port'] as int,
+    networkType: getNetworkTypeFromString(json['networkType']),
+    chainID: json['chainID'] as String,
+  );
+}
+
+Map<String, dynamic> _$StorageNodeToJson(StorageNode instance) => <String, dynamic>{
+  'name': instance.name,
+  'host': instance.host,
+  'isEncryptedEndpoint': instance.isEncryptedEndpoint,
+  'port': instance.port,
+  'networkType': instance.networkType.toString(),
+  'chainID': instance.chainID,
+};
+
+
+
+/*
+ * StorageServer
+ */
+@JsonSerializable()
 class StorageServer {
   String name;
   String host;
@@ -85,8 +123,35 @@ class StorageServer {
     String port = (this.port != null)? ":"+ this.port.toString() : "";
     return prefix + this.host + port;
   }
+
+  factory StorageServer.fromJson(Map<String, dynamic> json) => _$StorageServerFromJson(json);
+  Map<String, dynamic> toJson() => _$StorageServerToJson(this);
 }
 
+StorageServer _$StorageServerFromJson(Map<String, dynamic> json) {
+  return StorageServer(
+    name: json['name'] as String,
+    host: json['host'] as String,
+    isEncryptedEndpoint: json['isEncryptedEndpoint'] as bool,
+    port: json['port'] as int,
+    timeoutInSeconds: json['timeoutInSeconds'] as int,
+  );
+}
+
+Map<String, dynamic> _$StorageServerToJson(StorageServer instance) => <String, dynamic>{
+  'name': instance.name,
+  'host': instance.host,
+  'isEncryptedEndpoint': instance.isEncryptedEndpoint,
+  'port': instance.port,
+  'timeoutInSeconds': instance.timeoutInSeconds,
+};
+
+
+
+/*
+ * StorageServerTemporary
+ */
+@JsonSerializable()
 class StorageServerTemporary extends StorageServer{
   String accountID;
   String chainID;
@@ -96,6 +161,7 @@ class StorageServerTemporary extends StorageServer{
         @required host,
         @required port,
         @required isEncryptedEndpoint,
+        @required timeoutInSeconds,
         @required accountID,
         chainID
       }) {
@@ -106,7 +172,33 @@ class StorageServerTemporary extends StorageServer{
 
     this.chainID = (chainID != null? chainID: null);
   }
+
+  factory StorageServerTemporary.fromJson(Map<String, dynamic> json) => _$StorageServerTemporaryFromJson(json);
+  Map<String, dynamic> toJson() => _$StorageServerTemporaryToJson(this);
 }
+
+StorageServer _$StorageServerTemporaryFromJson(Map<String, dynamic> json) {
+  return StorageServerTemporary(
+    name: json['name'] as String,
+    host: json['host'] as String,
+    isEncryptedEndpoint: json['isEncryptedEndpoint'] as bool,
+    port: json['port'] as int,
+    timeoutInSeconds: json['timeoutInSeconds'] as int,
+    accountID: json['accountID'] as String,
+    chainID: json['chainID'] as String,
+  );
+}
+
+Map<String, dynamic> _$StorageServerTemporaryToJson(StorageServerTemporary instance) => <String, dynamic>{
+  'name': instance.name,
+  'host': instance.host,
+  'isEncryptedEndpoint': instance.isEncryptedEndpoint,
+  'port': instance.port,
+  'timeoutInSeconds': instance.timeoutInSeconds,
+  'accountID': instance.accountID,
+  'chainID': instance.chainID,
+};
+
 
 class DBAkeyStorage {
   static SharedPreferences prefs;
@@ -144,7 +236,9 @@ class DBAkeyStorage {
 
 int _NUM_OF_STEPS = 3;
 //data stored in the singleton class
+@JsonSerializable()
 class StorageData {
+  bool _isUpdatedInCurrentSession;
   StorageNode selectedNode;
   StorageNode defaultNode;
   List<StorageNode> _nodes;
@@ -152,11 +246,13 @@ class StorageData {
   StorageServer storageServer;
   StorageServerTemporary _storageServerTemporary;
 
+  //this should not be stored on disc
   DBAkeyStorage dbAkeyStorage;
 
 
   StorageData(){
     this._nodes = new List();
+    this._isUpdatedInCurrentSession = false;
     this.selectedNode = null;
     this.defaultNode = null;
     this.storageServer = null;
@@ -169,7 +265,48 @@ class StorageData {
     //initialize every step
     this._steps[0] = StepDataEnterAccount();
     this._steps[1] = StepDataScan();
-    // this._steps[2] =
+  }
+
+  bool get isUpdatedInCurrentSession => _isUpdatedInCurrentSession;
+
+  set isUpdatedInCurrentSession(bool value) {
+    _isUpdatedInCurrentSession = value;
+  }
+
+  void fromStorageData(StorageData item){
+    this.selectedNode = item.selectedNode;
+    this.defaultNode = item.defaultNode;
+    this._nodes = item._nodes;
+    this._steps = item._steps;
+    this.storageServer = item.storageServer;
+    this._storageServerTemporary = item._storageServerTemporary;
+
+    //updated in current session
+    this._isUpdatedInCurrentSession = item.isUpdatedInCurrentSession;
+  }
+
+  StorageData StorageDataDB({StorageNode selectedNode, StorageNode defaultNode, List<StorageNode> nodes, List<StepData> steps, StorageServer storageServer, StorageServerTemporary storageServerTemporary}){
+    this.selectedNode = selectedNode;
+    this.defaultNode = defaultNode;
+    this._nodes = nodes;
+    this._steps = steps;
+    this.storageServer = storageServer;
+    this._storageServerTemporary = storageServerTemporary;
+
+    //updated in current session
+    this._isUpdatedInCurrentSession = true;
+    return this;
+  }
+
+  StorageNode getNode(){
+    StorageNode defaultNode = this.getDefaultNode();
+    StorageNode selectedNode = this.getSelectedNode();
+    return selectedNode != null? selectedNode : defaultNode;
+  }
+
+
+  List<StepData> getStorageDataAll(){
+    return _steps;
   }
 
   StepData getStorageData(int index){
@@ -210,24 +347,102 @@ class StorageData {
     return this.storageServer;
   }
 
+  StorageServer getStorageServerTemporary(){
+    return this._storageServerTemporary;
+  }
+
   DBAkeyStorage getDBAkeyStorage(){
     return this.dbAkeyStorage;
   }
 
+  factory StorageData.fromJson(Map<String, dynamic> json) => _$StorageDataFromJson(json);
+  Map<String, dynamic> toJson() => _$StorageDataToJson(this);
 
+  //save to local storage
+  void save ({Function callback(bool) = null}) async{
+    try {
+      Map<String, dynamic> value = this.toJson();
+      String forStorage =  json.encode(value);// value.toString();
+      final storage = new FlutterSecureStorage();
+      await storage.write(key: "data", value: forStorage);
+      if (callback != null)
+        callback(true);
+    }
+    catch(e){
+      print(e);
+      callback(false);
+    }
+  }
+  void load({Function (bool isAlreadyUpdated, bool isValid) callback}) async{
+    try{
+      Storage storage = Storage();
+      if (storage.isUpdatedInCurrentSession) {
+        if (callback != null)
+          callback(true, false);
+        return;
+      }
+      final storageDB = new FlutterSecureStorage();
+      String value = await storageDB.read(key: "data");
+      storage.fromStorageData(StorageData.fromJson(jsonDecode(value)));
+      if (callback != null)
+        callback(false, true);
+    }
+    catch (e)  {
+      print(e);
+      if (callback != null)
+        callback(true, false);
+    }
+  }
 
 }
 
+ StepDataListfromJson (Map<String, dynamic> list){
+  List<StepData> output = new List();
+  output.add(StepDataEnterAccount.fromJson(list['StepDataEnterAccount']));
+  output.add(StepDataScan.fromJson(list['StepDataScan']));
+  return output;
+}
+
+
+Map<String, dynamic> StepDataListToJson (List<StepData> list){
+  Map<String, dynamic> output = new Map();
+  output['StepDataEnterAccount'] = (list[0] as StepDataEnterAccount).toJson();
+  output['StepDataScan'] = (list[1] as StepDataScan).toJson();
+  return output;
+}
+
+StorageData _$StorageDataFromJson(Map<String, dynamic> json) {
+  StorageData storageData = StorageData();
+  return storageData.StorageDataDB(
+    selectedNode: StorageNode.fromJson(json['selectedNode']) as StorageNode,
+    defaultNode: StorageNode.fromJson(json['defaultNode']),
+    nodes: json['nodes'] != null ? (json['nodes'] as List).map(
+            (e) =>StorageNode.fromJson(e as Map<String, dynamic>)).toList() : null,
+    steps: StepDataListfromJson(json['steps']),
+    storageServer: StorageServer.fromJson(json['storageServer']),
+    storageServerTemporary: json['storageServerTemporary'] != null ? StorageServerTemporary.fromJson(json['storageServerTemporary']) : null,
+  );
+}
+
+Map<String, dynamic> _$StorageDataToJson(StorageData instance) => <String, dynamic>{
+  'selectedNode': instance.selectedNode.toJson(),
+  'defaultNode': instance.defaultNode.toJson(),
+  'nodes': instance.storageNodes() != null?
+            instance.storageNodes().map((item) => item.toJson()).toList() : null,
+  'steps': StepDataListToJson(instance.getStorageDataAll()),
+  'storageServer': instance.storageServer.toJson(),
+  'storageServerTemporary': instance.getStorageServerTemporary()!= null ?
+  instance.getStorageServerTemporary().toJson(): null
+};
+
 //singelton class
 class Storage extends StorageData {
-  static final Storage _singleton = new Storage._internal();
+  static Storage _singleton = new Storage._internal();
 
   factory Storage(){
     StorageData();
     return _singleton;
   }
 
-  Storage._internal(){
-    //initialization your logic here
-  }
+  Storage._internal(){}
 }

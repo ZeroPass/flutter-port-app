@@ -6,9 +6,7 @@ import "package:eosio_passid_mobile_app/screen/main/stepper/stepScan/stepScan.da
 import "package:eosio_passid_mobile_app/screen/main/stepper/stepper.dart";
 import 'package:flutter/cupertino.dart';
 import 'package:eosio_passid_mobile_app/screen/customDatePicker.dart';
-import 'package:eosio_passid_mobile_app/screen/customAlertDialog.dart';
 import 'package:eosio_passid_mobile_app/screen/theme.dart';
-import 'package:eosio_passid_mobile_app/screen/customButton.dart';
 
 class StepScanForm extends StatefulWidget {
   StepScanForm({Key key}) : super(key: key);
@@ -33,11 +31,12 @@ class _StepScanFormState extends State<StepScanForm> {
   void updateFields() {
     var storage = Storage();
     StepDataScan storageStepScan = storage.getStorageData(1);
-    _passportIdTextController.text = storageStepScan.documentID;
-    _birthTextController.text =
-        CustomDatePicker.formatDate(storageStepScan.birth);
-    _validUntilTextController.text =
-        CustomDatePicker.formatDate(storageStepScan.validUntil);
+    _passportIdTextController.text = storageStepScan.documentID != null?
+        storageStepScan.documentID : "";
+    _birthTextController.text = storageStepScan.birth != null?
+        CustomDatePicker.formatDate(storageStepScan.birth) : "";
+    _validUntilTextController.text = storageStepScan.validUntil != null?
+        CustomDatePicker.formatDate(storageStepScan.validUntil) : "";
   }
 
   //clear fields in account form
@@ -60,8 +59,8 @@ class _StepScanFormState extends State<StepScanForm> {
     return BlocBuilder(
       bloc: stepScanBloc,
       builder: (BuildContext context, StepScanState state) {
+        updateFields();
         if (state is StateScan) emptyFields();
-        if (state is FullState) updateFields();
 
         return Form(
             key: _formKey,
@@ -99,6 +98,7 @@ class _StepScanFormState extends State<StepScanForm> {
 
                   //save to storage
                   storageStepScan.documentID = _passportIdTextController.text;
+                  storage.save();
 
                   stepperBloc.liveModifyHeader(1, context);
                 },
@@ -110,15 +110,16 @@ class _StepScanFormState extends State<StepScanForm> {
                   DateTime(DateTime.now().year - 10, DateTime.now().month,
                       DateTime.now().day),
                   /*callback*/ (selectedDate) {
-                /*if (DateTime.now().difference(selectedDate).inDays < 0 ) {
-                          _birthTextController.text = null;
-                          CustomAlertDialog(context, "Date of birth cannot be in the future.");
-                        }*/
-                //save to storage
-                storageStepScan.birth = selectedDate;
-                //update header
-                stepperBloc.liveModifyHeader(1, context);
-              }, _birthTextController),
+                    //save to storage
+                    storageStepScan.birth = selectedDate;
+                    //save storage
+                    storage.save();
+
+                    //update header
+                    stepperBloc.liveModifyHeader(1, context);
+                  },
+                  _birthTextController,
+              ),
               SizedBox(height: 17),
               CustomDatePicker(
                   "Date of Expiry",
@@ -126,12 +127,11 @@ class _StepScanFormState extends State<StepScanForm> {
                       DateTime.now().day + 1),
                   DateTime(2030),
                   /*callback*/ (selectedDate) {
-                /*if (DateTime.now().difference(selectedDate).inDays > 0 ) {
-                        _birthTextController.text = null;
-                        CustomAlertDialog(context, "Date of Expiration should not be in the past.");
-                      }*/
                 //save to storage
                 storageStepScan.validUntil = selectedDate;
+                //save storage
+                storage.save();
+
                 //update header
                 stepperBloc.liveModifyHeader(1, context);
               }, _validUntilTextController)

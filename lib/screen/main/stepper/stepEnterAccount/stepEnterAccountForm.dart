@@ -86,8 +86,9 @@ class _StepEnterAccountFormState extends State<StepEnterAccountForm> {
     });
   }
 
-  Widget selectNetworkWithTile(
-      var context, StepEnterAccountState state, var stepEnterAccountBloc) {
+  Widget selectNetworkWithTile(var context,
+      StepEnterAccountState state,
+      var stepEnterAccountBloc) {
     var storage = Storage();
     return ListTile(
       dense: true,
@@ -101,7 +102,7 @@ class _StepEnterAccountFormState extends State<StepEnterAccountForm> {
                   fontSize: AndroidThemeST().getValues().themeValues["TILE_BAR"]
                       ["SIZE_TEXT"]),
             ),
-            Text(storage.selectedNode.name,
+            Text(storage.getNode().name,
                 style: TextStyle(
                     fontSize: AndroidThemeST()
                         .getValues()
@@ -117,8 +118,6 @@ class _StepEnterAccountFormState extends State<StepEnterAccountForm> {
   Widget body(BuildContext context, StepEnterAccountState state,
       var stepEnterAccountBloc) {
     var storage = Storage();
-    StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
-
     if (state is DeletedState) emptyFields();
     if (state is FullState) updateFields();
 
@@ -146,6 +145,9 @@ class _StepEnterAccountFormState extends State<StepEnterAccountForm> {
                 StepDataEnterAccount storageStepEnterAccount =
                     _storage.getStorageData(0);
                 storageStepEnterAccount.accountID = _accountTextController.text;
+
+                //save storage
+                storage.save();
 
                 stepperBloc.liveModifyHeader(0, context);
               },

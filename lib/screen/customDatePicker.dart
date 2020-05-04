@@ -14,13 +14,13 @@ class CustomDatePicker extends StatefulWidget {
   DateTime firstDate;
   DateTime lastDate;
   DateTime initialDate;
+  DateTime onShowValue;
   TextEditingController textEditingController ;
   Function callbackOnDatePicked;
 
-  CustomDatePicker([@required this.text, @required this.firstDate, @required this.lastDate, this.callbackOnDatePicked, this.textEditingController, this.initialDate,])
-  {
 
-    //textEditingController = new TextEditingController();
+  CustomDatePicker([@required this.text, @required this.firstDate, @required this.lastDate, this.callbackOnDatePicked, this.textEditingController, this.initialDate, this.onShowValue = null])
+  {
   }
 
   @override
@@ -41,6 +41,9 @@ class _CustomDatePicker extends State<CustomDatePicker> {
   _CustomDatePicker();
 
   Widget showAndroidDatePicker(BuildContext context){
+    if (widget.onShowValue != null)
+      widget.textEditingController.text = CustomDatePicker.formatDate(widget.onShowValue);
+
     return TextFormField(
       controller: widget.textEditingController,
       decoration: InputDecoration(labelText: widget.text),
@@ -61,15 +64,7 @@ class _CustomDatePicker extends State<CustomDatePicker> {
 
 
         final pickedDate = await pickDate(context, widget.firstDate, widget.initialDate, widget.lastDate);
-        /*var datePicked = await DatePicker.showSimpleDatePicker(
-          context,
-          initialDate: widget.initialDate,
-          firstDate: widget.firstDate,
-          lastDate: widget.lastDate,
-          dateFormat: "dd-MMMM-yyyy",
-          locale: DateTimePickerLocale.en_us,
-        );*/
-        //var t = DateFormat.yMMMd().
+
         if (pickedDate != null) {
           widget.textEditingController.text = CustomDatePicker.formatDate(pickedDate);
         }

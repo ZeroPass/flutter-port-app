@@ -11,3 +11,12 @@ var settings ={
     NetworkType.CUSTOM: null
   }
 };
+
+NetworkType getNetworkTypeFromString(String networkAsString) {
+  for (NetworkType element in NetworkType.values) {
+    if (element.toString() == networkAsString) {
+      return element;
+    }
+  }
+  return null;
+}

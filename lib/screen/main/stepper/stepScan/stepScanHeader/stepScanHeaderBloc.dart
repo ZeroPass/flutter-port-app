@@ -1,31 +1,37 @@
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepScan/stepScanHeader/stepScanHeader.dart';
+import 'package:eosio_passid_mobile_app/screen/main/stepper/stepScan/stepScan.dart';
 import 'package:bloc/bloc.dart';
-import 'package:eosio_passid_mobile_app/screen/main/stepper/stepper.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:async';
-import 'package:eosio_passid_mobile_app/utils/storage.dart';
-import 'package:flutter/material.dart';
-import 'package:equatable/equatable.dart';
-import 'dart:math';
-
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
 
 
 class StepScanHeaderBloc extends Bloc<StepScanHeaderEvent, StepScanHeaderState> {
   //final int maxSteps;
-  StepScanHeaderBloc();
+  StepScanHeaderBloc(){
+    updateDataOnUI();
+  }
 
-
-  var validatorText = '';
+  //check if there is any data stored
+  void updateDataOnUI(){
+    //check updated data
+    Storage storage = Storage();
+    storage.load(callback: (isAlreadyUpdated, isValid){
+      if (isAlreadyUpdated == true || isValid == true){
+        StepDataScan storageStepScan = storage.getStorageData(1);
+        if (storageStepScan.documentID != null || storageStepScan.birth != null || storageStepScan.validUntil != null )
+        this.add(WithDataEvent(documentID: storageStepScan.documentID,
+            birth: storageStepScan.birth,
+            validUntil: storageStepScan.validUntil));
+      }
+    });
+  }
 
   @override
   StepScanHeaderState get initialState => WithoutDataState();
 
   @override
   void onError(Object error, StackTrace stacktrace) {
-    // TODO: implement onError
-    print("hey, there is an error");
-    print(error);
     super.onError(error, stacktrace);
   }
 

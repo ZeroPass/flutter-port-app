@@ -1,27 +1,30 @@
-import 'package:equatable/equatable.dart';
+import 'package:eosio_passid_mobile_app/utils/storage.dart';
 
-abstract class StepEnterAccountState /*extends Equatable*/ {
+abstract class StepEnterAccountState {
   var accountID;
+  StorageNode network;
 
-  StepEnterAccountState({this.accountID = ''});
+  StepEnterAccountState({this.accountID = null, this.network = null});
 
   @override
   List<Object> get props => [];
 }
 
 class DeletedState extends StepEnterAccountState {
-  DeletedState(): super();
-
-  @override
-  String toString() => 'StepEnterAccountState:DeletedState { accountID: $accountID }';
-}
-
-class FullState extends StepEnterAccountState {
-  FullState(String accountID){
-    this.accountID = accountID;
+  DeletedState( StorageNode network ){
+    this.network = network;
   }
 
   @override
-  String toString() => 'StepEnterAccountState:FullState { accountID: $accountID }';
+  String toString() => 'StepEnterAccountState:DeletedState { network: $network }';
 }
 
+class FullState extends StepEnterAccountState {
+  FullState(String accountID, StorageNode network ){
+    this.accountID = accountID;
+    this.network = network;
+  }
+
+  @override
+  String toString() => 'StepEnterAccountState:FullState { accountID: $accountID, network: $network }';
+}
