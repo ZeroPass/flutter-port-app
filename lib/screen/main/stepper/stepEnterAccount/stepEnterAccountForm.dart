@@ -30,7 +30,7 @@ class _StepEnterAccountFormState extends State<StepEnterAccountForm> {
   void updateFields() {
     var storage = Storage();
     StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
-    _accountTextController.text = storageStepEnterAccount.accountID;
+    _accountTextController.text = storageStepEnterAccount.accountID != null ? storageStepEnterAccount.accountID : "";
   }
 
   //clear fields in account form
