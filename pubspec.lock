@@ -247,11 +247,9 @@ packages:
   flutter_nfc_kit:
     dependency: transitive
     description:
-      path: "."
-      ref: patch-trnx
-      resolved-ref: d76a815f9992b0b784cb1653acc8d38e9b1fe5ca
-      url: "https://github.com/smlu/flutter_nfc_kit.git"
-    source: git
+      name: flutter_nfc_kit
+      url: "https://pub.dartlang.org"
+    source: hosted
     version: "1.1.0"
   flutter_platform_widgets:
     dependency: "direct main"
