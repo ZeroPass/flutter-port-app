@@ -275,12 +275,10 @@ packages:
   flutter_nfc_kit:
     dependency: transitive
     description:
-      path: "."
-      ref: patch-ios-alert-msg
-      resolved-ref: "3229e79b905fdf4d65cb8ae3f96582f4d51d03b4"
-      url: "https://github.com/smlu/flutter_nfc_kit.git"
-    source: git
-    version: "1.0.2"
+      name: flutter_nfc_kit
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.1.0"
   flutter_platform_widgets:
     dependency: "direct main"
     description:

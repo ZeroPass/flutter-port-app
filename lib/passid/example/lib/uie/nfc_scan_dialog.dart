@@ -1,4 +1,5 @@
 //  Created by smlu, copyright © 2020 ZeroPass. All rights reserved.
+import 'package:async/async.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flare_flutter/provider/asset_flare.dart';
 import 'package:flutter/cupertino.dart';
@@ -18,13 +19,24 @@ class NfcScanDialog {
   /// Constructs new [NfcScanDialog] using [context] and optionally
   /// [onCancel] callback which is called when user presses cancel button.
   /// If callback [onCancel] is not provided or null the cancel button will be hidden.
-  NfcScanDialog(this.context, {Function() onCancel}) : _onCancel = onCancel {
-    _showCancelButton = _onCancel != null;
+  NfcScanDialog(this.context, {Function() onCancel}) : _onCancelCB = onCancel {
+    _showCancelButton = _onCancelCB != null;
   }
 
   /// Shows bottom dialog with optionally [message] string.
   Future<T> show<T>({String message}) {
-    return _showBottomSheet(message);
+    return _showBottomSheet<T>(message).then((value) async {
+      if (_closingOperation != null) {
+        await _closingOperation.cancel();
+        _closingOperation = null;
+      }
+      else if (_sheetSetter != null) {
+        // dialog was closed without user clicking cancel button
+        _sheetSetter = null;
+        await _onCancel();
+      }
+      return value;
+    });
   }
 
   /// Hides dialog.
@@ -42,8 +54,10 @@ class NfcScanDialog {
 
   String _msg;
   String _iconAnimation = _IconAnimations.animWaiting;
-  final Function _onCancel;
   StateSetter _sheetSetter;
+
+  CancelableOperation _closingOperation;
+  final Function _onCancelCB;
   bool _showCancelButton;
 
   void _setMessage(final String msg) {
@@ -62,6 +76,7 @@ class NfcScanDialog {
       return null;
     }
 
+    _showCancelButton = _onCancelCB != null;
     _iconAnimation = _IconAnimations.animWaiting;
     _msg = msg ?? '';
     return showModalBottomSheet(
@@ -76,60 +91,61 @@ class NfcScanDialog {
               builder: (BuildContext context, StateSetter setState) {
             _sheetSetter = setState;
             return WillPopScope(
-              onWillPop: () async => false,
-              child: Container(
-                height: MediaQuery.of(context).size.width,
-                child: Padding(
-                    padding: EdgeInsets.all(30.0),
-                    child: Center(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.max,
-                        children: <Widget>[
-                          Text('Ready to Scan',
-                              style:
-                                  TextStyle(fontSize: 25, color: Colors.grey)),
-                          const SizedBox(height: 30),
-                          Container(
-                              width: 100,
-                              height: 100,
-                              child: FlareActor.asset(
-                                _IconAnimations.file,
-                                alignment: Alignment.center,
-                                fit: BoxFit.cover,
-                                animation: _iconAnimation,
-                              )),
-                          const SizedBox(height: 15),
-                          Container(
-                              height: 60,
-                              child: Row(children: <Widget>[
-                                Expanded(
-                                    child: Text(_msg,
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(fontSize: 16)))
-                              ])),
-                          const SizedBox(height: 10),
-                          makeButton(
-                              visible: _showCancelButton,
-                              context: context,
-                              text: 'CANCEL',
-                              margin: null,
-                              onPressed: () async {
-                                await _closeBottomSheet();
-                                if (_onCancel != null) {
-                                  return await _onCancel();
-                                }
-                              })
-                        ],
-                      ),
-                    ))));
+                onWillPop: () async => false,
+                child: Container(
+                    height: MediaQuery.of(context).size.width,
+                    child: Padding(
+                        padding: EdgeInsets.all(30.0),
+                        child: Center(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.max,
+                            children: <Widget>[
+                              Text('Ready to Scan',
+                                  style: TextStyle(
+                                      fontSize: 25, color: Colors.grey)),
+                              const SizedBox(height: 30),
+                              Container(
+                                  width: 100,
+                                  height: 100,
+                                  child: FlareActor.asset(
+                                    _IconAnimations.file,
+                                    alignment: Alignment.center,
+                                    fit: BoxFit.cover,
+                                    animation: _iconAnimation,
+                                  )),
+                              const SizedBox(height: 15),
+                              ConstrainedBox(
+                                  constraints: BoxConstraints(minHeight: 60),
+                                  child: Row(children: <Widget>[
+                                    Expanded(
+                                        child: Text(_msg,
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(fontSize: 16)))
+                                  ])),
+                              const SizedBox(height: 10),
+                              makeButton(
+                                visible: _showCancelButton,
+                                context: context,
+                                text: 'CANCEL',
+                                margin: null,
+                                onPressed: _onCancel
+                              )
+                            ],
+                          ),
+                        ))));
           });
         });
   }
 
   Future<void> _closeBottomSheet(
-      {String message, String errorMessage, Duration delayClosing}) async {
+      {String message, String errorMessage, Duration delayClosing}) {
     if (_sheetSetter != null) {
+      if(_closingOperation != null) {
+        _closingOperation.cancel();
+        _closingOperation = null;
+      }
+
       if ((message != null || errorMessage != null)) {
         _sheetSetter(() {
           _showCancelButton = false;
@@ -142,15 +158,28 @@ class NfcScanDialog {
           }
         });
 
-        _sheetSetter = null;
-        if (delayClosing != null) { // Delay closing dialog to display message
-          await Future.delayed(delayClosing);
+        if (delayClosing != null) {
+          // Delay closing dialog to display message
+          _closingOperation = CancelableOperation.fromFuture(
+              Future.delayed(delayClosing)
+          ).then((value) {
+            if (_sheetSetter != null) {
+              _sheetSetter = null;
+              Navigator.pop(context);
+            }
+          });
+          return _closingOperation.valueOrCancellation();
         }
-      } else {
-        _sheetSetter = null;
       }
-
+      _sheetSetter = null;
       Navigator.pop(context);
+    }
+  }
+
+  Future<void> _onCancel() async {
+    await _closeBottomSheet();
+    if (_onCancelCB != null) {
+      return await _onCancelCB();
     }
   }
 }

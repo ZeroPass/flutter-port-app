@@ -116,8 +116,8 @@ class NfcScanDialog {
                                     animation: _iconAnimation,
                                   )),
                               const SizedBox(height: 15),
-                              Container(
-                                  height: 60,
+                              ConstrainedBox(
+                                  constraints: BoxConstraints(minHeight: 60),
                                   child: Row(children: <Widget>[
                                     Expanded(
                                         child: Text(_msg,
