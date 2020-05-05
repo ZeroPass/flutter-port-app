@@ -27,8 +27,8 @@ import 'efdg1_dialog.dart';
 import 'passport_scanner.dart';
 import 'uie/uiutils.dart';
 
-Map AUTHENTICATOR_ACTIONS = {
-  "ATTESTAION_REQUEST": {
+final _authenticatorActions = {
+  "ATTESTATION_REQUEST": {
     "NAME": "Attestation",
     "DATA": [
       "Country (SOD)",
@@ -40,7 +40,7 @@ Map AUTHENTICATOR_ACTIONS = {
     "NAME": "Personal Info",
     "DATA": ["Personal Information (DG1))", "Passport Signature"]
   },
-  "PERSONAL_INFORMATION_REQUEST_FALSIFIED": {
+  "FAKE_PERSONAL_INFORMATION_REQUEST": {
     "NAME": "Fake Personal Info",
     "DATA": ["Personal Information (DG1)", "Passport Signature)"]
   },
@@ -74,7 +74,7 @@ class ServerSecurityContext {
 enum AuthnAction { register, login }
 
 class Authn extends StatefulWidget {
-  String _selectedAction = "ATTESTAION_REQUEST";
+  String _selectedAction = "ATTESTATION_REQUEST";
 
   Authn({Key key});
 
@@ -284,7 +284,6 @@ class _AuthnState extends State<Authn> {
             case 406:
               {
                 alertMsg = 'Passport verification failed!';
-
                 if (msg.contains('invalid dg1 file')) {
                   alertMsg = 'Server refused to accept sent personal data!';
                 } else if (msg.contains('invalid dg15 file')) {
@@ -372,7 +371,7 @@ class _AuthnState extends State<Authn> {
 
   void selectNetwork(var context) {
     BottomPickerStructure bps = BottomPickerStructure();
-    bps.importActionTypesList(AUTHENTICATOR_ACTIONS, widget._selectedAction,
+    bps.importActionTypesList(_authenticatorActions, widget._selectedAction,
         "Select validation", "Please select type of validation");
     CustomBottomPickerState cbps = CustomBottomPickerState(structure: bps);
     cbps.showPicker(context,
@@ -391,19 +390,21 @@ class _AuthnState extends State<Authn> {
       title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Text(
-              'Request',
+            Text('Request',
               style: TextStyle(
-                  fontSize: AndroidThemeST().getValues().themeValues["STEPPER"]
-                      ["STEP_TAP"]["SIZE_TEXT"]),
+                  fontSize:
+                    AndroidThemeST()
+                      .getValues().themeValues["STEPPER"]["STEP_TAP"]["SIZE_TEXT"]),
             ),
-            Text(AUTHENTICATOR_ACTIONS[widget._selectedAction]['NAME'],
+            Text(_authenticatorActions[widget._selectedAction]['NAME'],
                 style: TextStyle(
-                    fontSize: AndroidThemeST()
+                    fontSize:
+                      AndroidThemeST()
                         .getValues()
                         .themeValues["STEPPER"]["STEP_TAP"]["SIZE_TEXT"],
-                    color: AndroidThemeST().getValues().themeValues["TILE_BAR"]
-                        ["COLOR_TEXT"]))
+                    color:
+                      AndroidThemeST()
+                        .getValues().themeValues["TILE_BAR"]["COLOR_TEXT"]))
           ]),
       //subtitle: Text("to see what is going to be sent"),
       trailing: Icon(Icons.expand_more),
@@ -423,25 +424,23 @@ class _AuthnState extends State<Authn> {
                       style: TextStyle(
                           /*fontWeight: FontWeight.bold,*/ fontSize:
                               AndroidThemeST()
-                                      .getValues()
-                                      .themeValues["STEPPER"]["STEP_TAP"]
-                                  ["SIZE_TEXT"])),
+                                .getValues()
+                                .themeValues["STEPPER"]["STEP_TAP"]["SIZE_TEXT"])),
                   margin: EdgeInsets.only(bottom: 10.0)),
-              for (var item in AUTHENTICATOR_ACTIONS[widget._selectedAction]
-                  ["DATA"])
+              for (var item in _authenticatorActions[widget._selectedAction]["DATA"])
                 Container(
                     child: Text('  • ' + item,
                         style: TextStyle(
-                            fontSize: AndroidThemeST()
-                                        .getValues()
-                                        .themeValues["STEPPER"]["STEP_TAP"]
-                                    ["SIZE_TEXT"] -
-                                2,
-                            color: AndroidThemeST()
-                                    .getValues()
-                                    .themeValues["STEPPER"]["STEP_TAP"]
-                                ["COLOR_TEXT"])),
+                            fontSize:
+                              AndroidThemeST()
+                                .getValues()
+                                .themeValues["STEPPER"]["STEP_TAP"]["SIZE_TEXT"] - 2,
+                            color:
+                             AndroidThemeST()
+                              .getValues()
+                              .themeValues["STEPPER"]["STEP_TAP"]["COLOR_TEXT"])),
                     margin: EdgeInsets.only(left: 0.0))
+
               //AndroidThemeST().getValues().themeValues["STEPPER"]["STEPPER_MANIPULATOR"]["COLOR_TEXT"])
             ]));
   }
@@ -457,17 +456,21 @@ class _AuthnState extends State<Authn> {
               child: Text('Attest and Send',
                   style: TextStyle(color: Colors.white)),
               onPressed: () {
-                if (widget._selectedAction == "ATTESTAION_REQUEST")
-                  startAction(context, AuthnAction.register);
-                else if (widget._selectedAction ==
-                    "PERSONAL_INFORMATION_REQUEST")
-                  startAction(context, AuthnAction.login, sendDG1: true);
-                else if (widget._selectedAction ==
-                    "PERSONAL_INFORMATION_REQUEST_FALSIFIED")
-                  startAction(context, AuthnAction.login,
+                switch(widget._selectedAction) {
+                  case 'ATTESTATION_REQUEST':
+                    startAction(context, AuthnAction.register);
+                    break;
+                  case 'PERSONAL_INFORMATION_REQUEST':
+                    startAction(context, AuthnAction.login, sendDG1: true);
+                    break;
+                  case 'FAKE_PERSONAL_INFORMATION_REQUEST':
+                    startAction(context, AuthnAction.login,
                       fakeAuthnData: true, sendDG1: true);
-                else if (widget._selectedAction == "LOGIN")
-                  startAction(context, AuthnAction.login);
+                    break;
+                  case 'LOGIN':
+                    startAction(context, AuthnAction.login);
+                    break;
+                }
               },
             ))
       ],
