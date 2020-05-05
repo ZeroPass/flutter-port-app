@@ -86,14 +86,6 @@ class _AuthnState extends State<Authn> {
   final _log = Logger('authn.screen');
   final String _fakeName = "Larimer Daniel";
 
-  //ProtoChallenge _challenge;
-
-  _AuthnState() {
-    print("start of test-test");
-
-    print("end of test-test");
-  }
-
   Future<bool> _handleConnectionError(final SocketException e) async {
     String title;
     String msg;
@@ -161,18 +153,18 @@ class _AuthnState extends State<Authn> {
     if (storageStepEnterAccount.isUnlocked == false &&
         storage.selectedNode.name != "ZeroPass Server")
       missingValuesText +=
-          "Account name (Step 'Enter account') is not valid.\n";
+          "- Account name is not valid.\n (Step 'Account')\n\n";
 
     StepDataScan storageStepScan = storage.getStorageData(1);
     if (storageStepScan.documentID == null)
       missingValuesText +=
-          "Passport Number (Step 'Passport Info') is not valid.\n";
+          "- Passport Number is not valid.\n (Step 'Passport Info')\n\n";
     if (storageStepScan.birth == null)
       missingValuesText +=
-          "Date of Birth (Step 'Passport Info') is not valid.\n";
+          "- Date of Birth is not valid.\n (Step 'Passport Info')\n\n";
     if (storageStepScan.validUntil == null)
       missingValuesText +=
-          "Date of Expiration (Step 'Passport Info') is not valid.\n";
+          "- Date of Expiry is not valid.\n (Step 'Passport Info')";
     return missingValuesText;
   }
 
@@ -347,18 +339,18 @@ class _AuthnState extends State<Authn> {
   }
 
   AuthnData _fakeData(AuthnData data) {
-    // Fake passport owner name
+    // Fake the name of passport owner
     final rawDG1 = data.dg1.toBytes();
     final name = _fakeName.replaceAll(' ', '<<');
-    print('name');
+    // Works for TD3 (passport MRZ) only.
+    // On other formats (TD1, TD2) will write to the wrong location.
     for (int i = 0; i < 39; i++) {
       int b = '<'.codeUnitAt(0);
       if (i < name.length) {
         b = name[i].codeUnitAt(0);
       }
-      rawDG1[i + 10] = b;
+      rawDG1[i + 10] = b; // The name field starts at position 10 on TD3
     }
-    print("${rawDG1.hex()}");
     final dg1 = EfDG1.fromBytes(rawDG1);
     return AuthnData(dg15: data.dg15, csig: data.csig, dg1: dg1);
   }
