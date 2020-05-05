@@ -6,7 +6,6 @@ import "package:eosio_passid_mobile_app/screen/main/stepper/stepper.dart";
 import 'package:flutter/cupertino.dart';
 import 'package:eosio_passid_mobile_app/utils/size.dart';
 import 'package:eosio_passid_mobile_app/screen/nfc/authn.dart';
-import 'package:eosio_passid_mobile_app/screen/customAlertDialog.dart';
 
 class StepAttestationForm extends StatefulWidget {
   StepAttestationForm({Key key}) : super(key: key);

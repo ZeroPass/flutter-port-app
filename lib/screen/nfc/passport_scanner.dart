@@ -4,15 +4,16 @@ import 'dart:io';
 import 'package:async/async.dart';
 import 'package:dmrtd/dmrtd.dart';
 import 'package:dmrtd/extensions.dart';
+import 'package:eosio_passid_mobile_app/screen/alert.dart';
 import 'package:eosio_passid_mobile_app/utils/structure.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:logging/logging.dart';
 import 'package:passid/passid.dart';
 
 import 'authn.dart';
 import 'uie/nfc_scan_dialog.dart';
-import 'uie/uiutils.dart';
 
 class PassportScannerError implements Exception {
   final String message;
@@ -24,7 +25,7 @@ class PassportScannerError implements Exception {
 class PassportScanner {
   final _log = Logger('passport.scanner');
   final _nfc = NfcProvider();
- NfcScanDialog _scanDialog;
+  NfcScanDialog _scanDialog;
 
   AuthnAction action;
   final BuildContext context;
@@ -32,11 +33,11 @@ class PassportScanner {
 
   PassportScanner(
       {@required this.context, this.challenge, @required this.action}) {
-        _scanDialog = NfcScanDialog(context, onCancel: () async {
-          _log.info('Scanning canceled by user');
-          await _cancel();
-        });
-      }
+    _scanDialog = NfcScanDialog(context, onCancel: () async {
+      _log.info('Scanning canceled by user');
+      await _cancel();
+    });
+  }
 
   /// Reads data from passport and signs passID proto [challenge]
   /// with passport's AA private key. Call to this function
@@ -183,25 +184,30 @@ class PassportScanner {
   }
 
   Future<void> _showUnsupportedMrtdAlert() async {
-    await showAlert(context, Text('Unsupported Passport'),
-        Text('This passport is not supported!'), [
-      FlatButton(
-          child: const Text(
-            'CLOSE',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          onPressed: () => Navigator.pop(context))
-    ]);
+    await showAlert(
+        context: context,
+        title: Text('Unsupported Passport',
+            style: TextStyle(color: Theme.of(context).errorColor)),
+        content: Text('This passport is not supported!'),
+        actions: [
+          PlatformDialogAction(
+              child: PlatformText('Close',
+                  style: TextStyle(
+                      color: Theme.of(context).errorColor,
+                      fontWeight: FontWeight.bold)),
+              onPressed: () => Navigator.pop(context))
+        ]);
   }
 
   Future<void> _connect({String alertMessage}) {
-    if (!Platform.isIOS) { // on iOS it's NFC framework handles displaying a NFC scan dialog
+    if (!Platform.isIOS) {
+      // on iOS it's NFC framework handles displaying a NFC scan dialog
       _scanDialog.show(message: alertMessage);
     }
-    return _call(() =>_nfc.connect(iosAlertMessage: alertMessage));
+    return _call(() => _nfc.connect(iosAlertMessage: alertMessage));
   }
 
-   Future<void> _disconnect({String alertMessage, String errorMessage}) {
+  Future<void> _disconnect({String alertMessage, String errorMessage}) {
     if (!Platform.isIOS) {
       return _scanDialog.hide(
           message: alertMessage,

@@ -1,33 +1,31 @@
 import 'dart:async';
 import 'dart:io';
 
-//import 'package:connectivity/connectivity.dart';
-import 'package:dmrtd/dmrtd.dart';
 import 'package:connectivity/connectivity.dart';
+
+import 'package:dmrtd/dmrtd.dart';
 import 'package:dmrtd/extensions.dart';
-import 'package:eosio_passid_mobile_app/screen/customChip.dart';
-import 'package:eosio_passid_mobile_app/utils/storage.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:passid/src/proto/proto_challenge.dart';
-import "package:eosio_passid_mobile_app/screen/nfc/passport_scanner.dart";
-import 'package:eosio_passid_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
-import 'package:eosio_passid_mobile_app/screen/main/stepper/stepScan/stepScan.dart';
-import 'package:passid/src/authn_data.dart';
-import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
-import 'package:logging/logging.dart';
-//import 'package:open_settings/open_settings.dart';
-import 'package:eosio_passid_mobile_app/utils/structure.dart';
-import 'package:passid/passid.dart';
-import 'package:logging/logging.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:eosio_passid_mobile_app/screen/theme.dart';
+
+import 'package:eosio_passid_mobile_app/screen/alert.dart';
 import 'package:eosio_passid_mobile_app/screen/customBottomPicker.dart';
 import 'package:eosio_passid_mobile_app/screen/customButton.dart';
+import 'package:eosio_passid_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
+import 'package:eosio_passid_mobile_app/screen/main/stepper/stepScan/stepScan.dart';
 
-import 'uie/uiutils.dart';
+import 'package:eosio_passid_mobile_app/utils/storage.dart';
+import 'package:eosio_passid_mobile_app/utils/structure.dart';
+import 'package:eosio_passid_mobile_app/screen/theme.dart';
+
+import 'package:logging/logging.dart';
+import 'package:passid/passid.dart';
+
 import 'efdg1_dialog.dart';
+import 'passport_scanner.dart';
+import 'uie/uiutils.dart';
 
 Map AUTHENTICATOR_ACTIONS = {
   "ATTESTAION_REQUEST": {
@@ -111,14 +109,18 @@ class _AuthnState extends State<Authn> {
           'Check server connection settings.';
     }
 
-    return showAlert<bool>(context, Text(title), Text(msg), [
-      FlatButton(
-          child: Text('OK',
-              style: TextStyle(
-                  color: Theme.of(context).errorColor,
-                  fontWeight: FontWeight.bold)),
-          onPressed: () => Navigator.pop(context, false))
-    ]);
+    return showAlert<bool>(
+        context: context,
+        title: Text(title),
+        content: Text(msg),
+        actions: [
+          PlatformDialogAction(
+              child: PlatformText('Close',
+                  style: TextStyle(
+                      color: Theme.of(context).errorColor,
+                      fontWeight: FontWeight.bold)),
+              onPressed: () => Navigator.pop(context, false))
+        ]);
   }
 
   Future<bool> showDG1(final EfDG1 dg1) async {
@@ -178,17 +180,19 @@ class _AuthnState extends State<Authn> {
       {bool fakeAuthnData = false, bool sendDG1 = false}) async {
     Storage storage = Storage();
     String checkedValues = checkValuesInStorage();
-    if (checkedValues != "") {
-      showAlert<bool>(context, Text('Warning'),
-          Text(checkedValues + "Invalid passport information."), [
-        FlatButton(
-            child: const Text(
-              'OK',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            onPressed: () => Navigator.pop(context, true))
-      ]);
-      return;
+    if (checkedValues.isNotEmpty) {
+      return showAlert(
+          context: context,
+          title: Text('Error'),
+          content: Text("Invalid or missing data!\n\n" + checkedValues),
+          actions: [
+            PlatformDialogAction(
+                child: PlatformText('Close',
+                    style: TextStyle(
+                        color: Theme.of(context).errorColor,
+                        fontWeight: FontWeight.bold)),
+                onPressed: () => Navigator.pop(context))
+          ]);
     }
     try {
       _showBusyIndicator();
@@ -246,15 +250,16 @@ class _AuthnState extends State<Authn> {
 
       final srvMsgGreeting = await _client.requestGreeting();
       await _hideBusyIndicator();
-      showAlert<bool>(context, Text('Attestation Succeeded'),
-          Text(_formatAttestationSuccess(srvMsgGreeting)), [
-        FlatButton(
-            child: Text('OK',
-                style: TextStyle(
-                    color: Theme.of(context).errorColor,
-                    fontWeight: FontWeight.bold)),
-            onPressed: () => Navigator.pop(context, false)),
-      ]);
+      await showAlert(
+          context: context,
+          title: Text('Attestation Succeeded'),
+          content: Text(_formatAttestationSuccess(srvMsgGreeting)),
+          actions: [
+            PlatformDialogAction(
+                child: PlatformText('Close',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+                onPressed: () => Navigator.pop(context))
+          ]);
 
       //storage.getDBAkeyStorage().init();
     } catch (e) {
@@ -325,16 +330,19 @@ class _AuthnState extends State<Authn> {
       // Show alert dialog
       await _hideBusyIndicator();
       if (alertMsg != null && alertTitle != null) {
-        await showAlert(context, Text(alertTitle), Text(alertMsg), [
-          FlatButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(
-                'CLOSE',
-                style: TextStyle(
-                    color: Theme.of(context).errorColor,
-                    fontWeight: FontWeight.bold),
-              ))
-        ]);
+        await showAlert(
+            context: context,
+            title: Text(alertTitle,
+                style: TextStyle(color: Theme.of(context).errorColor)),
+            content: Text(alertMsg),
+            actions: [
+              PlatformDialogAction(
+                  child: PlatformText('Close',
+                      style: TextStyle(
+                          color: Theme.of(context).errorColor,
+                          fontWeight: FontWeight.bold)),
+                  onPressed: () => Navigator.pop(context))
+            ]);
       }
     }
   }
