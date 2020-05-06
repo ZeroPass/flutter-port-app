@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import "package:eosio_passid_mobile_app/screen/main/stepper/stepper.dart";
-import 'package:eosio_passid_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccountHeader/stepEnterAccountHeader.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
-import 'package:eosio_passid_mobile_app/screen/main/stepper/stepScan/stepScanHeader/stepScanHeader.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepScan/stepScan.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
-import 'package:eosio_passid_mobile_app/screen/theme.dart';
-import 'package:eosio_passid_mobile_app/screen/customAlertDialog.dart';
+
+import '../../alert.dart';
 
 class StepperForm extends StatefulWidget {
   final List<Step> steps;
@@ -78,25 +75,17 @@ class _StepperFormState extends State<StepperForm> {
                 if (errors.isEmpty) {
                   functionOnStepContinue();
                 } else {
-                  CustomAlertDialog(context, "Cannot continue",
+                  showAlert(
+                    context: context,
+                    title: Text("Cannot continue"),
+                    content: Text(errors + '\nPlease fill the form with valid data!')
+                  );
+                  /*CustomAlertDialog(context, "Cannot continue",
                       errors + '\nPlease fill the form with valid data.', () {
                     print("button pressed");
-                  });
-                  /*showPlatformDialog(
-              context: context,
-              builder: (_) => PlatformAlertDialog(
-                title: Text('Cannot continue'),
-                content: Text(errors + '\nPlease fill the form with valid data.'),
-                actions: <Widget>[
-                  PlatformDialogAction(
-                      child: PlatformText('OK', style: TextStyle(color: AndroidThemeST().getValues().themeValues["STEPPER"]["STEPPER_MANIPULATOR"]["COLOR_TEXT"])),
-                      onPressed: () => Navigator.pop(context)
-                  )
-                ],
-              ),
-            );*/
+                  });*/
                 }
-              }, /**/
+              },
             ))
       ],
     );

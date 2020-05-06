@@ -1,36 +1,34 @@
 import 'dart:async';
 import 'dart:io';
 
-//import 'package:connectivity/connectivity.dart';
-import 'package:dmrtd/dmrtd.dart';
 import 'package:connectivity/connectivity.dart';
+
+import 'package:dmrtd/dmrtd.dart';
 import 'package:dmrtd/extensions.dart';
-import 'package:eosio_passid_mobile_app/screen/customChip.dart';
-import 'package:eosio_passid_mobile_app/utils/storage.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:passid/src/proto/proto_challenge.dart';
-import "package:eosio_passid_mobile_app/screen/nfc/passport_scanner.dart";
-import 'package:eosio_passid_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
-import 'package:eosio_passid_mobile_app/screen/main/stepper/stepScan/stepScan.dart';
-import 'package:passid/src/authn_data.dart';
-import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
-import 'package:logging/logging.dart';
-//import 'package:open_settings/open_settings.dart';
-import 'package:eosio_passid_mobile_app/utils/structure.dart';
-import 'package:passid/passid.dart';
-import 'package:logging/logging.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:eosio_passid_mobile_app/screen/theme.dart';
+
+import 'package:eosio_passid_mobile_app/screen/alert.dart';
 import 'package:eosio_passid_mobile_app/screen/customBottomPicker.dart';
 import 'package:eosio_passid_mobile_app/screen/customButton.dart';
+import 'package:eosio_passid_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
+import 'package:eosio_passid_mobile_app/screen/main/stepper/stepScan/stepScan.dart';
 
-import 'uie/uiutils.dart';
+import 'package:eosio_passid_mobile_app/utils/storage.dart';
+import 'package:eosio_passid_mobile_app/utils/structure.dart';
+import 'package:eosio_passid_mobile_app/screen/theme.dart';
+
+import 'package:logging/logging.dart';
+import 'package:passid/passid.dart';
+
 import 'efdg1_dialog.dart';
+import 'passport_scanner.dart';
+import 'uie/uiutils.dart';
 
-Map AUTHENTICATOR_ACTIONS = {
-  "ATTESTAION_REQUEST": {
+final _authenticatorActions = {
+  "ATTESTATION_REQUEST": {
     "NAME": "Attestation",
     "DATA": [
       "Country (SOD)",
@@ -42,7 +40,7 @@ Map AUTHENTICATOR_ACTIONS = {
     "NAME": "Personal Info",
     "DATA": ["Personal Information (DG1))", "Passport Signature"]
   },
-  "PERSONAL_INFORMATION_REQUEST_FALSIFIED": {
+  "FAKE_PERSONAL_INFORMATION_REQUEST": {
     "NAME": "Fake Personal Info",
     "DATA": ["Personal Information (DG1)", "Passport Signature)"]
   },
@@ -76,7 +74,7 @@ class ServerSecurityContext {
 enum AuthnAction { register, login }
 
 class Authn extends StatefulWidget {
-  String _selectedAction = "ATTESTAION_REQUEST";
+  String _selectedAction = "ATTESTATION_REQUEST";
 
   Authn({Key key});
 
@@ -87,14 +85,6 @@ class _AuthnState extends State<Authn> {
   PassIdClient _client;
   final _log = Logger('authn.screen');
   final String _fakeName = "Larimer Daniel";
-
-  //ProtoChallenge _challenge;
-
-  _AuthnState() {
-    print("start of test-test");
-
-    print("end of test-test");
-  }
 
   Future<bool> _handleConnectionError(final SocketException e) async {
     String title;
@@ -111,14 +101,18 @@ class _AuthnState extends State<Authn> {
           'Check server connection settings.';
     }
 
-    return showAlert<bool>(context, Text(title), Text(msg), [
-      FlatButton(
-          child: Text('OK',
-              style: TextStyle(
-                  color: Theme.of(context).errorColor,
-                  fontWeight: FontWeight.bold)),
-          onPressed: () => Navigator.pop(context, false))
-    ]);
+    return showAlert<bool>(
+        context: context,
+        title: Text(title),
+        content: Text(msg),
+        actions: [
+          PlatformDialogAction(
+              child: PlatformText('Close',
+                  style: TextStyle(
+                      color: Theme.of(context).errorColor,
+                      fontWeight: FontWeight.bold)),
+              onPressed: () => Navigator.pop(context, false))
+        ]);
   }
 
   Future<bool> showDG1(final EfDG1 dg1) async {
@@ -159,18 +153,18 @@ class _AuthnState extends State<Authn> {
     if (storageStepEnterAccount.isUnlocked == false &&
         storage.selectedNode.name != "ZeroPass Server")
       missingValuesText +=
-          "Account name (Step 'Enter account') is not valid.\n";
+          "- Account name is not valid.\n (Step 'Account')\n\n";
 
     StepDataScan storageStepScan = storage.getStorageData(1);
     if (storageStepScan.documentID == null)
       missingValuesText +=
-          "Passport Number (Step 'Passport Info') is not valid.\n";
+          "- Passport Number is not valid.\n (Step 'Passport Info')\n\n";
     if (storageStepScan.birth == null)
       missingValuesText +=
-          "Date of Birth (Step 'Passport Info') is not valid.\n";
+          "- Date of Birth is not valid.\n (Step 'Passport Info')\n\n";
     if (storageStepScan.validUntil == null)
       missingValuesText +=
-          "Date of Expiration (Step 'Passport Info') is not valid.\n";
+          "- Date of Expiry is not valid.\n (Step 'Passport Info')";
     return missingValuesText;
   }
 
@@ -178,17 +172,19 @@ class _AuthnState extends State<Authn> {
       {bool fakeAuthnData = false, bool sendDG1 = false}) async {
     Storage storage = Storage();
     String checkedValues = checkValuesInStorage();
-    if (checkedValues != "") {
-      showAlert<bool>(context, Text('Warning'),
-          Text(checkedValues + "Invalid passport information."), [
-        FlatButton(
-            child: const Text(
-              'OK',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            onPressed: () => Navigator.pop(context, true))
-      ]);
-      return;
+    if (checkedValues.isNotEmpty) {
+      return showAlert(
+          context: context,
+          title: Text('Error'),
+          content: Text("Invalid or missing data!\n\n" + checkedValues),
+          actions: [
+            PlatformDialogAction(
+                child: PlatformText('Close',
+                    style: TextStyle(
+                        color: Theme.of(context).errorColor,
+                        fontWeight: FontWeight.bold)),
+                onPressed: () => Navigator.pop(context))
+          ]);
     }
     try {
       _showBusyIndicator();
@@ -246,15 +242,16 @@ class _AuthnState extends State<Authn> {
 
       final srvMsgGreeting = await _client.requestGreeting();
       await _hideBusyIndicator();
-      showAlert<bool>(context, Text('Attestation Succeeded'),
-          Text(_formatAttestationSuccess(srvMsgGreeting)), [
-        FlatButton(
-            child: Text('OK',
-                style: TextStyle(
-                    color: Theme.of(context).errorColor,
-                    fontWeight: FontWeight.bold)),
-            onPressed: () => Navigator.pop(context, false)),
-      ]);
+      await showAlert(
+          context: context,
+          title: Text('Attestation Succeeded'),
+          content: Text(_formatAttestationSuccess(srvMsgGreeting)),
+          actions: [
+            PlatformDialogAction(
+                child: PlatformText('Close',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+                onPressed: () => Navigator.pop(context))
+          ]);
 
       //storage.getDBAkeyStorage().init();
     } catch (e) {
@@ -279,7 +276,6 @@ class _AuthnState extends State<Authn> {
             case 406:
               {
                 alertMsg = 'Passport verification failed!';
-
                 if (msg.contains('invalid dg1 file')) {
                   alertMsg = 'Server refused to accept sent personal data!';
                 } else if (msg.contains('invalid dg15 file')) {
@@ -325,33 +321,36 @@ class _AuthnState extends State<Authn> {
       // Show alert dialog
       await _hideBusyIndicator();
       if (alertMsg != null && alertTitle != null) {
-        await showAlert(context, Text(alertTitle), Text(alertMsg), [
-          FlatButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(
-                'CLOSE',
-                style: TextStyle(
-                    color: Theme.of(context).errorColor,
-                    fontWeight: FontWeight.bold),
-              ))
-        ]);
+        await showAlert(
+            context: context,
+            title: Text(alertTitle,
+                style: TextStyle(color: Theme.of(context).errorColor)),
+            content: Text(alertMsg),
+            actions: [
+              PlatformDialogAction(
+                  child: PlatformText('Close',
+                      style: TextStyle(
+                          color: Theme.of(context).errorColor,
+                          fontWeight: FontWeight.bold)),
+                  onPressed: () => Navigator.pop(context))
+            ]);
       }
     }
   }
 
   AuthnData _fakeData(AuthnData data) {
-    // Fake passport owner name
+    // Fake the name of passport owner
     final rawDG1 = data.dg1.toBytes();
     final name = _fakeName.replaceAll(' ', '<<');
-    print('name');
+    // Works for TD3 (passport MRZ) only.
+    // On other formats (TD1, TD2) will write to the wrong location.
     for (int i = 0; i < 39; i++) {
       int b = '<'.codeUnitAt(0);
       if (i < name.length) {
         b = name[i].codeUnitAt(0);
       }
-      rawDG1[i + 10] = b;
+      rawDG1[i + 10] = b; // The name field starts at position 10 on TD3
     }
-    print("${rawDG1.hex()}");
     final dg1 = EfDG1.fromBytes(rawDG1);
     return AuthnData(dg15: data.dg15, csig: data.csig, dg1: dg1);
   }
@@ -364,7 +363,7 @@ class _AuthnState extends State<Authn> {
 
   void selectNetwork(var context) {
     BottomPickerStructure bps = BottomPickerStructure();
-    bps.importActionTypesList(AUTHENTICATOR_ACTIONS, widget._selectedAction,
+    bps.importActionTypesList(_authenticatorActions, widget._selectedAction,
         "Select validation", "Please select type of validation");
     CustomBottomPickerState cbps = CustomBottomPickerState(structure: bps);
     cbps.showPicker(context,
@@ -383,19 +382,21 @@ class _AuthnState extends State<Authn> {
       title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Text(
-              'Request',
+            Text('Request',
               style: TextStyle(
-                  fontSize: AndroidThemeST().getValues().themeValues["STEPPER"]
-                      ["STEP_TAP"]["SIZE_TEXT"]),
+                  fontSize:
+                    AndroidThemeST()
+                      .getValues().themeValues["STEPPER"]["STEP_TAP"]["SIZE_TEXT"]),
             ),
-            Text(AUTHENTICATOR_ACTIONS[widget._selectedAction]['NAME'],
+            Text(_authenticatorActions[widget._selectedAction]['NAME'],
                 style: TextStyle(
-                    fontSize: AndroidThemeST()
+                    fontSize:
+                      AndroidThemeST()
                         .getValues()
                         .themeValues["STEPPER"]["STEP_TAP"]["SIZE_TEXT"],
-                    color: AndroidThemeST().getValues().themeValues["TILE_BAR"]
-                        ["COLOR_TEXT"]))
+                    color:
+                      AndroidThemeST()
+                        .getValues().themeValues["TILE_BAR"]["COLOR_TEXT"]))
           ]),
       //subtitle: Text("to see what is going to be sent"),
       trailing: Icon(Icons.expand_more),
@@ -415,25 +416,23 @@ class _AuthnState extends State<Authn> {
                       style: TextStyle(
                           /*fontWeight: FontWeight.bold,*/ fontSize:
                               AndroidThemeST()
-                                      .getValues()
-                                      .themeValues["STEPPER"]["STEP_TAP"]
-                                  ["SIZE_TEXT"])),
+                                .getValues()
+                                .themeValues["STEPPER"]["STEP_TAP"]["SIZE_TEXT"])),
                   margin: EdgeInsets.only(bottom: 10.0)),
-              for (var item in AUTHENTICATOR_ACTIONS[widget._selectedAction]
-                  ["DATA"])
+              for (var item in _authenticatorActions[widget._selectedAction]["DATA"])
                 Container(
                     child: Text('  • ' + item,
                         style: TextStyle(
-                            fontSize: AndroidThemeST()
-                                        .getValues()
-                                        .themeValues["STEPPER"]["STEP_TAP"]
-                                    ["SIZE_TEXT"] -
-                                2,
-                            color: AndroidThemeST()
-                                    .getValues()
-                                    .themeValues["STEPPER"]["STEP_TAP"]
-                                ["COLOR_TEXT"])),
+                            fontSize:
+                              AndroidThemeST()
+                                .getValues()
+                                .themeValues["STEPPER"]["STEP_TAP"]["SIZE_TEXT"] - 2,
+                            color:
+                             AndroidThemeST()
+                              .getValues()
+                              .themeValues["STEPPER"]["STEP_TAP"]["COLOR_TEXT"])),
                     margin: EdgeInsets.only(left: 0.0))
+
               //AndroidThemeST().getValues().themeValues["STEPPER"]["STEPPER_MANIPULATOR"]["COLOR_TEXT"])
             ]));
   }
@@ -449,17 +448,21 @@ class _AuthnState extends State<Authn> {
               child: Text('Attest and Send',
                   style: TextStyle(color: Colors.white)),
               onPressed: () {
-                if (widget._selectedAction == "ATTESTAION_REQUEST")
-                  startAction(context, AuthnAction.register);
-                else if (widget._selectedAction ==
-                    "PERSONAL_INFORMATION_REQUEST")
-                  startAction(context, AuthnAction.login, sendDG1: true);
-                else if (widget._selectedAction ==
-                    "PERSONAL_INFORMATION_REQUEST_FALSIFIED")
-                  startAction(context, AuthnAction.login,
+                switch(widget._selectedAction) {
+                  case 'ATTESTATION_REQUEST':
+                    startAction(context, AuthnAction.register);
+                    break;
+                  case 'PERSONAL_INFORMATION_REQUEST':
+                    startAction(context, AuthnAction.login, sendDG1: true);
+                    break;
+                  case 'FAKE_PERSONAL_INFORMATION_REQUEST':
+                    startAction(context, AuthnAction.login,
                       fakeAuthnData: true, sendDG1: true);
-                else if (widget._selectedAction == "LOGIN")
-                  startAction(context, AuthnAction.login);
+                    break;
+                  case 'LOGIN':
+                    startAction(context, AuthnAction.login);
+                    break;
+                }
               },
             ))
       ],
