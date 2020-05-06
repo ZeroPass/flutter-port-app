@@ -144,7 +144,7 @@ class _StepEnterAccountFormState extends State<StepEnterAccountForm> {
                 //save to storage
                 StepDataEnterAccount storageStepEnterAccount =
                     _storage.getStorageData(0);
-                storageStepEnterAccount.accountID = _accountTextController.text;
+                storageStepEnterAccount.accountID = _accountTextController.text.length !=0 ? _accountTextController.text : null;
 
                 //save storage
                 storage.save();

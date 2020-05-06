@@ -118,7 +118,25 @@ class _StepScanFormState extends State<StepScanForm> {
                     //update header
                     stepperBloc.liveModifyHeader(1, context);
                   },
-                  _birthTextController,
+                  /*callback*/ (String value) {
+                    if (value == null || value == "")
+                      storageStepScan.birth = null;
+                    else
+                      {
+                        try {
+                          storageStepScan.birth = CustomDatePicker.parseDateFormated(value);
+                        }
+                        catch(e){
+                          print("Converting throws error.");
+                        }
+                      }
+                      //save storage
+                    storage.save();
+
+                    //update header
+                    stepperBloc.liveModifyHeader(1, context);
+              },
+                _birthTextController,
               ),
               SizedBox(height: 17),
               CustomDatePicker(
@@ -134,7 +152,26 @@ class _StepScanFormState extends State<StepScanForm> {
 
                 //update header
                 stepperBloc.liveModifyHeader(1, context);
-              }, _validUntilTextController)
+              },
+                  /*callback*/ (String value) {
+                  if (value == null || value == "")
+                    storageStepScan.validUntil = null;
+                  else
+                  {
+                    try {
+                      storageStepScan.validUntil = CustomDatePicker.parseDateFormated(value);
+                    }
+                    catch(e){
+                      print("Converting throws error.");
+                    }
+                  }
+                  //save storage
+                  storage.save();
+
+                  //update header
+                  stepperBloc.liveModifyHeader(1, context);
+                },
+                _validUntilTextController)
             ]));
       },
     );

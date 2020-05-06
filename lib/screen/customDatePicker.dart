@@ -17,9 +17,10 @@ class CustomDatePicker extends StatefulWidget {
   DateTime onShowValue;
   TextEditingController textEditingController ;
   Function callbackOnDatePicked;
+  Function callbackOnUpdate;
 
 
-  CustomDatePicker([@required this.text, @required this.firstDate, @required this.lastDate, this.callbackOnDatePicked, this.textEditingController, this.initialDate, this.onShowValue = null])
+  CustomDatePicker([@required this.text, @required this.firstDate, @required this.lastDate, this.callbackOnDatePicked, this.callbackOnUpdate, this.textEditingController, this.initialDate, this.onShowValue = null])
   {
   }
 
@@ -35,6 +36,33 @@ class CustomDatePicker extends StatefulWidget {
   {
     return DateFormat.yMMMd().parse(strDate);
   }
+
+  static DateTime parseDateFormated(String strDate)
+  {
+    return DateFormat('MMM d, yyyy', 'en_US').parse(strDate);
+  }
+
+  static bool isDateStringFormatedValid(String strDate)
+  {
+    try {
+      parseDateFormated(strDate);
+      return true;
+    }
+    catch(e){
+      return false;
+    }
+  }
+
+  static bool isDateFormatedValid(String strDate)
+  {
+    try {
+      parseDateFormated(strDate);
+      return true;
+    }
+    catch(e){
+      return false;
+    }
+  }
 }
 
 class _CustomDatePicker extends State<CustomDatePicker> {
@@ -47,23 +75,30 @@ class _CustomDatePicker extends State<CustomDatePicker> {
     return TextFormField(
       controller: widget.textEditingController,
       decoration: InputDecoration(labelText: widget.text),
+      onChanged: (String value) {
+        if(widget.callbackOnUpdate != null){
+          widget.callbackOnUpdate(value);
+        }
+      },
       onTap: () async {
         FocusScope.of(context).requestFocus(new FocusNode());
-        if(widget.textEditingController.text.isNotEmpty) {
-          // Set init date to previously selected date
-          widget.initialDate = CustomDatePicker.parseDate(widget.textEditingController.text);
-        } else {
+        if(widget.textEditingController.text.isNotEmpty && CustomDatePicker.isDateStringFormatedValid(widget.textEditingController.text))
+          widget.initialDate =  CustomDatePicker.parseDate(widget.textEditingController.text); // Set init date to previously selected date
+        else
           widget.initialDate = new DateTime(DateTime.now().year, 1, 1);//January 1st, current year
-          if(widget.initialDate.isBefore(widget.firstDate)) {
-            widget.initialDate = widget.firstDate;
-          }
-          else if(widget.initialDate.isAfter(widget.lastDate)) {
-            widget.initialDate = widget.lastDate;
-          }
+
+        if(widget.initialDate.isBefore(widget.firstDate)) {
+          widget.initialDate = widget.firstDate;
+        }
+        else if(widget.initialDate.isAfter(widget.lastDate)) {
+          widget.initialDate = widget.lastDate;
         }
 
-
-        final pickedDate = await pickDate(context, widget.firstDate, widget.initialDate, widget.lastDate);
+        DateTime pickedDate = await pickDate(
+            context,
+            widget.firstDate,
+            widget.initialDate ,
+            widget.lastDate);
 
         if (pickedDate != null) {
           widget.textEditingController.text = CustomDatePicker.formatDate(pickedDate);
