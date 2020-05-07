@@ -37,7 +37,7 @@ class StepDataEnterAccount extends StepData{
     this.hasData = (value == "" || value == null ? false : true);
     //activate the button
     this.isUnlocked = (value == null || value.length <= 4 ? false : true);
-    }
+  }
 
   factory StepDataEnterAccount.fromJson(Map<String, dynamic> json) => _$StepDataEnterAccountFromJson(json);
   Map<String, dynamic> toJson() => _$StepDataEnterAccountToJson(this);

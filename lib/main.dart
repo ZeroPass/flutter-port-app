@@ -34,7 +34,7 @@ void fillDatabase()
   Storage storage = new Storage();
 
   //to call it just one time
-  if(storage.storageNodes().length > 0)
+  if(storage.storageNodes().isNotEmpty)
     return;
 
   print("---------------------------------------------------in fill datatbase");
