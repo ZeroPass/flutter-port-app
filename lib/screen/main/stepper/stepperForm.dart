@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import "package:eosio_passid_mobile_app/screen/main/stepper/stepper.dart";
@@ -68,7 +70,8 @@ class _StepperFormState extends State<StepperForm> {
         Padding(
             padding: EdgeInsets.only(top: 40),
             child: PlatformButton(
-              child: Text('Continue', style: TextStyle(color: Colors.white)),
+              padding: Platform.isIOS ? EdgeInsets.symmetric(horizontal: 0) : null,
+              child: Text('Continue'),
               onPressed: () {
                 String errors = onButtonNextPressed(currentStep);
                 //is button 'next' unlocked

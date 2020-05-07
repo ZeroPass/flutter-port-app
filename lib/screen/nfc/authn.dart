@@ -445,8 +445,8 @@ class _AuthnState extends State<Authn> {
         Padding(
             padding: EdgeInsets.only(top: 40),
             child: PlatformButton(
-              child: Text('Attest and Send',
-                  style: TextStyle(color: Colors.white)),
+              child: Text('Attest and Send'),
+              iosFilled: (_) => CupertinoFilledButtonData(),
               onPressed: () {
                 switch(widget._selectedAction) {
                   case 'ATTESTATION_REQUEST':
