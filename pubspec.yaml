@@ -35,6 +35,7 @@ dependencies:
   dart_countries_states: ^0.0.8
   json_serializable: ^3.3.0
   flutter_secure_storage: ^3.3.3
+  flutter_datetime_picker: ^1.3.8
 
   #shared_preferences_settings: ^1.2.0
   card_settings: ^1.8.0
@@ -46,6 +47,7 @@ dependencies:
   flutter_cupertino_date_picker: ^1.0.12
   #flutter_holo_date_picker:
   #  git: 'https://github.com/kfiross/flutter_holo_date_picker.git'
+  flutter_holo_date_picker: ^0.1.3+3
   flutter_platform_widgets: ^0.32.4
   flutter_svg: ^0.17.4
   flutter_tags: ^0.4.7
