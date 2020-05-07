@@ -53,10 +53,4 @@ class StepScanHeaderBloc extends Bloc<StepScanHeaderEvent, StepScanHeaderState> 
       yield WithoutDataState();
     }
   }
-
-  @override
-  Stream<StepScanHeaderState> transformStates(Stream<StepScanHeaderState> states) {
-    // TODO: implement transformStates
-    return super.transformStates(states);
-  }
 }

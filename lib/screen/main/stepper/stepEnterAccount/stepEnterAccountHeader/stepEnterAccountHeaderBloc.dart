@@ -57,11 +57,5 @@ class StepEnterAccountHeaderBloc extends Bloc<StepEnterAccountHeaderEvent, StepE
         yield WithoutAccountIDState(network: event.network, server: event.server);
       }
     }
-
-    @override
-    Stream<StepEnterAccountHeaderState> transformStates(Stream<StepEnterAccountHeaderState> states) {
-      // TODO: implement transformStates
-      return super.transformStates(states);
-    }
   }
 
