@@ -12,17 +12,13 @@ class CustomButton extends StatefulWidget {
   double fontSize;
   Function callbackOnPressed;
 
-  CustomButton({@required this.title, @required this.callbackOnPressed, this.fontColor = null, this.backgroundColor = Colors.white, this.fontSize = null, this.minWidth = null})
+  CustomButton({@required this.title, @required this.callbackOnPressed, this.fontColor, this.backgroundColor = Colors.white, this.fontSize, this.minWidth = 44.0})
   {
     if (this.fontColor == null)
       this.fontSize =  AndroidThemeST().getValues().themeValues["BUTTON"]["COLOR"];
 
     if (this.fontSize == null)
       this.fontSize =  AndroidThemeST().getValues().themeValues["BUTTON"]["SIZE_TEXT"];
-
-    if(this.minWidth == null)
-      this.minWidth = 44.0;
-
   }
 
   @override
