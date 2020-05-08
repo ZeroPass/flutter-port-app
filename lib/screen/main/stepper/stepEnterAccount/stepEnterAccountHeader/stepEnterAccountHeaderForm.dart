@@ -97,7 +97,8 @@ class _StepEnterAccountHeaderFormState
                         transform: new Matrix4.identity()..scale(0.8),
                         child: Row(children: <Widget>[
                                 if (state is WithAccountIDState)
-                                  Container(child: CustomChip([state.accountID]), margin: EdgeInsets.only(left: 3.0)),
+                                  if(state.accountID != null)
+                                    Container(child: CustomChip([state.accountID]), margin: EdgeInsets.only(left: 3.0)),
                                 //if (state.server != null)
                                 //  Container(child: CustomChip(["SERVER"]), margin: EdgeInsets.only(left: 3.0)),
                                 ])),
