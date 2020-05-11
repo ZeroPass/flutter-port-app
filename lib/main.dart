@@ -18,8 +18,7 @@ import 'package:eosio_passid_mobile_app/screen/theme.dart';
 import 'package:eosio_passid_mobile_app/screen/settings/settings.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:logging/logging.dart';
-import 'package:flare_flutter/flare_actor.dart';
-import 'package:flare_flutter/provider/asset_flare.dart';
+import 'package:eosio_passid_mobile_app/screen/slideToSideRoute.dart';
 
 void main() {
   Logger.root.level = Level.ALL;
@@ -157,10 +156,19 @@ class _PassIdWidgetState extends State<PassIdWidget>
               androidIcon: Icon(Icons.menu, size: 35.0),
               android: (_) => MaterialIconButtonData(tooltip: 'Settings'),
               onPressed: () {
-                Navigator.push(
+                final page = Settings();
+                Navigator.of(context).push(SlideToSideRoute(page));
+                /*Navigator.push(
+                  context,
+                  new MyCustomRoute(builder: (context) => new Settings()),
+                );*/
+
+                //final page = Settings();
+                //SlideToSideRoute(page: page);
+                /*Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => Settings()));
+                    builder: (context) => Settings()));*/
               }
             )
           ],

@@ -167,7 +167,7 @@ class _CustomDatePicker extends State<CustomDatePicker> {
           else if(widget.initialDate.isAfter(widget.lastDate)) {
             widget.initialDate = widget.lastDate;
           }
-          
+
           var pickedDate = await DatePicker.showSimpleDatePicker(
             context,
             initialDate: widget.initialDate,
