@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:eosio_passid_mobile_app/settings/settings.dart';
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
 import 'package:flutter/cupertino.dart';
@@ -58,6 +60,7 @@ void fillDatabase()
 
   StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
   storageStepEnterAccount.isUnlocked = true;
+  
   /*
   storage.save(callback:
       (isValid){
@@ -103,6 +106,9 @@ class PassId extends StatelessWidget {
             android: (_) => MaterialAppData(
                 theme: AndroidTheme().getLight(),
                 darkTheme: AndroidTheme().getDark()),
+            ios: (_) => CupertinoAppData(
+              theme: iosThemeData()
+            ),
             home: PassIdWidget()));
   }
 }
@@ -127,8 +133,9 @@ class _PassIdWidgetState extends State<PassIdWidget>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold( // TODO: return to PlatformScaffold
-        appBar: AppBar( //TODO: return to PlatformAppBar
+    return PlatformScaffold(
+        appBar: PlatformAppBar(
+          automaticallyImplyLeading: true,
           title: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
@@ -136,13 +143,17 @@ class _PassIdWidgetState extends State<PassIdWidget>
                   width: 35,
                   height: 35,
                   child: Image(image: AssetImage('assets/images/passid.png'))),
-              Text("  Pass"), Text("ID", style: TextStyle(fontWeight: FontWeight.bold))
+              Text("  Pass", 
+                style: TextStyle(color: Colors.white)), 
+              Text("ID", 
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold))
             ],
           ),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.menu, size: 35.0),
-              tooltip: 'Settings',
+          trailingActions: <Widget>[
+            PlatformIconButton(
+              iosIcon: Icon(Icons.menu, color: Colors.white),
+              androidIcon: Icon(Icons.menu, size: 35.0),
+              android: (_) => MaterialIconButtonData(tooltip: 'Settings'),
               onPressed: () {
                 Navigator.push(
                   context,
@@ -167,29 +178,27 @@ class _PassIdWidgetState extends State<PassIdWidget>
             BlocProvider<StepperBloc>(
                 create: (BuildContext context) => StepperBloc(maxSteps: 3))
           ],
-          child:
-
-          Scaffold(
-              body: StepperForm(steps: [
-            Step(
-              title: StepEnterAccountHeaderForm(),
-              //subtitle: Text("EOSIO Testnet", style: TextStyle(color: Color(0xFFa58157))),
-              content: StepEnterAccountForm(
-                  /*stepEnterAccountHeaderObj: StepEnterAccountHeaderBloc()*/),
-              //isActive: true,
-            ),
-            Step(
-              title: StepScanHeaderForm(),
-              //subtitle: Text("here you can write something", style: TextStyle(color: Color(0xFFa5a057)),),
-              content: StepScanForm(),
-              //state: StepState.ed iting,
-              //isActive: true,
-            ),
-            Step(
-              title: Text("Attestation"),
-              content: StepAttestationForm(),
-              //isActive: true,
-            ),
+          child: Scaffold(
+            body: StepperForm(steps: [
+              Step(
+                title: StepEnterAccountHeaderForm(),
+                //subtitle: Text("EOSIO Testnet", style: TextStyle(color: Color(0xFFa58157))),
+                content: StepEnterAccountForm(
+                    /*stepEnterAccountHeaderObj: StepEnterAccountHeaderBloc()*/),
+                //isActive: true,
+              ),
+              Step(
+                title: StepScanHeaderForm(),
+                //subtitle: Text("here you can write something", style: TextStyle(color: Color(0xFFa5a057)),),
+                content: StepScanForm(),
+                //state: StepState.ed iting,
+                //isActive: true,
+              ),
+              Step(
+                title: Text("Attestation"),
+                content: StepAttestationForm(),
+                //isActive: true,
+              ),
           ])),
         ));
   }

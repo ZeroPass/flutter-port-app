@@ -194,12 +194,8 @@ class AndroidThemeST extends AndroidTheme {
 }
 
 
-class IOSTheme extends CustomTheme{
-  ThemeData getLight() {
-
-  }
-
-  ThemeData getDark(){
-
-  }
+CupertinoThemeData iosThemeData() {
+  return CupertinoThemeData(
+    barBackgroundColor: Color.fromARGB(255, 87, 104, 165)
+  );
 }
