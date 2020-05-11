@@ -124,7 +124,9 @@ class _PassIdWidgetState extends State<PassIdWidget>
   void initState() {
     super.initState();
     initializeDateFormatting();
-    SystemChrome.setEnabledSystemUIOverlays([]); // hide status bar
+    if(!Platform.isIOS){
+      SystemChrome.setEnabledSystemUIOverlays([]); // hide status bar
+    }
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
