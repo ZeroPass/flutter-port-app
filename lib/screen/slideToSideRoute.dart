@@ -20,14 +20,17 @@ class SlideToSideRoute<T> extends PageRoute<T> {
   @override
   Widget buildPage(BuildContext context, Animation<double> animation,
       Animation<double> secondaryAnimation) {
+    AnimationController _controller;
 
-    //screen arrives from right side
+    //screen arrives from right side\
     if (this.direction == Direction.FROM_RIGHT)
       return SlideTransition(
         position: Tween<Offset>(
           begin: const Offset(1,0),
           end: Offset.zero,
-        ).animate(animation),
+        ).animate(CurvedAnimation(
+            parent: animation,
+            curve: Curves.easeOutQuart)),
         child: child,
       );
     else
@@ -36,7 +39,9 @@ class SlideToSideRoute<T> extends PageRoute<T> {
         position: Tween<Offset>(
           begin: const Offset(-1,0),
           end: Offset.zero,
-        ).animate(animation),
+        ).animate(CurvedAnimation(
+            parent: animation,
+            curve: Curves.easeOutQuart)),
         child: child,
       );
 

@@ -31,6 +31,7 @@ Map light = {
     "STEP_SCAN":
     {
       "SIZE_TEXT":17.0,
+      "SIZE_SMALLER_TEXT":15.0,
       "COLOR_TEXT":Color(0xFF646464)
     },
     "STEP_TAP":
@@ -97,6 +98,7 @@ class ThemeValues{
       "STEP_SCAN":
       {
         "SIZE_TEXT":null,
+        "SIZE_SMALLER_TEXT":null,
         "COLOR_TEXT":null
       },
       "STEP_TAP":

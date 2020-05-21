@@ -158,17 +158,6 @@ class _PassIdWidgetState extends State<PassIdWidget>
               onPressed: () {
                 final page = Settings();
                 Navigator.of(context).push(SlideToSideRoute(page));
-                /*Navigator.push(
-                  context,
-                  new MyCustomRoute(builder: (context) => new Settings()),
-                );*/
-
-                //final page = Settings();
-                //SlideToSideRoute(page: page);
-                /*Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => Settings()));*/
               }
             )
           ],
@@ -189,7 +178,13 @@ class _PassIdWidgetState extends State<PassIdWidget>
                 create: (BuildContext context) => StepperBloc(maxSteps: 3))
           ],
           child: Scaffold(
-            body: StepperForm(steps: [
+
+            body:GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () {
+                  FocusScope.of(context).requestFocus(new FocusNode());
+                },
+                child:StepperForm(steps: [
               Step(
                 title: StepEnterAccountHeaderForm(),
                 //subtitle: Text("EOSIO Testnet", style: TextStyle(color: Color(0xFFa58157))),
@@ -209,7 +204,7 @@ class _PassIdWidgetState extends State<PassIdWidget>
                 content: StepAttestationForm(),
                 //isActive: true,
               ),
-          ])),
+          ]))),
         ));
   }
 }

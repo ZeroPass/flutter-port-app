@@ -20,7 +20,7 @@ class StepEnterAccountHeaderBloc extends Bloc<StepEnterAccountHeaderEvent, StepE
     storage.load(callback: (isAlreadyUpdated, isValid){
       if (isAlreadyUpdated == true || isValid == true){
         StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
-        if (storageStepEnterAccount.accountID != null )
+        if (storageStepEnterAccount.accountID != null && storageStepEnterAccount.accountID != "" )
           this.add(WithAccountIDEvent(accountID: storageStepEnterAccount.accountID,
                                       network: storage.getNode()));
       }

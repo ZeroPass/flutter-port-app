@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import "package:eosio_passid_mobile_app/screen/main/stepper/stepScan/stepScan.dart";
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import "package:eosio_passid_mobile_app/screen/main/stepper/stepper.dart";
 import 'package:flutter/cupertino.dart';
 import 'package:eosio_passid_mobile_app/screen/customDatePicker.dart';
@@ -19,29 +20,31 @@ class _StepScanFormState extends State<StepScanForm> {
   TextEditingController _passportIdTextController = TextEditingController();
   TextEditingController _birthTextController = TextEditingController();
   TextEditingController _validUntilTextController = TextEditingController();
-  //Stepper steps
+  bool _validExpiration; // = false;
 
   _StepScanFormState({Key key}) {
     _passportIdTextController = TextEditingController();
     _birthTextController = TextEditingController();
     _validUntilTextController = TextEditingController();
+    _validExpiration = false;
   }
 
   //update fields in account form
   void updateFields() {
     var storage = Storage();
     StepDataScan storageStepScan = storage.getStorageData(1);
-    _passportIdTextController.text = storageStepScan.documentID != null?
-        storageStepScan.documentID : "";
-    _birthTextController.text = storageStepScan.birth != null?
-        CustomDatePicker.formatDate(storageStepScan.birth) : "";
-    _validUntilTextController.text = storageStepScan.validUntil != null?
-        CustomDatePicker.formatDate(storageStepScan.validUntil) : "";
+    _passportIdTextController.text =
+        storageStepScan.documentID != null ? storageStepScan.documentID : "";
+    _birthTextController.text = storageStepScan.birth != null
+        ? CustomDatePicker.formatDate(storageStepScan.birth)
+        : "";
+    _validUntilTextController.text = storageStepScan.validUntil != null
+        ? CustomDatePicker.formatDate(storageStepScan.validUntil)
+        : "";
   }
 
   //clear fields in account form
   void emptyFields() {
-    print("fileds empty process");
     _passportIdTextController.text = '';
     _birthTextController.text = '';
     _validUntilTextController.text = '';
@@ -50,8 +53,6 @@ class _StepScanFormState extends State<StepScanForm> {
   @override
   Widget build(BuildContext context) {
     Storage storage = Storage();
-    StepDataScan storageStepScan = storage.getStorageData(1);
-
     final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
     final stepScanBloc = BlocProvider.of<StepScanBloc>(context);
     final stepperBloc = BlocProvider.of<StepperBloc>(context);
@@ -67,7 +68,7 @@ class _StepScanFormState extends State<StepScanForm> {
             autovalidate: true,
             child: Column(children: <Widget>[
               //const AndroidThemeST().getValues().themeValues["STEPPER"]["STEP_SCAN"]["COLOR_TEXT"]
-              Text(
+              SelectableText(
                 'This data is only used to establish secure communication between your device and passport.',
                 style: TextStyle(
                     color: AndroidThemeST().getValues().themeValues["STEPPER"]
@@ -97,6 +98,7 @@ class _StepScanFormState extends State<StepScanForm> {
                         .copyWith(text: value.toUpperCase());
 
                   //save to storage
+                  StepDataScan storageStepScan = storage.getStorageData(1);
                   storageStepScan.documentID = _passportIdTextController.text;
                   storage.save();
 
@@ -105,63 +107,29 @@ class _StepScanFormState extends State<StepScanForm> {
               ),
               SizedBox(height: 17),
               CustomDatePicker(
-                  "Date of Birth",
-                  DateTime(1930),
-                  DateTime(DateTime.now().year - 10, DateTime.now().month,
-                      DateTime.now().day),
-                  /*callback*/ (selectedDate) {
-                    //save to storage
-                    storageStepScan.birth = selectedDate;
-                    //save storage
-                    storage.save();
+                "Date of Birth",
+                DateTime(1930),
+                DateTime(DateTime.now().year - 10, DateTime.now().month,
+                    DateTime.now().day),
+                /*callback*/ (selectedDate) {
+                  //save to storage
+                  StepDataScan storageStepScan = storage.getStorageData(1);
+                  storageStepScan.birth = selectedDate;
+                  //save storage
+                  storage.save();
 
-                    //update header
-                    stepperBloc.liveModifyHeader(1, context);
-                  },
-                  /*callback*/ (String value) {
-                    if (value == null || value == "")
-                      storageStepScan.birth = null;
-                    else
-                      {
-                        try {
-                          storageStepScan.birth = CustomDatePicker.parseDateFormated(value);
-                        }
-                        catch(e){
-                          print("Converting throws error.");
-                        }
-                      }
-                      //save storage
-                    storage.save();
-
-                    //update header
-                    stepperBloc.liveModifyHeader(1, context);
-              },
-                _birthTextController,
-              ),
-              SizedBox(height: 17),
-              CustomDatePicker(
-                  "Date of Expiry",
-                  DateTime(DateTime.now().year, DateTime.now().month,
-                      DateTime.now().day + 1),
-                  DateTime(2030),
-                  /*callback*/ (selectedDate) {
-                //save to storage
-                storageStepScan.validUntil = selectedDate;
-                //save storage
-                storage.save();
-
-                //update header
-                stepperBloc.liveModifyHeader(1, context);
-              },
-                  /*callback*/ (String value) {
+                  //update header
+                  stepperBloc.liveModifyHeader(1, context);
+                },
+                /*callback*/ (String value) {
+                  StepDataScan storageStepScan = storage.getStorageData(1);
                   if (value == null || value == "")
-                    storageStepScan.validUntil = null;
-                  else
-                  {
+                    storageStepScan.birth = null;
+                  else {
                     try {
-                      storageStepScan.validUntil = CustomDatePicker.parseDateFormated(value);
-                    }
-                    catch(e){
+                      storageStepScan.birth =
+                          CustomDatePicker.parseDateFormated(value);
+                    } catch (e) {
                       print("Converting throws error.");
                     }
                   }
@@ -171,7 +139,58 @@ class _StepScanFormState extends State<StepScanForm> {
                   //update header
                   stepperBloc.liveModifyHeader(1, context);
                 },
-                _validUntilTextController)
+                _birthTextController,
+              ),
+              SizedBox(height: 17),
+              CustomDatePicker(
+                    "Date of Expiry",
+                  (!this._validExpiration)?
+                    DateTime(DateTime.now().year, DateTime.now().month,
+                        DateTime.now().day + 1):
+                        DateTime(1930),
+                    DateTime(2030),
+                    /*callback*/ (selectedDate) {
+                  //save to storage
+                  StepDataScan storageStepScan = storage.getStorageData(1);
+                  storageStepScan.validUntil = selectedDate;
+                  //save storage
+                  storage.save();
+
+                  //update header
+                  stepperBloc.liveModifyHeader(1, context);
+                },
+                    /*callback*/ (String value) {
+                  StepDataScan storageStepScan = storage.getStorageData(1);
+                  if (value == null || value == "")
+                    storageStepScan.validUntil = null;
+                  else {
+                    try {
+                      storageStepScan.validUntil =
+                          CustomDatePicker.parseDateFormated(value);
+                    } catch (e) {
+                      print("Converting throws error.");
+                    }
+                  }
+                  //save storage
+                  storage.save();
+
+                  //update header
+                  stepperBloc.liveModifyHeader(1, context);
+                }, _validUntilTextController),
+
+              Row( mainAxisAlignment: MainAxisAlignment.end, children:[
+                SelectableText(
+                    'Allow expired passports',
+                    style: TextStyle(
+                        fontSize: AndroidThemeST().getValues().themeValues["STEPPER"]
+                        ["STEP_SCAN"]["SIZE_SMALLER_TEXT"],
+                        color: AndroidThemeST().getValues().themeValues["STEPPER"]
+                        ["STEP_SCAN"]["COLOR_TEXT"])),
+                  PlatformSwitch(
+                    value: this._validExpiration,
+                    onChanged: (bool value) => setState(() => this._validExpiration = value),
+                )
+              ])
             ]));
       },
     );

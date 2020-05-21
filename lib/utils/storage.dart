@@ -48,6 +48,25 @@ class StorageNode {
         }
   }
 
+  StorageNode.clone(StorageNode storageNode):
+        this(name: storageNode.name,
+          host:storageNode.host,
+          port:storageNode.port,
+          isEncryptedEndpoint: storageNode.isEncryptedEndpoint,
+          networkType: storageNode.networkType,
+          chainID: storageNode.chainID);
+
+  bool compare(StorageNode storageNode)
+  {
+    return (this.name == storageNode.name &&
+        this.host == storageNode.host &&
+        this.port == storageNode.port &&
+        this.isEncryptedEndpoint == storageNode.isEncryptedEndpoint &&
+        this.networkType == storageNode.networkType &&
+        this.chainID == storageNode.chainID)?
+      true:false;
+  }
+
   factory StorageNode.fromJson(Map<String, dynamic> json) => _$StorageNodeFromJson(json);
   Map<String, dynamic> toJson() => _$StorageNodeToJson(this);
 

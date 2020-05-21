@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'dart:async';
 import 'package:flutter/material.dart';
 
 class StepperState extends Equatable {

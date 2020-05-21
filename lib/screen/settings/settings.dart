@@ -7,55 +7,14 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 
-/*
 class Settings extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Text("kva je");
-  }
-}
-*/
-
-
-class Settings extends StatelessWidget {
-
-  //final _ponyModel = PonyModel();
-
-  // once the form submits, this is flipped to true, and fields can then go into autovalidate mode.
-  bool _autoValidate = false;
-
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
-  // control state only works if the field order never changes.
-  // to support orientation changes, we assign a unique key to each field
-  // if you only have one orientation, the _formKey is sufficient
-  final GlobalKey<FormState> _nameKey = GlobalKey<FormState>();
-  final GlobalKey<FormState> _typeKey = GlobalKey<FormState>();
-  final GlobalKey<FormState> _ageKey = GlobalKey<FormState>();
-  final GlobalKey<FormState> _descriptionlKey = GlobalKey<FormState>();
-  final GlobalKey<FormState> _hobbiesKey = GlobalKey<FormState>();
-  final GlobalKey<FormState> _coatKey = GlobalKey<FormState>();
-  final GlobalKey<FormState> _maneKey = GlobalKey<FormState>();
-  final GlobalKey<FormState> _hasSpotsKey = GlobalKey<FormState>();
-  final GlobalKey<FormState> _spotKey = GlobalKey<FormState>();
-  final GlobalKey<FormState> _heightKey = GlobalKey<FormState>();
-  final GlobalKey<FormState> _weightKey = GlobalKey<FormState>();
-  final GlobalKey<FormState> _dateKey = GlobalKey<FormState>();
-  final GlobalKey<FormState> _timeKey = GlobalKey<FormState>();
-  final GlobalKey<FormState> _priceKey = GlobalKey<FormState>();
-  final GlobalKey<FormState> _phoneKey = GlobalKey<FormState>();
-  final GlobalKey<FormState> _emailKey = GlobalKey<FormState>();
-  final GlobalKey<FormState> _passwordKey = GlobalKey<FormState>();
-  final GlobalKey<FormState> _sliderKey = GlobalKey<FormState>();
-
-  bool _showMaterialonIOS = true;
 
   @override
   Widget build(BuildContext context) {
-
-    return Scaffold(
-      appBar: AppBar(
+    return PlatformScaffold(
+        android: (_) => MaterialScaffoldData(resizeToAvoidBottomPadding: false),
+        ios: (_) => CupertinoPageScaffoldData(resizeToAvoidBottomInset: false),
+        appBar: PlatformAppBar(
         title: Text("Settings"),
       ),
         body:SettingsScreen()
@@ -69,17 +28,12 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  String title = "Spheria";
-  String author = "Cody Leet";
-  String url = "http://www.codyleet.com/spheria";
-
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
 
   @override
   Widget build(BuildContext context) {
-    return Container(child:
-    Form(
+    return Container(
+        child: Form(
       key: _formKey,
       child: CardSettings(
         padding: 0,

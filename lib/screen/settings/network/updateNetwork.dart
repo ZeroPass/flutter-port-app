@@ -1,22 +1,57 @@
 import 'package:flutter/material.dart';
-//import 'package:shared_preferences_settings/shared_preferences_settings.dart';
-import 'package:eosio_passid_mobile_app/screen/theme.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
 import 'package:eosio_passid_mobile_app/settings/settings.dart';
 import 'package:eosio_passid_mobile_app/utils/structure.dart';
 import 'package:card_settings/card_settings.dart';
-
-import 'package:flutter/material.dart';
-import 'package:eosio_passid_mobile_app/screen/theme.dart';
-import 'package:bloc/bloc.dart';
-
-
+import 'package:eosio_passid_mobile_app/screen/alert.dart';
 
 class SettingsNetworkUpdate extends StatelessWidget {
   StorageNode storageNode;
 
-  SettingsNetworkUpdate({@required StorageNode this.storageNode});
+  //to check if any field has been updated
+  StorageNode currentUpdatedValues;
 
+  SettingsNetworkUpdate({@required StorageNode this.storageNode}) {
+    this.currentUpdatedValues = new StorageNode.clone(this.storageNode);
+  }
+
+  void onButtonPressedDelete() {}
+
+  void onButtonPressedSave(BuildContext context) {
+    //copy values to storage if there is any change
+    if (!this.storageNode.compare(this.currentUpdatedValues))
+      this.storageNode = new StorageNode.clone(this.currentUpdatedValues);
+    showAlert(
+        context: context,
+        title: Text("The data have been saved successfully"),
+        closeOnBackPressed: true);
+  }
+
+  Future<bool> onWillPop(BuildContext context) {
+    if (!this.storageNode.compare(this.currentUpdatedValues)) {
+      showAlert(
+          context: context,
+          title: Text("The data have been saved successfully"),
+          actions: [
+            PlatformDialogAction(
+                child: PlatformText('Cancel'),
+                onPressed: () {
+                  Navigator.pop(context);
+                }),
+            PlatformDialogAction(
+                child: PlatformText('Save and go',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+                onPressed: () {
+                  this.storageNode =
+                      new StorageNode.clone(this.currentUpdatedValues);
+                  Navigator.pop(context);
+                })
+          ]);
+      return new Future.value(false);
+    } else
+      return new Future.value(true);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,91 +63,118 @@ class SettingsNetworkUpdate extends StatelessWidget {
       chainsKeys.add(StringUtil.getWithoutTypeName(item.key));
       chainsValues.add(item.key.toString());
     }
-    return Scaffold(
-        appBar: AppBar(
-          title: Text("Select network"),
+    return PlatformScaffold(
+        android: (_) => MaterialScaffoldData(resizeToAvoidBottomPadding: false),
+        ios: (_) => CupertinoPageScaffoldData(resizeToAvoidBottomInset: false),
+        appBar: PlatformAppBar(
+          //automaticallyImplyLeading: true,
+          title: Text("Edit", style: TextStyle(color: Colors.white)),
+          trailingActions: <Widget>[
+            PlatformIconButton(
+                iosIcon: Icon(Icons.delete_outline, color: Colors.white),
+                androidIcon: Icon(Icons.delete_outline, size: 35.0),
+                android: (_) => MaterialIconButtonData(tooltip: 'Delete'),
+                onPressed: () {
+                  /*final page = Settings();
+                Navigator.of(context).push(SlideToSideRoute(page));
+              */
+                }),
+            PlatformIconButton(
+                iosIcon: Icon(Icons.save, color: Colors.white),
+                androidIcon: Icon(Icons.save, size: 35.0),
+                android: (_) => MaterialIconButtonData(tooltip: 'Save'),
+                onPressed: () {
+                  onButtonPressedSave(context);
+                  /*final page = Settings();
+                Navigator.of(context).push(SlideToSideRoute(page));
+              */
+                })
+          ],
         ),
-        body:
-        Form(
-          key: _formKey,
-          child: CardSettings(
-            padding: 0,
-            children: <Widget>[
-              CardSettingsText(
-                label: 'Name',
-                contentAlign: TextAlign.right,
-                initialValue: storageNode.name,
-                validator: (value) {
-                  if (value == null || value.isEmpty) return 'Title is required.';
-                  return "";
-                },
-                onSaved: (value) => storageNode.name = value,
-              ),
-
-              CardSettingsText(
-                label: 'Host',
-                contentAlign: TextAlign.right,
-                initialValue: storageNode.host,
-                validator: (value) {
-                  if (!(value.startsWith('http:') || value.startsWith('https:'))) return 'Must be a valid website.';
-                  return "";
-                },
-                onSaved: (value) => storageNode.host = value,
-              ),
-              CardSettingsInt(
-                label: 'Port',
-                contentAlign: TextAlign.right,
-                initialValue: storageNode.port,
-                validator: (value) {
-                  if (value < 0) return 'Port need to be unsigned.';
-                  return "";
-                },
-                onSaved: (value) => storageNode.port = value,
-              ),
-              CardSettingsSwitch(
-                label: 'Encrypted connection',
-                contentAlign: TextAlign.right,
-                initialValue: storageNode.isEncryptedEndpoint,
-                onSaved: (value) => storageNode.isEncryptedEndpoint = value,
-              ),
-              CardSettingsListPicker(
-                label: 'Network type',
-                contentAlign: TextAlign.right,
-                initialValue: storageNode.networkType.toString(),
-                options: chainsKeys,
-                values: chainsValues,
-                onChanged: (value) {
-                  print(value);
-                  storageNode.networkType = EnumUtil.fromStringEnum(
-                      NetworkType.values, StringUtil.getWithoutTypeName(value));
-                }
-              ),
-              CardSettingsText(
-                label: 'Chain ID',
-                contentAlign: TextAlign.right,
-                initialValue: storageNode.chainID,
-                enabled: false,// storageNode.networkType == NetworkType.CUSTOM? false: true,
-                visible: true,
-                validator: (value) {
-                  print("kva je");
-                  if (storageNode.networkType != NetworkType.CUSTOM)
-                    return "You cannot change chain id. Network type is not selected as custom.";
-                  return "";
-                },
-                onSaved: (value) {
-                  print("kva je 1");
-                  if (storageNode.networkType == NetworkType.CUSTOM)
-                    storageNode.chainID = value;
-                  }
-              ),
-              //for (var item in settings['chain_id'].entries)
-              //            item.key.toString(): item.key.toString().replaceAll("NetworkType.", "")
-            ],
+        body: WillPopScope(
+          onWillPop: () => onWillPop(context),
+          child: Form(
+            key: _formKey,
+            child: CardSettings(
+              padding: 0,
+              children: <Widget>[
+                CardSettingsText(
+                  label: 'Name',
+                  contentAlign: TextAlign.right,
+                  initialValue: storageNode.name,
+                  validator: (value) {
+                    if (value == null || value.isEmpty)
+                      return 'Title is required.';
+                    return "";
+                  },
+                  onSaved: (value) => this.currentUpdatedValues.name = value,
+                ),
+                CardSettingsText(
+                  label: 'Host',
+                  contentAlign: TextAlign.right,
+                  initialValue: storageNode.host,
+                  validator: (value) {
+                    if (!(value.startsWith('http:') ||
+                        value.startsWith('https:')))
+                      return 'Must be a valid website.';
+                    return "";
+                  },
+                  onSaved: (value) => this.currentUpdatedValues.host = value,
+                ),
+                CardSettingsInt(
+                  label: 'Port',
+                  contentAlign: TextAlign.right,
+                  initialValue: storageNode.port,
+                  validator: (value) {
+                    print("IN validator");
+                    if (value < 0) return 'Port need to be unsigned.';
+                    return "";
+                  },
+                  onSaved: (value) {
+                    print("IN SAVE");
+                    this.currentUpdatedValues.port = value;
+                  },
+                ),
+                CardSettingsSwitch(
+                  label: 'Encrypted connection',
+                  contentAlign: TextAlign.right,
+                  initialValue: storageNode.isEncryptedEndpoint,
+                  onSaved: (value) =>
+                      this.currentUpdatedValues.isEncryptedEndpoint = value,
+                ),
+                CardSettingsListPicker(
+                    label: 'Network type',
+                    contentAlign: TextAlign.right,
+                    initialValue: storageNode.networkType.toString(),
+                    options: chainsKeys,
+                    values: chainsValues,
+                    onChanged: (value) {
+                      this.currentUpdatedValues.networkType =
+                          EnumUtil.fromStringEnum(NetworkType.values,
+                              StringUtil.getWithoutTypeName(value));
+                    }),
+                CardSettingsText(
+                    label: 'Chain ID',
+                    contentAlign: TextAlign.right,
+                    initialValue: storageNode.chainID,
+                    enabled: false,
+                    // storageNode.networkType == NetworkType.CUSTOM? false: true,
+                    visible: true,
+                    validator: (value) {
+                      if (this.currentUpdatedValues.networkType !=
+                          NetworkType.CUSTOM)
+                        return "You cannot change chain id. Network type is not selected as custom.";
+                      return "";
+                    },
+                    onSaved: (value) {
+                      if (this.currentUpdatedValues.networkType ==
+                          NetworkType.CUSTOM)
+                        this.currentUpdatedValues.chainID = value;
+                    }),
+              ],
+            ),
           ),
-        ),
-
-
-    );
+        ));
   }
 }
 

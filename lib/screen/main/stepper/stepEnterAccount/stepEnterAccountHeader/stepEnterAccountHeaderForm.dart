@@ -17,8 +17,7 @@ class StepEnterAccountHeaderForm extends StatefulWidget {
       _StepEnterAccountHeaderFormState();
 }
 
-class _StepEnterAccountHeaderFormState
-    extends State<StepEnterAccountHeaderForm> {
+class _StepEnterAccountHeaderFormState extends State<StepEnterAccountHeaderForm> {
   //Stepper steps
 
   _StepEnterAccountHeaderFormState({Key key});
