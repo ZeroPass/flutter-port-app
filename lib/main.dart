@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:eosio_passid_mobile_app/settings/settings.dart';
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
@@ -19,6 +20,9 @@ import 'package:eosio_passid_mobile_app/screen/settings/settings.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:logging/logging.dart';
 import 'package:eosio_passid_mobile_app/screen/slideToSideRoute.dart';
+import 'package:device_preview/device_preview.dart' as DevPreview;
+
+var RUN_IN_DEVICE_PREVIEW_MODE = false;
 
 void main() {
   Logger.root.level = Level.ALL;
@@ -26,7 +30,14 @@ void main() {
     print(
         '${record.loggerName} ${record.level.name}: ${record.time}: ${record.message}');
   });
-  runApp(PassId());
+  runApp(
+      RUN_IN_DEVICE_PREVIEW_MODE?
+        DevPreview.DevicePreview(
+          enabled: !kReleaseMode,
+          builder: (context) => PassId(),
+        ):
+        PassId()
+  );
 }
 
 void fillDatabase()
