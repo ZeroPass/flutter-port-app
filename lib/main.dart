@@ -59,19 +59,6 @@ void fillDatabase()
 
   StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
   storageStepEnterAccount.isUnlocked = true;
-  
-  /*
-  storage.save(callback:
-      (isValid){
-        print(isValid);
-      });
-
-  storage.load(callback:
-  (isValid, object){
-    print(isValid);
-    print(object);
-  });
-  */
 }
 
 /*
@@ -132,6 +119,15 @@ class _PassIdWidgetState extends State<PassIdWidget>
     ]);
   }
 
+
+  StepState _getState(int i) {
+    print("rererer");
+    if (1 >= i)
+      return StepState.complete;
+    else
+      return StepState.indexed;
+  }
+
   @override
   Widget build(BuildContext context) {
     return PlatformScaffold(
@@ -184,27 +180,7 @@ class _PassIdWidgetState extends State<PassIdWidget>
                 onTap: () {
                   FocusScope.of(context).requestFocus(new FocusNode());
                 },
-                child:StepperForm(steps: [
-              Step(
-                title: StepEnterAccountHeaderForm(),
-                //subtitle: Text("EOSIO Testnet", style: TextStyle(color: Color(0xFFa58157))),
-                content: StepEnterAccountForm(
-                    /*stepEnterAccountHeaderObj: StepEnterAccountHeaderBloc()*/),
-                //isActive: true,
-              ),
-              Step(
-                title: StepScanHeaderForm(),
-                //subtitle: Text("here you can write something", style: TextStyle(color: Color(0xFFa5a057)),),
-                content: StepScanForm(),
-                //state: StepState.ed iting,
-                //isActive: true,
-              ),
-              Step(
-                title: Text("Attestation"),
-                content: StepAttestationForm(),
-                //isActive: true,
-              ),
-          ]))),
+                child:StepperForm())),
         ));
   }
 }

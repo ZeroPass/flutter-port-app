@@ -4,26 +4,61 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import "package:eosio_passid_mobile_app/screen/main/stepper/stepper.dart";
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
+import 'package:eosio_passid_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccountHeader/stepEnterAccountHeader.dart';
+import 'package:eosio_passid_mobile_app/screen/main/stepper/stepScan/stepScanHeader/stepScanHeader.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepScan/stepScan.dart';
+import 'package:eosio_passid_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
 
 import '../../alert.dart';
 
 class StepperForm extends StatefulWidget {
-  final List<Step> steps;
 
-  StepperForm({Key key, @required this.steps}) : super(key: key);
+  StepperForm();
 
   @override
-  _StepperFormState createState() => _StepperFormState(steps: steps);
+  _StepperFormState createState() => _StepperFormState(/*steps: steps*/);
 }
 
 class _StepperFormState extends State<StepperForm> {
-  //Stepper steps
-  final List<Step> steps;
+  int currentState = 0;
+  List<StepState> listState = [
+    StepState.indexed,
+    StepState.editing,
+  ];
 
-  _StepperFormState({Key key, @required this.steps});
+  StepState _getState(int step) {
+    if (currentState == step)
+      return StepState.editing;
+    else
+      return StepState.indexed;
+  }
+
+
+  //Stepper steps
+  List<Step> _getSteps(BuildContext context) {
+    return <Step>[
+      Step(
+          title: StepEnterAccountHeaderForm(),
+          content: StepEnterAccountForm(),
+          state: _getState(0),
+      ),
+      Step(
+          title: StepScanHeaderForm(),
+          content: StepScanForm(),
+          state: _getState(1),
+      ),
+      Step(
+        title: Text("Attestation"),
+        content: StepAttestationForm(),
+        state: _getState(2),
+      ),
+    ];
+  }
+  _StepperFormState({Key key/*, @required this.steps*/});
+
+
 
   String onButtonNextPressed(int currentStep) {
     var storage = Storage();
@@ -102,17 +137,21 @@ class _StepperFormState extends State<StepperForm> {
       builder: (BuildContext context, StepperState state) {
         return Stepper(
             currentStep: state.step,
-            steps: steps,
+            steps: _getSteps(context),
             type: StepperType.vertical,
             onStepTapped: (step) {
               //stepperBloc.modifyHeader(state.step, step, context);
+              //steps[step].state = StepState.editing;
+              this.currentState = step;
               stepperBloc.add(StepTapped(step: step));
             },
             onStepCancel: () {
+              this.currentState = state.step - 1;
               stepperBloc.add(StepCancelled());
             },
             onStepContinue: () {
               //stepperBloc.modifyHeader(state.step, state.step + 1, context);
+              this.currentState = state.step + 1;
               stepperBloc.add(StepContinue());
             },
             controlsBuilder: (BuildContext context,
