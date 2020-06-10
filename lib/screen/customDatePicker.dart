@@ -74,6 +74,7 @@ class _CustomDatePicker extends State<CustomDatePicker> {
       widget.textEditingController.text = CustomDatePicker.formatDate(widget.onShowValue);
 
     return TextFormField(
+      showCursor: false,
       controller: widget.textEditingController,
       decoration: InputDecoration(labelText: widget.text),
       onChanged: (String value) {
@@ -147,6 +148,9 @@ class _CustomDatePicker extends State<CustomDatePicker> {
       widget.textEditingController.text = CustomDatePicker.formatDate(widget.onShowValue);
 
     return TextFormField(
+        showCursor: false,
+        //autofocus: true,
+        textInputAction: TextInputAction.none,
         controller: widget.textEditingController,
         decoration: InputDecoration(labelText: widget.text),
         onChanged: (String value) {
@@ -155,7 +159,7 @@ class _CustomDatePicker extends State<CustomDatePicker> {
           }
         },
         onTap: () async {
-          FocusScope.of(context).requestFocus(new FocusNode());
+          //FocusScope.of(context).requestFocus(new FocusNode());
           if(widget.textEditingController.text.isNotEmpty && CustomDatePicker.isDateStringFormatedValid(widget.textEditingController.text))
             widget.initialDate =  CustomDatePicker.parseDate(widget.textEditingController.text); // Set init date to previously selected date
           else
@@ -170,6 +174,7 @@ class _CustomDatePicker extends State<CustomDatePicker> {
 
           var pickedDate = await DatePicker.showSimpleDatePicker(
             context,
+            backgroundColor: DateTimePickerTheme.Default.backgroundColor.withOpacity(1.0),
             initialDate: widget.initialDate,
             firstDate: widget.firstDate,
             lastDate: widget.lastDate,

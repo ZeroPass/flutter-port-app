@@ -18,7 +18,7 @@ class StepperForm extends StatefulWidget {
   StepperForm();
 
   @override
-  _StepperFormState createState() => _StepperFormState(/*steps: steps*/);
+  _StepperFormState createState() => _StepperFormState();
 }
 
 class _StepperFormState extends State<StepperForm> {
@@ -91,8 +91,8 @@ class _StepperFormState extends State<StepperForm> {
         }
         break;
 
-      default:
-        FocusScope.of(context).requestFocus(FocusNode());
+      //default:
+      //  FocusScope.of(context).requestFocus(FocusNode());
     }
   }
 
@@ -140,8 +140,6 @@ class _StepperFormState extends State<StepperForm> {
             steps: _getSteps(context),
             type: StepperType.vertical,
             onStepTapped: (step) {
-              //stepperBloc.modifyHeader(state.step, step, context);
-              //steps[step].state = StepState.editing;
               this.currentState = step;
               stepperBloc.add(StepTapped(step: step));
             },
@@ -150,7 +148,6 @@ class _StepperFormState extends State<StepperForm> {
               stepperBloc.add(StepCancelled());
             },
             onStepContinue: () {
-              //stepperBloc.modifyHeader(state.step, state.step + 1, context);
               this.currentState = state.step + 1;
               stepperBloc.add(StepContinue());
             },

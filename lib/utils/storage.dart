@@ -26,6 +26,9 @@ class StorageNode {
   int port;
   NetworkType networkType;
   String chainID;
+  bool notBlockchain;
+  //do not need to be stored - just to check if field is correct in settings section
+  Map<String, Map<String, dynamic>> validation;
 
   StorageNode(
       { @required this.name,
@@ -33,7 +36,9 @@ class StorageNode {
         @required this.port,
         @required this.isEncryptedEndpoint,
         @required this.networkType,
-        this.chainID}) {
+        this.chainID,
+        this.notBlockchain = false
+      }) {
 
         //remove http(s) part of host
         this.host = this.host.toLowerCase();
@@ -54,7 +59,17 @@ class StorageNode {
           port:storageNode.port,
           isEncryptedEndpoint: storageNode.isEncryptedEndpoint,
           networkType: storageNode.networkType,
-          chainID: storageNode.chainID);
+          chainID: storageNode.chainID,
+          notBlockchain: storageNode.notBlockchain);
+
+  StorageNode clone(StorageNode storageNode){
+    this.name = storageNode.name;
+    this.port = storageNode.port;
+    this.isEncryptedEndpoint = storageNode.isEncryptedEndpoint;
+    this.networkType = storageNode.networkType;
+    this.chainID = storageNode.chainID;
+    this.notBlockchain = storageNode.notBlockchain;
+  }
 
   bool compare(StorageNode storageNode)
   {
@@ -63,8 +78,49 @@ class StorageNode {
         this.port == storageNode.port &&
         this.isEncryptedEndpoint == storageNode.isEncryptedEndpoint &&
         this.networkType == storageNode.networkType &&
-        this.chainID == storageNode.chainID)?
+        this.chainID == storageNode.chainID &&
+        this.notBlockchain == storageNode.notBlockchain)?
       true:false;
+  }
+
+  Map<String, dynamic> fillValidationUnit(String name)
+  {
+    Map<String, dynamic> structure ={
+      'isValid': true,
+      'errorMsg': null
+    };
+    return structure;
+  }
+
+  void initValidation()
+  {
+    validation = new Map();
+    //init validation values on true
+    validation['name'] = fillValidationUnit('name');
+    validation['host'] = fillValidationUnit('host');
+    validation['isEncryptedEndpoint'] = fillValidationUnit('isEncryptedEndpoint');
+    validation['port'] = fillValidationUnit('port');
+    validation['networkType'] = fillValidationUnit('networkType');
+    validation['chainID'] = fillValidationUnit('chainID');
+    validation['notBlockchain'] = fillValidationUnit('notBlockchain');
+  }
+
+  void setValidationError(String field, String errorMsg)
+  {
+    if (this.validation.containsKey(field))
+    {
+      this.validation[field]['isValid'] = false;
+      this.validation[field]['errorMsg'] = errorMsg;
+    }
+  }
+
+  void setValidationCorrect(String field)
+  {
+    if (this.validation.containsKey(field) && !this.validation[field]['isValid'])
+    {
+      this.validation[field]['isValid'] = true;
+      this.validation[field]['errorMsg'] = null;
+    }
   }
 
   factory StorageNode.fromJson(Map<String, dynamic> json) => _$StorageNodeFromJson(json);
@@ -92,6 +148,7 @@ StorageNode _$StorageNodeFromJson(Map<String, dynamic> json) {
     port: json['port'] as int,
     networkType: getNetworkTypeFromString(json['networkType']),
     chainID: json['chainID'] as String,
+    notBlockchain: json['notBlockchain'] as bool
   );
 }
 
@@ -102,6 +159,7 @@ Map<String, dynamic> _$StorageNodeToJson(StorageNode instance) => <String, dynam
   'port': instance.port,
   'networkType': instance.networkType.toString(),
   'chainID': instance.chainID,
+  'notBlockchain': instance.notBlockchain
 };
 
 

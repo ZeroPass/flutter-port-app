@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
-//import 'package:shared_preferences_settings/shared_preferences_settings.dart';
 import 'package:eosio_passid_mobile_app/screen/theme.dart';
 import 'package:eosio_passid_mobile_app/screen/settings/network/network.dart';
 import 'package:card_settings/card_settings.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:eosio_passid_mobile_app/screen/slideToSideRoute.dart';
 
 class Settings extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
     return PlatformScaffold(
-        android: (_) => MaterialScaffoldData(resizeToAvoidBottomPadding: false),
+        android: (_) => MaterialScaffoldData(resizeToAvoidBottomInset: false),
         ios: (_) => CupertinoPageScaffoldData(resizeToAvoidBottomInset: false),
         appBar: PlatformAppBar(
         title: Text("Settings"),
@@ -35,8 +34,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Container(
         child: Form(
       key: _formKey,
-      child: CardSettings(
-        padding: 0,
+      child: CardSettingsSection(
         children: <Widget>[
           CardSettingsHeader(label: 'Network'),
           ListTile(
@@ -44,8 +42,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
               title: Text("Node management"),
               onTap: () {
                 //open 'update network' panel
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => SettingsNetwork()));
+                final page = SettingsNetwork();
+                Navigator.of(context).push(SlideToSideRoute(page));
+
+
               }
           ),
           ListTile(

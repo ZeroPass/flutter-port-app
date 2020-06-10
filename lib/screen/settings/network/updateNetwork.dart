@@ -6,22 +6,48 @@ import 'package:eosio_passid_mobile_app/utils/structure.dart';
 import 'package:card_settings/card_settings.dart';
 import 'package:eosio_passid_mobile_app/screen/alert.dart';
 
-class SettingsNetworkUpdate extends StatelessWidget {
+/*
+class SettingsNetworkUpdate extends StatefulWidget {
+  Storage storage;
   StorageNode storageNode;
+  //to check if any field has been updated
+  StorageNode currentUpdatedValues;
+
+  SettingsNetworkUpdate({@required Storage this.storage, @required StorageNode this.storageNode});
+
+  @override
+  State<StatefulWidget> createState() {
+    return new _SettingsNetworkUpdate();
+  }
+}
+
+class _SettingsNetworkUpdate extends State<SettingsNetworkUpdate> {
+
+ */
+
+class SettingsNetworkUpdate extends StatelessWidget {
+  Storage storage;
+  StorageNode storageNode;
+
 
   //to check if any field has been updated
   StorageNode currentUpdatedValues;
 
-  SettingsNetworkUpdate({@required StorageNode this.storageNode}) {
+  SettingsNetworkUpdate({@required Storage this.storage, @required StorageNode this.storageNode})
+  {
     this.currentUpdatedValues = new StorageNode.clone(this.storageNode);
+    //init validation fields
+    this.storageNode.initValidation();
   }
 
   void onButtonPressedDelete() {}
 
-  void onButtonPressedSave(BuildContext context) {
+  void onButtonPressedSave(BuildContext context)
+  {
     //copy values to storage if there is any change
     if (!this.storageNode.compare(this.currentUpdatedValues))
-      this.storageNode = new StorageNode.clone(this.currentUpdatedValues);
+      this.storageNode.clone(this.currentUpdatedValues);// = new StorageNode.clone(this.currentUpdatedValues);
+    storage.save();
     showAlert(
         context: context,
         title: Text("The data have been saved successfully"),
@@ -53,6 +79,8 @@ class SettingsNetworkUpdate extends StatelessWidget {
       return new Future.value(true);
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -64,7 +92,7 @@ class SettingsNetworkUpdate extends StatelessWidget {
       chainsValues.add(item.key.toString());
     }
     return PlatformScaffold(
-        android: (_) => MaterialScaffoldData(resizeToAvoidBottomPadding: false),
+        android: (_) => MaterialScaffoldData(resizeToAvoidBottomInset: false),
         ios: (_) => CupertinoPageScaffoldData(resizeToAvoidBottomInset: false),
         appBar: PlatformAppBar(
           //automaticallyImplyLeading: true,
@@ -95,45 +123,58 @@ class SettingsNetworkUpdate extends StatelessWidget {
           onWillPop: () => onWillPop(context),
           child: Form(
             key: _formKey,
-            child: CardSettings(
-              padding: 0,
-              children: <Widget>[
+            child: CardSettingsSection(
+              children: [
                 CardSettingsText(
                   label: 'Name',
                   contentAlign: TextAlign.right,
                   initialValue: storageNode.name,
+                  autovalidate: true,
                   validator: (value) {
-                    if (value == null || value.isEmpty)
+                    if (value == null || value.isEmpty) {
+                      this.storageNode.setValidationError("name", "Field 'Title' is empty.");
                       return 'Title is required.';
+                    }
+                    this.storageNode.setValidationCorrect("name");
+                    this.currentUpdatedValues.name = value;
                     return "";
-                  },
-                  onSaved: (value) => this.currentUpdatedValues.name = value,
+                  }
                 ),
                 CardSettingsText(
                   label: 'Host',
                   contentAlign: TextAlign.right,
                   initialValue: storageNode.host,
+                  autovalidate: true,
                   validator: (value) {
-                    if (!(value.startsWith('http:') ||
-                        value.startsWith('https:')))
-                      return 'Must be a valid website.';
+                    if (!(value.startsWith('http:') || value.startsWith('https:'))) {
+                      this.storageNode.setValidationError("host", "Field 'Host' is not valid.");
+                      return "Host must start with 'http(s)://'";
+                    }
+                    this.storageNode.setValidationCorrect("host");
+                    this.currentUpdatedValues.host = value;
                     return "";
-                  },
-                  onSaved: (value) => this.currentUpdatedValues.host = value,
+                  }
                 ),
                 CardSettingsInt(
                   label: 'Port',
                   contentAlign: TextAlign.right,
                   initialValue: storageNode.port,
+                  autovalidate: true,
                   validator: (value) {
-                    print("IN validator");
-                    if (value < 0) return 'Port need to be unsigned.';
-                    return "";
-                  },
-                  onSaved: (value) {
-                    print("IN SAVE");
+                    if (value == null)
+                    {
+                      this.storageNode.setValidationError("port", "Field 'post' is empty.");
+                      return 'There must be a value.';
+                    }
+                    if (value < 0)
+                    {
+                      this.storageNode.setValidationError("port", "Field 'post' is negative.");
+                      return 'Port need to be unsigned.';
+                    }
+                    this.storageNode.setValidationCorrect("port");
                     this.currentUpdatedValues.port = value;
-                  },
+                    return "";
+                  }
                 ),
                 CardSettingsSwitch(
                   label: 'Encrypted connection',
@@ -148,18 +189,22 @@ class SettingsNetworkUpdate extends StatelessWidget {
                     initialValue: storageNode.networkType.toString(),
                     options: chainsKeys,
                     values: chainsValues,
-                    onChanged: (value) {
+                    onChanged:  (value) async {
+                      //setState(() { this.storageNode.networkType = NetworkType.CUSTOM; });
                       this.currentUpdatedValues.networkType =
                           EnumUtil.fromStringEnum(NetworkType.values,
                               StringUtil.getWithoutTypeName(value));
+                      var r = this.currentUpdatedValues.networkType == NetworkType.CUSTOM;
+                      print (r);
+                      var t = 9;
                     }),
                 CardSettingsText(
                     label: 'Chain ID',
                     contentAlign: TextAlign.right,
                     initialValue: storageNode.chainID,
-                    enabled: false,
-                    // storageNode.networkType == NetworkType.CUSTOM? false: true,
-                    visible: true,
+                    enabled: this.currentUpdatedValues.networkType == NetworkType.CUSTOM? true : false,
+                    visible: this.currentUpdatedValues.networkType == NetworkType.CUSTOM? true : false,
+                    autovalidate: true,
                     validator: (value) {
                       if (this.currentUpdatedValues.networkType !=
                           NetworkType.CUSTOM)

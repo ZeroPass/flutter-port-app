@@ -22,7 +22,7 @@ environment:
 
 dependencies:
   bloc: ^4.0.0
-  card_settings: ^1.8.2
+  card_settings: ^1.9.3
   device_preview: ^0.4.5
   connectivity: ^0.4.8+5
   cupertino_icons: ^0.1.3
@@ -32,6 +32,7 @@ dependencies:
     path: lib/dmrtd
   equatable: ^1.1.1
   flare_flutter: ^2.0.3
+  http: ^0.12.1
   flutter:
     sdk: flutter
   flutter_bloc: ^4.0.0
@@ -40,6 +41,8 @@ dependencies:
   flutter_holo_date_picker: ^0.1.3+3
   flutter_platform_widgets: ^0.40.0
   flutter_secure_storage: ^3.3.3
+  keyboard_dismisser: ^1.0.2
+  flutter_statusbarcolor: ^0.2.3
   flutter_svg: ^0.17.4
   flutter_tags: ^0.4.8
   json_serializable: ^3.3.0

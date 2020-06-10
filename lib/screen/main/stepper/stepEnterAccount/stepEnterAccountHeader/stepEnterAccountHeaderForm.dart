@@ -8,6 +8,7 @@ import 'package:eosio_passid_mobile_app/screen/customChip.dart';
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
 import 'package:eosio_passid_mobile_app/utils/size.dart';
 import 'package:eosio_passid_mobile_app/screen/theme.dart';
+import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 
 class StepEnterAccountHeaderForm extends StatefulWidget {
   StepEnterAccountHeaderForm({Key key}) : super(key: key);
@@ -77,6 +78,7 @@ class _StepEnterAccountHeaderFormState extends State<StepEnterAccountHeaderForm>
       bloc: stepEnterAccountHeaderBloc,
       builder: (BuildContext context, StepEnterAccountHeaderState state) {
         return Container(
+
             width: CustomSize.getMaxWidth(context, STEPPER_ICON_PADDING),
             child: Column(children: <Widget>[
               Row(
@@ -94,23 +96,22 @@ class _StepEnterAccountHeaderFormState extends State<StepEnterAccountHeaderForm>
                     Transform(
                         alignment: Alignment.centerRight,
                         transform: new Matrix4.identity()..scale(0.8),
-                        child: Row(children: <Widget>[
+                        child: Row(
+                            mainAxisAlignment:MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
                                 if (state is WithAccountIDState)
-                                  if(state.accountID != null)
+                                  if(state.network.notBlockchain == false && state.accountID != null)
                                     Container(child: CustomChip([state.accountID]), margin: EdgeInsets.only(left: 3.0)),
                                 //if (state.server != null)
                                 //  Container(child: CustomChip(["SERVER"]), margin: EdgeInsets.only(left: 3.0)),
                                 ])),
-                    if (state is WithAccountIDState)
-                      Align(
-                          alignment: Alignment.centerRight,
-                          child: deleteButton(context))
+                    if (state is WithAccountIDState && state.network.notBlockchain == false)
+                      deleteButton(context)
                   ])
                 ],
               )
             ]
-                //)
-                ));
+          ));
       },
     );
   }

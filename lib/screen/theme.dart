@@ -175,7 +175,7 @@ class AndroidTheme extends CustomTheme{
     return ThemeData(primarySwatch: _primaryColor,
         buttonTheme: ButtonThemeData(
           buttonColor: Color(0xFFa58157),
-          textTheme: ButtonTextTheme.primary,
+          textTheme: ButtonTextTheme.normal,
         )
     );
   }

@@ -1,32 +1,35 @@
 import 'package:eosio_passid_mobile_app/screen/settings/network/updateNetwork.dart';
 import 'package:flutter/material.dart';
-//import 'package:shared_preferences_settings/shared_preferences_settings.dart';
-import 'package:eosio_passid_mobile_app/screen/settings/network/network.dart';
-import 'package:eosio_passid_mobile_app/screen/theme.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
+import 'package:eosio_passid_mobile_app/screen/slideToSideRoute.dart';
 
 class SettingsNetwork extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
     var storage = Storage();
+    List<StorageNode> storageNodes = storage.storageNodes();
     final items = <Widget>[
-    for (StorageNode item in storage.storageNodes())
+    //for (StorageNode item in storage.storageNodes())
+    for(var i = 0;i<storageNodes.length;i++)
       ListTile(
           leading: Icon(Icons.cloud),
-          title: Text(item.name),
-          subtitle: Text(item.networkType.toString()),
+          title: Text(storageNodes[i].name),
+          subtitle: Text(storageNodes[i].networkType.toString()),
           onTap: () {
             //open 'update network' panel
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => SettingsNetworkUpdate(storageNode: item)));
+            final page = SettingsNetworkUpdate(storage: storage, storageNode: storageNodes[i]);
+            Navigator.of(context).push(SlideToSideRoute(page));
           }
         )
-        ];
+      ];
 
 
-    return Scaffold(
-        appBar: AppBar(
+    return PlatformScaffold(
+        android: (_) => MaterialScaffoldData(resizeToAvoidBottomInset: false),
+        ios: (_) => CupertinoPageScaffoldData(resizeToAvoidBottomInset: false),
+        appBar: PlatformAppBar(
           title: Text("Select network"),
         ),
         body:ListView(

@@ -5,7 +5,7 @@ import 'package:eosio_passid_mobile_app/utils/storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepper.dart';
@@ -20,7 +20,9 @@ import 'package:eosio_passid_mobile_app/screen/settings/settings.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:logging/logging.dart';
 import 'package:eosio_passid_mobile_app/screen/slideToSideRoute.dart';
+import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:device_preview/device_preview.dart' as DevPreview;
+import 'package:eosio_passid_mobile_app/utils/httpRequest.dart';
 
 var RUN_IN_DEVICE_PREVIEW_MODE = false;
 
@@ -62,14 +64,21 @@ void fillDatabase()
   sn = new StorageNode(name: "Jungle", host: "456786.eosnode.io", port: 443, isEncryptedEndpoint: true, networkType: NetworkType.CUSTOM, chainID: "abce5435345dsaffdas");
   nodes.add(sn);
 
-  sn = new StorageNode(name: "ZeroPass Server", host: "mainenet.eosnode.io", port: 443, isEncryptedEndpoint: true, networkType: NetworkType.MAINNET, chainID: "abcedfdsdfgasfsdfasdfasdaffdas");
+  sn = new StorageNode(name: "ZeroPass Server", host: "mainenet.eosnode.io", port: 443, isEncryptedEndpoint: true, networkType: NetworkType.MAINNET, chainID: "abcedfdsdfgasfsdfasdfasdaffdas", notBlockchain: true);
   nodes.add(sn);
 
-  StorageServer ss = new StorageServer(name: "mainServer", host: "51.15.224.168", port: 443, isEncryptedEndpoint: true);
-  storage.storageServer = ss;
+  //StorageServer ss = new StorageServer(name: "mainServer", host: "51.15.224.168", port: 443, isEncryptedEndpoint: true);
+  //storage.storageServer = ss;
 
   StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
   storageStepEnterAccount.isUnlocked = true;
+
+  /*var t = HTTPrequest(url:"fdsf");
+  t.getRequestJson((bool isValid, String msg ){
+    var e = isValid;
+    var w = msg;
+    var r = 0;
+  });*/
 }
 
 /*
@@ -130,17 +139,10 @@ class _PassIdWidgetState extends State<PassIdWidget>
     ]);
   }
 
-
-  StepState _getState(int i) {
-    print("rererer");
-    if (1 >= i)
-      return StepState.complete;
-    else
-      return StepState.indexed;
-  }
-
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setEnabledSystemUIOverlays ([SystemUiOverlay.top]);
+    FlutterStatusbarcolor.setStatusBarColor(Color(0xFF4f5f96));
     return PlatformScaffold(
         appBar: PlatformAppBar(
           automaticallyImplyLeading: true,
@@ -184,14 +186,51 @@ class _PassIdWidgetState extends State<PassIdWidget>
             BlocProvider<StepperBloc>(
                 create: (BuildContext context) => StepperBloc(maxSteps: 3))
           ],
-          child: Scaffold(
-
-            body:GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: () {
-                  FocusScope.of(context).requestFocus(new FocusNode());
-                },
-                child:StepperForm())),
-        ));
+          child: KeyboardDismisser(
+            gestures:[
+              GestureType.onTapDown,
+              GestureType.onTapUp,
+              GestureType.onTap,
+              GestureType.onTapCancel,
+              GestureType.onSecondaryTapDown,
+              GestureType.onSecondaryTapUp,
+              GestureType.onSecondaryTapCancel,
+              GestureType.onDoubleTap,
+              GestureType. onLongPress,
+              GestureType.onLongPressStart,
+              GestureType.onLongPressMoveUpdate,
+              GestureType.onLongPressUp,
+              GestureType.onLongPressEnd,
+              GestureType.onVerticalDragDown,
+              GestureType.onVerticalDragStart,
+              GestureType.onVerticalDragUpdate,
+              GestureType.onVerticalDragEnd,
+              GestureType.onVerticalDragCancel,
+              GestureType.onHorizontalDragDown,
+              GestureType.onHorizontalDragStart,
+              GestureType.onHorizontalDragUpdate,
+              GestureType.onHorizontalDragEnd,
+              GestureType.onHorizontalDragCancel,
+              GestureType.onForcePressStart,
+              GestureType.onForcePressPeak,
+              GestureType.onForcePressUpdate,
+              GestureType.onForcePressEnd,
+              GestureType.onPanDown,
+              //GestureType.onPanStart,
+              //GestureType.onPanUpdateAnyDirection,
+              GestureType.onPanUpdateDownDirection,
+              GestureType.onPanUpdateUpDirection,
+              GestureType.onPanUpdateLeftDirection,
+              GestureType.onPanUpdateRightDirection,
+              //GestureType.onPanEnd,
+              //GestureType.onPanCancel,
+              //GestureType.onScaleStart,
+              //GestureType.onScaleUpdate,
+              //GestureType.onScaleEnd
+            ],
+            child:Scaffold(
+            body:StepperForm()),
+        ))
+    );
   }
 }

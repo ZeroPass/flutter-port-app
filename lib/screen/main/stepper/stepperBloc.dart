@@ -53,7 +53,6 @@ class StepperBloc extends Bloc<StepperEvent, StepperState> {
   }
 
   bool liveModifyHeader (int step, var context) {
-    print("inn live modify header");
     var storage = Storage();
     switch (step) {
       case 0:
@@ -85,7 +84,6 @@ class StepperBloc extends Bloc<StepperEvent, StepperState> {
                 documentID: storageStepScan.documentID,
                 birth: storageStepScan.birth,
                 validUntil: storageStepScan.validUntil));
-
           }
           //statements;
         }
