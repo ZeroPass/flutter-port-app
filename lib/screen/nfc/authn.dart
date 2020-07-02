@@ -26,6 +26,7 @@ import 'package:passid/passid.dart';
 import 'efdg1_dialog.dart';
 import 'passport_scanner.dart';
 import 'uie/uiutils.dart';
+import 'package:flutter/services.dart';
 
 final _authenticatorActions = {
   "ATTESTATION_REQUEST": {
@@ -449,6 +450,9 @@ class _AuthnState extends State<Authn> {
               color: Color(0xFFa58157),
               //iosFilled: (_) => CupertinoFilledButtonData(),
               onPressed: () {
+                //remove system bottom navigation bar
+                print("abc");
+                removeNavigationBar();
                 switch(widget._selectedAction) {
                   case 'ATTESTATION_REQUEST':
                     startAction(context, AuthnAction.register);
@@ -464,6 +468,7 @@ class _AuthnState extends State<Authn> {
                     startAction(context, AuthnAction.login);
                     break;
                 }
+                changeNavigationBarColor();
               },
             ))
       ],

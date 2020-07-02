@@ -20,13 +20,18 @@ import 'package:eosio_passid_mobile_app/screen/settings/settings.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:logging/logging.dart';
 import 'package:eosio_passid_mobile_app/screen/slideToSideRoute.dart';
-import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
+//import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:device_preview/device_preview.dart' as DevPreview;
 import 'package:eosio_passid_mobile_app/utils/httpRequest.dart';
 
 var RUN_IN_DEVICE_PREVIEW_MODE = false;
 
 void main() {
+
+  //SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+  //  systemNavigationBarColor: Colors.grey,
+  //));
+
   Logger.root.level = Level.ALL;
   Logger.root.onRecord.listen((record) {
     print(
@@ -40,6 +45,7 @@ void main() {
         ):
         PassId()
   );
+  //changeNavigationBarColor();
 }
 
 void fillDatabase()
@@ -67,8 +73,8 @@ void fillDatabase()
   sn = new StorageNode(name: "ZeroPass Server", host: "mainenet.eosnode.io", port: 443, isEncryptedEndpoint: true, networkType: NetworkType.MAINNET, chainID: "abcedfdsdfgasfsdfasdfasdaffdas", notBlockchain: true);
   nodes.add(sn);
 
-  //StorageServer ss = new StorageServer(name: "mainServer", host: "51.15.224.168", port: 443, isEncryptedEndpoint: true);
-  //storage.storageServer = ss;
+  StorageServer ss = new StorageServer(name: "mainServer", host: "51.15.224.168", port: 443, isEncryptedEndpoint: true);
+  storage.storageServer = ss;
 
   StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
   storageStepEnterAccount.isUnlocked = true;
@@ -141,8 +147,7 @@ class _PassIdWidgetState extends State<PassIdWidget>
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setEnabledSystemUIOverlays ([SystemUiOverlay.top]);
-    FlutterStatusbarcolor.setStatusBarColor(Color(0xFF4f5f96));
+    changeNavigationBarColor();
     return PlatformScaffold(
         appBar: PlatformAppBar(
           automaticallyImplyLeading: true,
@@ -153,7 +158,7 @@ class _PassIdWidgetState extends State<PassIdWidget>
                   width: 35,
                   height: 35,
                   child: Image(image: AssetImage('assets/images/passid.png'))),
-              Text("  Pass", 
+              Text("     Pass",
                 style: TextStyle(color: Colors.white)), 
               Text("ID", 
                 style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold))
@@ -162,7 +167,7 @@ class _PassIdWidgetState extends State<PassIdWidget>
           trailingActions: <Widget>[
             PlatformIconButton(
               iosIcon: Icon(Icons.menu, color: Colors.white),
-              androidIcon: Icon(Icons.menu, size: 35.0),
+              androidIcon: Icon(Icons.menu, size: 30.0),
               android: (_) => MaterialIconButtonData(tooltip: 'Settings'),
               onPressed: () {
                 final page = Settings();
@@ -216,12 +221,12 @@ class _PassIdWidgetState extends State<PassIdWidget>
               GestureType.onForcePressUpdate,
               GestureType.onForcePressEnd,
               GestureType.onPanDown,
-              //GestureType.onPanStart,
-              //GestureType.onPanUpdateAnyDirection,
               GestureType.onPanUpdateDownDirection,
               GestureType.onPanUpdateUpDirection,
               GestureType.onPanUpdateLeftDirection,
               GestureType.onPanUpdateRightDirection,
+              //GestureType.onPanStart,
+              //GestureType.onPanUpdateAnyDirection,
               //GestureType.onPanEnd,
               //GestureType.onPanCancel,
               //GestureType.onScaleStart,

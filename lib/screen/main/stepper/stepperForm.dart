@@ -10,6 +10,7 @@ import 'package:eosio_passid_mobile_app/screen/main/stepper/stepScan/stepScan.da
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
+import "package:eosio_passid_mobile_app/screen/main/stepper/customStepper.dart";
 
 import '../../alert.dart';
 
@@ -135,7 +136,7 @@ class _StepperFormState extends State<StepperForm> {
     return BlocBuilder(
       bloc: stepperBloc,
       builder: (BuildContext context, StepperState state) {
-        return Stepper(
+        return CustomStepper(
             currentStep: state.step,
             steps: _getSteps(context),
             type: StepperType.vertical,

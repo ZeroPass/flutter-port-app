@@ -42,17 +42,12 @@ class _StepEnterAccountFormState extends State<StepEnterAccountForm> {
     showPlatformModalSheet(
         context: context,
         builder: (_) => PopupMenuButton(
-              //child: new ListTile(
-              //  title: new Text('11 or 22?'),
-              //  trailing: const Icon(Icons.more_vert),
-              //),
               itemBuilder: (_) => <PopupMenuItem<String>>[
                 PopupMenuItem<String>(child: Text('11'), value: '11'),
                 PopupMenuItem<String>(child: Text('22'), value: '22'),
               ],
               onSelected: (value) => {},
             )).whenComplete(() {
-      print('Hey there, I\'m calling after hide bottomSheet');
     });
   }
 
@@ -147,11 +142,11 @@ class _StepEnterAccountFormState extends State<StepEnterAccountForm> {
                 storageStepEnterAccount.accountID = _accountTextController.text.length !=0 ? _accountTextController.text : null;
 
                 //save storage
-                storage.save();
+                _storage.save();
 
                 stepperBloc.liveModifyHeader(0, context);
               },
-            )
+            ),
         ]));
   }
 

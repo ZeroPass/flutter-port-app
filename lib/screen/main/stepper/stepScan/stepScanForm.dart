@@ -158,7 +158,7 @@ class _StepScanFormState extends State<StepScanForm> {
 
                   //update header
                   stepperBloc.liveModifyHeader(1, context);
-                },
+                  },
                     /*callback*/ (String value) {
                   StepDataScan storageStepScan = storage.getStorageData(1);
                   if (value == null || value == "")

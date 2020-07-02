@@ -70,6 +70,31 @@ class _StepEnterAccountHeaderFormState extends State<StepEnterAccountHeaderForm>
     );
   }
 
+  String truncateNetwork(String networkName, int length)
+  {
+    if (length < 0)
+      return networkName;
+    //we check with length + 3 because of three dots
+    if (networkName.length > length + 3)
+    {
+      networkName = networkName.substring(0, networkName.indexOf(" ") > 0? networkName.indexOf(" "): networkName.length);
+      if (networkName.length > length)
+        return networkName.substring(0, length) + "...";
+      return networkName;
+    }
+    return networkName;
+  }
+
+  String truncateAccountName(String accountName, int length)
+  {
+    if (length < 0)
+      return accountName;
+    //we check with length + 3 because of three dots
+    if (accountName.length > length + 3)
+        return accountName.substring(0, length) + "...";
+    return accountName;
+  }
+
   @override
   Widget build(BuildContext context) {
     final stepEnterAccountHeaderBloc =
@@ -89,7 +114,7 @@ class _StepEnterAccountHeaderFormState extends State<StepEnterAccountHeaderForm>
                     Transform(
                         alignment: Alignment.centerLeft,
                         transform: new Matrix4.identity()..scale(0.8),
-                        child: Container(child: CustomChip([state.network.name]), margin: EdgeInsets.only(left: 3.0))
+                        child: Container(child: CustomChip([truncateNetwork(state.network.name, 5)]), margin: EdgeInsets.only(left: 3.0))
                     ),
                   ]),
                   Row(children: <Widget>[
@@ -101,7 +126,7 @@ class _StepEnterAccountHeaderFormState extends State<StepEnterAccountHeaderForm>
                             children: <Widget>[
                                 if (state is WithAccountIDState)
                                   if(state.network.notBlockchain == false && state.accountID != null)
-                                    Container(child: CustomChip([state.accountID]), margin: EdgeInsets.only(left: 3.0)),
+                                    Container(child: CustomChip([truncateAccountName(state.accountID, 6)]), margin: EdgeInsets.only(left: 3.0)),
                                 //if (state.server != null)
                                 //  Container(child: CustomChip(["SERVER"]), margin: EdgeInsets.only(left: 3.0)),
                                 ])),

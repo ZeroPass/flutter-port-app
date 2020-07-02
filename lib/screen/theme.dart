@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:eosio_passid_mobile_app/utils/color.dart';
+import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
+import 'package:flutter/services.dart';
 
 /*
  Make sure to fill all values
@@ -131,6 +133,27 @@ class ThemeValues{
 
   set themeValues(value) {
     _themeValues = value;
+  }
+}
+
+//change the color of navigation color
+void changeNavigationBarColor() async {
+  try {
+    SystemChrome.setEnabledSystemUIOverlays (SystemUiOverlay.values);
+    FlutterStatusbarcolor.setStatusBarColor(Color(0xFF4f5f96));
+    await FlutterStatusbarcolor.setNavigationBarColor(Color(0xFFF0F0F0));
+    FlutterStatusbarcolor.setNavigationBarWhiteForeground(false);
+  } on PlatformException catch (e) {
+    debugPrint(e.toString());
+  }
+}
+
+void removeNavigationBar() async {
+  try {
+    //SystemChrome.setEnabledSystemUIOverlays ([SystemUiOverlay.top]);
+    SystemChrome.setEnabledSystemUIOverlays ([]);
+  } on PlatformException catch (e) {
+    debugPrint(e.toString());
   }
 }
 
