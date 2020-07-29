@@ -1,27 +1,32 @@
+import 'package:eosio_passid_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
+import 'package:eosio_passid_mobile_app/screen/requestType.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
-abstract class StepAttestationEvent extends Equatable {
+abstract class StepAttestationEvent /*extends Equatable*/ {
   StepAttestationEvent();
 }
 
-class NotAllDataInStorageEvent extends StepAttestationEvent {
+class AttestationEvent extends StepAttestationEvent {
 
-  NotAllDataInStorageEvent();
+  AttestationEvent();
 
   @override
   List<Object> get props => [];
 
   @override
-  String toString() => 'StepAttestationEvent:NotAllDataInStorageEvent ';
+  String toString() => 'StepAttestationEvent:AttestationEvent ';
 }
 
-class AllDataInStorageEvent extends StepAttestationEvent{
-  //show temp on header
-  String temp;
+class AttestationWithDataEvent extends StepAttestationEvent{
+  //NFCDeviceData deviceData;
+  RequestType requestType;
 
-  AllDataInStorageEvent({@required this.temp});
+  AttestationWithDataEvent({@required this.requestType});
 
   @override
-  List<Object> get props => [temp];
+  List<Object> get props => [requestType];
+
+  @override
+  String toString() => 'StepAttestationEvent:AttestationWithDataEvent {requestType: $requestType}';
 }

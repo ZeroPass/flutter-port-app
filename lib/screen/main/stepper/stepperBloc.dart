@@ -3,6 +3,8 @@ import 'package:eosio_passid_mobile_app/screen/main/stepper/stepEnterAccount/ste
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepScan/stepScan.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepScan/stepScanHeader/stepScanHeader.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
+import 'package:eosio_passid_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
+import 'package:eosio_passid_mobile_app/screen/main/stepper/stepAttestation/stepAttestationHeader/stepAttestationHeader.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:async';
@@ -48,9 +50,6 @@ class StepperBloc extends Bloc<StepperEvent, StepperState> {
     super.onTransition(transition);
     print(transition);
   }
-  void modifyBody(int previousStep, int nextStep){
-
-  }
 
   bool liveModifyHeader (int step, var context) {
     var storage = Storage();
@@ -89,6 +88,14 @@ class StepperBloc extends Bloc<StepperEvent, StepperState> {
         }
         break;
 
+      case 2:
+        {
+          final stepAttestationHeaderBloc = BlocProvider.of<StepAttestationHeaderBloc>(context);
+          StepDataAttestation storageStepAttestation = storage.getStorageData(2);
+          stepAttestationHeaderBloc.add(AttestationHeaderWithDataEvent(requestType: storageStepAttestation.requestType));
+        }
+        break;
+
       default:
         {
           //statements;
@@ -100,16 +107,18 @@ class StepperBloc extends Bloc<StepperEvent, StepperState> {
   @override
   Stream<StepperState> mapEventToState(StepperEvent event) async* {
     if (event is StepTapped) {
-      yield state.copyWith(step: event.step);
+      yield state.copyWith(step: event.step, maxSteps: state.maxSteps);
     }
     else if (event is StepCancelled) {
       yield state.copyWith(
-        step: state.step - 1 >= 0 ? state.step - 1 : 0,
+          step: state.step - 1 >= 0 ? state.step - 1 : 0,
+          maxSteps: state.maxSteps
       );
     }
     else if (event is StepContinue) {
       yield state.copyWith(
-        step: state.step + 1 < maxSteps ? state.step + 1 : 0,
+          step: state.step + event.stepsJump < this.maxSteps ? state.step + event.stepsJump : 0,
+          maxSteps: state.maxSteps
       );
     }
   }

@@ -21,7 +21,7 @@ Map light = {
     },
     "CHIP":
     {
-      "SIZE_TEXT":17.0,
+      "SIZE_TEXT":14.0,
       "COLOR_TEXT":Color(0xFFa55900),
       "COLOR_BACKGROUND":Color(0xFFfce4c7)
     },

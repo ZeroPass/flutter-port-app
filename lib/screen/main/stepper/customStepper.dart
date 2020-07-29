@@ -183,7 +183,7 @@ class _CustomStepperState extends State<CustomStepper> with TickerProviderStateM
   @override
   void didUpdateWidget(CustomStepper oldWidget) {
     super.didUpdateWidget(oldWidget);
-    assert(widget.steps.length == oldWidget.steps.length);
+    //assert(widget.steps.length == oldWidget.steps.length); //we want to live change the size/ structure of stepper
 
     for (int i = 0; i < oldWidget.steps.length; i += 1)
       _oldStates[i] = oldWidget.steps[i].state;

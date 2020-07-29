@@ -18,6 +18,16 @@ class EnumUtil {
   }
 }
 
+class MapUtil {
+  static bool contains<T>(Map structure, T requestType) {
+    return structure.containsKey(requestType);
+  }
+}
+
+enum Sex{ Male , Female }
+
+enum NFCdeviceType { P , Unknown }
+
 final Map<DgTag, String> mapDgTagName = {
   EfDG1.TAG : 'Ef.DG1',
   EfDG2.TAG : 'Ef.DG2',

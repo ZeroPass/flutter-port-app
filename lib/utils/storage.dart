@@ -1,3 +1,4 @@
+import 'package:eosio_passid_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepScan/stepScan.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepper.dart';
@@ -342,6 +343,8 @@ class StorageData {
     //initialize every step
     this._steps[0] = StepDataEnterAccount();
     this._steps[1] = StepDataScan();
+    this._steps[2] = StepDataAttestation();
+
   }
 
   bool get isUpdatedInCurrentSession => _isUpdatedInCurrentSession;
@@ -477,6 +480,7 @@ class StorageData {
   List<StepData> output = new List();
   output.add(StepDataEnterAccount.fromJson(list['StepDataEnterAccount']));
   output.add(StepDataScan.fromJson(list['StepDataScan']));
+  output.add(StepDataAttestation.fromJson(list['StepDataAttestation']));
   return output;
 }
 
@@ -485,6 +489,7 @@ Map<String, dynamic> StepDataListToJson (List<StepData> list){
   Map<String, dynamic> output = new Map();
   output['StepDataEnterAccount'] = (list[0] as StepDataEnterAccount).toJson();
   output['StepDataScan'] = (list[1] as StepDataScan).toJson();
+  output['StepDataAttestation'] = (list[2] as StepDataAttestation).toJson();
   return output;
 }
 

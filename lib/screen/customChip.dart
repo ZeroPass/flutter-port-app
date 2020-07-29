@@ -24,11 +24,11 @@ class _CustomChipState extends State<CustomChip> {
       children: <Widget>[
         for (var item in widget.titles)
         FilterChip(
-          padding: EdgeInsets.only(left: 0.0),
-
+          padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
+          labelPadding: EdgeInsets.fromLTRB(0, -3, 0, -3),
           backgroundColor: AndroidThemeST().getValues().themeValues["STEPPER"]["CHIP"]["COLOR_BACKGROUND"],
           selectedColor: AndroidThemeST().getValues().themeValues["STEPPER"]["CHIP"]["COLOR_BACKGROUND"],
-
+          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
           pressElevation: 0.0,
           label: Text(item, style: TextStyle(color: AndroidThemeST().getValues().themeValues["STEPPER"]["CHIP"]["COLOR_TEXT"],
                       fontSize: AndroidThemeST().getValues().themeValues["STEPPER"]["CHIP"]["SIZE_TEXT"])),

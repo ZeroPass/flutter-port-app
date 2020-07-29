@@ -111,25 +111,17 @@ class _StepEnterAccountHeaderFormState extends State<StepEnterAccountHeaderForm>
                 children: <Widget>[
                   Row(children: <Widget>[
                     Text("Account"),
-                    Transform(
-                        alignment: Alignment.centerLeft,
-                        transform: new Matrix4.identity()..scale(0.8),
-                        child: Container(child: CustomChip([truncateNetwork(state.network.name, 5)]), margin: EdgeInsets.only(left: 3.0))
-                    ),
+                    Container(child: CustomChip([truncateNetwork(state.network.name, 5)]), margin: EdgeInsets.only(left: 3.0))
                   ]),
                   Row(children: <Widget>[
-                    Transform(
-                        alignment: Alignment.centerRight,
-                        transform: new Matrix4.identity()..scale(0.8),
-                        child: Row(
-                            mainAxisAlignment:MainAxisAlignment.spaceBetween,
+                    Row(mainAxisAlignment:MainAxisAlignment.spaceBetween,
                             children: <Widget>[
                                 if (state is WithAccountIDState)
                                   if(state.network.notBlockchain == false && state.accountID != null)
-                                    Container(child: CustomChip([truncateAccountName(state.accountID, 6)]), margin: EdgeInsets.only(left: 3.0)),
+                                    Container(child: CustomChip([truncateAccountName(state.accountID, 20)]), margin: EdgeInsets.only(left: 3.0)),
                                 //if (state.server != null)
                                 //  Container(child: CustomChip(["SERVER"]), margin: EdgeInsets.only(left: 3.0)),
-                                ])),
+                                ]),
                     if (state is WithAccountIDState && state.network.notBlockchain == false)
                       deleteButton(context)
                   ])

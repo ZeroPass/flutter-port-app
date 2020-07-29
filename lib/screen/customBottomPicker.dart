@@ -1,4 +1,7 @@
+import 'package:dmrtd/src/utils.dart';
+import 'package:eosio_passid_mobile_app/utils/structure.dart';
 import 'package:flutter/material.dart';
+import 'package:eosio_passid_mobile_app/screen/requestType.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
@@ -35,6 +38,19 @@ class BottomPickerStructure{
           isSelected: (selectedNode != null && item.name == selectedNode.name?true:false)));
   }
 
+  void importStorageRequestList(Map<RequestType, dynamic> authenticatorActions, [RequestType selectedRequest = null, String title = null, String message = null]){
+    this.isValid = true;
+    this.title = (title == null ? "" : title);
+    this.message = (message == null ? "" : message);
+
+    authenticatorActions.forEach((key, value) { 
+      this.elements.add(BottomPickerElement(name: value["NAME"],
+          isSelected: selectedRequest == key? true : false,
+          key: StringUtil.getWithoutTypeName(key) )
+      );
+    });
+  }
+
   void importstorageServerList(List<StorageServer> nodes, [StorageServer selectedServer = null]){
     this.isValid = true;
     this.title = (title == null ? "" : title);
@@ -55,7 +71,7 @@ class BottomPickerStructure{
     for (var item in actions.keys) {
           this.elements.add(BottomPickerElement(name: actions[item]["NAME"],
               isSelected: (selectedAction != null && item == selectedAction?true:false),
-          key: item));
+          key: StringUtil.getWithoutTypeName(item)));
       //print("Key : $k, value : ${numMap[k]}");
     }
   }

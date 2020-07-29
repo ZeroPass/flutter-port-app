@@ -19,6 +19,7 @@ import 'package:eosio_passid_mobile_app/screen/main/stepper/stepScan/stepScan.da
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
 import 'package:eosio_passid_mobile_app/utils/structure.dart';
 import 'package:eosio_passid_mobile_app/screen/theme.dart';
+import 'package:eosio_passid_mobile_app/screen/requestType.dart';
 
 import 'package:logging/logging.dart';
 import 'package:passid/passid.dart';
@@ -26,30 +27,7 @@ import 'package:passid/passid.dart';
 import 'efdg1_dialog.dart';
 import 'passport_scanner.dart';
 import 'uie/uiutils.dart';
-import 'package:flutter/services.dart';
 
-final _authenticatorActions = {
-  "ATTESTATION_REQUEST": {
-    "NAME": "Attestation",
-    "DATA": [
-      "Country (SOD)",
-      "Passport Public Key (DG15)",
-      "Passport Signature"
-    ]
-  },
-  "PERSONAL_INFORMATION_REQUEST": {
-    "NAME": "Personal Info",
-    "DATA": ["Personal Information (DG1))", "Passport Signature"]
-  },
-  "FAKE_PERSONAL_INFORMATION_REQUEST": {
-    "NAME": "Fake Personal Info",
-    "DATA": ["Personal Information (DG1)", "Passport Signature)"]
-  },
-  "LOGIN": {
-    "NAME": "Login",
-    "DATA": ["Passport Signature"]
-  },
-};
 
 class ServerSecurityContext {
   static SecurityContext _ctx;
@@ -75,7 +53,7 @@ class ServerSecurityContext {
 enum AuthnAction { register, login }
 
 class Authn extends StatefulWidget {
-  String _selectedAction = "ATTESTATION_REQUEST";
+  RequestType _selectedAction = RequestType.ATTESTATION_REQUEST;
 
   Authn({Key key});
 
@@ -362,82 +340,6 @@ class _AuthnState extends State<Authn> {
     return "You're attested as $names";
   }
 
-  void selectNetwork(var context) {
-    BottomPickerStructure bps = BottomPickerStructure();
-    bps.importActionTypesList(_authenticatorActions, widget._selectedAction,
-        "Select validation", "Please select type of validation");
-    CustomBottomPickerState cbps = CustomBottomPickerState(structure: bps);
-    cbps.showPicker(context,
-        //callback function to manage user click action on selection
-        (BottomPickerElement returnedItem) {
-      setState(() {
-        widget._selectedAction = returnedItem.key;
-      });
-    });
-  }
-
-  Widget selectModeWithTile(var context) {
-    return ListTile(
-      dense: true,
-      contentPadding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 8.0),
-      title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Text('Request',
-              style: TextStyle(
-                  fontSize:
-                    AndroidThemeST()
-                      .getValues().themeValues["STEPPER"]["STEP_TAP"]["SIZE_TEXT"]),
-            ),
-            Text(_authenticatorActions[widget._selectedAction]['NAME'],
-                style: TextStyle(
-                    fontSize:
-                      AndroidThemeST()
-                        .getValues()
-                        .themeValues["STEPPER"]["STEP_TAP"]["SIZE_TEXT"],
-                    color:
-                      AndroidThemeST()
-                        .getValues().themeValues["TILE_BAR"]["COLOR_TEXT"]))
-          ]),
-      //subtitle: Text("to see what is going to be sent"),
-      trailing: Icon(Icons.expand_more),
-      onTap: () => selectNetwork(context),
-    );
-  }
-
-  Widget dataDescription(var context) {
-    return Container(
-        alignment: Alignment.centerLeft,
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Container(
-                  child: Text('Data Sent',
-                      style: TextStyle(
-                          /*fontWeight: FontWeight.bold,*/ fontSize:
-                              AndroidThemeST()
-                                .getValues()
-                                .themeValues["STEPPER"]["STEP_TAP"]["SIZE_TEXT"])),
-                  margin: EdgeInsets.only(bottom: 10.0)),
-              for (var item in _authenticatorActions[widget._selectedAction]["DATA"])
-                Container(
-                    child: Text('  • ' + item,
-                        style: TextStyle(
-                            fontSize:
-                              AndroidThemeST()
-                                .getValues()
-                                .themeValues["STEPPER"]["STEP_TAP"]["SIZE_TEXT"] - 2,
-                            color:
-                             AndroidThemeST()
-                              .getValues()
-                              .themeValues["STEPPER"]["STEP_TAP"]["COLOR_TEXT"])),
-                    margin: EdgeInsets.only(left: 0.0))
-
-              //AndroidThemeST().getValues().themeValues["STEPPER"]["STEPPER_MANIPULATOR"]["COLOR_TEXT"])
-            ]));
-  }
-
   Widget buttonScan(var context) {
     return Row(
       //mainAxisSize: MainAxisSize.max,
@@ -451,20 +353,19 @@ class _AuthnState extends State<Authn> {
               //iosFilled: (_) => CupertinoFilledButtonData(),
               onPressed: () {
                 //remove system bottom navigation bar
-                print("abc");
                 removeNavigationBar();
                 switch(widget._selectedAction) {
-                  case 'ATTESTATION_REQUEST':
+                  case RequestType.ATTESTATION_REQUEST:
                     startAction(context, AuthnAction.register);
                     break;
-                  case 'PERSONAL_INFORMATION_REQUEST':
+                  case RequestType.PERSONAL_INFORMATION_REQUEST:
                     startAction(context, AuthnAction.login, sendDG1: true);
                     break;
-                  case 'FAKE_PERSONAL_INFORMATION_REQUEST':
+                  case RequestType.FAKE_PERSONAL_INFORMATION_REQUEST:
                     startAction(context, AuthnAction.login,
                       fakeAuthnData: true, sendDG1: true);
                     break;
-                  case 'LOGIN':
+                  case RequestType.LOGIN:
                     startAction(context, AuthnAction.login);
                     break;
                 }
@@ -526,8 +427,6 @@ class _AuthnState extends State<Authn> {
     return Container(
         child: Column(
       children: <Widget>[
-        selectModeWithTile(context),
-        dataDescription(context),
         buttonScan(context)
       ],
     ));

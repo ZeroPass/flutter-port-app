@@ -85,10 +85,10 @@ class _StepScanHeaderFormState
                 children: <Widget>[
                     Text("Passport Info"),
                     Row(children: <Widget>[
-                      Transform(
+                      /*Transform(
                         alignment: Alignment.centerRight,
                         transform: new Matrix4.identity()..scale(0.8),
-                        child: Row(children: <Widget>[
+                        child:*/ Row(children: <Widget>[
                           if (state is WithDataState && state.documentID != null && state.documentID.isNotEmpty)
                             Container(child: CustomChip(['No.']), margin: EdgeInsets.only(left: 3.0)),
                           if (state is WithDataState && state.birth != null)
@@ -96,8 +96,8 @@ class _StepScanHeaderFormState
                           if (state is WithDataState && state.validUntil != null)
                             Container(child: CustomChip(['Expiry']), margin: EdgeInsets.only(left: 3.0)),
 
-                    ])
-                    ),
+                    ]),
+                    //),
 
                     if (state is WithDataState)
                       Align(

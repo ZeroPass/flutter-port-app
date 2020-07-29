@@ -1,9 +1,6 @@
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
-//import "package:eosio_passid_mobile_app/screen/main/stepper/StepEnterAccount/StepEnterAccountHeader/StepEnterAccountHeader.dart" as SEAHB;
 import 'package:bloc/bloc.dart';
-import 'package:eosio_passid_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccountHeader/stepEnterAccountHeader.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepper.dart';
-import 'package:eosio_passid_mobile_app/settings/settings.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:async';
 import 'package:eosio_passid_mobile_app/utils/storage.dart';

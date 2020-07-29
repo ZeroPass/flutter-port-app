@@ -7,13 +7,13 @@ class StepperState extends Equatable {
 
   StepperState({
     @required this.step,
-    @required this.maxSteps,
+    @required this.maxSteps
   });
 
   StepperState copyWith({int step, int maxSteps}) {
     return StepperState(
-      step: step ?? this.step,
-      maxSteps: maxSteps ?? this.maxSteps,
+          step: step ?? this.step,
+          maxSteps: maxSteps
     );
   }
 

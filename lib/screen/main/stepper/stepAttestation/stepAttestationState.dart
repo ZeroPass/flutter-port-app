@@ -1,28 +1,29 @@
+import 'package:eosio_passid_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
+import 'package:eosio_passid_mobile_app/screen/requestType.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/cupertino.dart';
 
 abstract class StepAttestationState /*extends Equatable*/ {
   @override
   List<Object> get props => [];
 }
 
-class NotAllDataInStorage extends StepAttestationState {
+class AttestationState extends StepAttestationState {
 
   @override
-  String toString() => 'StepAttestationState:NotAllDataInStorage';
+  String toString() => 'StepAttestationState:AttestationState';
 }
 
-class AllDataInStorage extends StepAttestationState {
-  //show documentID on header
-  String temp;
+class AttestationWithDataState extends StepAttestationState {
+  //NFCDeviceData deviceData;
+  RequestType requestType;
 
-  AllDataInStorage({String this.temp = null});
-
-  String getTemp(){return this.temp;}
+  AttestationWithDataState({@required this.requestType});
 
   @override
-  List<Object> get props => [temp];
+  List<Object> get props => [requestType];
 
   @override
-  String toString() => 'FullState:StepScanState { temp: $temp}';
+  String toString() => 'StepAttestationState:AttestationWithDataState { request type: $requestType}';
 }
 

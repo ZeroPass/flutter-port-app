@@ -6,25 +6,6 @@ import 'package:eosio_passid_mobile_app/utils/structure.dart';
 import 'package:card_settings/card_settings.dart';
 import 'package:eosio_passid_mobile_app/screen/alert.dart';
 
-/*
-class SettingsNetworkUpdate extends StatefulWidget {
-  Storage storage;
-  StorageNode storageNode;
-  //to check if any field has been updated
-  StorageNode currentUpdatedValues;
-
-  SettingsNetworkUpdate({@required Storage this.storage, @required StorageNode this.storageNode});
-
-  @override
-  State<StatefulWidget> createState() {
-    return new _SettingsNetworkUpdate();
-  }
-}
-
-class _SettingsNetworkUpdate extends State<SettingsNetworkUpdate> {
-
- */
-
 class SettingsNetworkUpdate extends StatelessWidget {
   Storage storage;
   StorageNode storageNode;

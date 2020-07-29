@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:eosio_passid_mobile_app/screen/main/stepper/stepAttestation/stepAttestationHeader/stepAttestationHeader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import "package:eosio_passid_mobile_app/screen/main/stepper/stepper.dart";
@@ -7,6 +8,8 @@ import 'package:eosio_passid_mobile_app/screen/main/stepper/stepEnterAccount/ste
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccountHeader/stepEnterAccountHeader.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepScan/stepScanHeader/stepScanHeader.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepScan/stepScan.dart';
+import 'package:eosio_passid_mobile_app/screen/main/stepper/stepReview/stepReviewHeader/stepReviewHeader.dart';
+import 'package:eosio_passid_mobile_app/screen/main/stepper/stepReview/stepReview.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
@@ -14,9 +17,21 @@ import "package:eosio_passid_mobile_app/screen/main/stepper/customStepper.dart";
 
 import '../../alert.dart';
 
-class StepperForm extends StatefulWidget {
+List<String> BUTTON_NEXT_TITLE = ["Continue", "Scan Passport", "Scan Passport", ""];
 
-  StepperForm();
+Widget getButtonNextTitle({@required int stepIndex}){
+  if (stepIndex > BUTTON_NEXT_TITLE.length-1)
+    throw FormatException("step index is larger than number of all steps");
+  return Text(BUTTON_NEXT_TITLE.elementAt(stepIndex));
+}
+
+class StepperForm extends StatefulWidget {
+  bool isMagnetLink;
+
+  StepperForm({isMagnetLink = null})
+  {
+    this.isMagnetLink = isMagnetLink == null || isMagnetLink == false ? false : true;
+  }
 
   @override
   _StepperFormState createState() => _StepperFormState();
@@ -38,12 +53,13 @@ class _StepperFormState extends State<StepperForm> {
 
 
   //Stepper steps
-  List<Step> _getSteps(BuildContext context) {
+  List<Step> getSteps(BuildContext context) {
     return <Step>[
       Step(
           title: StepEnterAccountHeaderForm(),
           content: StepEnterAccountForm(),
           state: _getState(0),
+
       ),
       Step(
           title: StepScanHeaderForm(),
@@ -51,13 +67,44 @@ class _StepperFormState extends State<StepperForm> {
           state: _getState(1),
       ),
       Step(
-        title: Text("Attestation"),
+        title: StepAttestationHeaderForm(),
         content: StepAttestationForm(),
         state: _getState(2),
       ),
+      Step(
+        title: StepReviewHeaderForm(),
+        content: StepReviewForm(),
+        state: _getState(3),
+      )
     ];
   }
-  _StepperFormState({Key key/*, @required this.steps*/});
+
+  List<Step> getStepsMagnetLink(BuildContext context) {
+    return <Step>[
+      Step(
+        title: StepEnterAccountHeaderForm(),
+        content: StepEnterAccountForm(),
+        state: _getState(0),
+      ),
+      Step(
+        title: StepScanHeaderForm(),
+        content: StepScanForm(),
+        state: _getState(1),
+      ),
+      Step(
+        title: Text("Attestation"),
+        content: StepAttestationForm(),
+        state: _getState(2),
+      )/*,
+      Step(
+        title: Text("test"),
+        content: Text("test1"),
+        state: _getState(3),
+      )*/
+    ];
+  }
+
+  _StepperFormState({Key key});
 
 
 
@@ -89,11 +136,14 @@ class _StepperFormState extends State<StepperForm> {
           if (storageStepScan.validUntil == null)
             errorMessage += "Date of Expiry' is empty.\n";
           return errorMessage;
+          break;
         }
-        break;
 
-      //default:
-      //  FocusScope.of(context).requestFocus(FocusNode());
+      case 2:
+        //step 3(Atttestation)
+        String errorMessage = "";
+        return errorMessage;
+        break;
     }
   }
 
@@ -107,7 +157,7 @@ class _StepperFormState extends State<StepperForm> {
             padding: EdgeInsets.only(top: 40),
             child: PlatformButton(
               padding: Platform.isIOS ? EdgeInsets.symmetric(horizontal: 0) : null,
-              child: Text('Continue'),
+              child: getButtonNextTitle(stepIndex: currentStep),
               onPressed: () {
                 String errors = onButtonNextPressed(currentStep);
                 //is button 'next' unlocked
@@ -119,10 +169,6 @@ class _StepperFormState extends State<StepperForm> {
                     title: Text("Cannot continue"),
                     content: Text(errors + '\nPlease fill the form with valid data!')
                   );
-                  /*CustomAlertDialog(context, "Cannot continue",
-                      errors + '\nPlease fill the form with valid data.', () {
-                    print("button pressed");
-                  });*/
                 }
               },
             ))
@@ -138,7 +184,7 @@ class _StepperFormState extends State<StepperForm> {
       builder: (BuildContext context, StepperState state) {
         return CustomStepper(
             currentStep: state.step,
-            steps: _getSteps(context),
+            steps: widget.isMagnetLink == true ? getStepsMagnetLink(context) : getSteps(context),
             type: StepperType.vertical,
             onStepTapped: (step) {
               this.currentState = step;
@@ -149,13 +195,16 @@ class _StepperFormState extends State<StepperForm> {
               stepperBloc.add(StepCancelled());
             },
             onStepContinue: () {
-              this.currentState = state.step + 1;
-              stepperBloc.add(StepContinue());
+
+              Storage storage = Storage();
+              StepDataAttestation stepDataAttestation = storage.getStorageData(2);
+              this.currentState = state.step + (stepDataAttestation.isOutsideCall ? 2 : 1);
+              stepperBloc.add(StepContinue(stepsJump: stepDataAttestation.isOutsideCall ? 2 : 1));
             },
             controlsBuilder: (BuildContext context,
                 {VoidCallback onStepContinue, VoidCallback onStepCancel}) {
               return Visibility(
-                  visible: state.step != 2,
+                  visible: state.step != state.maxSteps - 1,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.end,
                     crossAxisAlignment: CrossAxisAlignment.end,

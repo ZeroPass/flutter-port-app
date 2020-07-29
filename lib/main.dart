@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:eosio_passid_mobile_app/screen/requestType.dart';
 import 'package:eosio_passid_mobile_app/settings/settings.dart';
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
 import 'package:flutter/cupertino.dart';
@@ -14,6 +15,9 @@ import 'package:eosio_passid_mobile_app/screen/main/stepper/stepEnterAccount/ste
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepScan/stepScanHeader/stepScanHeader.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepScan/stepScan.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
+import 'package:eosio_passid_mobile_app/screen/main/stepper/stepAttestation/stepAttestationHeader/stepAttestationHeader.dart';
+import 'package:eosio_passid_mobile_app/screen/main/stepper/stepReview/stepReview.dart';
+import 'package:eosio_passid_mobile_app/screen/main/stepper/stepReview/stepReviewHeader/stepReviewHeader.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:eosio_passid_mobile_app/screen/theme.dart';
 import 'package:eosio_passid_mobile_app/screen/settings/settings.dart';
@@ -73,11 +77,17 @@ void fillDatabase()
   sn = new StorageNode(name: "ZeroPass Server", host: "mainenet.eosnode.io", port: 443, isEncryptedEndpoint: true, networkType: NetworkType.MAINNET, chainID: "abcedfdsdfgasfsdfasdfasdaffdas", notBlockchain: true);
   nodes.add(sn);
 
-  StorageServer ss = new StorageServer(name: "mainServer", host: "51.15.224.168", port: 443, isEncryptedEndpoint: true);
+  StorageServer ss = new StorageServer(name: "mainServer", host: "163.172.144.187", port: 443, isEncryptedEndpoint: true);
   storage.storageServer = ss;
 
   StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
   storageStepEnterAccount.isUnlocked = true;
+
+  StepDataAttestation stepDataAttestation = storage.getStorageData(2);
+  stepDataAttestation.requestType = RequestType.ATTESTATION_REQUEST;
+  stepDataAttestation.isOutsideCall = true;
+
+  storage.save();
 
   /*var t = HTTPrequest(url:"fdsf");
   t.getRequestJson((bool isValid, String msg ){
@@ -119,7 +129,8 @@ class PassId extends StatelessWidget {
                 theme: AndroidTheme().getLight(),
                 darkTheme: AndroidTheme().getDark()),
             ios: (_) => CupertinoAppData(
-              theme: iosThemeData()
+              theme: iosThemeData(),
+
             ),
             home: PassIdWidget()));
   }
@@ -188,8 +199,14 @@ class _PassIdWidgetState extends State<PassIdWidget>
                 create: (BuildContext context) => StepScanBloc()),
             BlocProvider<StepAttestationBloc>(
                 create: (BuildContext context) => StepAttestationBloc()),
+            BlocProvider<StepAttestationHeaderBloc>(
+                create: (BuildContext context) => StepAttestationHeaderBloc()),
+            BlocProvider<StepReviewBloc>(
+                create: (BuildContext context) => StepReviewBloc()),
+            BlocProvider<StepReviewHeaderBloc>(
+                create: (BuildContext context) => StepReviewHeaderBloc()),
             BlocProvider<StepperBloc>(
-                create: (BuildContext context) => StepperBloc(maxSteps: 3))
+                create: (BuildContext context) => StepperBloc(maxSteps: 4 /*set maximum steps you have in any/all modes*/))
           ],
           child: KeyboardDismisser(
             gestures:[
@@ -234,6 +251,7 @@ class _PassIdWidgetState extends State<PassIdWidget>
               //GestureType.onScaleEnd
             ],
             child:Scaffold(
+              //resizeToAvoidBottomInset: false,
             body:StepperForm()),
         ))
     );
