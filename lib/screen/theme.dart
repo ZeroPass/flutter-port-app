@@ -40,6 +40,11 @@ Map light = {
     {
       "SIZE_TEXT":17.0,
       "COLOR_TEXT":Color(0xFF646464)
+    },
+    "STEP_REVIEW":
+    {
+      "SIZE_TEXT":17.0,
+      "COLOR_TEXT":Color(0xFF646464)
     }
   },
   "BUTTON":
@@ -104,6 +109,11 @@ class ThemeValues{
         "COLOR_TEXT":null
       },
       "STEP_TAP":
+      {
+        "SIZE_TEXT":null,
+        "COLOR_TEXT":null
+      },
+      "STEP_REVIEW":
       {
         "SIZE_TEXT":null,
         "COLOR_TEXT":null

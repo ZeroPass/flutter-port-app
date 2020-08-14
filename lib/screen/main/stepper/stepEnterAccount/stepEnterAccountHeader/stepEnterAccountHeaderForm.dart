@@ -111,7 +111,7 @@ class _StepEnterAccountHeaderFormState extends State<StepEnterAccountHeaderForm>
                 children: <Widget>[
                   Row(children: <Widget>[
                     Text("Account"),
-                    Container(child: CustomChip([truncateNetwork(state.network.name, 5)]), margin: EdgeInsets.only(left: 3.0))
+                    Container(child: CustomChip([truncateNetwork(state.network != null?state.network.name: "", 5)]), margin: EdgeInsets.only(left: 3.0))
                   ]),
                   Row(children: <Widget>[
                     Row(mainAxisAlignment:MainAxisAlignment.spaceBetween,

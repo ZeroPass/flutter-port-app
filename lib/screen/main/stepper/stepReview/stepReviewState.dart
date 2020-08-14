@@ -5,10 +5,10 @@ abstract class StepReviewState {
 
 class WithoutDataState extends StepReviewState {
   @override
-  String toString() => 'StepEnterAccountState:DeletedState';
+  String toString() => 'StepReviewState:WithoutDataState';
 }
 
 class WithDataState extends StepReviewState {
   @override
-  String toString() => 'StepEnterAccountState:FullState';
+  String toString() => 'StepReviewState:WithDataState';
 }

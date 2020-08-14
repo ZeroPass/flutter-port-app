@@ -462,6 +462,8 @@ class StorageData {
         return;
       }
       final storageDB = new FlutterSecureStorage();
+      var test = storageDB.readAll();
+      var test1 = test.toString();
       String value = await storageDB.read(key: "data");
       storage.fromStorageData(StorageData.fromJson(jsonDecode(value)));
       if (callback != null)

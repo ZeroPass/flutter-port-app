@@ -198,8 +198,8 @@ class _StepperFormState extends State<StepperForm> {
 
               Storage storage = Storage();
               StepDataAttestation stepDataAttestation = storage.getStorageData(2);
-              this.currentState = state.step + (stepDataAttestation.isOutsideCall ? 2 : 1);
-              stepperBloc.add(StepContinue(stepsJump: stepDataAttestation.isOutsideCall ? 2 : 1));
+              this.currentState = state.step + (stepDataAttestation.isOutsideCall && state.step == 1 ? 2 : 1);
+              stepperBloc.add(StepContinue(stepsJump: stepDataAttestation.isOutsideCall && state.step == 1 ? 2 : 1));
             },
             controlsBuilder: (BuildContext context,
                 {VoidCallback onStepContinue, VoidCallback onStepCancel}) {

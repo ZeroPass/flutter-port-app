@@ -19,6 +19,7 @@ import 'package:eosio_passid_mobile_app/screen/main/stepper/stepAttestation/step
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepReview/stepReview.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepReview/stepReviewHeader/stepReviewHeader.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:eosio_passid_mobile_app/screen/nfc/authn/authn.dart';
 import 'package:eosio_passid_mobile_app/screen/theme.dart';
 import 'package:eosio_passid_mobile_app/screen/settings/settings.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -27,6 +28,7 @@ import 'package:eosio_passid_mobile_app/screen/slideToSideRoute.dart';
 //import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:device_preview/device_preview.dart' as DevPreview;
 import 'package:eosio_passid_mobile_app/utils/httpRequest.dart';
+import 'package:eosio_passid_mobile_app/screen/flushbar.dart';
 
 var RUN_IN_DEVICE_PREVIEW_MODE = false;
 
@@ -56,6 +58,7 @@ void fillDatabase()
 {
   print("fill database");
   Storage storage = new Storage();
+  storage.load(callback: (isAlreadyUpdated, isValid){});
 
   //to call it just one time
   if(storage.storageNodes().isNotEmpty)
@@ -87,7 +90,7 @@ void fillDatabase()
   stepDataAttestation.requestType = RequestType.ATTESTATION_REQUEST;
   stepDataAttestation.isOutsideCall = true;
 
-  storage.save();
+  //storage.save();
 
   /*var t = HTTPrequest(url:"fdsf");
   t.getRequestJson((bool isValid, String msg ){
@@ -114,11 +117,11 @@ class PassId extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
+    loadDatabase(callbackStatus: (isAlreadyUpdated, isValid){
+    });
     fillDatabase();
-    loadDatabase();
-
     return PlatformProvider(
-        //initialPlatform: initialPlatform,
+      //initialPlatform: initialPlatform,
         builder: (BuildContext context) => PlatformApp(
             title: 'PassID',
             localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
@@ -133,6 +136,7 @@ class PassId extends StatelessWidget {
 
             ),
             home: PassIdWidget()));
+
   }
 }
 
@@ -154,11 +158,14 @@ class _PassIdWidgetState extends State<PassIdWidget>
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
+    //WidgetsBinding.instance
+    //    .addPostFrameCallback((_) => widget.scaffoldContext.state.showSnackBar(SnackBar(content: Text("Your message here..")));
   }
 
-  @override
+@override
   Widget build(BuildContext context) {
     changeNavigationBarColor();
+    setGlobalStaticBuildContext(context);
     return PlatformScaffold(
         appBar: PlatformAppBar(
           automaticallyImplyLeading: true,
@@ -176,6 +183,15 @@ class _PassIdWidgetState extends State<PassIdWidget>
             ],
           ),
           trailingActions: <Widget>[
+            PlatformIconButton(
+                iosIcon: Icon(Icons.event, color: Colors.white),
+                androidIcon: Icon(Icons.event, size: 30.0),
+                android: (_) => MaterialIconButtonData(tooltip: 'Settings'),
+                onPressed: () {
+                  showFlushbar("title", "message");
+                  //showDefaultSnackbar(context);
+                }
+            ),
             PlatformIconButton(
               iosIcon: Icon(Icons.menu, color: Colors.white),
               androidIcon: Icon(Icons.menu, size: 30.0),
@@ -206,7 +222,9 @@ class _PassIdWidgetState extends State<PassIdWidget>
             BlocProvider<StepReviewHeaderBloc>(
                 create: (BuildContext context) => StepReviewHeaderBloc()),
             BlocProvider<StepperBloc>(
-                create: (BuildContext context) => StepperBloc(maxSteps: 4 /*set maximum steps you have in any/all modes*/))
+                create: (BuildContext context) => StepperBloc(maxSteps: 4 /*set maximum steps you have in any/all modes*/)),
+            BlocProvider<AuthnBloc>(
+                create: (BuildContext context) => AuthnBloc()),
           ],
           child: KeyboardDismisser(
             gestures:[

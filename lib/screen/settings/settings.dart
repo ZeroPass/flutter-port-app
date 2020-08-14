@@ -34,11 +34,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Container(
         child: Form(
       key: _formKey,
-      child: CardSettingsSection(
-        children: <Widget>[
+      child: Text("temp unvailable")/*CardSettingsSection(
+        children: [
           CardSettingsHeader(label: 'Network'),
-          ListTile(
-              leading: Icon(Icons.cloud),
+          CardSettingsButton (
+              label: Icon(Icons.cloud),
               title: Text("Node management"),
               onTap: () {
                 //open 'update network' panel
@@ -57,13 +57,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
               }
           ),
           CardSettingsHeader(label: 'About'),
-          ListTile(
+          CardSettingsText(
               leading: Icon(Icons.info),
-              title: Text("PassID"),
+              label: "PassID",
               subtitle: Text(AndroidThemeST().getValues().themeValues["APP_DATA"]["COMPANY_NAME"] +
                   ' ('+ AndroidThemeST().getValues().themeValues["APP_DATA"]["YEAR_LAST_UPDATE"].toString() +  '), version:' +
                   AndroidThemeST().getValues().themeValues["APP_DATA"]["VERSION"]),
-              onTap: () {
+              onChanged: (String s) {
                 //function(item);
                 // Navigator.pop(context);
               }
@@ -71,7 +71,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
 
         ],
-      ),
+      ),*/
     )
     );
 

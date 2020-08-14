@@ -12,7 +12,7 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:logging/logging.dart';
 import 'package:passid/passid.dart';
 
-import 'authn.dart';
+import 'authn/authn.dart';
 import 'uie/nfc_scan_dialog.dart';
 
 class PassportScannerError implements Exception {

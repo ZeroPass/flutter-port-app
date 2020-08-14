@@ -1,3 +1,37 @@
+/*import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:eosio_passid_mobile_app/utils/size.dart';
+import 'package:eosio_passid_mobile_app/screen/nfc/authn/authn.dart';
+
+class AuthnForm extends StatefulWidget {
+  AuthnForm() {}
+
+  @override
+  _AuthnState createState() => _AuthnFormState();
+}
+
+class _AuthnFormState extends State<AuthnForm> {
+
+  @override
+  Widget build(BuildContext context) {
+    final authnBloc = BlocProvider.of<AuthnBloc>(context);
+    return BlocBuilder(
+      bloc: authnBloc,
+      builder: (BuildContext context, AuthnState state) {
+        return Container(
+            width: CustomSize.getMaxWidth(context, STEPPER_ICON_PADDING),
+            child: Form(
+              autovalidate: true,
+              child:Authn()
+            )
+        );
+      },
+    );
+  }
+}
+*/
+
 import 'dart:async';
 import 'dart:io';
 
@@ -5,16 +39,17 @@ import 'package:connectivity/connectivity.dart';
 
 import 'package:dmrtd/dmrtd.dart';
 import 'package:dmrtd/extensions.dart';
+import 'package:eosio_passid_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 
 import 'package:eosio_passid_mobile_app/screen/alert.dart';
-import 'package:eosio_passid_mobile_app/screen/customBottomPicker.dart';
 import 'package:eosio_passid_mobile_app/screen/customButton.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepScan/stepScan.dart';
+import 'package:eosio_passid_mobile_app/screen/nfc/authn/authn.dart';
 
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
 import 'package:eosio_passid_mobile_app/utils/structure.dart';
@@ -23,10 +58,12 @@ import 'package:eosio_passid_mobile_app/screen/requestType.dart';
 
 import 'package:logging/logging.dart';
 import 'package:passid/passid.dart';
+import 'package:bloc/bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'efdg1_dialog.dart';
-import 'passport_scanner.dart';
-import 'uie/uiutils.dart';
+import '../efdg1_dialog.dart';
+import '../passport_scanner.dart';
+import '../uie/uiutils.dart';
 
 
 class ServerSecurityContext {
@@ -52,15 +89,15 @@ class ServerSecurityContext {
 
 enum AuthnAction { register, login }
 
-class Authn extends StatefulWidget {
+class AuthnForm extends StatefulWidget {
   RequestType _selectedAction = RequestType.ATTESTATION_REQUEST;
 
-  Authn({Key key});
+  AuthnForm({Key key});
 
-  _AuthnState createState() => _AuthnState();
+  _AuthnForm createState() => _AuthnForm();
 }
 
-class _AuthnState extends State<Authn> {
+class _AuthnForm extends State<AuthnForm> {
   PassIdClient _client;
   final _log = Logger('authn.screen');
   final String _fakeName = "Larimer Daniel";
@@ -79,7 +116,7 @@ class _AuthnState extends State<Authn> {
       msg = 'Failed to connect to server.\n'
           'Check server connection settings.';
     }
-
+    
     return showAlert<bool>(
         context: context,
         title: Text(title),
@@ -116,7 +153,7 @@ class _AuthnState extends State<Authn> {
     assert(challenge != null);
     final dbaKeys = DBAKeys(passportID, birthDate, validUntilDate);
     final data = await PassportScanner(
-            context: context, challenge: challenge, action: action)
+        context: context, challenge: challenge, action: action)
         .scan(dbaKeys);
 
     Storage storage = Storage();
@@ -132,18 +169,18 @@ class _AuthnState extends State<Authn> {
     if (storageStepEnterAccount.isUnlocked == false &&
         storage.selectedNode.name != "ZeroPass Server")
       missingValuesText +=
-          "- Account name is not valid.\n (Step 'Account')\n\n";
+      "- Account name is not valid.\n (Step 'Account')\n\n";
 
     StepDataScan storageStepScan = storage.getStorageData(1);
     if (storageStepScan.documentID == null)
       missingValuesText +=
-          "- Passport Number is not valid.\n (Step 'Passport Info')\n\n";
+      "- Passport Number is not valid.\n (Step 'Passport Info')\n\n";
     if (storageStepScan.birth == null)
       missingValuesText +=
-          "- Date of Birth is not valid.\n (Step 'Passport Info')\n\n";
+      "- Date of Birth is not valid.\n (Step 'Passport Info')\n\n";
     if (storageStepScan.validUntil == null)
       missingValuesText +=
-          "- Date of Expiry is not valid.\n (Step 'Passport Info')";
+      "- Date of Expiry is not valid.\n (Step 'Passport Info')";
     return missingValuesText;
   }
 
@@ -181,11 +218,11 @@ class _AuthnState extends State<Authn> {
           StepDataScan storageStepScan = storage.getStorageData(1);
           await _hideBusyIndicator();
           return _getAuthnData(
-                  challenge,
-                  AuthnAction.register,
-                  storageStepScan.documentID,
-                  storageStepScan.birth,
-                  storageStepScan.validUntil)
+              challenge,
+              AuthnAction.register,
+              storageStepScan.documentID,
+              storageStepScan.birth,
+              storageStepScan.validUntil)
               .then((data) async {
             await _showBusyIndicator();
             return data;
@@ -196,11 +233,11 @@ class _AuthnState extends State<Authn> {
           StepDataScan storageStepScan = storage.getStorageData(1);
           await _hideBusyIndicator();
           return _getAuthnData(
-                  challenge,
-                  AuthnAction.login,
-                  storageStepScan.documentID,
-                  storageStepScan.birth,
-                  storageStepScan.validUntil)
+              challenge,
+              AuthnAction.login,
+              storageStepScan.documentID,
+              storageStepScan.birth,
+              storageStepScan.validUntil)
               .then((data) async {
             if (fakeAuthnData) {
               data = _fakeData(data);
@@ -251,7 +288,7 @@ class _AuthnState extends State<Authn> {
             case 401:
               alertMsg = 'Attestation failed!';
               break;
-            //case 404: // TODO: parse message and translate it to system language
+          //case 404: // TODO: parse message and translate it to system language
             case 406:
               {
                 alertMsg = 'Passport verification failed!';
@@ -353,8 +390,11 @@ class _AuthnState extends State<Authn> {
               //iosFilled: (_) => CupertinoFilledButtonData(),
               onPressed: () {
                 //remove system bottom navigation bar
+                Storage storage = Storage();
+                StepDataAttestation stepDataAttestation = storage.getStorageData(2);
+
                 removeNavigationBar();
-                switch(widget._selectedAction) {
+                switch(stepDataAttestation.requestType) {
                   case RequestType.ATTESTATION_REQUEST:
                     startAction(context, AuthnAction.register);
                     break;
@@ -363,11 +403,14 @@ class _AuthnState extends State<Authn> {
                     break;
                   case RequestType.FAKE_PERSONAL_INFORMATION_REQUEST:
                     startAction(context, AuthnAction.login,
-                      fakeAuthnData: true, sendDG1: true);
+                        fakeAuthnData: true, sendDG1: true);
                     break;
                   case RequestType.LOGIN:
                     startAction(context, AuthnAction.login);
                     break;
+
+                  default:
+                    throw new Exception("Request type is not known.");
                 }
                 changeNavigationBarColor();
               },
@@ -378,7 +421,7 @@ class _AuthnState extends State<Authn> {
 
   bool _isBusyIndicatorVisible = false;
   final GlobalKey<State> _keyBusyIndicator =
-      GlobalKey<State>(debugLabel: 'key_authn_busy_indicator');
+  GlobalKey<State>(debugLabel: 'key_authn_busy_indicator');
   Future<void> _showBusyIndicator({String msg = 'Please Wait ....'}) async {
     await _hideBusyIndicator();
     await showBusyDialog(context, _keyBusyIndicator, msg: msg);
@@ -397,9 +440,12 @@ class _AuthnState extends State<Authn> {
     }
   }
 
-  Future<bool> _showDG1Dialog(final EfDG1 dg1,
-      {String msg = 'Data to be sent'}) async {
+  Future<bool> _showDG1Dialog(final EfDG1 dg1, {String msg = 'Data to be sent'}) async {
     _log.debug('Showing EfDG1 dialog');
+
+    final authnBloc = BlocProvider.of<AuthnBloc>(context);
+    authnBloc.add(WithDataEvent(dg1: dg1, msg: msg));
+    /*
     return showEfDG1Dialog(context, dg1, message: msg, actions: [
       Center(
           child: CustomButton(
@@ -419,16 +465,49 @@ class _AuthnState extends State<Authn> {
               callbackOnPressed: () {
                 Navigator.pop(context, false);
               })),
-    ]);
+    ]);*/
   }
 
   @override
   Widget build(BuildContext context) {
+    final authnBloc = BlocProvider.of<AuthnBloc>(context);
+    return BlocBuilder(
+        bloc: authnBloc,
+        builder: (BuildContext context, AuthnState state) {
     return Container(
         child: Column(
-      children: <Widget>[
-        buttonScan(context)
-      ],
-    ));
-  }
+          children: <Widget>[
+            buttonScan(context),
+            if (state is WithoutDataState)
+              Text("abc"),
+            if (state is WithDataState)
+              EfDG1Dialog(
+                  context: context,
+                  dg1: state.dg1,
+                  message: state.msg,
+                  actions:  [
+                    Center(
+                    child: CustomButton(
+                        title: "Send",
+                        fontColor: Colors.white,
+                        backgroundColor: Colors.blue,
+                        //minWidth: MediaQuery.of(context).size.width,
+                        callbackOnPressed: () {
+                          Navigator.pop(context, true);
+                        })),
+                Center(
+                    child: CustomButton(
+                        title: "Cancel",
+                        fontColor: Colors.blue,
+                        backgroundColor: Colors.white,
+                        //minWidth: MediaQuery.of(context).size.width-100,
+                        callbackOnPressed: () {
+                          Navigator.pop(context, false);
+                        })),
+              ])
+
+          ],
+        ));
+  });
+}
 }
