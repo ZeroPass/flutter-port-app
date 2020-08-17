@@ -444,43 +444,12 @@ class _AuthnForm extends State<AuthnForm> {
     _log.debug('Showing EfDG1 dialog');
 
     final authnBloc = BlocProvider.of<AuthnBloc>(context);
-    bool sendDataAwait = null;
-    authnBloc.add(WithDataEvent(dg1: dg1, msg: msg, sendData: await (bool sendData)
+    Completer<bool> send = new Completer<bool>();
+    authnBloc.add(WithDataEvent(dg1: dg1, msg: msg, sendData: (bool sendData)
     {
-      return Future<bool>.value(sendData?true:false);
-    }));/*
-    authnBloc.add(WithDataEvent(dg1: dg1, msg: msg, sendData: authnBloc.sendDataSignal));
-    if (await authnBloc.sendDataSignal(true) != null){
-      var i =0;
-      return true;
-    }
-    else {
-      var y = 8;
-      return false;
-    }
-    return await authnBloc.sendDataSignal(true);
-    */
-    /*
-    return showEfDG1Dialog(context, dg1, message: msg, actions: [
-      Center(
-          child: CustomButton(
-              title: "Send",
-              fontColor: Colors.white,
-              backgroundColor: Colors.blue,
-              //minWidth: MediaQuery.of(context).size.width,
-              callbackOnPressed: () {
-                Navigator.pop(context, true);
-              })),
-      Center(
-          child: CustomButton(
-              title: "Cancel",
-              fontColor: Colors.blue,
-              backgroundColor: Colors.white,
-              //minWidth: MediaQuery.of(context).size.width-100,
-              callbackOnPressed: () {
-                Navigator.pop(context, false);
-              })),
-    ]);*/
+      send.complete(sendData);
+    }));
+    return send.future;
   }
 
   @override

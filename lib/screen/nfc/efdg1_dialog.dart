@@ -3,7 +3,6 @@ import 'package:dart_countries_states/country_provider.dart';
 import 'package:dart_countries_states/models/alpha2_codes.dart';
 import 'package:dart_countries_states/models/alpha3_code.dart';
 import 'package:dart_countries_states/models/country.dart';
-import 'package:eosio_passid_mobile_app/screen/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:dmrtd/dmrtd.dart';
 
