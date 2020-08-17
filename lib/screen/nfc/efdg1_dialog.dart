@@ -124,7 +124,7 @@ class _EfDG1Dialog extends State<EfDG1Dialog> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: <Widget>[
                                 Align(
-                                    alignment: Alignment.centerRight,
+                                    alignment: Alignment.centerLeft,
                                     child: Text(
                                   'Passport Data',
                                   style: TextStyle(
@@ -173,7 +173,7 @@ class _EfDG1Dialog extends State<EfDG1Dialog> {
                                 ]),
                                 const SizedBox(height: 30),
                               Align(
-                                alignment: Alignment.centerRight,
+                                alignment: Alignment.centerLeft,
                                 child: Text(
                                   'Personal Data',
                                   style: TextStyle(
