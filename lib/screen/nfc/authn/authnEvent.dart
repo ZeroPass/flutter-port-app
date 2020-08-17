@@ -16,8 +16,9 @@ class WithoutDataEvent extends AuthnEvent{
 class WithDataEvent extends AuthnEvent{
   EfDG1 dg1;
   String msg;
+  Function(bool) sendData;
 
-  WithDataEvent({@required this.dg1, @required this.msg});
+  WithDataEvent({@required this.dg1, @required this.msg, @required this.sendData});
 
   @override
   String toString() => 'AuthnEvent:WithDataEvent {dg1: filled, message: $this.msg}}';

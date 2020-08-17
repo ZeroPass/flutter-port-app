@@ -184,15 +184,6 @@ class _PassIdWidgetState extends State<PassIdWidget>
           ),
           trailingActions: <Widget>[
             PlatformIconButton(
-                iosIcon: Icon(Icons.event, color: Colors.white),
-                androidIcon: Icon(Icons.event, size: 30.0),
-                android: (_) => MaterialIconButtonData(tooltip: 'Settings'),
-                onPressed: () {
-                  showFlushbar("title", "message");
-                  //showDefaultSnackbar(context);
-                }
-            ),
-            PlatformIconButton(
               iosIcon: Icon(Icons.menu, color: Colors.white),
               androidIcon: Icon(Icons.menu, size: 30.0),
               android: (_) => MaterialIconButtonData(tooltip: 'Settings'),

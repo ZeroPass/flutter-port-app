@@ -27,24 +27,6 @@ class EfDG1Dialog extends StatefulWidget{
   StateSetter _sheetSetter;
 
   EfDG1Dialog({@required this.context, @required this.dg1, @required this.message, @required this.actions});
-  /*
-    _formatCountryCode(dg1.mrz.country).then((c) {
-      if (_sheetSetter != null) {
-        _sheetSetter(() => _issuingCountry = c);
-      } else {
-        _issuingCountry = c;
-      }
-    });
-
-    _formatCountryCode(dg1.mrz.nationality).then((c) {
-      if (_sheetSetter != null) {
-        _sheetSetter(() => _nationality = c);
-      } else {
-        _nationality = c;
-      }
-    });
-  }
-  }*/
 
   @override
   _EfDG1Dialog createState() => _EfDG1Dialog();
@@ -129,11 +111,9 @@ class _EfDG1Dialog extends State<EfDG1Dialog> {
             padding: EdgeInsets.all(0.0),
             child: Column(children: <Widget>[
               const SizedBox(height: 10),
+              if (widget.message != null)
               SelectableText(
-                widget.message ?? '',
-                style: TextStyle(
-                    color: AndroidThemeST().getValues().themeValues["STEPPER"]
-                    ["STEP_REVIEW"]["COLOR_TEXT"]),
+                widget.message,
               ),
               const SizedBox(height: 20),
               SingleChildScrollView(
@@ -143,12 +123,14 @@ class _EfDG1Dialog extends State<EfDG1Dialog> {
                           child: Column(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: <Widget>[
-                                Text(
+                                Align(
+                                    alignment: Alignment.centerRight,
+                                    child: Text(
                                   'Passport Data',
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 18),
-                                ),
+                                )),
                                 const SizedBox(height: 5),
                                 Row(children: <Widget>[
                                   Expanded(
@@ -190,12 +172,14 @@ class _EfDG1Dialog extends State<EfDG1Dialog> {
                                           style: TextStyle(fontSize: 16)))
                                 ]),
                                 const SizedBox(height: 30),
-                                Text(
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: Text(
                                   'Personal Data',
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 18),
-                                ),
+                                )),
                                 const SizedBox(height: 5),
                                 Row(children: <Widget>[
                                   Expanded(

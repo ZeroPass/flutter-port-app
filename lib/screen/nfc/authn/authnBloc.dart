@@ -16,12 +16,17 @@ class AuthnBloc extends Bloc<AuthnEvent, AuthnState> {
     super.onTransition(transition);
   }
 
+  Future<bool> sendDataSignal(bool sendData)
+  {
+    return Future<bool>.value(sendData);
+  }
+
   @override
   Stream<AuthnState> mapEventToState( AuthnEvent event) async* {
     if (event is WithoutDataEvent)
       yield WithoutDataState();
     else if (event is WithDataEvent)
-      yield WithDataState(dg1: event.dg1, msg: event.msg);
+      yield WithDataState(dg1: event.dg1, msg: event.msg, sendData: event.sendData);
     else
       yield WithoutDataState();
     }

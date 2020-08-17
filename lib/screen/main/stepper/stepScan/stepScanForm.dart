@@ -67,7 +67,6 @@ class _StepScanFormState extends State<StepScanForm> {
             key: _formKey,
             autovalidate: true,
             child: Column(children: <Widget>[
-              //const AndroidThemeST().getValues().themeValues["STEPPER"]["STEP_SCAN"]["COLOR_TEXT"]
               SelectableText(
                 'This data is only used to establish secure communication between your device and passport.',
                 style: TextStyle(

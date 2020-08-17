@@ -440,11 +440,26 @@ class _AuthnForm extends State<AuthnForm> {
     }
   }
 
-  Future<bool> _showDG1Dialog(final EfDG1 dg1, {String msg = 'Data to be sent'}) async {
+  Future<bool> _showDG1Dialog(final EfDG1 dg1, {String msg = null}) async {
     _log.debug('Showing EfDG1 dialog');
 
     final authnBloc = BlocProvider.of<AuthnBloc>(context);
-    authnBloc.add(WithDataEvent(dg1: dg1, msg: msg));
+    bool sendDataAwait = null;
+    authnBloc.add(WithDataEvent(dg1: dg1, msg: msg, sendData: await (bool sendData)
+    {
+      return Future<bool>.value(sendData?true:false);
+    }));/*
+    authnBloc.add(WithDataEvent(dg1: dg1, msg: msg, sendData: authnBloc.sendDataSignal));
+    if (await authnBloc.sendDataSignal(true) != null){
+      var i =0;
+      return true;
+    }
+    else {
+      var y = 8;
+      return false;
+    }
+    return await authnBloc.sendDataSignal(true);
+    */
     /*
     return showEfDG1Dialog(context, dg1, message: msg, actions: [
       Center(
@@ -477,9 +492,17 @@ class _AuthnForm extends State<AuthnForm> {
     return Container(
         child: Column(
           children: <Widget>[
-            buttonScan(context),
             if (state is WithoutDataState)
-              Text("abc"),
+              buttonScan(context),
+            if (state is WithDataState)
+              Align(
+                  alignment: Alignment.centerLeft,
+                  child:Text('Data to be sent',
+                style: TextStyle(
+
+                    color: AndroidThemeST().getValues().themeValues["STEPPER"]
+                    ["STEP_TAP"]["COLOR_TEXT"]),
+              )),
             if (state is WithDataState)
               EfDG1Dialog(
                   context: context,
@@ -493,7 +516,7 @@ class _AuthnForm extends State<AuthnForm> {
                         backgroundColor: Colors.blue,
                         //minWidth: MediaQuery.of(context).size.width,
                         callbackOnPressed: () {
-                          Navigator.pop(context, true);
+                          state.sendData(true);
                         })),
                 Center(
                     child: CustomButton(
@@ -502,7 +525,7 @@ class _AuthnForm extends State<AuthnForm> {
                         backgroundColor: Colors.white,
                         //minWidth: MediaQuery.of(context).size.width-100,
                         callbackOnPressed: () {
-                          Navigator.pop(context, false);
+                          state.sendData(false);
                         })),
               ])
 
