@@ -231,6 +231,7 @@ class AndroidThemeST extends AndroidTheme {
 
 CupertinoThemeData iosThemeData() {
   return CupertinoThemeData(
+    brightness: Brightness.light, // force light theme as way around for buggy dark theme. 
     barBackgroundColor: Color.fromARGB(255, 87, 104, 165)
   );
 }
