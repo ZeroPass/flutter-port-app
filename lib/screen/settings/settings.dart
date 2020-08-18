@@ -40,18 +40,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
       header: CardSettingsHeader(label: 'Network'),
           children: <CardSettingsWidget>[
             CardSettingsButton  (
-              label: "Node management",
+              label: "Server management",
               onPressed: (){
                 Navigator.push(context,
                   MaterialPageRoute(builder: (context) => SettingsNetwork()));
             },),
-            CardSettingsButton  (
-              label: "Server  management",
+            /*CardSettingsButton  (
+              label: "Node  management",
               bottomSpacing: 3,
               onPressed: (){
                 //Navigator.push(context, MaterialPageRoute(builder: (context) => SettingsNetwork()));
               },
-            ),
+            ),*/
           ]
       ),
 
