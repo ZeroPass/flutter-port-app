@@ -104,9 +104,12 @@ class SettingsNetworkUpdate extends StatelessWidget {
           onWillPop: () => onWillPop(context),
           child: Form(
             key: _formKey,
-            child: CardSettingsSection(
-              children: [
-                CardSettingsText(
+            child:
+            CardSettings(
+              children: <CardSettingsSection>[
+            CardSettingsSection(
+            children: <CardSettingsWidget>[
+              CardSettingsText(
                   label: 'Name',
                   contentAlign: TextAlign.right,
                   initialValue: storageNode.name,
@@ -120,8 +123,8 @@ class SettingsNetworkUpdate extends StatelessWidget {
                     this.currentUpdatedValues.name = value;
                     return "";
                   }
-                ),
-                CardSettingsText(
+              ),
+              CardSettingsText(
                   label: 'Host',
                   contentAlign: TextAlign.right,
                   initialValue: storageNode.host,
@@ -135,8 +138,8 @@ class SettingsNetworkUpdate extends StatelessWidget {
                     this.currentUpdatedValues.host = value;
                     return "";
                   }
-                ),
-                CardSettingsInt(
+              ),
+              CardSettingsInt(
                   label: 'Port',
                   contentAlign: TextAlign.right,
                   initialValue: storageNode.port,
@@ -156,49 +159,51 @@ class SettingsNetworkUpdate extends StatelessWidget {
                     this.currentUpdatedValues.port = value;
                     return "";
                   }
-                ),
-                CardSettingsSwitch(
-                  label: 'Encrypted connection',
+              ),
+              CardSettingsSwitch(
+                label: 'Encrypted connection',
+                contentAlign: TextAlign.right,
+                initialValue: storageNode.isEncryptedEndpoint,
+                onSaved: (value) =>
+                this.currentUpdatedValues.isEncryptedEndpoint = value,
+              ),
+              CardSettingsListPicker(
+                  label: 'Network type',
                   contentAlign: TextAlign.right,
-                  initialValue: storageNode.isEncryptedEndpoint,
-                  onSaved: (value) =>
-                      this.currentUpdatedValues.isEncryptedEndpoint = value,
-                ),
-                CardSettingsListPicker(
-                    label: 'Network type',
-                    contentAlign: TextAlign.right,
-                    initialValue: storageNode.networkType.toString(),
-                    options: chainsKeys,
-                    values: chainsValues,
-                    onChanged:  (value) async {
-                      //setState(() { this.storageNode.networkType = NetworkType.CUSTOM; });
-                      this.currentUpdatedValues.networkType =
-                          EnumUtil.fromStringEnum(NetworkType.values,
-                              StringUtil.getWithoutTypeName(value));
-                      var r = this.currentUpdatedValues.networkType == NetworkType.CUSTOM;
-                      print (r);
-                      var t = 9;
-                    }),
-                CardSettingsText(
-                    label: 'Chain ID',
-                    contentAlign: TextAlign.right,
-                    initialValue: storageNode.chainID,
-                    enabled: this.currentUpdatedValues.networkType == NetworkType.CUSTOM? true : false,
-                    visible: this.currentUpdatedValues.networkType == NetworkType.CUSTOM? true : false,
-                    autovalidate: true,
-                    validator: (value) {
-                      if (this.currentUpdatedValues.networkType !=
-                          NetworkType.CUSTOM)
-                        return "You cannot change chain id. Network type is not selected as custom.";
-                      return "";
-                    },
-                    onSaved: (value) {
-                      if (this.currentUpdatedValues.networkType ==
-                          NetworkType.CUSTOM)
-                        this.currentUpdatedValues.chainID = value;
-                    }),
-              ],
-            ),
+                  initialValue: storageNode.networkType.toString(),
+                  options: chainsKeys,
+                  values: chainsValues,
+                  onChanged:  (value) async {
+                    //setState(() { this.storageNode.networkType = NetworkType.CUSTOM; });
+                    this.currentUpdatedValues.networkType =
+                        EnumUtil.fromStringEnum(NetworkType.values,
+                            StringUtil.getWithoutTypeName(value));
+                    var r = this.currentUpdatedValues.networkType == NetworkType.CUSTOM;
+                    print (r);
+                    var t = 9;
+                  }),
+              CardSettingsText(
+                  label: 'Chain ID',
+                  contentAlign: TextAlign.right,
+                  initialValue: storageNode.chainID,
+                  enabled: this.currentUpdatedValues.networkType == NetworkType.CUSTOM? true : false,
+                  visible: this.currentUpdatedValues.networkType == NetworkType.CUSTOM? true : false,
+                  autovalidate: true,
+                  validator: (value) {
+                    if (this.currentUpdatedValues.networkType !=
+                        NetworkType.CUSTOM)
+                      return "You cannot change chain id. Network type is not selected as custom.";
+                    return "";
+                  },
+                  onSaved: (value) {
+                    if (this.currentUpdatedValues.networkType ==
+                        NetworkType.CUSTOM)
+                      this.currentUpdatedValues.chainID = value;
+                  }),
+            ],
+          ),
+        ]
+        )
           ),
         ));
   }
