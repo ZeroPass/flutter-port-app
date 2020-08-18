@@ -11,6 +11,7 @@ class StepAttestationHeaderBloc extends Bloc<StepAttestationHeaderEvent, StepAtt
   StepAttestationHeaderState get initialState {
     Storage storage = Storage();
     StepDataAttestation stepDataAttestation = storage.getStorageData(2);
+    print( stepDataAttestation.requestType);
     return AttestationHeaderWithDataState(
         requestType: stepDataAttestation.requestType);
   }

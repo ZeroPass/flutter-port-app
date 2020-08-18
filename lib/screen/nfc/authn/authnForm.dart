@@ -469,26 +469,24 @@ class _AuthnForm extends State<AuthnForm> {
                   dg1: state.dg1,
                   message: state.msg,
                   actions:  [
-                    Center(
-                    child: CustomButton(
-                        title: "Send",
-                        fontColor: Colors.white,
-                        backgroundColor: Colors.blue,
-                        //minWidth: MediaQuery.of(context).size.width,
-                        callbackOnPressed: () {
-                          authnBloc.add(WithoutDataEvent());
-                          state.sendData(true);
-                        })),
-                Center(
-                    child: CustomButton(
-                        title: "Cancel",
-                        fontColor: Colors.blue,
-                        backgroundColor: Colors.white,
-                        //minWidth: MediaQuery.of(context).size.width-100,
-                        callbackOnPressed: () {
-                          authnBloc.add(WithoutDataEvent());
-                          state.sendData(false);
-                        })),
+                    PlatformButton(
+                      child: Text('Cancel'),
+                      color: Color(0xFFa58157),
+                      //iosFilled: (_) => CupertinoFilledButtonData(),
+                      onPressed: () {
+                        authnBloc.add(WithoutDataEvent());
+                        state.sendData(false);
+                      },
+                    ),
+                    PlatformButton(
+                      child: Text('Send'),
+                      color: Color(0xFFa58157),
+                      //iosFilled: (_) => CupertinoFilledButtonData(),
+                      onPressed: () {
+                        authnBloc.add(WithoutDataEvent());
+                        state.sendData(true);
+                      },
+                    )
               ])
 
           ],

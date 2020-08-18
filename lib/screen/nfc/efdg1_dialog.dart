@@ -105,7 +105,8 @@ class _EfDG1Dialog extends State<EfDG1Dialog> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: MediaQuery.of(context).size.height * 0.80,
+        height: MediaQuery.of(context).size.height * 0.70,
+
         child: Padding(
             padding: EdgeInsets.all(0.0),
             child: Column(children: <Widget>[
@@ -240,7 +241,6 @@ class _EfDG1Dialog extends State<EfDG1Dialog> {
                                   Spacer()
                                 ]),
                               ])))),
-              Spacer(flex: 60),
               Wrap(
                   direction: Axis.horizontal,
                   runSpacing: 10,
