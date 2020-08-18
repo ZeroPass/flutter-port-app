@@ -60,6 +60,7 @@ import 'package:logging/logging.dart';
 import 'package:passid/passid.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:eosio_passid_mobile_app/screen/flushbar.dart';
 
 import '../efdg1_dialog.dart';
 import '../passport_scanner.dart';
@@ -116,19 +117,9 @@ class _AuthnForm extends State<AuthnForm> {
       msg = 'Failed to connect to server.\n'
           'Check server connection settings.';
     }
-    
-    return showAlert<bool>(
-        context: context,
-        title: Text(title),
-        content: Text(msg),
-        actions: [
-          PlatformDialogAction(
-              child: PlatformText('Close',
-                  style: TextStyle(
-                      color: Theme.of(context).errorColor,
-                      fontWeight: FontWeight.bold)),
-              onPressed: () => Navigator.pop(context, false))
-        ]);
+    await _hideBusyIndicator();
+    showFlushbar(title, msg);
+    return Future<bool>.value(false);
   }
 
   Future<bool> showDG1(final EfDG1 dg1) async {
@@ -383,7 +374,7 @@ class _AuthnForm extends State<AuthnForm> {
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
         Padding(
-            padding: EdgeInsets.only(top: 40),
+            padding: EdgeInsets.only(top: 0),
             child: PlatformButton(
               child: Text('Attest and Send'),
               color: Color(0xFFa58157),
@@ -485,6 +476,7 @@ class _AuthnForm extends State<AuthnForm> {
                         backgroundColor: Colors.blue,
                         //minWidth: MediaQuery.of(context).size.width,
                         callbackOnPressed: () {
+                          authnBloc.add(WithoutDataEvent());
                           state.sendData(true);
                         })),
                 Center(
@@ -494,6 +486,7 @@ class _AuthnForm extends State<AuthnForm> {
                         backgroundColor: Colors.white,
                         //minWidth: MediaQuery.of(context).size.width-100,
                         callbackOnPressed: () {
+                          authnBloc.add(WithoutDataEvent());
                           state.sendData(false);
                         })),
               ])

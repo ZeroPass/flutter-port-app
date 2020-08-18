@@ -64,6 +64,11 @@ Map light = {
     "VERSION": "0.0.1",
     "YEAR_LAST_UPDATE": 2020,
     "COMPANY_NAME": "ZeroPass"
+  },
+  "FLUSHBAR":
+  {
+    "COLOR_TEXT":  Colors.white,
+    "COLOR_BACKGROUND":Color(0xFFa58157)
   }
 };
 //the same valus for now
@@ -137,6 +142,11 @@ class ThemeValues{
       "YEAR_LAST_UPDATE": 2020,
       "COMPANY_NAME": "ZeroPass"
     },
+    "FLUSHBAR":
+    {
+      "COLOR_TEXT": null,
+      "COLOR_BACKGROUND": null
+    }
   };
 
   get themeValues => _themeValues;
