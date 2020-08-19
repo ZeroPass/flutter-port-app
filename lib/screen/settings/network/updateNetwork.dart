@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
@@ -73,25 +74,39 @@ class SettingsNetworkUpdate extends StatelessWidget {
       chainsValues.add(item.key.toString());
     }
     return PlatformScaffold(
-        android: (_) => MaterialScaffoldData(resizeToAvoidBottomInset: false),
-        ios: (_) => CupertinoPageScaffoldData(resizeToAvoidBottomInset: false),
+        material: (_,__) => MaterialScaffoldData(resizeToAvoidBottomInset: false),
+        cupertino: (_,__) => CupertinoPageScaffoldData(resizeToAvoidBottomInset: false),
         appBar: PlatformAppBar(
           //automaticallyImplyLeading: true,
           title: Text("Edit", style: TextStyle(color: Colors.white)),
           trailingActions: <Widget>[
             PlatformIconButton(
-                iosIcon: Icon(Icons.delete_outline, color: Colors.white),
-                androidIcon: Icon(Icons.delete_outline, size: 35.0),
-                android: (_) => MaterialIconButtonData(tooltip: 'Delete'),
+                cupertino: (_,__) => CupertinoIconButtonData(
+                  icon: Icon(
+                    CupertinoIcons.delete,
+                    color: Colors.white,
+                    size: 30
+                  ), 
+                  padding: EdgeInsets.only(right: 20),
+                ),
+                materialIcon: Icon(Icons.delete_outline, size: 35.0),
+                material: (_,__) => MaterialIconButtonData(tooltip: 'Delete'),
                 onPressed: () {
                   /*final page = Settings();
                 Navigator.of(context).push(SlideToSideRoute(page));
               */
                 }),
             PlatformIconButton(
-                iosIcon: Icon(Icons.save, color: Colors.white),
+                cupertino: (_,__) => CupertinoIconButtonData(
+                  icon: Icon( // Save icon
+                    IconData(0xf41F, fontPackage: CupertinoIcons.iconFontPackage, fontFamily: CupertinoIcons.iconFont),
+                    color: Colors.white,
+                    size: 35
+                  ), 
+                  padding: EdgeInsets.all(0),
+                ),
                 androidIcon: Icon(Icons.save, size: 35.0),
-                android: (_) => MaterialIconButtonData(tooltip: 'Save'),
+                material: (_, __) => MaterialIconButtonData(tooltip: 'Save'),
                 onPressed: () {
                   onButtonPressedSave(context);
                   /*final page = Settings();
@@ -128,6 +143,7 @@ class SettingsNetworkUpdate extends StatelessWidget {
                   label: 'Host',
                   contentAlign: TextAlign.right,
                   initialValue: storageNode.host,
+                  autocorrect: false,
                   autovalidate: true,
                   validator: (value) {
                     if (!(value.startsWith('http:') || value.startsWith('https:'))) {
