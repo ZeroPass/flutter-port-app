@@ -136,7 +136,7 @@ class SettingsNetworkUpdate extends StatelessWidget {
                     }
                     this.storageNode.setValidationCorrect("name");
                     this.currentUpdatedValues.name = value;
-                    return "";
+                    return null;
                   }
               ),
               CardSettingsText(
@@ -152,7 +152,7 @@ class SettingsNetworkUpdate extends StatelessWidget {
                     }
                     this.storageNode.setValidationCorrect("host");
                     this.currentUpdatedValues.host = value;
-                    return "";
+                    return null;
                   }
               ),
               CardSettingsInt(
@@ -173,7 +173,7 @@ class SettingsNetworkUpdate extends StatelessWidget {
                     }
                     this.storageNode.setValidationCorrect("port");
                     this.currentUpdatedValues.port = value;
-                    return "";
+                    return null;
                   }
               ),
               CardSettingsSwitch(
@@ -209,7 +209,7 @@ class SettingsNetworkUpdate extends StatelessWidget {
                     if (this.currentUpdatedValues.networkType !=
                         NetworkType.CUSTOM)
                       return "You cannot change chain id. Network type is not selected as custom.";
-                    return "";
+                    return null;
                   },
                   onSaved: (value) {
                     if (this.currentUpdatedValues.networkType ==
