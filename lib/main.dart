@@ -184,9 +184,16 @@ class _PassIdWidgetState extends State<PassIdWidget>
           ),
           trailingActions: <Widget>[
             PlatformIconButton(
-              iosIcon: Icon(Icons.menu, color: Colors.white),
+              cupertino: (_,__) => CupertinoIconButtonData(
+                icon: Icon(
+                  Icons.menu,
+                  color: Colors.white,
+                  size: 35
+                ), 
+                padding: EdgeInsets.all(0),
+              ),
               androidIcon: Icon(Icons.menu, size: 30.0),
-              android: (_) => MaterialIconButtonData(tooltip: 'Settings'),
+              material: (_,__) => MaterialIconButtonData(tooltip: 'Settings'),
               onPressed: () {
                 final page = Settings();
                 Navigator.of(context).push(SlideToSideRoute(page));
