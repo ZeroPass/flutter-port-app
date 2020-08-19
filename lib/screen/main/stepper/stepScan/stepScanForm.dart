@@ -20,13 +20,13 @@ class _StepScanFormState extends State<StepScanForm> {
   TextEditingController _passportIdTextController = TextEditingController();
   TextEditingController _birthTextController = TextEditingController();
   TextEditingController _validUntilTextController = TextEditingController();
-  bool _validExpiration; // = false;
+  bool _allowExpiredPassport; // = false;
 
   _StepScanFormState({Key key}) {
     _passportIdTextController = TextEditingController();
     _birthTextController = TextEditingController();
     _validUntilTextController = TextEditingController();
-    _validExpiration = false;
+    _allowExpiredPassport = false;
   }
 
   //update fields in account form
@@ -107,7 +107,7 @@ class _StepScanFormState extends State<StepScanForm> {
               SizedBox(height: 17),
               CustomDatePicker(
                 "Date of Birth",
-                DateTime(1930),
+                DateTime(DateTime.now().year - 90),
                 DateTime(DateTime.now().year - 10, DateTime.now().month,
                     DateTime.now().day),
                 /*callback*/ (selectedDate) {
@@ -143,11 +143,10 @@ class _StepScanFormState extends State<StepScanForm> {
               SizedBox(height: 17),
               CustomDatePicker(
                     "Date of Expiry",
-                  (!this._validExpiration)?
-                    DateTime(DateTime.now().year, DateTime.now().month,
-                        DateTime.now().day + 1):
-                        DateTime(1930),
-                    DateTime(2030),
+                  (this._allowExpiredPassport)
+                    ? DateTime(DateTime.now().year - 90)
+                    : DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day + 1),
+                  DateTime(DateTime.now().year + 10),
                     /*callback*/ (selectedDate) {
                   //save to storage
                   StepDataScan storageStepScan = storage.getStorageData(1);
@@ -186,8 +185,8 @@ class _StepScanFormState extends State<StepScanForm> {
                         color: AndroidThemeST().getValues().themeValues["STEPPER"]
                         ["STEP_SCAN"]["COLOR_TEXT"])),
                   PlatformSwitch(
-                    value: this._validExpiration,
-                    onChanged: (bool value) => setState(() => this._validExpiration = value),
+                    value: this._allowExpiredPassport,
+                    onChanged: (bool value) => setState(() => this._allowExpiredPassport = value),
                 )
               ])
             ]));
