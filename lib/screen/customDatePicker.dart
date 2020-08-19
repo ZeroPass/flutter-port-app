@@ -143,6 +143,22 @@ class _CustomDatePicker extends State<CustomDatePicker> {
     );
   }
 
+  void _updateInitDateTime() {
+    if(widget.textEditingController.text.isNotEmpty && CustomDatePicker.isDateStringFormatedValid(widget.textEditingController.text)) {
+      widget.initialDate = CustomDatePicker.parseDate(widget.textEditingController.text); // Set init date to previously selected date
+    } else {
+      widget.initialDate = DateTime(DateTime.now().year, 1, 1);//January 1st, current year
+    }
+
+    // Clamp init date to first/last date
+    if(widget.initialDate.isBefore(widget.firstDate)) {
+      widget.initialDate = widget.firstDate;
+    }
+    else if(widget.initialDate.isAfter(widget.lastDate)) {
+      widget.initialDate = widget.lastDate;
+    }
+  }
+
   Widget showAndroidDatePickerHoloTheme(BuildContext context){
     if (widget.onShowValue != null)
       widget.textEditingController.text = CustomDatePicker.formatDate(widget.onShowValue);
@@ -160,18 +176,7 @@ class _CustomDatePicker extends State<CustomDatePicker> {
         },
         onTap: () async {
           //FocusScope.of(context).requestFocus(new FocusNode());
-          if(widget.textEditingController.text.isNotEmpty && CustomDatePicker.isDateStringFormatedValid(widget.textEditingController.text))
-            widget.initialDate =  CustomDatePicker.parseDate(widget.textEditingController.text); // Set init date to previously selected date
-          else
-            widget.initialDate = new DateTime(DateTime.now().year, 1, 1);//January 1st, current year
-
-          if(widget.initialDate.isBefore(widget.firstDate)) {
-            widget.initialDate = widget.firstDate;
-          }
-          else if(widget.initialDate.isAfter(widget.lastDate)) {
-            widget.initialDate = widget.lastDate;
-          }
-
+          _updateInitDateTime();
           var pickedDate = await DatePicker.showSimpleDatePicker(
             context,
             backgroundColor: DateTimePickerTheme.Default.backgroundColor.withOpacity(1.0),
@@ -200,19 +205,8 @@ class _CustomDatePicker extends State<CustomDatePicker> {
       decoration: InputDecoration(labelText: widget.text),
       onTap: () async {
         FocusScope.of(context).requestFocus(new FocusNode());
-        if(widget.textEditingController.text.isNotEmpty) {
-          // Set init date to previously selected date
-          widget.initialDate = CustomDatePicker.parseDate(widget.textEditingController.text);
-        } else {
-          widget.initialDate = new DateTime(DateTime.now().year, 1, 1);//January 1st, current year
-          if(widget.initialDate.isBefore(widget.firstDate)) {
-            widget.initialDate = widget.firstDate;
-          }
-          else if(widget.initialDate.isAfter(widget.lastDate)) {
-            widget.initialDate = widget.lastDate;
-          }
-        }
-
+        
+        _updateInitDateTime();
         final pickedDate = await _pickDate(context, initDate: widget.initialDate, firstDate: widget.firstDate, lastDate: widget.lastDate);
         if (pickedDate != null) {
           widget.textEditingController.text = CustomDatePicker.formatDate(pickedDate);
