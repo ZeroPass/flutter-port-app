@@ -242,6 +242,26 @@ class AndroidThemeST extends AndroidTheme {
 CupertinoThemeData iosThemeData() {
   return CupertinoThemeData(
     brightness: Brightness.light, // force light theme as way around for buggy dark theme. 
-    barBackgroundColor: Color.fromARGB(255, 87, 104, 165)
+    barBackgroundColor: Color.fromARGB(255, 87, 104, 165),
+    textTheme: CupertinoTextThemeData(
+      primaryColor: CupertinoColors.white,
+      navTitleTextStyle: TextStyle(
+        inherit: false, // TODO: this should be true, but there is an error when transiting between routes
+        color: Colors.white,
+        fontSize: 18,
+        fontWeight: FontWeight.normal
+      ),
+      navActionTextStyle: TextStyle(
+        inherit: false, // TODO: this should be true, but there is an error when transiting between routes
+        color: Colors.white,
+        fontSize: 18,
+        fontWeight: FontWeight.normal
+      ),
+      navLargeTitleTextStyle: TextStyle(
+        inherit: false, // TODO: this should be true, but there is an error when transiting between routes
+        color: Colors.white,
+        fontSize: 18,
+        fontWeight: FontWeight.normal
+      ))
   );
 }
