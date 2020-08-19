@@ -11,8 +11,8 @@ class Settings extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PlatformScaffold(
-        android: (_) => MaterialScaffoldData(resizeToAvoidBottomInset: false),
-        ios: (_) => CupertinoPageScaffoldData(resizeToAvoidBottomInset: false),
+        material: (_,__) => MaterialScaffoldData(resizeToAvoidBottomInset: false),
+        cupertino: (_,__) => CupertinoPageScaffoldData(resizeToAvoidBottomInset: false),
         appBar: PlatformAppBar(
         title: Text("Settings"),
       ),
@@ -40,7 +40,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       header: CardSettingsHeader(label: 'Network'),
           children: <CardSettingsWidget>[
             CardSettingsButton  (
-              label: "Server management",
+              label: "Node settings",
               onPressed: (){
                 Navigator.push(context,
                   MaterialPageRoute(builder: (context) => SettingsNetwork()));
