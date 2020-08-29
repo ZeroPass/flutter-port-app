@@ -7,9 +7,8 @@ class StepReviewHeaderBloc extends Bloc<StepReviewHeaderEvent, StepReviewHeaderS
 
   StepEnterAccountHeaderBloc(){}
 
-
     @override
-    StepReviewHeaderState get initialState => NoDataState();
+    StepReviewHeaderState get initialState => StepReviewHeaderWithoutDataState();
 
 
     @override
@@ -24,6 +23,9 @@ class StepReviewHeaderBloc extends Bloc<StepReviewHeaderEvent, StepReviewHeaderS
 
     @override
     Stream<StepReviewHeaderState> mapEventToState( StepReviewHeaderEvent event) async* {
-        yield NoDataState();
+      if (event is StepReviewHeaderWithoutDataEvent)
+        yield StepReviewHeaderWithoutDataState();
+      else if (event is StepReviewHeaderWithDataEvent)
+        yield StepReviewHeaderWithDataState();
     }
   }

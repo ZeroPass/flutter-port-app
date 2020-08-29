@@ -5,6 +5,7 @@ import 'package:eosio_passid_mobile_app/screen/main/stepper/stepScan/stepScanHea
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepAttestation/stepAttestationHeader/stepAttestationHeader.dart';
+import 'package:eosio_passid_mobile_app/screen/main/stepper/stepReview/stepReviewHeader/stepReviewHeader.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:async';
@@ -39,8 +40,11 @@ abstract class StepData{
 
 class StepperBloc extends Bloc<StepperEvent, StepperState> {
   final int maxSteps;
+  bool isReviewLocked;
 
-  StepperBloc({@required this.maxSteps}){}
+  StepperBloc({@required this.maxSteps}){
+    this.isReviewLocked = true;
+  }
 
   @override
   StepperState get initialState => StepperState(step: 0, maxSteps: maxSteps);
@@ -51,7 +55,14 @@ class StepperBloc extends Bloc<StepperEvent, StepperState> {
     print(transition);
   }
 
-  bool liveModifyHeader (int step, var context) {
+  @override
+  void onEvent(StepperEvent event) {
+    super.onEvent(event);
+    print("event");
+    print(event);
+  }
+
+  bool liveModifyHeader (int step, var context, {bool dataInStep}) {
     var storage = Storage();
     switch (step) {
       case 0:
@@ -96,6 +107,17 @@ class StepperBloc extends Bloc<StepperEvent, StepperState> {
         }
         break;
 
+      case 3:
+        {
+          final stepReviewHeaderBloc = BlocProvider.of<StepReviewHeaderBloc>(context);
+          StepDataAttestation storageStepAttestation = storage.getStorageData(2);
+          if (dataInStep)
+            stepReviewHeaderBloc.add(StepReviewHeaderWithDataEvent());
+          else
+            stepReviewHeaderBloc.add(StepReviewHeaderWithoutDataEvent());
+        }
+        break;
+
       default:
         {
           //statements;
@@ -107,17 +129,29 @@ class StepperBloc extends Bloc<StepperEvent, StepperState> {
   @override
   Stream<StepperState> mapEventToState(StepperEvent event) async* {
     if (event is StepTapped) {
-      yield state.copyWith(step: event.step, maxSteps: state.maxSteps);
+      if (event.step < state.maxSteps-1) // do not allow access to last step
+        yield state.copyWith(step: event.step, previousStep: state.step, maxSteps: state.maxSteps);
     }
     else if (event is StepCancelled) {
       yield state.copyWith(
           step: state.step - 1 >= 0 ? state.step - 1 : 0,
+          previousStep: state.step,
           maxSteps: state.maxSteps
       );
     }
     else if (event is StepContinue) {
+      if (state.step + event.stepsJump < this.maxSteps - 1) // do not allow access to last step
+        yield state.copyWith(
+            step: state.step + event.stepsJump < this.maxSteps ? state.step +
+                event.stepsJump : 0,
+            previousStep: state.step,
+            maxSteps: state.maxSteps
+        );
+    }
+    else if (event is StepBackToPrevious) {
       yield state.copyWith(
-          step: state.step + event.stepsJump < this.maxSteps ? state.step + event.stepsJump : 0,
+          step: state.previousStep,
+          previousStep: state.step,
           maxSteps: state.maxSteps
       );
     }

@@ -119,7 +119,7 @@ class _EfDG1Dialog extends State<EfDG1Dialog> {
               SingleChildScrollView(
                   child: Card(
                       child: Padding(
-                          padding: EdgeInsets.all(15.0),
+                          padding: EdgeInsets.all(0.0),
                           child: Column(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: <Widget>[
@@ -242,6 +242,7 @@ class _EfDG1Dialog extends State<EfDG1Dialog> {
                                 ]),
                               ])))),
               Wrap(
+                alignment: WrapAlignment.start,
                   direction: Axis.horizontal,
                   runSpacing: 10,
                   spacing: 10,

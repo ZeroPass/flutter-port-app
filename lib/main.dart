@@ -88,7 +88,7 @@ void fillDatabase()
 
   StepDataAttestation stepDataAttestation = storage.getStorageData(2);
   stepDataAttestation.requestType = RequestType.ATTESTATION_REQUEST;
-  stepDataAttestation.isOutsideCall = true;
+  stepDataAttestation.isOutsideCall = OutsideCall(reqeustedBy: "Ultra DEX");
 
   //storage.save();
 

@@ -11,11 +11,12 @@ abstract class StepperEvent extends Equatable {
 
 class StepTapped extends StepperEvent {
   final int step;
+  final int previousStep;
 
-  StepTapped({@required this.step});
+  StepTapped({@required this.step, @required this.previousStep});
 
   @override
-  String toString() => 'StepTapped { step: $step }';
+  String toString() => 'StepTapped { step: $step, previous step:$previousStep }';
 }
 
 class StepCancelled extends StepperEvent {
@@ -26,12 +27,19 @@ class StepCancelled extends StepperEvent {
 
 class StepContinue extends StepperEvent {
   int stepsJump;
+  final int previousStep;
 
-  StepContinue({this.stepsJump = null})
+  StepContinue({this.stepsJump = null, @required this.previousStep})
   {
     if (stepsJump == null) stepsJump = 1;
   }
 
   @override
-  String toString() => 'StepContinue (stepsJump: $stepsJump)';
+  String toString() => 'StepContinue (stepsJump: $stepsJump, previous step: $previousStep)';
+}
+
+class StepBackToPrevious extends StepperEvent {
+
+  @override
+  String toString() => 'StepBackToPrevious ';
 }

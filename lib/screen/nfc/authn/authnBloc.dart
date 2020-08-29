@@ -21,7 +21,7 @@ class AuthnBloc extends Bloc<AuthnEvent, AuthnState> {
     if (event is WithoutDataEvent)
       yield WithoutDataState();
     else if (event is WithDataEvent)
-      yield WithDataState(dg1: event.dg1, msg: event.msg, sendData: event.sendData);
+      yield WithDataState(dg1: event.dg1, msg: event.msg, outsideCall: event.outsideCall, sendData: event.sendData);
     else
       yield WithoutDataState();
     }

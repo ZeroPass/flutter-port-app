@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepAttestation/stepAttestationHeader/stepAttestationHeader.dart';
+import 'package:eosio_passid_mobile_app/screen/nfc/authn/authn.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import "package:eosio_passid_mobile_app/screen/main/stepper/stepper.dart";
@@ -14,6 +15,7 @@ import 'package:eosio_passid_mobile_app/screen/main/stepper/stepAttestation/step
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
 import "package:eosio_passid_mobile_app/screen/main/stepper/customStepper.dart";
+import 'package:eosio_passid_mobile_app/screen/nfc/authn/authn.dart';
 
 import '../../alert.dart';
 
@@ -38,14 +40,15 @@ class StepperForm extends StatefulWidget {
 }
 
 class _StepperFormState extends State<StepperForm> {
-  int currentState = 0;
   List<StepState> listState = [
     StepState.indexed,
     StepState.editing,
   ];
 
-  StepState _getState(int step) {
-    if (currentState == step)
+  StepState _getState(int step, int currentStep, {disabledReview = false}) {
+    if(step == 3 && disabledReview)
+      return StepState.disabled;
+    if (currentStep == step)
       return StepState.editing;
     else
       return StepState.indexed;
@@ -53,48 +56,52 @@ class _StepperFormState extends State<StepperForm> {
 
 
   //Stepper steps
-  List<Step> getSteps(BuildContext context) {
+  List<Step> getSteps(BuildContext context, int currentStep, bool disabledReview) {
     return <Step>[
       Step(
           title: StepEnterAccountHeaderForm(),
           content: StepEnterAccountForm(),
-          state: _getState(0),
+          state: _getState(0, currentStep),
+          isActive: true
 
       ),
       Step(
           title: StepScanHeaderForm(),
           content: StepScanForm(),
-          state: _getState(1),
+          state: _getState(1, currentStep),
+          isActive: true
       ),
       Step(
         title: StepAttestationHeaderForm(),
         content: StepAttestationForm(),
-        state: _getState(2),
+        state: _getState(2, currentStep),
+        isActive: true
       ),
       Step(
         title: StepReviewHeaderForm(),
         content: StepReviewForm(),
-        state: _getState(3),
+        state: _getState(3, currentStep, disabledReview: disabledReview),
+        //isActive: false
       )
     ];
   }
 
-  List<Step> getStepsMagnetLink(BuildContext context) {
+  List<Step> getStepsMagnetLink(BuildContext context, int currentStep, bool disabledReview) {
     return <Step>[
       Step(
         title: StepEnterAccountHeaderForm(),
         content: StepEnterAccountForm(),
-        state: _getState(0),
+        state: _getState(0, currentStep),
       ),
       Step(
         title: StepScanHeaderForm(),
         content: StepScanForm(),
-        state: _getState(1),
+        state: _getState(1, currentStep),
       ),
       Step(
         title: Text("Attestation"),
         content: StepAttestationForm(),
-        state: _getState(2),
+        state: _getState(2, currentStep),
       )/*,
       Step(
         title: Text("test"),
@@ -175,6 +182,13 @@ class _StepperFormState extends State<StepperForm> {
       ],
     );
   }
+/*
+  void NFC(var stepperBloc){
+    var authn = BlocProvider.of<AuthnBloc>(context);
+    startNFCAction(context).then((bool value) {
+      stepperBloc.add(StepBackToPrevious());
+    })
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -184,22 +198,20 @@ class _StepperFormState extends State<StepperForm> {
       builder: (BuildContext context, StepperState state) {
         return CustomStepper(
             currentStep: state.step,
-            steps: widget.isMagnetLink == true ? getStepsMagnetLink(context) : getSteps(context),
+            steps: widget.isMagnetLink == true ? getStepsMagnetLink(context, state.step, stepperBloc.isReviewLocked) : getSteps(context, state.step, stepperBloc.isReviewLocked),
             type: StepperType.vertical,
             onStepTapped: (step) {
-              this.currentState = step;
               stepperBloc.add(StepTapped(step: step));
             },
             onStepCancel: () {
-              this.currentState = state.step - 1;
               stepperBloc.add(StepCancelled());
             },
             onStepContinue: () {
 
               Storage storage = Storage();
               StepDataAttestation stepDataAttestation = storage.getStorageData(2);
-              this.currentState = state.step + (stepDataAttestation.isOutsideCall && state.step == 1 ? 2 : 1);
-              stepperBloc.add(StepContinue(stepsJump: stepDataAttestation.isOutsideCall && state.step == 1 ? 2 : 1));
+
+              stepperBloc.add(StepContinue(stepsJump: stepDataAttestation.isOutsideCall.isOutsideCall && state.step == 1 ? 2 : 1));
             },
             controlsBuilder: (BuildContext context,
                 {VoidCallback onStepContinue, VoidCallback onStepCancel}) {

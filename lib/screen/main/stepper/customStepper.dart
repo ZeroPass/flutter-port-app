@@ -5,6 +5,8 @@
 import 'package:flutter/widgets.dart';
 import "package:flutter/material.dart";
 
+import 'package:eosio_passid_mobile_app/screen/theme.dart';
+
 
 // TODO(dragostis): Missing functionality:
 //   * mobile horizontal mode with adding/removing steps
@@ -31,7 +33,7 @@ const Color _kErrorLight = Colors.red;
 final Color _kErrorDark = Colors.red.shade400;
 const Color _kCircleActiveLight = Colors.white;
 const Color _kCircleActiveDark = Colors.black87;
-const Color _kDisabledLight = Colors.black38;
+const Color _kDisabledLight = Colors.black12;
 const Color _kDisabledDark = Colors.white38;
 const double _kStepSize = 24.0;
 const double _kTriangleHeight = _kStepSize * 0.866025; // Triangle height. sqrt(3.0)
@@ -245,7 +247,7 @@ class _CustomStepperState extends State<CustomStepper> with TickerProviderStateM
   Color _circleColor(int index) {
     final ThemeData themeData = Theme.of(context);
     if (!_isDark()) {
-      return widget.steps[index].isActive ? themeData.primaryColor : Colors.black38;
+      return widget.steps[index].isActive ? AndroidThemeST().getValues().themeValues["STEPPER"]["STEP_HEADER"]["COLOR_CIRCLE"] : AndroidThemeST().getValues().themeValues["STEPPER"]["STEP_HEADER"]["COLOR_CIRCLE_DISABLED"];
     } else {
       return widget.steps[index].isActive ? themeData.accentColor : themeData.backgroundColor;
     }

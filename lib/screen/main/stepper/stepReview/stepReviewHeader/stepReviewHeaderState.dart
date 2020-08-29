@@ -7,7 +7,12 @@ abstract class StepReviewHeaderState /*extends Equatable*/ {
   List<Object> get props => [];
 }
 
-class NoDataState extends StepReviewHeaderState {
+class StepReviewHeaderWithoutDataState extends StepReviewHeaderState {
   @override
-  String toString() => 'StepReviewHeaderState:NoDataState';
+  String toString() => 'StepReviewHeaderState:StepReviewHeaderWithoutDataState';
+}
+
+class StepReviewHeaderWithDataState extends StepReviewHeaderState {
+  @override
+  String toString() => 'StepReviewHeaderState:StepReviewHeaderWithDataState';
 }

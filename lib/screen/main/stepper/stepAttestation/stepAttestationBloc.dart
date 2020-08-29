@@ -10,116 +10,62 @@ import 'package:eosio_passid_mobile_app/utils/storage.dart';
 import 'package:eosio_passid_mobile_app/utils/structure.dart';
 import 'package:meta/meta.dart';
 
-//propse of class is easer presentation of data - not to save anywhere
-class NFCDeviceData {
-  //passport data
-  NFCdeviceType _deviceType;
-  String _NFCdeviceNumber;
-  DateTime _dateOfExpiration;
-  String _countryOfIssuer;
+@JsonSerializable()
+class OutsideCall{
+  bool _isOutsideCall;
+  String _requestedBy;
 
-  //personal data
-  String _name;
-  String _lastName;
-  DateTime _dateOfBirth;
-  Sex _sex;
-  String _nationality;
-  String _additionalData;
-
-  NFCdeviceType get deviceType => _deviceType;
-
-  set deviceType(NFCdeviceType value) {
-    _deviceType = value;
+  OutsideCall OutsideCallFromJson({bool isOutsideCall, String requestedBy})
+  {
+    this._isOutsideCall = isOutsideCall;
+    this._requestedBy = requestedBy;
+    return this;
   }
 
-  String get additionalData => _additionalData;
-
-  set additionalData(String value) {
-    _additionalData = value;
+  OutsideCall({@required String reqeustedBy})
+  {
+    _isOutsideCall = true;
+    _requestedBy = reqeustedBy;
   }
 
-  String get nationality => _nationality;
-
-  set nationality(String value) {
-    _nationality = value;
+  void removeRequestedBy()
+  {
+    _isOutsideCall = false;
+    _requestedBy = null;
   }
 
-  Sex get sex => _sex;
+  bool get isOutsideCall => _isOutsideCall;
 
-  set sex(Sex value) {
-    _sex = value;
-  }
+  String get requestedBy => _requestedBy;
 
-  DateTime get dateOfBirth => _dateOfBirth;
-
-  set dateOfBirth(DateTime value) {
-    _dateOfBirth = value;
-  }
-
-  String get lastName => _lastName;
-
-  set lastName(String value) {
-    _lastName = value;
-  }
-
-  String get name => _name;
-
-  set name(String value) {
-    _name = value;
-  }
-
-  String get countryOfIssuer => _countryOfIssuer;
-
-  set countryOfIssuer(String value) {
-    _countryOfIssuer = value;
-  }
-
-  DateTime get dateOfExpiration => _dateOfExpiration;
-
-  set dateOfExpiration(DateTime value) {
-    _dateOfExpiration = value;
-  }
-
-  String get NFCdeviceNumber => _NFCdeviceNumber;
-
-  set NFCdeviceNumber(String value) {
-    _NFCdeviceNumber = value;
-  }
-
-  @override
-  String toString() {
-    return 'NFCDeviceData{_deviceType: $_deviceType, _NFCdeviceNumber: $_NFCdeviceNumber, _dateOfExpiration: $_dateOfExpiration, _countryOfIssuer: $_countryOfIssuer, _name: $_name, _lastName: $_lastName, _dateOfBirth: $_dateOfBirth, _sex: $_sex, _nationality: $_nationality, _additionalData: $_additionalData}';
-  }
-
-  Map printToMap(){
-    Map<String, dynamic> output =
-    {"Passport type": deviceType,
-      "Passport no.": NFCdeviceNumber,
-      "Date of expiry": dateOfExpiration,
-      "Issuing country:": countryOfIssuer,
-      "Name": name,
-      "Last name": lastName,
-      "Date of Birth": dateOfBirth,
-      "Sex": sex,
-      "Nationality": nationality,
-      "Additional data": additionalData
-    };
-    return output;
-  }
+  factory OutsideCall.fromJson(Map<String, dynamic> json) => _$OutsideCallFromJson(json);
+  Map<String, dynamic> toJson() => _$OutsideCallToJson(this);
 }
 
+OutsideCall _$OutsideCallFromJson(Map<String, dynamic> json) {
+  OutsideCall obj = OutsideCall();
+  return obj.OutsideCallFromJson(
+        isOutsideCall: json['isOutsideCall'] as bool,
+        requestedBy: json['requestedBy'] as String
+  );
+}
+
+Map<String, dynamic> _$OutsideCallToJson(OutsideCall instance) => <String, dynamic>{
+  'isOutsideCall' : instance.isOutsideCall,
+  'requestedBy' : instance.requestedBy
+};
 
 @JsonSerializable()
 class StepDataAttestation extends StepData{
   RequestType _requestType;
-  bool _isOutsideCall;
+  OutsideCall _isOutsideCall;
 
-  StepDataAttestation([@required this._isOutsideCall, this._requestType = null,]) {
+  StepDataAttestation([@required this._requestType = null, @required this._isOutsideCall]) {
     if (this.requestType == null)
       this._requestType = RequestType.ATTESTATION_REQUEST; //default request type
   }
 
-  StepDataAttestation StepDataAttestationFromJson({RequestType requestType, bool isOutsideCall})
+  StepDataAttestation StepDataAttestationFromJson({RequestType requestType, OutsideCall isOutsideCall})
   {
     this.requestType = requestType;
     this.isOutsideCall = isOutsideCall;
@@ -134,9 +80,9 @@ class StepDataAttestation extends StepData{
       this._requestType = value;
   }
 
-  bool get isOutsideCall => _isOutsideCall;
+  OutsideCall get isOutsideCall => _isOutsideCall;
 
-  set isOutsideCall(bool value) {
+  set isOutsideCall(OutsideCall value) {
     _isOutsideCall = value;
   }
 
@@ -148,7 +94,7 @@ StepDataAttestation _$StepDataAttestationFromJson(Map<String, dynamic> json) {
   StepDataAttestation obj = StepDataAttestation();
   return obj.StepDataAttestationFromJson(
     requestType: EnumUtil.fromStringEnum(RequestType.values, json['requestType']),
-    isOutsideCall: json['isOutsideCall']
+    isOutsideCall: OutsideCall.fromJson(json['isOutsideCall'])
   );
 }
 

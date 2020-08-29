@@ -3,25 +3,28 @@ import 'package:flutter/material.dart';
 
 class StepperState extends Equatable {
   final int step;
+  final int previousStep;
   final int maxSteps;
 
   StepperState({
     @required this.step,
+    @required this.previousStep,
     @required this.maxSteps
   });
 
-  StepperState copyWith({int step, int maxSteps}) {
+  StepperState copyWith({int step, int previousStep, int maxSteps}) {
     return StepperState(
           step: step ?? this.step,
+          previousStep: previousStep ?? this.previousStep,
           maxSteps: maxSteps
     );
   }
 
   @override
-  List<Object> get props => [step, maxSteps];
+  List<Object> get props => [step, previousStep, maxSteps];
 
   @override
-  String toString() => 'StepperState { step: $step, maxSteps: $maxSteps }';
+  String toString() => 'StepperState { step: $step, prevoius step: $previousStep, maxSteps: $maxSteps }';
 
 }
 

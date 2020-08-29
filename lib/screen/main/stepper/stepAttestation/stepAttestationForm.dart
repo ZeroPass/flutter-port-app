@@ -43,6 +43,21 @@ void selectRequestType(var context,
           });
 }
 
+String truncateRequestType(RequestType requestType, int length)
+{
+  if (requestType == null || MapUtil.contains(AuthenticatorActions, requestType) == false)
+    throw Exception("StepAttestationFormz:truncateRequestType; not valid AuthenticatorAction");
+
+  String requestTypeStr = AuthenticatorActions[requestType]["NAME"];
+  if (length < 0)
+    return requestTypeStr;
+  //we check with length + 3 because of three dots
+  if (requestTypeStr.length > length + 3)
+    if (requestTypeStr.length > length)
+      return requestTypeStr.substring(0, length) + "...";
+  return requestTypeStr;
+}
+
 Widget selectRequestTypeWithTile(var context,
                               StepAttestationState state,
                               var stepAttestationBloc) {
@@ -60,7 +75,7 @@ Widget selectRequestTypeWithTile(var context,
                 fontSize: AndroidThemeST().getValues().themeValues["TILE_BAR"]
                 ["SIZE_TEXT"]),
           ),
-          Text(  AuthenticatorActions[stepDataAttestation.requestType]["NAME"],
+          Text(truncateRequestType(stepDataAttestation.requestType, 10),
               style: TextStyle(
                   fontSize: AndroidThemeST()
                       .getValues()

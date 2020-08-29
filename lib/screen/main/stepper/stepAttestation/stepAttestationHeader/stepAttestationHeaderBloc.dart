@@ -7,6 +7,23 @@ import 'package:eosio_passid_mobile_app/utils/storage.dart';
 
 
 class StepAttestationHeaderBloc extends Bloc<StepAttestationHeaderEvent, StepAttestationHeaderState> {
+
+  StepAttestationHeaderBloc(){
+    updateDataOnUI();
+  }
+
+  //check if there is any data stored
+  void updateDataOnUI(){
+    //check updated data
+    Storage storage = Storage();
+    storage.load(callback: (isAlreadyUpdated, isValid){
+      if (isAlreadyUpdated == true || isValid == true){
+        StepDataAttestation storageAttestation = storage.getStorageData(2);
+          this.add(AttestationHeaderWithDataEvent(requestType: storageAttestation.requestType));
+      }
+    });
+  }
+
   @override
   StepAttestationHeaderState get initialState {
     Storage storage = Storage();

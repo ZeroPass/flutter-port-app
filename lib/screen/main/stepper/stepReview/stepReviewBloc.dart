@@ -10,6 +10,12 @@ class StepReviewBloc extends Bloc<StepReviewEvent, StepReviewState> {
   @override
   StepReviewState get initialState => WithoutDataState();
 
+  @override
+  void onEvent(StepReviewEvent event) {
+    // TODO: implement onEvent
+    super.onEvent(event);
+    print ("on alert");
+  }
 
   @override
   void onTransition(Transition<StepReviewEvent, StepReviewState> transition) {

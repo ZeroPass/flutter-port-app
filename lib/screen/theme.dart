@@ -19,6 +19,11 @@ Map light = {
     {
       "COLOR_BACKGROUND": Color(0xFFa58157),
     },
+    "STEP_HEADER":
+    {
+      "COLOR_CIRCLE" : Color(0xFFa58157),
+      "COLOR_CIRCLE_DISABLED": Colors.black12
+    },
     "CHIP":
     {
       "SIZE_TEXT":14.0,
@@ -95,6 +100,11 @@ class ThemeValues{
       "BUTTON_DELETE":
       {
         "COLOR_BACKGROUND": null,
+      },
+      "STEP_HEADER":
+      {
+      "COLOR_CIRCLE" : null,
+      "COLOR_CIRCLE_DISABLED": null
       },
       "CHIP":
       {

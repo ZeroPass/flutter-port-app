@@ -24,7 +24,6 @@ class _StepEnterAccountHeaderFormState extends State<StepEnterAccountHeaderForm>
   _StepEnterAccountHeaderFormState({Key key});
 
   Widget deleteButton(BuildContext context) {
-    final stepperBloc = BlocProvider.of<StepperBloc>(context);
     final stepEnterAccountHeaderBloc =
         BlocProvider.of<StepEnterAccountHeaderBloc>(context);
     final stepEnterAccountBloc = BlocProvider.of<StepEnterAccountBloc>(context);
