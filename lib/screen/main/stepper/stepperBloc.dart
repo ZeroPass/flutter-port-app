@@ -140,7 +140,7 @@ class StepperBloc extends Bloc<StepperEvent, StepperState> {
       );
     }
     else if (event is StepContinue) {
-      if (state.step + event.stepsJump < this.maxSteps - 1) // do not allow access to last step
+      if (state.step + event.stepsJump < this.maxSteps) // do not allow access to last step
         yield state.copyWith(
             step: state.step + event.stepsJump < this.maxSteps ? state.step +
                 event.stepsJump : 0,
