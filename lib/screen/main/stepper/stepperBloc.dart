@@ -132,6 +132,9 @@ class StepperBloc extends Bloc<StepperEvent, StepperState> {
       if (event.step < state.maxSteps-1) // do not allow access to last step
         yield state.copyWith(step: event.step, previousStep: state.step, maxSteps: state.maxSteps);
     }
+    else if (event is StepRunByFlow) {
+        yield state.copyWith(step: event.step, previousStep: state.step, maxSteps: state.maxSteps);
+    }
     else if (event is StepCancelled) {
       yield state.copyWith(
           step: state.step - 1 >= 0 ? state.step - 1 : 0,

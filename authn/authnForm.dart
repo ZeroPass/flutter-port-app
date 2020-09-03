@@ -369,7 +369,7 @@ class _AuthnForm extends State<AuthnForm> {
     return "You're attested as $names";
   }
 
-  Widget buttonScan(var context) {
+  /*Widget buttonScan(var context) {
     return Row(
       //mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.start,
@@ -409,7 +409,7 @@ class _AuthnForm extends State<AuthnForm> {
             ))
       ],
     );
-  }
+  }*/
 
   Future<bool> startNFCAction(BuildContext context)
   {

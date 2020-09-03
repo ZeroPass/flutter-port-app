@@ -221,8 +221,8 @@ class _PassIdWidgetState extends State<PassIdWidget>
                 create: (BuildContext context) => StepReviewHeaderBloc()),
             BlocProvider<StepperBloc>(
                 create: (BuildContext context) => StepperBloc(maxSteps: 4 /*set maximum steps you have in any/all modes*/)),
-            BlocProvider<AuthnBloc>(
-                create: (BuildContext context) => AuthnBloc()),
+            /*BlocProvider<AuthnBloc>(
+                create: (BuildContext context) => AuthnBloc()),*/
           ],
           child: KeyboardDismisser(
             gestures:[

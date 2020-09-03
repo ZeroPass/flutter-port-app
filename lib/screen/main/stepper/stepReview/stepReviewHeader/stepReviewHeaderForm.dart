@@ -5,7 +5,6 @@ import 'package:eosio_passid_mobile_app/screen/main/stepper/stepReview/stepRevie
 import 'package:flutter/cupertino.dart';
 import "package:eosio_passid_mobile_app/screen/main/stepper/stepper.dart";
 import 'package:eosio_passid_mobile_app/utils/size.dart';
-import 'package:eosio_passid_mobile_app/screen/nfc/authn/authn.dart' as Authn;
 import 'package:eosio_passid_mobile_app/screen/theme.dart';
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
 
@@ -20,7 +19,6 @@ Widget deleteButton(BuildContext context) {
   final stepperBloc = BlocProvider.of<StepperBloc>(context);
   final stepReviewHeaderBloc = BlocProvider.of<StepReviewHeaderBloc>(context);
   final stepReviewBloc = BlocProvider.of<StepReviewBloc>(context);
-  final authnBloc = BlocProvider.of<Authn.AuthnBloc>(context);
 
   return ClipOval(
     child: Material(
@@ -39,7 +37,7 @@ Widget deleteButton(BuildContext context) {
           stepperBloc.add(StepTapped(step: stepperBloc.state.previousStep ?? 1));
 
           //change state on step main window
-          authnBloc.add(Authn.WithoutDataEvent());
+          stepReviewBloc.add(StepReviewWithoutDataEvent());
 
           //change state on step header
           stepReviewHeaderBloc.add(StepReviewHeaderWithoutDataEvent());

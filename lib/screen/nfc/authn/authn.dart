@@ -1,30 +1,30 @@
-export 'authnBloc.dart';
-export 'authnEvent.dart';
-export 'authnForm.dart';
-export 'authnState.dart';
-
-
-/*import 'dart:async';
+import 'dart:async';
 import 'dart:io';
 
 import 'package:connectivity/connectivity.dart';
 
 import 'package:dmrtd/dmrtd.dart';
 import 'package:dmrtd/extensions.dart';
+import 'package:eosio_passid_mobile_app/screen/main/stepper/stepReview/stepReview.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import "package:bloc/bloc.dart";
+import "package:flutter_bloc/flutter_bloc.dart";
 
 import 'package:eosio_passid_mobile_app/screen/alert.dart';
 import 'package:eosio_passid_mobile_app/screen/customButton.dart';
+import 'package:eosio_passid_mobile_app/screen/main/stepper/stepper.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
+import 'package:eosio_passid_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepScan/stepScan.dart';
 
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
 import 'package:eosio_passid_mobile_app/utils/structure.dart';
 import 'package:eosio_passid_mobile_app/screen/theme.dart';
 import 'package:eosio_passid_mobile_app/screen/requestType.dart';
+import 'package:eosio_passid_mobile_app/screen/nfc/authn/authn.dart';
 
 import 'package:logging/logging.dart';
 import 'package:passid/passid.dart';
@@ -32,7 +32,6 @@ import 'package:passid/passid.dart';
 import '../efdg1_dialog.dart';
 import '../passport_scanner.dart';
 import '../uie/uiutils.dart';
-
 
 class ServerSecurityContext {
   static SecurityContext _ctx;
@@ -57,67 +56,43 @@ class ServerSecurityContext {
 
 enum AuthnAction { register, login }
 
-class Authn extends StatefulWidget {
-  RequestType _selectedAction = RequestType.ATTESTATION_REQUEST;
-
-  Authn({Key key});
-
-  _AuthnState createState() => _AuthnState();
-}
-
-class _AuthnState extends State<Authn> {
+class Authn /*extends State<Authn>*/ {
   PassIdClient _client;
+  Future<bool> Function(SocketException e) onConnectionError;
+  Future<bool> Function(EfDG1 dg1) onDG1FileRequested;
   final _log = Logger('authn.screen');
   final String _fakeName = "Larimer Daniel";
 
-  Future<bool> _handleConnectionError(final SocketException e) async {
-    String title;
-    String msg;
-    final connectivityResult = await Connectivity().checkConnectivity();
-    if (connectivityResult == ConnectivityResult.none ||
-        !await testConnection()) {
-      title = 'No Internet connection';
-      msg = 'An internet connection is required!';
-    } else {
-      //settingsAction = () => _settingsButton.onPressed();
-      title = 'Connection error';
-      msg = 'Failed to connect to server.\n'
-          'Check server connection settings.';
-    }
+  Authn({@required this.onDG1FileRequested, @required this.onConnectionError});
 
-    return showAlert<bool>(
-        context: context,
-        title: Text(title),
-        content: Text(msg),
-        actions: [
-          PlatformDialogAction(
-              child: PlatformText('Close',
-                  style: TextStyle(
-                      color: Theme.of(context).errorColor,
-                      fontWeight: FontWeight.bold)),
-              onPressed: () => Navigator.pop(context, false))
-        ]);
-  }
-
-  Future<bool> showDG1(final EfDG1 dg1) async {
-    return _showDG1Dialog(dg1, msg: 'Server requested additional data');
+  Future<bool> showDG1(BuildContext context, final EfDG1 dg1) async {
+    return this.onDG1FileRequested(dg1);
+    //return _showDG1Dialog(dg1, msg: 'Server requested additional data');
   }
 
   Future<bool> _handleDG1Request(final EfDG1 dg1) async {
-    return _showDG1Dialog(dg1, msg: 'Server requested additional data');
+    return Future<bool>.value(false);
+    //return _showDG1Dialog(context, dg1, msg: 'Server requested additional data');
   }
 
   Future<AuthnData> _getAuthnData(
+      BuildContext context,
       final ProtoChallenge challenge,
       AuthnAction action,
       String passportID,
       DateTime birthDate,
       DateTime validUntil) async {
-    return _scanPassport(challenge, action, passportID, birthDate, validUntil);
+    return _scanPassport(
+        context, challenge, action, passportID, birthDate, validUntil);
   }
 
-  Future<AuthnData> _scanPassport(ProtoChallenge challenge, AuthnAction action,
-      String passportID, DateTime birthDate, DateTime validUntilDate) async {
+  Future<AuthnData> _scanPassport(
+      BuildContext context,
+      ProtoChallenge challenge,
+      AuthnAction action,
+      String passportID,
+      DateTime birthDate,
+      DateTime validUntilDate) async {
     assert(challenge != null);
     final dbaKeys = DBAKeys(passportID, birthDate, validUntilDate);
     final data = await PassportScanner(
@@ -152,7 +127,7 @@ class _AuthnState extends State<Authn> {
     return missingValuesText;
   }
 
-  void startAction(BuildContext context, AuthnAction action,
+  Future<bool> startAction(BuildContext context, AuthnAction action,
       {bool fakeAuthnData = false, bool sendDG1 = false}) async {
     Storage storage = Storage();
     String checkedValues = checkValuesInStorage();
@@ -171,28 +146,29 @@ class _AuthnState extends State<Authn> {
           ]);
     }
     try {
-      _showBusyIndicator();
+      _showBusyIndicator(context);
       final httpClient = ServerSecurityContext.getHttpClient(
           timeout: Duration(seconds: storage.storageServer.timeoutInSeconds))
         ..badCertificateCallback = badCertificateHostCheck;
 
       _client = PassIdClient(Uri.parse(storage.storageServer.toString()),
           httpClient: httpClient);
-      _client.onConnectionError = _handleConnectionError;
-      _client.onDG1FileRequested = _handleDG1Request;
+      _client.onConnectionError = this.onConnectionError;
+      _client.onDG1FileRequested = this.onDG1FileRequested;
 
       if (action == AuthnAction.register)
         await _client.register((challenge) async {
           StepDataScan storageStepScan = storage.getStorageData(1);
           await _hideBusyIndicator();
           return _getAuthnData(
+                  context,
                   challenge,
                   AuthnAction.register,
                   storageStepScan.documentID,
                   storageStepScan.birth,
                   storageStepScan.validUntil)
               .then((data) async {
-            await _showBusyIndicator();
+            await _showBusyIndicator(context);
             return data;
           });
         });
@@ -201,6 +177,7 @@ class _AuthnState extends State<Authn> {
           StepDataScan storageStepScan = storage.getStorageData(1);
           await _hideBusyIndicator();
           return _getAuthnData(
+                  context,
                   challenge,
                   AuthnAction.login,
                   storageStepScan.documentID,
@@ -211,7 +188,7 @@ class _AuthnState extends State<Authn> {
               data = _fakeData(data);
             }
             if (sendDG1) {
-              if (!await _showDG1Dialog(data.dg1)) {
+              if (!await this.onDG1FileRequested(data.dg1)) {
                 // User said no.
                 // Throw an exception just to get us out of this scope.
                 // An exception should not show any error dialog to user.
@@ -219,7 +196,7 @@ class _AuthnState extends State<Authn> {
               }
             }
 
-            await _showBusyIndicator();
+            await _showBusyIndicator(context);
             return data;
           });
         }, sendEfDG1: sendDG1);
@@ -345,46 +322,37 @@ class _AuthnState extends State<Authn> {
     return "You're attested as $names";
   }
 
-  Widget buttonScan(var context) {
-    return Row(
-      //mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: <Widget>[
-        Padding(
-            padding: EdgeInsets.only(top: 40),
-            child: PlatformButton(
-              child: Text('Attest and Send'),
-              color: Color(0xFFa58157),
-              //iosFilled: (_) => CupertinoFilledButtonData(),
-              onPressed: () {
-                //remove system bottom navigation bar
-                removeNavigationBar();
-                switch(widget._selectedAction) {
-                  case RequestType.ATTESTATION_REQUEST:
-                    startAction(context, AuthnAction.register);
-                    break;
-                  case RequestType.PERSONAL_INFORMATION_REQUEST:
-                    startAction(context, AuthnAction.login, sendDG1: true);
-                    break;
-                  case RequestType.FAKE_PERSONAL_INFORMATION_REQUEST:
-                    startAction(context, AuthnAction.login,
-                      fakeAuthnData: true, sendDG1: true);
-                    break;
-                  case RequestType.LOGIN:
-                    startAction(context, AuthnAction.login);
-                    break;
-                }
-                changeNavigationBarColor();
-              },
-            ))
-      ],
-    );
+  Future<bool> startNFCAction(BuildContext context) {
+    Storage storage = Storage();
+    StepDataAttestation stepDataAttestation = storage.getStorageData(2);
+
+    switch (stepDataAttestation.requestType) {
+      case RequestType.ATTESTATION_REQUEST:
+        return startAction(context, AuthnAction.register);
+        break;
+      case RequestType.PERSONAL_INFORMATION_REQUEST:
+        return startAction(context, AuthnAction.login, sendDG1: true);
+        break;
+      case RequestType.FAKE_PERSONAL_INFORMATION_REQUEST:
+        return startAction(context, AuthnAction.login,
+            fakeAuthnData: true, sendDG1: true);
+        break;
+      case RequestType.LOGIN:
+        return startAction(context, AuthnAction.login);
+        break;
+
+      default:
+        throw new Exception("Request type is not known.");
+    }
+    changeNavigationBarColor();
   }
 
   bool _isBusyIndicatorVisible = false;
   final GlobalKey<State> _keyBusyIndicator =
       GlobalKey<State>(debugLabel: 'key_authn_busy_indicator');
-  Future<void> _showBusyIndicator({String msg = 'Please Wait ....'}) async {
+
+  Future<void> _showBusyIndicator(BuildContext context,
+      {String msg = 'Please Wait ....'}) async {
     await _hideBusyIndicator();
     await showBusyDialog(context, _keyBusyIndicator, msg: msg);
     _isBusyIndicatorVisible = true;
@@ -402,41 +370,13 @@ class _AuthnState extends State<Authn> {
     }
   }
 
-  Future<bool> _showDG1Dialog(final EfDG1 dg1,
-      {String msg = 'Data to be sent'}) async {
-    _log.debug('Showing EfDG1 dialog');
-    return showEfDG1Dialog(context, dg1, message: msg, actions: [
-      Center(
-          child: CustomButton(
-              title: "Send",
-              fontColor: Colors.white,
-              backgroundColor: Colors.blue,
-              //minWidth: MediaQuery.of(context).size.width,
-              callbackOnPressed: () {
-                Navigator.pop(context, true);
-              })),
-      Center(
-          child: CustomButton(
-              title: "Cancel",
-              fontColor: Colors.blue,
-              backgroundColor: Colors.white,
-              //minWidth: MediaQuery.of(context).size.width-100,
-              callbackOnPressed: () {
-                Navigator.pop(context, false);
-              })),
-    ]);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
         child: Column(
       children: <Widget>[
-        buttonScan(context),
         EfDG1Dialog(),
-
       ],
     ));
   }
 }
-*/

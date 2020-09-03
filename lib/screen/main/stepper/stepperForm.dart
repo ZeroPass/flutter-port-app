@@ -1,7 +1,10 @@
 import 'dart:io';
 
+import 'dart:async';
+import 'package:dmrtd/internal.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepAttestation/stepAttestationHeader/stepAttestationHeader.dart';
 import 'package:eosio_passid_mobile_app/screen/nfc/authn/authn.dart';
+import 'package:eosio_passid_mobile_app/screen/requestType.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import "package:eosio_passid_mobile_app/screen/main/stepper/stepper.dart";
@@ -14,15 +17,24 @@ import 'package:eosio_passid_mobile_app/screen/main/stepper/stepReview/stepRevie
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
+import 'package:eosio_passid_mobile_app/utils/structure.dart';
 import "package:eosio_passid_mobile_app/screen/main/stepper/customStepper.dart";
 import 'package:eosio_passid_mobile_app/screen/nfc/authn/authn.dart';
+import 'package:eosio_passid_mobile_app/screen/nfc/efdg1_dialog.dart';
+import 'package:connectivity/connectivity.dart';
+import 'package:dmrtd/dmrtd.dart';
 
 import '../../alert.dart';
 
-List<String> BUTTON_NEXT_TITLE = ["Continue", "Scan Passport", "Scan Passport", ""];
+List<String> BUTTON_NEXT_TITLE = [
+  "Continue",
+  "Scan Passport",
+  "Scan Passport",
+  ""
+];
 
-Widget getButtonNextTitle({@required int stepIndex}){
-  if (stepIndex > BUTTON_NEXT_TITLE.length-1)
+Widget getButtonNextTitle({@required int stepIndex}) {
+  if (stepIndex > BUTTON_NEXT_TITLE.length - 1)
     throw FormatException("step index is larger than number of all steps");
   return Text(BUTTON_NEXT_TITLE.elementAt(stepIndex));
 }
@@ -30,9 +42,9 @@ Widget getButtonNextTitle({@required int stepIndex}){
 class StepperForm extends StatefulWidget {
   bool isMagnetLink;
 
-  StepperForm({isMagnetLink = null})
-  {
-    this.isMagnetLink = isMagnetLink == null || isMagnetLink == false ? false : true;
+  StepperForm({isMagnetLink = null}) {
+    this.isMagnetLink =
+        isMagnetLink == null || isMagnetLink == false ? false : true;
   }
 
   @override
@@ -46,37 +58,32 @@ class _StepperFormState extends State<StepperForm> {
   ];
 
   StepState _getState(int step, int currentStep, {disabledReview = false}) {
-    if(step == 3 && disabledReview)
-      return StepState.disabled;
+    if (step == 3 && disabledReview) return StepState.disabled;
     if (currentStep == step)
       return StepState.editing;
     else
       return StepState.indexed;
   }
 
-
   //Stepper steps
-  List<Step> getSteps(BuildContext context, int currentStep, bool disabledReview) {
+  List<Step> getSteps(
+      BuildContext context, int currentStep, bool disabledReview) {
     return <Step>[
       Step(
           title: StepEnterAccountHeaderForm(),
           content: StepEnterAccountForm(),
           state: _getState(0, currentStep),
-          isActive: true
-
-      ),
+          isActive: true),
       Step(
           title: StepScanHeaderForm(),
           content: StepScanForm(),
           state: _getState(1, currentStep),
-          isActive: true
-      ),
+          isActive: true),
       Step(
-        title: StepAttestationHeaderForm(),
-        content: StepAttestationForm(),
-        state: _getState(2, currentStep),
-        isActive: true
-      ),
+          title: StepAttestationHeaderForm(),
+          content: StepAttestationForm(),
+          state: _getState(2, currentStep),
+          isActive: true),
       Step(
         title: StepReviewHeaderForm(),
         content: StepReviewForm(),
@@ -86,7 +93,8 @@ class _StepperFormState extends State<StepperForm> {
     ];
   }
 
-  List<Step> getStepsMagnetLink(BuildContext context, int currentStep, bool disabledReview) {
+  List<Step> getStepsMagnetLink(
+      BuildContext context, int currentStep, bool disabledReview) {
     return <Step>[
       Step(
         title: StepEnterAccountHeaderForm(),
@@ -102,7 +110,7 @@ class _StepperFormState extends State<StepperForm> {
         title: Text("Attestation"),
         content: StepAttestationForm(),
         state: _getState(2, currentStep),
-      )/*,
+      ) /*,
       Step(
         title: Text("test"),
         content: Text("test1"),
@@ -112,8 +120,6 @@ class _StepperFormState extends State<StepperForm> {
   }
 
   _StepperFormState({Key key});
-
-
 
   String onButtonNextPressed(int currentStep) {
     var storage = Storage();
@@ -163,7 +169,8 @@ class _StepperFormState extends State<StepperForm> {
         Padding(
             padding: EdgeInsets.only(top: 40),
             child: PlatformButton(
-              padding: Platform.isIOS ? EdgeInsets.symmetric(horizontal: 0) : null,
+              padding:
+                  Platform.isIOS ? EdgeInsets.symmetric(horizontal: 0) : null,
               child: getButtonNextTitle(stepIndex: currentStep),
               onPressed: () {
                 String errors = onButtonNextPressed(currentStep);
@@ -172,23 +179,98 @@ class _StepperFormState extends State<StepperForm> {
                   functionOnStepContinue();
                 } else {
                   showAlert(
-                    context: context,
-                    title: Text("Cannot continue"),
-                    content: Text(errors + '\nPlease fill the form with valid data!')
-                  );
+                      context: context,
+                      title: Text("Cannot continue"),
+                      content: Text(
+                          errors + '\nPlease fill the form with valid data!'));
                 }
               },
             ))
       ],
     );
   }
-/*
-  void NFC(var stepperBloc){
-    var authn = BlocProvider.of<AuthnBloc>(context);
-    startNFCAction(context).then((bool value) {
+
+  Future<bool> _showDG1Dialog(BuildContext context, final EfDG1 dg1,
+      {String msg = null}) async {
+    //final authnBloc = BlocProvider.of<AuthnBloc>(context);
+    Storage storage = new Storage();
+    StepDataAttestation stepDataAttestation = storage.getStorageData(2);
+
+    StepperBloc stepperBloc = BlocProvider.of<StepperBloc>(context);
+    StepReviewBloc stepReviewBloc = BlocProvider.of<StepReviewBloc>(context);
+
+    //unlock review tab in stepper
+    stepperBloc.isReviewLocked = true;
+
+    stepperBloc.add(StepRunByFlow(
+        step: stepperBloc.state.maxSteps - 1 /*last step*/,
+        previousStep: stepperBloc.state.step));
+    //change header in stepper
+    stepperBloc.liveModifyHeader(3, context, dataInStep: true);
+    //stepperBloc.
+
+    Completer<bool> send = new Completer<bool>();
+    stepReviewBloc.add(StepReviewWithDataEvent(
+        dg1: dg1,
+        msg: msg,
+        outsideCall: stepDataAttestation.isOutsideCall,
+        sendData: (bool isDataSent) {
+          send.complete(isDataSent);
+        }));
+    return send.future;
+  }
+
+  Future<bool> _showEFDG1(
+    BuildContext context,
+  ) async {
+    String title;
+    String msg;
+    final connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult == ConnectivityResult.none ||
+        !await testConnection()) {
+      title = 'No Internet connection';
+      msg = 'An internet connection is required!';
+    } else {
+      //settingsAction = () => _settingsButton.onPressed();
+      title = 'Connection error';
+      msg = 'Failed to connect to server.\n'
+          'Check server connection settings.';
+    }
+    return showAlert<bool>(
+        context: context,
+        title: Text(title),
+        content: Text(msg),
+        actions: [
+          PlatformDialogAction(
+              child: PlatformText('Close',
+                  style: TextStyle(
+                      color: Theme.of(context).errorColor,
+                      fontWeight: FontWeight.bold)),
+              onPressed: () => Navigator.pop(context, false))
+        ]);
+  }
+
+  bool isStepNFC(var stepperBloc, int stepJumps) {
+    return (stepperBloc.state.step + stepJumps == stepperBloc.state.maxSteps - 1
+        ? //is last step
+        true
+        : false);
+  }
+
+  void callNFC(BuildContext context, var stepperBloc) {
+    Authn authn = Authn(
+        /*show DG1 step*/
+        onDG1FileRequested: (EfDG1 dg1) {
+      return _showDG1Dialog(context, dg1);
+    },
+        /*show connection error*/
+        onConnectionError: (SocketException e) async {
+      return _showEFDG1(context);
+    });
+    authn.startNFCAction(context).then((bool value) {
       stepperBloc.add(StepBackToPrevious());
-    })
-  }*/
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -198,7 +280,10 @@ class _StepperFormState extends State<StepperForm> {
       builder: (BuildContext context, StepperState state) {
         return CustomStepper(
             currentStep: state.step,
-            steps: widget.isMagnetLink == true ? getStepsMagnetLink(context, state.step, stepperBloc.isReviewLocked) : getSteps(context, state.step, stepperBloc.isReviewLocked),
+            steps: widget.isMagnetLink == true
+                ? getStepsMagnetLink(
+                    context, state.step, stepperBloc.isReviewLocked)
+                : getSteps(context, state.step, stepperBloc.isReviewLocked),
             type: StepperType.vertical,
             onStepTapped: (step) {
               stepperBloc.add(StepTapped(step: step));
@@ -207,11 +292,18 @@ class _StepperFormState extends State<StepperForm> {
               stepperBloc.add(StepCancelled());
             },
             onStepContinue: () {
-
               Storage storage = Storage();
-              StepDataAttestation stepDataAttestation = storage.getStorageData(2);
+              StepDataAttestation stepDataAttestation =
+                  storage.getStorageData(2);
 
-              stepperBloc.add(StepContinue(stepsJump: stepDataAttestation.isOutsideCall.isOutsideCall && state.step == 1 ? 2 : 1));
+              int stepJumps = stepDataAttestation.isOutsideCall.isOutsideCall &&
+                      state.step == 1
+                  ? 2
+                  : 1;
+              if (this.isStepNFC(stepperBloc, stepJumps))
+                callNFC(context, stepperBloc);
+              else
+                stepperBloc.add(StepContinue(stepsJump: stepJumps));
             },
             controlsBuilder: (BuildContext context,
                 {VoidCallback onStepContinue, VoidCallback onStepCancel}) {

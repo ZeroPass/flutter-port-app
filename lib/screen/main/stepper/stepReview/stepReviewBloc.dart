@@ -8,7 +8,7 @@ class StepReviewBloc extends Bloc<StepReviewEvent, StepReviewState> {
   StepReviewBloc(){}
 
   @override
-  StepReviewState get initialState => WithoutDataState();
+  StepReviewState get initialState => StepReviewWithoutDataState();
 
   @override
   void onEvent(StepReviewEvent event) {
@@ -25,11 +25,11 @@ class StepReviewBloc extends Bloc<StepReviewEvent, StepReviewState> {
 
   @override
   Stream<StepReviewState> mapEventToState( StepReviewEvent event) async* {
-    if (event is WithoutDataEvent)
-      yield WithoutDataState();
-    else if (event is WithDataEvent)
-      yield WithDataState();
+    if (event is StepReviewWithoutDataEvent)
+      yield StepReviewWithoutDataState();
+    else if (event is StepReviewWithDataEvent)
+      yield StepReviewWithDataState(dg1: event.dg1, msg: event.msg, outsideCall: event.outsideCall, sendData: event.sendData);
     else
-      yield WithoutDataState();
+      yield StepReviewWithoutDataState();
     }
   }

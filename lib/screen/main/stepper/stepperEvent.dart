@@ -19,6 +19,16 @@ class StepTapped extends StepperEvent {
   String toString() => 'StepTapped { step: $step, previous step:$previousStep }';
 }
 
+class StepRunByFlow extends StepperEvent {
+  final int step;
+  final int previousStep;
+
+  StepRunByFlow({@required this.step, @required this.previousStep});
+
+  @override
+  String toString() => 'StepRunByFlow { step: $step, previous step:$previousStep }';
+}
+
 class StepCancelled extends StepperEvent {
 
   @override
