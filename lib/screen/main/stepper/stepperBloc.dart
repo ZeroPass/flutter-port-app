@@ -153,8 +153,8 @@ class StepperBloc extends Bloc<StepperEvent, StepperState> {
     }
     else if (event is StepBackToPrevious) {
       yield state.copyWith(
-          step: state.previousStep,
-          previousStep: state.step,
+          step: state.step,
+          previousStep: state.previousStep,
           maxSteps: state.maxSteps
       );
     }

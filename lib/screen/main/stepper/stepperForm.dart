@@ -57,17 +57,18 @@ class _StepperFormState extends State<StepperForm> {
     StepState.editing,
   ];
 
-  StepState _getState(int step, int currentStep, {disabledReview = false}) {
-    if (step == 3 && disabledReview) return StepState.disabled;
+  StepState _getState(int step, int currentStep, {isLastStep = false}) {
     if (currentStep == step)
       return StepState.editing;
+    else if (isLastStep)
+      return StepState.disabled;
     else
       return StepState.indexed;
   }
 
   //Stepper steps
   List<Step> getSteps(
-      BuildContext context, int currentStep, bool disabledReview) {
+      BuildContext context, int currentStep) {
     return <Step>[
       Step(
           title: StepEnterAccountHeaderForm(),
@@ -87,14 +88,15 @@ class _StepperFormState extends State<StepperForm> {
       Step(
         title: StepReviewHeaderForm(),
         content: StepReviewForm(),
-        state: _getState(3, currentStep, disabledReview: disabledReview),
+        state: _getState(3, currentStep, isLastStep: true),
+        isActive: (3 == currentStep ? true : false)
         //isActive: false
       )
     ];
   }
 
   List<Step> getStepsMagnetLink(
-      BuildContext context, int currentStep, bool disabledReview) {
+      BuildContext context, int currentStep) {
     return <Step>[
       Step(
         title: StepEnterAccountHeaderForm(),
@@ -199,15 +201,11 @@ class _StepperFormState extends State<StepperForm> {
     StepperBloc stepperBloc = BlocProvider.of<StepperBloc>(context);
     StepReviewBloc stepReviewBloc = BlocProvider.of<StepReviewBloc>(context);
 
-    //unlock review tab in stepper
-    stepperBloc.isReviewLocked = true;
-
     stepperBloc.add(StepRunByFlow(
         step: stepperBloc.state.maxSteps - 1 /*last step*/,
         previousStep: stepperBloc.state.step));
     //change header in stepper
     stepperBloc.liveModifyHeader(3, context, dataInStep: true);
-    //stepperBloc.
 
     Completer<bool> send = new Completer<bool>();
     stepReviewBloc.add(StepReviewWithDataEvent(
@@ -269,6 +267,8 @@ class _StepperFormState extends State<StepperForm> {
     });
     authn.startNFCAction(context).then((bool value) {
       stepperBloc.add(StepBackToPrevious());
+      //review header; cleaning process
+      stepperBloc.liveModifyHeader(3, context, dataInStep: false);
     });
   }
 
@@ -281,9 +281,8 @@ class _StepperFormState extends State<StepperForm> {
         return CustomStepper(
             currentStep: state.step,
             steps: widget.isMagnetLink == true
-                ? getStepsMagnetLink(
-                    context, state.step, stepperBloc.isReviewLocked)
-                : getSteps(context, state.step, stepperBloc.isReviewLocked),
+                ? getStepsMagnetLink(context, state.step)
+                : getSteps(context, state.step),
             type: StepperType.vertical,
             onStepTapped: (step) {
               stepperBloc.add(StepTapped(step: step));
@@ -293,13 +292,10 @@ class _StepperFormState extends State<StepperForm> {
             },
             onStepContinue: () {
               Storage storage = Storage();
-              StepDataAttestation stepDataAttestation =
-                  storage.getStorageData(2);
+              StepDataAttestation stepDataAttestation = storage.getStorageData(2);
 
               int stepJumps = stepDataAttestation.isOutsideCall.isOutsideCall &&
-                      state.step == 1
-                  ? 2
-                  : 1;
+                      state.step == 1 ? 2 : 1;
               if (this.isStepNFC(stepperBloc, stepJumps))
                 callNFC(context, stepperBloc);
               else
@@ -308,7 +304,7 @@ class _StepperFormState extends State<StepperForm> {
             controlsBuilder: (BuildContext context,
                 {VoidCallback onStepContinue, VoidCallback onStepCancel}) {
               return Visibility(
-                  visible: state.step != state.maxSteps - 1,
+                  visible: state.step != state.maxSteps,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.end,
                     crossAxisAlignment: CrossAxisAlignment.end,

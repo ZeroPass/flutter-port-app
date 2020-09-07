@@ -335,7 +335,10 @@ class Authn /*extends State<Authn>*/ {
         break;
       case RequestType.FAKE_PERSONAL_INFORMATION_REQUEST:
         return startAction(context, AuthnAction.login,
-            fakeAuthnData: true, sendDG1: true);
+            fakeAuthnData: true, sendDG1: true).catchError((e) {
+          print("Got error: ${e.error}");     // Finally, callback fires.
+          return Future<bool>.value(false);                          // Future completes with 42.
+        });
         break;
       case RequestType.LOGIN:
         return startAction(context, AuthnAction.login);
