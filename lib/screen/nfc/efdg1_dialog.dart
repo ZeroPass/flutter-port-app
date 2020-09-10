@@ -3,11 +3,16 @@ import 'package:dart_countries_states/country_provider.dart';
 import 'package:dart_countries_states/models/alpha2_codes.dart';
 import 'package:dart_countries_states/models/alpha3_code.dart';
 import 'package:dart_countries_states/models/country.dart';
+import 'package:eosio_passid_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
+import 'package:eosio_passid_mobile_app/screen/main/stepper/stepScan/stepScan.dart';
+import 'package:eosio_passid_mobile_app/utils/storage.dart';
 import 'package:flutter/material.dart';
 import 'package:dmrtd/dmrtd.dart';
+import 'package:eosio_passid_mobile_app/screen/requestType.dart';
 
 import '../../utils/structure.dart';
 import 'uie/uiutils.dart';
+
 
 // Dialog displays MRZ data stored in file EF.DG1
 /*Future<T> showEfDG1Dialog<T>(BuildContext context, EfDG1 dg1,
@@ -104,12 +109,14 @@ class _EfDG1Dialog extends State<EfDG1Dialog> {
 
   @override
   Widget build(BuildContext context) {
+    Storage storage = Storage();
+    StepDataAttestation stepDataAttestation = storage.getStorageData(2);
     return Container(
         height: MediaQuery.of(context).size.height * 0.70,
-
         child: Padding(
-            padding: EdgeInsets.all(0.0),
-            child: Column(children: <Widget>[
+            padding: EdgeInsets.all(2.0),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
               const SizedBox(height: 10),
               if (widget.message != null)
               SelectableText(
@@ -119,28 +126,48 @@ class _EfDG1Dialog extends State<EfDG1Dialog> {
               SingleChildScrollView(
                   child: Card(
                       child: Padding(
-                          padding: EdgeInsets.all(0.0),
+                          padding: EdgeInsets.all(4.0),
                           child: Column(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: <Widget>[
                                 Align(
-                                    alignment: Alignment.centerLeft,
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      'Data send',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 17),
+                                    )),
+                                const SizedBox(height: 5),
+
+                                for (var item in AuthenticatorActions[stepDataAttestation.requestType]["DATA"])
+                                  Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Container(
+                                      child: Text('• ' + item,
+                                          style: TextStyle(fontSize: 15)),
+                                      margin: EdgeInsets.only(left: 0.0)),
+                                  ),
+                                const SizedBox(height: 30),
+                                //////////////////////////////////////////////////////////////////
+                                Align(
+                                    alignment: Alignment.center,
                                     child: Text(
                                   'Passport Data',
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 18),
+                                      fontSize: 17),
                                 )),
                                 const SizedBox(height: 5),
                                 Row(children: <Widget>[
                                   Expanded(
                                       child: Text(
                                     'Passport type:',
-                                    style: TextStyle(fontSize: 16),
+                                    style: TextStyle(fontSize: 15),
                                   )),
                                   Expanded(
                                       child: Text(widget.dg1.mrz.documentCode,
-                                          style: TextStyle(fontSize: 16)))
+                                          style: TextStyle(fontSize: 15)))
                                 ]),
                                 Row(
                                     mainAxisAlignment:
@@ -148,72 +175,72 @@ class _EfDG1Dialog extends State<EfDG1Dialog> {
                                     children: <Widget>[
                                       Expanded(
                                           child: Text('Passport no.:',
-                                              style: TextStyle(fontSize: 16))),
+                                              style: TextStyle(fontSize: 15))),
                                       Expanded(
                                           child: Text(widget.dg1.mrz.documentNumber,
-                                              style: TextStyle(fontSize: 16))),
+                                              style: TextStyle(fontSize: 15))),
                                     ]),
                                 Row(children: <Widget>[
                                   Expanded(
                                       child: Text('Date of Expiry:',
-                                          style: TextStyle(fontSize: 16))),
+                                          style: TextStyle(fontSize: 15))),
                                   Expanded(
                                       child: Text(
                                           _formatDate(
                                               widget.dg1.mrz.dateOfExpiry, context),
-                                          style: TextStyle(fontSize: 16)))
+                                          style: TextStyle(fontSize: 15)))
                                 ]),
                                 Row(children: <Widget>[
                                   Expanded(
                                       child: Text('Issuing Country:',
-                                          style: TextStyle(fontSize: 16))),
+                                          style: TextStyle(fontSize: 15))),
                                   Expanded(
                                       child: Text(widget._issuingCountry,
-                                          style: TextStyle(fontSize: 16)))
+                                          style: TextStyle(fontSize: 15)))
                                 ]),
                                 const SizedBox(height: 30),
                               Align(
-                                alignment: Alignment.centerLeft,
+                                alignment: Alignment.center,
                                 child: Text(
                                   'Personal Data',
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 18),
+                                      fontSize: 17),
                                 )),
                                 const SizedBox(height: 5),
                                 Row(children: <Widget>[
                                   Expanded(
                                       child: Text('Name:',
-                                          style: TextStyle(fontSize: 16))),
+                                          style: TextStyle(fontSize: 15))),
                                   Expanded(
                                       child: Text(capitalize(widget.dg1.mrz.firstName),
-                                          style: TextStyle(fontSize: 16))),
+                                          style: TextStyle(fontSize: 15))),
                                 ]),
                                 Row(
                                   children: <Widget>[
                                     Expanded(
                                         child: Text('Last Name',
-                                            style: TextStyle(fontSize: 16))),
+                                            style: TextStyle(fontSize: 15))),
                                     Expanded(
                                         child: Text(
                                             capitalize(widget.dg1.mrz.lastName),
-                                            style: TextStyle(fontSize: 16))),
+                                            style: TextStyle(fontSize: 15))),
                                   ],
                                 ),
                                 Row(children: <Widget>[
                                   Expanded(
                                       child: Text('Date of Birth:',
-                                          style: TextStyle(fontSize: 16))),
+                                          style: TextStyle(fontSize: 15))),
                                   Expanded(
                                       child: Text(
                                           _formatDate(
                                               widget.dg1.mrz.dateOfBirth, context),
-                                          style: TextStyle(fontSize: 16))),
+                                          style: TextStyle(fontSize: 15))),
                                 ]),
                                 Row(children: <Widget>[
                                   Expanded(
                                       child: Text('Sex:',
-                                          style: TextStyle(fontSize: 16))),
+                                          style: TextStyle(fontSize: 15))),
                                   Expanded(
                                     child: Text(
                                         widget.dg1.mrz.sex.isEmpty
@@ -221,31 +248,32 @@ class _EfDG1Dialog extends State<EfDG1Dialog> {
                                             : widget.dg1.mrz.sex == 'M'
                                                 ? 'Male'
                                                 : 'Female',
-                                        style: TextStyle(fontSize: 16)),
+                                        style: TextStyle(fontSize: 15)),
                                   )
                                 ]),
                                 Row(children: <Widget>[
                                   Expanded(
                                       child: Text('Nationality:',
-                                          style: TextStyle(fontSize: 16))),
+                                          style: TextStyle(fontSize: 15))),
                                   Expanded(
                                       child: Text(widget._nationality,
-                                          style: TextStyle(fontSize: 16))),
+                                          style: TextStyle(fontSize: 15))),
                                 ]),
                                 Row(children: <Widget>[
                                   Text('Additional Data:',
-                                      style: TextStyle(fontSize: 16)),
+                                      style: TextStyle(fontSize: 15)),
                                   Spacer(),
                                   Text(widget.dg1.mrz.optionalData,
-                                      style: TextStyle(fontSize: 16)),
+                                      style: TextStyle(fontSize: 15)),
                                   Spacer()
                                 ]),
                               ])))),
+                  const SizedBox(height: 20),
               Wrap(
-                alignment: WrapAlignment.start,
+                alignment: WrapAlignment.spaceAround,
                   direction: Axis.horizontal,
-                  runSpacing: 10,
-                  spacing: 10,
+                  runSpacing: 1,
+                  spacing: 1,
                   children: <Widget>[...widget.actions])
             ])));
   }

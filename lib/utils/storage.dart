@@ -133,8 +133,14 @@ class StorageNode {
     else return 2;//no http(s) beginning of string
   }
 
-  //print url address
   String toString(){
+    String prefix = (this.isEncryptedEndpoint)? "https://" : "http://";
+    String port = (this.port != null)? ":"+ this.port.toString() : "";
+    return prefix + this.host + port;
+  }
+
+  String url()
+  {
     String prefix = (this.isEncryptedEndpoint)? "https://" : "http://";
     String port = (this.port != null)? ":"+ this.port.toString() : "";
     return prefix + this.host + port;

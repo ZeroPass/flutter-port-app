@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'dart:async';
 import 'package:dmrtd/internal.dart';
+import 'package:eosio_passid_mobile_app/screen/flushbar.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepAttestation/stepAttestationHeader/stepAttestationHeader.dart';
 import 'package:eosio_passid_mobile_app/screen/nfc/authn/authn.dart';
 import 'package:eosio_passid_mobile_app/screen/requestType.dart';

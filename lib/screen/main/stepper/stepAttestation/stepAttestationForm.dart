@@ -46,7 +46,7 @@ void selectRequestType(var context,
 String truncateRequestType(RequestType requestType, int length)
 {
   if (requestType == null || MapUtil.contains(AuthenticatorActions, requestType) == false)
-    throw Exception("StepAttestationFormz:truncateRequestType; not valid AuthenticatorAction");
+    throw Exception("StepAttestationForm:truncateRequestType; not valid AuthenticatorAction");
 
   String requestTypeStr = AuthenticatorActions[requestType]["NAME"];
   if (length < 0)

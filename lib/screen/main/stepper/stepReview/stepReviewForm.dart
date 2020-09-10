@@ -35,7 +35,7 @@ class _StepReviewFormState extends State<StepReviewForm> {
                       if (state is StepReviewWithDataState)
                         Align(
                             alignment: Alignment.centerLeft,
-                            child:Text('Review what data will be send to ' + (state.outsideCall.isOutsideCall ? state.outsideCall.requestedBy : 'the blockchain.'),
+                            child:Text('Review what data will be send to ' + (state.outsideCall.isOutsideCall && false ? state.outsideCall.requestedBy : 'the blockchain.'),
                               style: TextStyle(color: AndroidThemeST().getValues().themeValues["STEPPER"]
                               ["STEP_TAP"]["COLOR_TEXT"]),
                             )),

@@ -5,17 +5,12 @@ import 'package:connectivity/connectivity.dart';
 
 import 'package:dmrtd/dmrtd.dart';
 import 'package:dmrtd/extensions.dart';
-import 'package:eosio_passid_mobile_app/screen/main/stepper/stepReview/stepReview.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import "package:bloc/bloc.dart";
-import "package:flutter_bloc/flutter_bloc.dart";
 
 import 'package:eosio_passid_mobile_app/screen/alert.dart';
-import 'package:eosio_passid_mobile_app/screen/customButton.dart';
-import 'package:eosio_passid_mobile_app/screen/main/stepper/stepper.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepScan/stepScan.dart';
@@ -24,7 +19,6 @@ import 'package:eosio_passid_mobile_app/utils/storage.dart';
 import 'package:eosio_passid_mobile_app/utils/structure.dart';
 import 'package:eosio_passid_mobile_app/screen/theme.dart';
 import 'package:eosio_passid_mobile_app/screen/requestType.dart';
-import 'package:eosio_passid_mobile_app/screen/nfc/authn/authn.dart';
 
 import 'package:logging/logging.dart';
 import 'package:passid/passid.dart';
@@ -335,7 +329,7 @@ class Authn /*extends State<Authn>*/ {
         break;
       case RequestType.FAKE_PERSONAL_INFORMATION_REQUEST:
         return startAction(context, AuthnAction.login,
-            fakeAuthnData: true, sendDG1: true);             
+            fakeAuthnData: true, sendDG1: true);
         break;
       case RequestType.LOGIN:
         return startAction(context, AuthnAction.login);
