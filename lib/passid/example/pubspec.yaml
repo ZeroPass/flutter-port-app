@@ -29,7 +29,10 @@ dependencies:
   flutter_widgets: ^0.1.12
   flutter_launcher_icons: ^0.7.5
   intl: ^0.16.0
-  open_settings: ^1.0.3
+  open_settings:
+    git:
+        url: https://github.com/smlu/open_settings/
+        ref: patch-1
   passid:
     path: ../
 
