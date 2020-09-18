@@ -24,6 +24,7 @@ import 'package:eosio_passid_mobile_app/screen/nfc/authn/authn.dart';
 import 'package:eosio_passid_mobile_app/screen/nfc/efdg1_dialog.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:dmrtd/dmrtd.dart';
+import 'package:passid/passid.dart';
 
 import '../../alert.dart';
 
@@ -193,9 +194,7 @@ class _StepperFormState extends State<StepperForm> {
     );
   }
 
-  Future<bool> _showDG1Dialog(BuildContext context, final EfDG1 dg1,
-      {String msg = null}) async {
-    //final authnBloc = BlocProvider.of<AuthnBloc>(context);
+  Future<bool> _showDG1Dialog(BuildContext context, final EfDG1 dg1, {String msg = null}) async {
     Storage storage = new Storage();
     StepDataAttestation stepDataAttestation = storage.getStorageData(2);
 
@@ -256,18 +255,26 @@ class _StepperFormState extends State<StepperForm> {
         : false);
   }
 
-  void callNFC(BuildContext context, var stepperBloc) {
+  Future<bool> callNFC(BuildContext context, var stepperBloc) async {
     Authn authn = Authn(
         /*show DG1 step*/
-        onDG1FileRequested: (EfDG1 dg1) {
-      return _showDG1Dialog(context, dg1);
-    },
+        onDG1FileRequested: (EfDG1 dg1) async {
+          return _showDG1Dialog(context, dg1);
+          },
         /*show connection error*/
         onConnectionError: (SocketException e) async {
       return _showEFDG1(context);
     });
-    authn.startNFCAction(context).then((bool value) {
-      stepperBloc.add(StepBackToPrevious());
+    await authn.startNFCAction(context).then((bool successful) {
+      if (!successful) {
+        stepperBloc.add(StepBackToPrevious());
+      }
+      else{
+        final stepReviewBloc = BlocProvider.of<StepReviewBloc>(context);
+        String transactionId = "";
+        String dataInRaw = "";
+        stepReviewBloc.add(StepReviewCompletedEvent(transactionID: transactionId, rawData: dataInRaw));
+      }
       //review header; cleaning process
       stepperBloc.liveModifyHeader(3, context, dataInStep: false);
     });
@@ -310,7 +317,8 @@ class _StepperFormState extends State<StepperForm> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: <Widget>[
-                      showButtonNext(context, state.step, onStepContinue)
+                      if (state.step < stepperBloc.maxSteps -1) //do not show on last step
+                        showButtonNext(context, state.step, onStepContinue)
                     ],
                   ));
             });

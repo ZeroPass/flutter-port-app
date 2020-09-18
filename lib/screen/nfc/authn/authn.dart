@@ -60,7 +60,8 @@ class Authn /*extends State<Authn>*/ {
   Authn({@required this.onDG1FileRequested, @required this.onConnectionError});
 
   Future<bool> showDG1(BuildContext context, final EfDG1 dg1) async {
-    return this.onDG1FileRequested(dg1);
+    var qe = this.onDG1FileRequested(dg1);
+    return qe;
     //return _showDG1Dialog(dg1, msg: 'Server requested additional data');
   }
 
@@ -162,9 +163,10 @@ class Authn /*extends State<Authn>*/ {
                   storageStepScan.birth,
                   storageStepScan.validUntil)
               .then((data) async {
-            await _showBusyIndicator(context);
-            return data;
+                await _showBusyIndicator(context);
+                return data;
           });
+          //return false;
         });
       else
         await _client.login((challenge) async {
@@ -182,7 +184,8 @@ class Authn /*extends State<Authn>*/ {
               data = _fakeData(data);
             }
             if (sendDG1) {
-              if (!await this.onDG1FileRequested(data.dg1)) {
+              var e = this.onDG1FileRequested(data.dg1);
+              if (!await e) {
                 // User said no.
                 // Throw an exception just to get us out of this scope.
                 // An exception should not show any error dialog to user.
@@ -207,8 +210,8 @@ class Authn /*extends State<Authn>*/ {
                     style: TextStyle(fontWeight: FontWeight.bold)),
                 onPressed: () => Navigator.pop(context))
           ]);
+      return true;
 
-      //storage.getDBAkeyStorage().init();
     } catch (e) {
       String alertTitle;
       String alertMsg;
@@ -289,7 +292,9 @@ class Authn /*extends State<Authn>*/ {
                           fontWeight: FontWeight.bold)),
                   onPressed: () => Navigator.pop(context))
             ]);
+        return false;
       }
+      return false;
     }
   }
 

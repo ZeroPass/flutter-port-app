@@ -13,13 +13,11 @@ class StepReviewBloc extends Bloc<StepReviewEvent, StepReviewState> {
   @override
   void onEvent(StepReviewEvent event) {
     // TODO: implement onEvent
-    super.onEvent(event);
     print ("on alert");
   }
 
   @override
   void onTransition(Transition<StepReviewEvent, StepReviewState> transition) {
-    print("on transition: -");
     super.onTransition(transition);
   }
 
@@ -29,6 +27,8 @@ class StepReviewBloc extends Bloc<StepReviewEvent, StepReviewState> {
       yield StepReviewWithoutDataState();
     else if (event is StepReviewWithDataEvent)
       yield StepReviewWithDataState(dg1: event.dg1, msg: event.msg, outsideCall: event.outsideCall, sendData: event.sendData);
+    else if (event is StepReviewCompletedEvent)
+      yield StepReviewCompletedState(requestType: event.requestType, transactionID: event.transactionID, rawData: event.rawData);
     else
       yield StepReviewWithoutDataState();
     }

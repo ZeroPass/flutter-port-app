@@ -27,7 +27,6 @@ import 'package:logging/logging.dart';
 import 'package:eosio_passid_mobile_app/screen/slideToSideRoute.dart';
 //import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:device_preview/device_preview.dart' as DevPreview;
-import 'file:///C:/Users/nejko/Desktop/ZeroPass/B1/development/eosio_passid_mobile_app2/eosio-passid-mobile-app/lib/utils/net/httpRequest.dart';
 import 'package:eosio_passid_mobile_app/screen/flushbar.dart';
 
 var RUN_IN_DEVICE_PREVIEW_MODE = false;

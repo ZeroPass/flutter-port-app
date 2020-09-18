@@ -114,7 +114,7 @@ class _EfDG1Dialog extends State<EfDG1Dialog> {
     return Container(
         height: MediaQuery.of(context).size.height * 0.70,
         child: Padding(
-            padding: EdgeInsets.all(2.0),
+            padding: EdgeInsets.all(0.0),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
               const SizedBox(height: 10),
@@ -122,11 +122,12 @@ class _EfDG1Dialog extends State<EfDG1Dialog> {
               SelectableText(
                 widget.message,
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 4),
               SingleChildScrollView(
                   child: Card(
+                      elevation: 0.0,//no shadow
                       child: Padding(
-                          padding: EdgeInsets.all(4.0),
+                          padding: EdgeInsets.all(14.0),
                           child: Column(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: <Widget>[
@@ -268,7 +269,7 @@ class _EfDG1Dialog extends State<EfDG1Dialog> {
                                   Spacer()
                                 ]),
                               ])))),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 32),
               Wrap(
                 alignment: WrapAlignment.spaceAround,
                   direction: Axis.horizontal,

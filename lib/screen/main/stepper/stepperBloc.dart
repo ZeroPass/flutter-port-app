@@ -129,6 +129,7 @@ class StepperBloc extends Bloc<StepperEvent, StepperState> {
   @override
   Stream<StepperState> mapEventToState(StepperEvent event) async* {
     if (event is StepTapped) {
+
       if (event.step < state.maxSteps-1) // do not allow access to last step
         yield state.copyWith(step: event.step, previousStep: state.step, maxSteps: state.maxSteps);
     }
@@ -152,10 +153,11 @@ class StepperBloc extends Bloc<StepperEvent, StepperState> {
         );
     }
     else if (event is StepBackToPrevious) {
-      yield state.copyWith(
-          step: state.previousStep,
-          previousStep: state.previousStep,
-          maxSteps: state.maxSteps
+      if (state.step == state.maxSteps -1) //jump only when you are on last step
+        yield state.copyWith(
+            step: state.previousStep,
+            previousStep: state.previousStep,
+            maxSteps: state.maxSteps
       );
     }
   }

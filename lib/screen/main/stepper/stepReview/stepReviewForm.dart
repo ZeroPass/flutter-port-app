@@ -1,4 +1,5 @@
 import 'package:eosio_passid_mobile_app/screen/nfc/authn/authn.dart';
+import 'package:eosio_passid_mobile_app/screen/requestType.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
@@ -17,6 +18,17 @@ class StepReviewForm extends StatefulWidget {
   _StepReviewFormState createState() => _StepReviewFormState();
 }
 
+Widget successfullySend(RequestType requestType, String transactionId, String rawData)
+{
+  String successText =  AuthenticatorActions[requestType]['TEXT_ON_SUCCESS'];
+
+  return Align(
+      alignment: Alignment.centerLeft,
+      child:Text(successText,
+        style: TextStyle(color: AndroidThemeST().getValues().themeValues["STEPPER"]
+        ["STEP_TAP"]["COLOR_TEXT"]),
+      ));
+}
 class _StepReviewFormState extends State<StepReviewForm> {
 
   @override
@@ -55,8 +67,9 @@ class _StepReviewFormState extends State<StepReviewForm> {
                                   state.sendData(true);
                                 },
                               )
-                            ])
-
+                            ]),
+                      if (state is StepReviewCompletedState)
+                        successfullySend(state.requestType, state.transactionID, state.rawData)
                     ],
                   )
               )
