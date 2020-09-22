@@ -9,21 +9,28 @@ Map<RequestType, dynamic> AuthenticatorActions = {
       "Passport Public Key (DG15)",
       "Passport Signature"
     ],
+    "DATA_IN_REVIEW": [
+      "Passport Public Key (DG15)",
+      "Passport Signature"
+    ],
     "TEXT_ON_SUCCESS": "Well done, your transaction is published. You are now attested as Anonymous."
   },
   RequestType.PERSONAL_INFORMATION_REQUEST: {
     "NAME": "Send Personal Info",
-    "DATA": ["Personal Information (DG1))", "Passport Signature"],
+    "DATA": ["Personal Information (DG1)", "Passport Signature"],
+    "DATA_IN_REVIEW": ["Passport Signature"],
     "TEXT_ON_SUCCESS": "Well done, your personal data  was successfully send."
   },
   RequestType.FAKE_PERSONAL_INFORMATION_REQUEST: {
     "NAME": "Send Fake Personal Info",
     "DATA": ["Personal Information (DG1)", "Passport Signature)"],
+    "DATA_IN_REVIEW": ["Passport Signature"],
     "TEXT_ON_SUCCESS": "Well done, your personal data  was successfully send."
   },
   RequestType.LOGIN: {
     "NAME": "Login",
     "DATA": ["Passport Signature"],
+    "DATA_IN_REVIEW": ["Passport Signature"],
     "TEXT_ON_SUCCESS": "Well done, you are successfully logged in."
   },
 };

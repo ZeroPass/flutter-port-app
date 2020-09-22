@@ -8,11 +8,11 @@ import 'package:eosio_passid_mobile_app/screen/main/stepper/stepScan/stepScan.da
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
 import 'package:flutter/material.dart';
 import 'package:dmrtd/dmrtd.dart';
+import 'package:eosio_passid_mobile_app/screen/customCard.dart';
 import 'package:eosio_passid_mobile_app/screen/requestType.dart';
 
 import '../../utils/structure.dart';
 import 'uie/uiutils.dart';
-
 
 // Dialog displays MRZ data stored in file EF.DG1
 /*Future<T> showEfDG1Dialog<T>(BuildContext context, EfDG1 dg1,
@@ -20,7 +20,7 @@ import 'uie/uiutils.dart';
   return EfDG1Dialog(context, dg1, message: message, actions: actions).show();
 }
 */
-class EfDG1Dialog extends StatefulWidget{
+class EfDG1Dialog extends StatefulWidget {
   final EfDG1 dg1;
   final BuildContext context;
   final String message;
@@ -30,17 +30,19 @@ class EfDG1Dialog extends StatefulWidget{
   String _nationality = '';
   StateSetter _sheetSetter;
 
-  EfDG1Dialog({@required this.context, @required this.dg1, @required this.message, @required this.actions});
+  EfDG1Dialog(
+      {@required this.context,
+      @required this.dg1,
+      @required this.message,
+      @required this.actions});
 
   @override
   _EfDG1Dialog createState() => _EfDG1Dialog();
 }
 
 class _EfDG1Dialog extends State<EfDG1Dialog> {
-
-
   @override
-  void initState(){
+  void initState() {
     super.initState();
     _formatCountryCode(widget.dg1.mrz.country).then((c) {
       if (widget._sheetSetter != null) {
@@ -72,11 +74,11 @@ class _EfDG1Dialog extends State<EfDG1Dialog> {
     try {
       Country c;
       if (code.length == 2) {
-        c = await widget._countryProvider.getCountryByCode2(
-            code2: Alpha2Code.valueOf(code));
+        c = await widget._countryProvider
+            .getCountryByCode2(code2: Alpha2Code.valueOf(code));
       } else {
-        c = await widget._countryProvider.getCountryByCode3(
-            code3: Alpha3Code.valueOf(code));
+        c = await widget._countryProvider
+            .getCountryByCode3(code3: Alpha3Code.valueOf(code));
       }
       return c.name;
     } catch (_) {
@@ -101,8 +103,8 @@ class _EfDG1Dialog extends State<EfDG1Dialog> {
         builder: (BuildContext context) {
           return StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {
-                widget._sheetSetter = setState;
-            build(context);//widget
+            widget._sheetSetter = setState;
+            build(context); //widget
           });
         });
   }
@@ -115,167 +117,50 @@ class _EfDG1Dialog extends State<EfDG1Dialog> {
         height: MediaQuery.of(context).size.height * 0.70,
         child: Padding(
             padding: EdgeInsets.all(0.0),
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start,
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-              const SizedBox(height: 10),
-              if (widget.message != null)
-              SelectableText(
-                widget.message,
-              ),
-              const SizedBox(height: 4),
-              SingleChildScrollView(
-                  child: Card(
-                      elevation: 0.0,//no shadow
-                      child: Padding(
-                          padding: EdgeInsets.all(14.0),
-                          child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: <Widget>[
-                                Align(
-                                    alignment: Alignment.center,
-                                    child: Text(
-                                      'Data send',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 17),
-                                    )),
-                                const SizedBox(height: 5),
-
-                                for (var item in AuthenticatorActions[stepDataAttestation.requestType]["DATA"])
-                                  Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Container(
-                                      child: Text('• ' + item,
-                                          style: TextStyle(fontSize: 15)),
-                                      margin: EdgeInsets.only(left: 0.0)),
-                                  ),
-                                const SizedBox(height: 30),
-                                //////////////////////////////////////////////////////////////////
-                                Align(
-                                    alignment: Alignment.center,
-                                    child: Text(
-                                  'Passport Data',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 17),
-                                )),
-                                const SizedBox(height: 5),
-                                Row(children: <Widget>[
-                                  Expanded(
-                                      child: Text(
-                                    'Passport type:',
-                                    style: TextStyle(fontSize: 15),
-                                  )),
-                                  Expanded(
-                                      child: Text(widget.dg1.mrz.documentCode,
-                                          style: TextStyle(fontSize: 15)))
-                                ]),
-                                Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: <Widget>[
-                                      Expanded(
-                                          child: Text('Passport no.:',
-                                              style: TextStyle(fontSize: 15))),
-                                      Expanded(
-                                          child: Text(widget.dg1.mrz.documentNumber,
-                                              style: TextStyle(fontSize: 15))),
-                                    ]),
-                                Row(children: <Widget>[
-                                  Expanded(
-                                      child: Text('Date of Expiry:',
-                                          style: TextStyle(fontSize: 15))),
-                                  Expanded(
-                                      child: Text(
-                                          _formatDate(
-                                              widget.dg1.mrz.dateOfExpiry, context),
-                                          style: TextStyle(fontSize: 15)))
-                                ]),
-                                Row(children: <Widget>[
-                                  Expanded(
-                                      child: Text('Issuing Country:',
-                                          style: TextStyle(fontSize: 15))),
-                                  Expanded(
-                                      child: Text(widget._issuingCountry,
-                                          style: TextStyle(fontSize: 15)))
-                                ]),
-                                const SizedBox(height: 30),
-                              Align(
-                                alignment: Alignment.center,
-                                child: Text(
-                                  'Personal Data',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 17),
-                                )),
-                                const SizedBox(height: 5),
-                                Row(children: <Widget>[
-                                  Expanded(
-                                      child: Text('Name:',
-                                          style: TextStyle(fontSize: 15))),
-                                  Expanded(
-                                      child: Text(capitalize(widget.dg1.mrz.firstName),
-                                          style: TextStyle(fontSize: 15))),
-                                ]),
-                                Row(
-                                  children: <Widget>[
-                                    Expanded(
-                                        child: Text('Last Name',
-                                            style: TextStyle(fontSize: 15))),
-                                    Expanded(
-                                        child: Text(
-                                            capitalize(widget.dg1.mrz.lastName),
-                                            style: TextStyle(fontSize: 15))),
-                                  ],
-                                ),
-                                Row(children: <Widget>[
-                                  Expanded(
-                                      child: Text('Date of Birth:',
-                                          style: TextStyle(fontSize: 15))),
-                                  Expanded(
-                                      child: Text(
-                                          _formatDate(
-                                              widget.dg1.mrz.dateOfBirth, context),
-                                          style: TextStyle(fontSize: 15))),
-                                ]),
-                                Row(children: <Widget>[
-                                  Expanded(
-                                      child: Text('Sex:',
-                                          style: TextStyle(fontSize: 15))),
-                                  Expanded(
-                                    child: Text(
-                                        widget.dg1.mrz.sex.isEmpty
-                                            ? '/'
-                                            : widget.dg1.mrz.sex == 'M'
-                                                ? 'Male'
-                                                : 'Female',
-                                        style: TextStyle(fontSize: 15)),
-                                  )
-                                ]),
-                                Row(children: <Widget>[
-                                  Expanded(
-                                      child: Text('Nationality:',
-                                          style: TextStyle(fontSize: 15))),
-                                  Expanded(
-                                      child: Text(widget._nationality,
-                                          style: TextStyle(fontSize: 15))),
-                                ]),
-                                Row(children: <Widget>[
-                                  Text('Additional Data:',
-                                      style: TextStyle(fontSize: 15)),
-                                  Spacer(),
-                                  Text(widget.dg1.mrz.optionalData,
-                                      style: TextStyle(fontSize: 15)),
-                                  Spacer()
-                                ]),
-                              ])))),
-                  const SizedBox(height: 32),
-              Wrap(
-                alignment: WrapAlignment.spaceAround,
-                  direction: Axis.horizontal,
-                  runSpacing: 1,
-                  spacing: 1,
-                  children: <Widget>[...widget.actions])
-            ])));
+                  const SizedBox(height: 0),
+                  if (widget.message != null)
+                    Text(
+                      widget.message,
+                    ),
+                  const SizedBox(height: 14),
+                  CustomCard("Personal Data", [
+                    CardItem('Name', widget.dg1.mrz.firstName),
+                    CardItem('Last Name', widget.dg1.mrz.lastName),
+                    CardItem("Date of Birth",
+                        _formatDate(widget.dg1.mrz.dateOfBirth, context)),
+                    CardItem(
+                        "Sex",
+                        widget.dg1.mrz.sex.isEmpty
+                            ? '/'
+                            : widget.dg1.mrz.sex == 'M' ? 'Male' : 'Female'),
+                    CardItem("Nationality:", widget.dg1.mrz.nationality),
+                    CardItem("Additional Data:", widget.dg1.mrz.optionalData)
+                  ]),
+                  const SizedBox(height: 18),
+                  CustomCard("Passport Data", [
+                    CardItem("Passport type", widget.dg1.mrz.documentCode),
+                    CardItem("Passport no.", widget.dg1.mrz.documentNumber),
+                    CardItem("Date of Expiry",
+                        _formatDate(widget.dg1.mrz.dateOfExpiry, context)),
+                    CardItem("Issuing Country:", widget.dg1.mrz.country)
+                  ]),
+                  const SizedBox(height: 18),
+                  CustomCard("Authn Data", [
+                    for (var item
+                        in AuthenticatorActions[stepDataAttestation.requestType]
+                            ["DATA_IN_REVIEW"])
+                      CardItem('• ' + item, null),
+                  ]),
+                  const SizedBox(height: 30),
+                  Wrap(
+                      alignment: WrapAlignment.spaceAround,
+                      direction: Axis.horizontal,
+                      runSpacing: 1,
+                      spacing: 1,
+                      children: <Widget>[...widget.actions])
+                ])));
   }
 }

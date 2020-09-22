@@ -49,18 +49,6 @@ class StepperBloc extends Bloc<StepperEvent, StepperState> {
   @override
   StepperState get initialState => StepperState(step: 0, maxSteps: maxSteps);
 
-  @override
-  void onTransition(Transition<StepperEvent, StepperState> transition) {
-    super.onTransition(transition);
-    print(transition);
-  }
-
-  @override
-  void onEvent(StepperEvent event) {
-    super.onEvent(event);
-    print("event");
-    print(event);
-  }
 
   bool liveModifyHeader (int step, var context, {bool dataInStep}) {
     var storage = Storage();

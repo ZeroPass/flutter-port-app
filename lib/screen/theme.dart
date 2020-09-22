@@ -74,6 +74,11 @@ Map light = {
   {
     "COLOR_TEXT":  Colors.white,
     "COLOR_BACKGROUND":Color(0xFFa58157)
+  },
+  "CUSTOM_CARD":
+  {
+    "SIZE_TEXT":17.0,
+    "COLOR_TEXT":Color(0xFF646464)
   }
 };
 //the same valus for now
@@ -156,6 +161,11 @@ class ThemeValues{
     {
       "COLOR_TEXT": null,
       "COLOR_BACKGROUND": null
+    },
+    "CUSTOM_CARD":
+    {
+      "SIZE_TEXT": null,
+      "COLOR_TEXT": null
     }
   };
 

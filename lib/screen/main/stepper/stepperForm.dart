@@ -69,8 +69,7 @@ class _StepperFormState extends State<StepperForm> {
   }
 
   //Stepper steps
-  List<Step> getSteps(
-      BuildContext context, int currentStep) {
+  List<Step> getSteps(BuildContext context, int currentStep) {
     return <Step>[
       Step(
           title: StepEnterAccountHeaderForm(),
@@ -88,17 +87,16 @@ class _StepperFormState extends State<StepperForm> {
           state: _getState(2, currentStep),
           isActive: true),
       Step(
-        title: StepReviewHeaderForm(),
-        content: StepReviewForm(),
-        state: _getState(3, currentStep, isLastStep: true),
-        isActive: (3 == currentStep ? true : false)
-        //isActive: false
-      )
+          title: StepReviewHeaderForm(),
+          content: StepReviewForm(),
+          state: _getState(3, currentStep, isLastStep: true),
+          isActive: (3 == currentStep ? true : false)
+          //isActive: false
+          )
     ];
   }
 
-  List<Step> getStepsMagnetLink(
-      BuildContext context, int currentStep) {
+  List<Step> getStepsMagnetLink(BuildContext context, int currentStep) {
     return <Step>[
       Step(
         title: StepEnterAccountHeaderForm(),
@@ -194,7 +192,8 @@ class _StepperFormState extends State<StepperForm> {
     );
   }
 
-  Future<bool> _showDG1Dialog(BuildContext context, final EfDG1 dg1, {String msg = null}) async {
+  Future<bool> _showDG1Dialog(BuildContext context, final EfDG1 dg1,
+      {String msg = null}) async {
     Storage storage = new Storage();
     StepDataAttestation stepDataAttestation = storage.getStorageData(2);
 
@@ -255,12 +254,19 @@ class _StepperFormState extends State<StepperForm> {
         : false);
   }
 
+  bool isClickedOnNFC(var stepperBloc, int step) {
+    return (step == stepperBloc.state.maxSteps - 1
+        ? //is last step
+        true
+        : false);
+  }
+
   Future<bool> callNFC(BuildContext context, var stepperBloc) async {
     Authn authn = Authn(
         /*show DG1 step*/
         onDG1FileRequested: (EfDG1 dg1) async {
-          return _showDG1Dialog(context, dg1);
-          },
+      return _showDG1Dialog(context, dg1);
+    },
         /*show connection error*/
         onConnectionError: (SocketException e) async {
       return _showEFDG1(context);
@@ -268,12 +274,40 @@ class _StepperFormState extends State<StepperForm> {
     await authn.startNFCAction(context).then((bool successful) {
       if (!successful) {
         stepperBloc.add(StepBackToPrevious());
-      }
-      else{
+      } else {
         final stepReviewBloc = BlocProvider.of<StepReviewBloc>(context);
-        String transactionId = "";
-        String dataInRaw = "";
-        stepReviewBloc.add(StepReviewCompletedEvent(transactionID: transactionId, rawData: dataInRaw));
+        Storage storage = Storage();
+        StepDataAttestation stepDataAttestation = storage.getStorageData(2);
+        String transactionId = "9c5a433fa32f58f1f5e35dTEMP234be0565ff1f37fe0781121ee9ba4962b789a";
+        String dataInRaw = """trx:
+        receipt:
+        status:'executed'
+        cpu_usage_us:0
+        net_usage_words:0
+        trx:
+        0:1
+      1:
+      signatures:""
+      compression:"none"
+      packed_context_free_data:""
+      packed_trx:""
+      trx:
+      expiration:""
+      ref_block_num:0
+      ref_block_prefix:0
+      max_net_usage_words:0
+      max_cpu_usage_ms:0
+      delay_sec:0
+      context_free_actions:
+      actions:Array[0] []
+      transaction_extensions:
+      signatures:
+      context_free_data""";
+
+        stepReviewBloc.add(StepReviewCompletedEvent(
+            requestType: stepDataAttestation.requestType,
+            transactionID: transactionId,
+            rawData: dataInRaw));
       }
       //review header; cleaning process
       stepperBloc.liveModifyHeader(3, context, dataInStep: false);
@@ -293,6 +327,10 @@ class _StepperFormState extends State<StepperForm> {
                 : getSteps(context, state.step),
             type: StepperType.vertical,
             onStepTapped: (step) {
+              //is current step = last step and not clicked last step
+              if (this.isStepNFC(stepperBloc, 0) &&
+                  !isClickedOnNFC(stepperBloc, step))
+                stepperBloc.liveModifyHeader(3, context, dataInStep: false);
               stepperBloc.add(StepTapped(step: step));
             },
             onStepCancel: () {
@@ -300,10 +338,13 @@ class _StepperFormState extends State<StepperForm> {
             },
             onStepContinue: () {
               Storage storage = Storage();
-              StepDataAttestation stepDataAttestation = storage.getStorageData(2);
+              StepDataAttestation stepDataAttestation =
+                  storage.getStorageData(2);
 
               int stepJumps = stepDataAttestation.isOutsideCall.isOutsideCall &&
-                      state.step == 1 ? 2 : 1;
+                      state.step == 1
+                  ? 2
+                  : 1;
               if (this.isStepNFC(stepperBloc, stepJumps))
                 callNFC(context, stepperBloc);
               else
@@ -317,7 +358,8 @@ class _StepperFormState extends State<StepperForm> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: <Widget>[
-                      if (state.step < stepperBloc.maxSteps -1) //do not show on last step
+                      if (state.step <
+                          stepperBloc.maxSteps - 1) //do not show on last step
                         showButtonNext(context, state.step, onStepContinue)
                     ],
                   ));
