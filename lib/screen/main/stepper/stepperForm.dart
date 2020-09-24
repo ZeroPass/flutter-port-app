@@ -217,6 +217,26 @@ class _StepperFormState extends State<StepperForm> {
     return send.future;
   }
 
+  void _showSuccessInReviewTab(BuildContext context) async {
+    Storage storage = new Storage();
+    StepDataAttestation stepDataAttestation = storage.getStorageData(2);
+
+    StepperBloc stepperBloc = BlocProvider.of<StepperBloc>(context);
+    StepReviewBloc stepReviewBloc = BlocProvider.of<StepReviewBloc>(context);
+
+    //jump to last step
+    stepperBloc.add(StepRunByFlow(
+        step: stepperBloc.state.maxSteps - 1 /*last step*/,
+        previousStep: stepperBloc.state.step));
+    //change header in stepper
+    stepperBloc.liveModifyHeader(3, context, dataInStep: true);
+
+    stepReviewBloc.add(StepReviewCompletedEvent(
+        requestType: stepDataAttestation.requestType,
+        transactionID: "jfkdsljfklsdjfklsdjflksdjfsdk",
+        rawData: "fdskfjsdkjfksdjfkdsjkfjsdkjfksds"));
+  }
+
   Future<bool> _showEFDG1(
     BuildContext context,
   ) async {
@@ -265,11 +285,16 @@ class _StepperFormState extends State<StepperForm> {
     Authn authn = Authn(
         /*show DG1 step*/
         onDG1FileRequested: (EfDG1 dg1) async {
-      return _showDG1Dialog(context, dg1);
+          return _showDG1Dialog(context, dg1);
     },
+        /*show last step*/
+        showSuccessInReviewTab: (){
+          _showSuccessInReviewTab(context);
+          return true;
+        },
         /*show connection error*/
         onConnectionError: (SocketException e) async {
-      return _showEFDG1(context);
+          return _showEFDG1(context);
     });
     await authn.startNFCAction(context).then((bool successful) {
       if (!successful) {
@@ -278,7 +303,8 @@ class _StepperFormState extends State<StepperForm> {
         final stepReviewBloc = BlocProvider.of<StepReviewBloc>(context);
         Storage storage = Storage();
         StepDataAttestation stepDataAttestation = storage.getStorageData(2);
-        String transactionId = "9c5a433fa32f58f1f5e35dTEMP234be0565ff1f37fe0781121ee9ba4962b789a";
+        String transactionId =
+            "9c5a433fa32f58f1f5e35dTEMP234be0565ff1f37fe0781121ee9ba4962b789a";
         String dataInRaw = """trx:
         receipt:
         status:'executed'

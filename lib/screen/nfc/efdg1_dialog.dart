@@ -26,8 +26,8 @@ class EfDG1Dialog extends StatefulWidget {
   final String message;
   final List<Widget> actions;
   final _countryProvider = CountryProvider();
-  String _issuingCountry = '';
-  String _nationality = '';
+  var _issuingCountry;
+  var _nationality;
   StateSetter _sheetSetter;
 
   EfDG1Dialog(

@@ -53,21 +53,20 @@ enum AuthnAction { register, login }
 class Authn /*extends State<Authn>*/ {
   PassIdClient _client;
   Future<bool> Function(SocketException e) onConnectionError;
+  void Function() showSuccessInReviewTab;
   Future<bool> Function(EfDG1 dg1) onDG1FileRequested;
+
   final _log = Logger('authn.screen');
   final String _fakeName = "Larimer Daniel";
 
-  Authn({@required this.onDG1FileRequested, @required this.onConnectionError});
+  Authn({@required this.onDG1FileRequested, @required this.showSuccessInReviewTab, @required this.onConnectionError});
 
   Future<bool> showDG1(BuildContext context, final EfDG1 dg1) async {
-    var qe = this.onDG1FileRequested(dg1);
-    return qe;
-    //return _showDG1Dialog(dg1, msg: 'Server requested additional data');
+    return this.onDG1FileRequested(dg1);
   }
 
   Future<bool> _handleDG1Request(final EfDG1 dg1) async {
     return Future<bool>.value(false);
-    //return _showDG1Dialog(context, dg1, msg: 'Server requested additional data');
   }
 
   Future<AuthnData> _getAuthnData(
@@ -151,23 +150,26 @@ class Authn /*extends State<Authn>*/ {
       _client.onConnectionError = this.onConnectionError;
       _client.onDG1FileRequested = this.onDG1FileRequested;
 
-      if (action == AuthnAction.register)
+      if (action == AuthnAction.register) {
         await _client.register((challenge) async {
           StepDataScan storageStepScan = storage.getStorageData(1);
           await _hideBusyIndicator();
           return _getAuthnData(
-                  context,
-                  challenge,
-                  AuthnAction.register,
-                  storageStepScan.documentID,
-                  storageStepScan.birth,
-                  storageStepScan.validUntil)
+              context,
+              challenge,
+              AuthnAction.register,
+              storageStepScan.documentID,
+              storageStepScan.birth,
+              storageStepScan.validUntil)
               .then((data) async {
-                await _showBusyIndicator(context);
-                return data;
+            await _showBusyIndicator(context);
+            return data;
           });
           //return false;
         });
+        //move to next step
+        showSuccessInReviewTab();
+      }
       else
         await _client.login((challenge) async {
           StepDataScan storageStepScan = storage.getStorageData(1);
@@ -200,7 +202,7 @@ class Authn /*extends State<Authn>*/ {
 
       final srvMsgGreeting = await _client.requestGreeting();
       await _hideBusyIndicator();
-      await showAlert(
+      /*await showAlert(
           context: context,
           title: Text('Attestation Succeeded'),
           content: Text(_formatAttestationSuccess(srvMsgGreeting)),
@@ -209,7 +211,7 @@ class Authn /*extends State<Authn>*/ {
                 child: PlatformText('Close',
                     style: TextStyle(fontWeight: FontWeight.bold)),
                 onPressed: () => Navigator.pop(context))
-          ]);
+          ]);*/
       return true;
 
     } catch (e) {

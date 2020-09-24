@@ -8,8 +8,11 @@ import "package:eosio_passid_mobile_app/screen/main/stepper/stepper.dart";
 import 'package:flutter/cupertino.dart';
 import 'package:eosio_passid_mobile_app/utils/size.dart';
 import 'package:eosio_passid_mobile_app/screen/customCard.dart';
+import 'package:eosio_passid_mobile_app/screen/customCardShowHide.dart';
 import 'package:eosio_passid_mobile_app/screen/nfc/efdg1_dialog.dart';
 import 'package:eosio_passid_mobile_app/screen/theme.dart';
+import 'package:flutter/services.dart';
+import 'package:eosio_passid_mobile_app/screen/flushbar.dart';
 
 class StepReviewForm extends StatefulWidget {
   StepEnterAccountForm() {}
@@ -18,7 +21,7 @@ class StepReviewForm extends StatefulWidget {
   _StepReviewFormState createState() => _StepReviewFormState();
 }
 
-Widget successfullySend(
+Widget successfullySend(BuildContext context,
     RequestType requestType, String transactionId, String rawData) {
   String successText = AuthenticatorActions[requestType]['TEXT_ON_SUCCESS'];
 
@@ -34,12 +37,32 @@ Widget successfullySend(
       child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            const SizedBox(height: 10),
             SelectableText(successText),
-            const SizedBox(height: 18),
-            CustomCard("Transaction ID", [CardItem(transactionId, null)], true),
-            const SizedBox(height: 18),
-            CustomCard("Raw Data", [CardItem(rawData, null)], true),
+            const SizedBox(height: 20),
+            CustomCardShowHide("• Transaction ID",
+              transactionId,
+                actions: [
+                  PlatformDialogAction(
+                    child: Text('Copy'),
+                    onPressed: () {
+                      showFlushbar(context, "Clipboard", "Item was copied to clipboard.");
+                      Clipboard.setData(ClipboardData(text: transactionId));
+                    },
+                  )
+                ]),
+            //const SizedBox(height: 4),
+            CustomCardShowHide("• Raw Data",
+                rawData,
+                actions: [
+                  PlatformDialogAction(
+                    child: Text('Copy'),
+                    //color: Color(0xFFa58157),
+                    onPressed: () {
+                      showFlushbar(context, "Clipboard", "Item was copied to clipboard.");
+                      Clipboard.setData(ClipboardData(text: rawData));
+                    },
+                  )
+                ]),
           ]));
 }
 
@@ -90,7 +113,7 @@ class _StepReviewFormState extends State<StepReviewForm> {
                               )
                             ]),
                       if (state is StepReviewCompletedState)
-                        successfullySend(state.requestType, state.transactionID,
+                        successfullySend(context, state.requestType, state.transactionID,
                             state.rawData)
                     ],
                   )));
