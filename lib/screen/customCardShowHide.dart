@@ -1,3 +1,4 @@
+import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:eosio_passid_mobile_app/screen/theme.dart';
@@ -50,9 +51,11 @@ class _CustomCardShowHideState extends State<CustomCardShowHide> {
                     child: Text(
                       widget.title,
                       style: TextStyle(
-                          color: AndroidThemeST()
-                              .getValues()
-                              .themeValues["CUSTOM_CARD"]["COLOR_TEXT"]),
+                          color: Platform.isIOS 
+                            ? CupertinoColors.activeBlue
+                            : AndroidThemeST()
+                                .getValues()
+                                .themeValues["CUSTOM_CARD"]["COLOR_TEXT"]),
                     )))),
         _visability
             ? SizedBox(
