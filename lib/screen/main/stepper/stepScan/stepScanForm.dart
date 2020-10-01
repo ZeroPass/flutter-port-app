@@ -140,7 +140,7 @@ class _StepScanFormState extends State<StepScanForm> {
                 },
                 _birthTextController,
               ),
-              SizedBox(height: 17),
+              SizedBox(height: 17),//temp raised from 17
               CustomDatePicker(
                     "Date of Expiry",
                   (this._allowExpiredPassport)

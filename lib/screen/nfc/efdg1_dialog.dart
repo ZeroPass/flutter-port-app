@@ -3,6 +3,7 @@ import 'package:dart_countries_states/country_provider.dart';
 import 'package:dart_countries_states/models/alpha2_codes.dart';
 import 'package:dart_countries_states/models/alpha3_code.dart';
 import 'package:dart_countries_states/models/country.dart';
+import 'package:eosio_passid_mobile_app/screen/customCardShowHide.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepScan/stepScan.dart';
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
@@ -29,12 +30,15 @@ class EfDG1Dialog extends StatefulWidget {
   var _issuingCountry;
   var _nationality;
   StateSetter _sheetSetter;
+  final String rawData;
 
   EfDG1Dialog(
       {@required this.context,
       @required this.dg1,
       @required this.message,
-      @required this.actions});
+      @required this.actions,
+      @required this.rawData
+      });
 
   @override
   _EfDG1Dialog createState() => _EfDG1Dialog();
@@ -61,9 +65,9 @@ class _EfDG1Dialog extends State<EfDG1Dialog> {
     });
   }
 
-  Future<T> show<T>() {
+  /*Future<T> show<T>() {
     return _showBottomSheet();
-  }
+  }*/
 
   String _formatDate(DateTime date, BuildContext ctx) {
     final locale = getLocaleOf(ctx);
@@ -96,10 +100,6 @@ class _EfDG1Dialog extends State<EfDG1Dialog> {
         isDismissible: false,
         useRootNavigator: true,
         isScrollControlled: true,
-        /*shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(25.0),
-                topRight: Radius.circular(25.0))),*/
         builder: (BuildContext context) {
           return StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {
@@ -114,7 +114,7 @@ class _EfDG1Dialog extends State<EfDG1Dialog> {
     Storage storage = Storage();
     StepDataAttestation stepDataAttestation = storage.getStorageData(2);
     return Container(
-        height: MediaQuery.of(context).size.height * 0.70,
+        height: MediaQuery.of(context).size.height * 1.2,
         child: Padding(
             padding: EdgeInsets.all(0.0),
             child: Column(
@@ -154,6 +154,9 @@ class _EfDG1Dialog extends State<EfDG1Dialog> {
                             ["DATA_IN_REVIEW"])
                       CardItem('• ' + item, null),
                   ]),
+                  const SizedBox(height: 18),
+                  CustomCardShowHide("Raw Data",
+                      this.widget.rawData),
                   const SizedBox(height: 30),
                   Wrap(
                       alignment: WrapAlignment.spaceAround,

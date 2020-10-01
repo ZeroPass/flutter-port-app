@@ -37,7 +37,7 @@ Widget deleteButton(BuildContext context) {
           stepperBloc.add(StepTapped(step: stepperBloc.state.previousStep ?? 1));
 
           //change state on step main window
-          stepReviewBloc.add(StepReviewWithoutDataEvent());
+          stepReviewBloc.add(StepReviewEmptyEvent());
 
           //change state on step header
           stepReviewHeaderBloc.add(StepReviewHeaderWithoutDataEvent());

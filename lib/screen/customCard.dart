@@ -100,6 +100,7 @@ class _CustomCardState extends State<CustomCard> {
                 text = text + element.itemTitle + " ";
                 if (element.item != null)
                   text = text + element.item  + " ";
+                text = text + "\n";
               }
               showFlushbar(context, "Clipboard", "Item was copied to clipboard.");
               Clipboard.setData(ClipboardData(text: text));

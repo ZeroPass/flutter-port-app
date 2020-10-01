@@ -53,13 +53,13 @@ enum AuthnAction { register, login }
 class Authn /*extends State<Authn>*/ {
   PassIdClient _client;
   Future<bool> Function(SocketException e) onConnectionError;
-  void Function() showSuccessInReviewTab;
+  void Function() showDataToBeSent;
   Future<bool> Function(EfDG1 dg1) onDG1FileRequested;
 
   final _log = Logger('authn.screen');
   final String _fakeName = "Larimer Daniel";
 
-  Authn({@required this.onDG1FileRequested, @required this.showSuccessInReviewTab, @required this.onConnectionError});
+  Authn({@required this.onDG1FileRequested, @required this.showDataToBeSent, @required this.onConnectionError});
 
   Future<bool> showDG1(BuildContext context, final EfDG1 dg1) async {
     return this.onDG1FileRequested(dg1);
@@ -162,13 +162,14 @@ class Authn /*extends State<Authn>*/ {
               storageStepScan.birth,
               storageStepScan.validUntil)
               .then((data) async {
-            await _showBusyIndicator(context);
+            //await _showBusyIndicator(context);
+            await showDataToBeSent();
             return data;
           });
           //return false;
         });
         //move to next step
-        showSuccessInReviewTab();
+        //showSuccessInReviewTab();
       }
       else
         await _client.login((challenge) async {
@@ -194,8 +195,10 @@ class Authn /*extends State<Authn>*/ {
                 throw PassportScannerError('Get me out');
               }
             }
+            else
+              showDataToBeSent();
 
-            await _showBusyIndicator(context);
+            //await _showBusyIndicator(context);
             return data;
           });
         }, sendEfDG1: sendDG1);

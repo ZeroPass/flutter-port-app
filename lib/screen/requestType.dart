@@ -10,27 +10,32 @@ Map<RequestType, dynamic> AuthenticatorActions = {
       "Passport Signature"
     ],
     "DATA_IN_REVIEW": [
+      "Country (SOD)",
       "Passport Public Key (DG15)",
       "Passport Signature"
     ],
-    "TEXT_ON_SUCCESS": "Well done, your transaction is published. You are now attested as Anonymous."
+    "TEXT_ON_SUCCESS": "Well done, your transaction is published. You are now attested as Anonymous.",
+    "IS_PUBLISHED_ON_CHAIN": true
   },
   RequestType.PERSONAL_INFORMATION_REQUEST: {
     "NAME": "Send Personal Info",
     "DATA": ["Personal Information (DG1)", "Passport Signature"],
     "DATA_IN_REVIEW": ["Passport Signature"],
-    "TEXT_ON_SUCCESS": "Well done, your personal data  was successfully send."
+    "TEXT_ON_SUCCESS": "Well done, your personal data  was successfully send.",
+    "IS_PUBLISHED_ON_CHAIN": false
   },
   RequestType.FAKE_PERSONAL_INFORMATION_REQUEST: {
     "NAME": "Send Fake Personal Info",
     "DATA": ["Personal Information (DG1)", "Passport Signature)"],
     "DATA_IN_REVIEW": ["Passport Signature"],
-    "TEXT_ON_SUCCESS": "Well done, your personal data  was successfully send."
+    "TEXT_ON_SUCCESS": "Well done, your personal data  was successfully send.",
+    "IS_PUBLISHED_ON_CHAIN": false
   },
   RequestType.LOGIN: {
-    "NAME": "Login",
+    "NAME": "Authentication",
     "DATA": ["Passport Signature"],
     "DATA_IN_REVIEW": ["Passport Signature"],
-    "TEXT_ON_SUCCESS": "Well done, you are successfully logged in."
+    "TEXT_ON_SUCCESS": "Well done, you are successfully logged in.",
+    "IS_PUBLISHED_ON_CHAIN": false
   },
 };

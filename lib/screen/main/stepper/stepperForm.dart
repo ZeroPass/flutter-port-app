@@ -54,6 +54,8 @@ class StepperForm extends StatefulWidget {
 }
 
 class _StepperFormState extends State<StepperForm> {
+  ScrollController _scrollController = new ScrollController();
+
   List<StepState> listState = [
     StepState.indexed,
     StepState.editing,
@@ -206,18 +208,48 @@ class _StepperFormState extends State<StepperForm> {
     //change header in stepper
     stepperBloc.liveModifyHeader(3, context, dataInStep: true);
 
+    //_scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+
     Completer<bool> send = new Completer<bool>();
     stepReviewBloc.add(StepReviewWithDataEvent(
+        requestType: stepDataAttestation.requestType,
         dg1: dg1,
         msg: msg,
+        rawData: """trx:
+              receipt:
+              status:'executed'
+              cpu_usage_us:0
+              net_usage_words:0
+              trx:
+              0:1
+            1:
+            signatures:""
+            compression:"none"
+            packed_context_free_data:""
+            packed_trx:""
+            trx:
+            expiration:""
+            ref_block_num:0
+            ref_block_prefix:0
+            max_net_usage_words:0
+            max_cpu_usage_ms:0
+            delay_sec:0
+            context_free_actions:
+            actions:Array[0] []
+            transaction_extensions:
+            signatures:
+            context_free_data""",
         outsideCall: stepDataAttestation.isOutsideCall,
         sendData: (bool isDataSent) {
+          //_scrollController.jumpTo(_scrollController.position.maxScrollExtent);
           send.complete(isDataSent);
-        }));
+        }
+        ));
+    //_scrollController.jumpTo(_scrollController.position.maxScrollExtent);
     return send.future;
   }
 
-  void _showSuccessInReviewTab(BuildContext context) async {
+  Future<bool> _showDataToBeSent(BuildContext context) async {
     Storage storage = new Storage();
     StepDataAttestation stepDataAttestation = storage.getStorageData(2);
 
@@ -231,10 +263,41 @@ class _StepperFormState extends State<StepperForm> {
     //change header in stepper
     stepperBloc.liveModifyHeader(3, context, dataInStep: true);
 
-    stepReviewBloc.add(StepReviewCompletedEvent(
+    Completer<bool> send = new Completer<bool>();
+    _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+    stepReviewBloc.add(StepReviewWithoutDataEvent(
         requestType: stepDataAttestation.requestType,
-        transactionID: "jfkdsljfklsdjfklsdjflksdjfsdk",
-        rawData: "fdskfjsdkjfksdjfkdsjkfjsdkjfksds"));
+        outsideCall: stepDataAttestation.isOutsideCall,
+        rawData: """trx:
+              receipt:
+              status:'executed'
+              cpu_usage_us:0
+              net_usage_words:0
+              trx:
+              0:1
+            1:
+            signatures:""
+            compression:"none"
+            packed_context_free_data:""
+            packed_trx:""
+            trx:
+            expiration:""
+            ref_block_num:0
+            ref_block_prefix:0
+            max_net_usage_words:0
+            max_cpu_usage_ms:0
+            delay_sec:0
+            context_free_actions:
+            actions:Array[0] []
+            transaction_extensions:
+            signatures:
+            context_free_data""",
+        sendData: (bool isDataSent) {
+          _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+          send.complete(isDataSent);
+        } ));
+    _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+    return send.future;
   }
 
   Future<bool> _showEFDG1(
@@ -288,9 +351,8 @@ class _StepperFormState extends State<StepperForm> {
           return _showDG1Dialog(context, dg1);
     },
         /*show last step*/
-        showSuccessInReviewTab: (){
-          _showSuccessInReviewTab(context);
-          return true;
+        showDataToBeSent: (){
+          return _showDataToBeSent(context);
         },
         /*show connection error*/
         onConnectionError: (SocketException e) async {
@@ -347,6 +409,7 @@ class _StepperFormState extends State<StepperForm> {
       bloc: stepperBloc,
       builder: (BuildContext context, StepperState state) {
         return CustomStepper(
+          physics: ClampingScrollPhysics(),
             currentStep: state.step,
             steps: widget.isMagnetLink == true
                 ? getStepsMagnetLink(context, state.step)
@@ -358,6 +421,7 @@ class _StepperFormState extends State<StepperForm> {
                   !isClickedOnNFC(stepperBloc, step))
                 stepperBloc.liveModifyHeader(3, context, dataInStep: false);
               stepperBloc.add(StepTapped(step: step));
+              //_scrollController.jumpTo(_scrollController.position.maxScrollExtent);
             },
             onStepCancel: () {
               stepperBloc.add(StepCancelled());

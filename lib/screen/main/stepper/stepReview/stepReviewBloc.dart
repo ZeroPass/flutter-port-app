@@ -8,13 +8,7 @@ class StepReviewBloc extends Bloc<StepReviewEvent, StepReviewState> {
   StepReviewBloc(){}
 
   @override
-  StepReviewState get initialState => StepReviewWithoutDataState();
-
-  @override
-  void onEvent(StepReviewEvent event) {
-    // TODO: implement onEvent
-    print ("on alert");
-  }
+  StepReviewState get initialState => StepReviewEmptyState();
 
   @override
   void onTransition(Transition<StepReviewEvent, StepReviewState> transition) {
@@ -23,13 +17,15 @@ class StepReviewBloc extends Bloc<StepReviewEvent, StepReviewState> {
 
   @override
   Stream<StepReviewState> mapEventToState( StepReviewEvent event) async* {
-    if (event is StepReviewWithoutDataEvent)
-      yield StepReviewWithoutDataState();
+    if (event is StepReviewEmptyEvent)
+      yield StepReviewEmptyState();
+    else if (event is StepReviewWithoutDataEvent)
+      yield StepReviewWithoutDataState(requestType: event.requestType, rawData: event.rawData, outsideCall: event.outsideCall, sendData: event.sendData);
     else if (event is StepReviewWithDataEvent)
-      yield StepReviewWithDataState(dg1: event.dg1, msg: event.msg, outsideCall: event.outsideCall, sendData: event.sendData);
+      yield StepReviewWithDataState(requestType: event.requestType, dg1: event.dg1, msg: event.msg, rawData: event.rawData, outsideCall: event.outsideCall, sendData: event.sendData);
     else if (event is StepReviewCompletedEvent)
       yield StepReviewCompletedState(requestType: event.requestType, transactionID: event.transactionID, rawData: event.rawData);
     else
-      yield StepReviewWithoutDataState();
+      yield StepReviewEmptyState();
     }
   }

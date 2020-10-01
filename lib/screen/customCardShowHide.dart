@@ -66,25 +66,31 @@ class _CustomCardShowHideState extends State<CustomCardShowHide> {
                     child: Padding(
                         padding: EdgeInsets.all(0.0),
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Padding(
                                 padding: const EdgeInsets.only(
-                                    left: 14.0, right: 14.0, top: 5.0),
+                                    left: 14.0, right: 14.0, top: 14.0, bottom: 0.0),
                                 child: SelectableText(
                                   this.widget.item,
                                   style: TextStyle(fontSize: 15),
+                                  maxLines: 20,
+                                  minLines: 2,
+
                                 )),
                             if (widget.actions != null)
-                              Wrap(
+                              Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Wrap(
                                   crossAxisAlignment: WrapCrossAlignment.end,
                                   alignment: WrapAlignment.end,
                                   direction: Axis.horizontal,
                                   runSpacing: 1,
                                   spacing: 1,
                                   children: <Widget>[...widget.actions])
+                              )
                           ],
-                        ))))
+              ))))
             /*const SizedBox(height: 30),
 
           */

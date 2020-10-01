@@ -1,6 +1,7 @@
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
 import 'package:eosio_passid_mobile_app/screen/requestType.dart';
 import 'package:meta/meta.dart';
+import 'package:flutter/material.dart';
 import 'package:dmrtd/dmrtd.dart';
 
 abstract class StepReviewState {
@@ -8,21 +9,33 @@ abstract class StepReviewState {
   List<Object> get props => [];
 }
 
+class StepReviewEmptyState extends StepReviewState{
+}
+
 class StepReviewWithoutDataState extends StepReviewState {
+  RequestType requestType;
+  OutsideCall outsideCall;
+  String rawData;
+  Function(bool) sendData;
+
+  StepReviewWithoutDataState({@required this.requestType, @required this.rawData, @required this.outsideCall, @required this.sendData});
+
   @override
-  String toString() => 'StepReviewState:StepReviewWithoutDataState';
+  String toString() => 'StepReviewState:StepReviewWithoutDataState {outside call: $outsideCall, raw data: $rawData,}}';
 }
 
 class StepReviewWithDataState extends StepReviewState {
+  RequestType requestType;
   EfDG1 dg1;
   String msg;
+  String rawData;
   OutsideCall outsideCall;
   Function(bool) sendData;
 
-  StepReviewWithDataState({@required this.dg1, @required this.msg, @required this.outsideCall, @required this.sendData});
+  StepReviewWithDataState({@required this.requestType, @required this.dg1, @required this.msg, @required this.rawData, @required this.outsideCall, @required this.sendData});
 
   @override
-  String toString() => 'StepReviewState:StepReviewWithDataState {dg1: filled, message: $msg, outside call: $outsideCall}}';
+  String toString() => 'StepReviewState:StepReviewWithDataState {requestType: $requestType, dg1: filled, message: $msg, raw data: $rawData, outside call: $outsideCall}}';
 }
 
 class StepReviewCompletedState extends StepReviewState{
