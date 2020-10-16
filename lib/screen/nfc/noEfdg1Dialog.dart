@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:eosio_passid_mobile_app/screen/customCard.dart';
 import 'package:eosio_passid_mobile_app/screen/customCardShowHide.dart';
 import 'package:eosio_passid_mobile_app/screen/requestType.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:eosio_passid_mobile_app/screen/flushbar.dart';
+import 'package:flutter/services.dart';
 
 
 class NoEfDG1Dialog extends StatefulWidget {
@@ -29,7 +32,7 @@ class _NoEfDG1Dialog extends State<NoEfDG1Dialog> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: MediaQuery.of(context).size.height * 0.80,
+        height: MediaQuery.of(context).size.height * 1.0,
         child: Padding(
             padding: EdgeInsets.all(0.0),
             child: Column(
@@ -42,7 +45,16 @@ class _NoEfDG1Dialog extends State<NoEfDG1Dialog> {
                   ]),
                   const SizedBox(height: 18),
                   CustomCardShowHide("Raw Data",
-                      this.widget.rawData),
+                      this.widget.rawData,
+                  actions: [
+                      PlatformDialogAction(
+                      child: Text('Copy'),
+                      onPressed: () {
+                        showFlushbar(context, "Clipboard", "Item was copied to clipboard.");
+                        Clipboard.setData(ClipboardData(text: this.widget.rawData));
+                      },
+                    )
+                  ],),
                   const SizedBox(height: 30),
                   Wrap(
                       alignment: WrapAlignment.spaceAround,

@@ -51,7 +51,7 @@ class _CustomCardShowHideState extends State<CustomCardShowHide> {
                     child: Text(
                       widget.title,
                       style: TextStyle(
-                          color: Platform.isIOS 
+                          color: Platform.isIOS || true //make it blue always
                             ? CupertinoColors.activeBlue
                             : AndroidThemeST()
                                 .getValues()
@@ -75,11 +75,12 @@ class _CustomCardShowHideState extends State<CustomCardShowHide> {
                                 padding: const EdgeInsets.only(
                                     left: 14.0, right: 14.0, top: 14.0, bottom: 0.0),
                                 child: SelectableText(
-                                  this.widget.item,
-                                  style: TextStyle(fontSize: 15),
-                                  maxLines: 20,
-                                  minLines: 2,
 
+                                  this.widget.item,
+                                  scrollPhysics: BouncingScrollPhysics(),
+                                  style: TextStyle(fontSize: 15),
+                                  maxLines: 15,
+                                  minLines: 2,
                                 )),
                             if (widget.actions != null)
                               Align(

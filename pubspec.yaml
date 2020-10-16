@@ -53,6 +53,7 @@ dependencies:
     path: lib/passid
   shared_preferences: ^0.5.7+1
   flushbar: ^1.10.4
+  #eosdart: ^0.4.6
 
 flutter_icons:
   ios: true

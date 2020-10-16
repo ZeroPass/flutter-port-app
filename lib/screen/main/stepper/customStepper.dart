@@ -25,6 +25,14 @@ import 'package:eosio_passid_mobile_app/screen/theme.dart';
 ///  * <https://material.io/archive/guidelines/components/steppers.html>
 
 
+double headersHeightTillStep(int step){
+    var linesHeight = 16 * 2; //line above and beneath the circle/triangle
+    var mainElementHeight = _kStepSize ; //height of circle or triangle
+    var margin = 8 * 2; //margin between main element and lines(above and beneath)
+    var total = (linesHeight + mainElementHeight + margin) * step - 1;
+    return total + .0;
+}
+
 const TextStyle _kStepStyle = TextStyle(
   fontSize: 12.0,
   color: Colors.white,
@@ -59,9 +67,10 @@ class CustomStepper extends StatefulWidget {
   /// new one.
   ///
   /// The [steps], [type], and [currentStep] arguments must not be null.
-  const CustomStepper({
+   CustomStepper({
     Key key,
     @required this.steps,
+    this.scrollController,
     this.physics,
     this.type = StepperType.vertical,
     this.currentStep = 0,
@@ -71,9 +80,17 @@ class CustomStepper extends StatefulWidget {
     this.controlsBuilder,
   }) : assert(steps != null),
         assert(type != null),
+        //assert(scrollController != null),
         assert(currentStep != null),
         assert(0 <= currentStep && currentStep < steps.length),
         super(key: key);
+   /*{
+     this.scrollController = ScrollController();
+   }*/
+
+  ///Scroll controller - we need it to handle position on the last step
+  ///added by ZeroPass team (Nejc)
+  ScrollController scrollController;// = ScrollController();
 
   /// The steps of the stepper whose titles, subtitles, icons always get shown.
   ///
@@ -169,6 +186,7 @@ class CustomStepper extends StatefulWidget {
 class _CustomStepperState extends State<CustomStepper> with TickerProviderStateMixin {
   List<GlobalKey> _keys;
   final Map<int, StepState> _oldStates = <int, StepState>{};
+  //ScrollController scrollController1 = ScrollController();
 
   @override
   void initState() {
@@ -189,6 +207,9 @@ class _CustomStepperState extends State<CustomStepper> with TickerProviderStateM
 
     for (int i = 0; i < oldWidget.steps.length; i += 1)
       _oldStates[i] = oldWidget.steps[i].state;
+
+    //if (_isLast(widget.currentStep))
+    //widget.scrollController.animateTo(72, duration: Duration(milliseconds: 500), curve: Curves.fastOutSlowIn);
   }
 
   bool _isFirst(int index) {
@@ -501,6 +522,7 @@ class _CustomStepperState extends State<CustomStepper> with TickerProviderStateM
   Widget _buildVertical() {
     return ListView(
       //shrinkWrap: true,
+      controller: widget.scrollController,
       physics: widget.physics,
       children: <Widget>[
         for (int i = 0; i < widget.steps.length; i += 1)
@@ -517,9 +539,11 @@ class _CustomStepperState extends State<CustomStepper> with TickerProviderStateM
                     duration: kThemeAnimationDuration,
                   );
 
+
                   if (widget.onStepTapped != null)
                     widget.onStepTapped(i);
                 } : null,
+
                 canRequestFocus: widget.steps[i].state != StepState.disabled,
                 child: _buildVerticalHeader(i),
               ),

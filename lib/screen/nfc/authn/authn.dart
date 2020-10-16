@@ -5,6 +5,7 @@ import 'package:connectivity/connectivity.dart';
 
 import 'package:dmrtd/dmrtd.dart';
 import 'package:dmrtd/extensions.dart';
+import 'package:eosio_passid_mobile_app/screen/main/stepper/customStepper.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -53,21 +54,13 @@ enum AuthnAction { register, login }
 class Authn /*extends State<Authn>*/ {
   PassIdClient _client;
   Future<bool> Function(SocketException e) onConnectionError;
-  void Function() showDataToBeSent;
+  Future<bool> Function() showDataToBeSent;
   Future<bool> Function(EfDG1 dg1) onDG1FileRequested;
 
   final _log = Logger('authn.screen');
   final String _fakeName = "Larimer Daniel";
 
   Authn({@required this.onDG1FileRequested, @required this.showDataToBeSent, @required this.onConnectionError});
-
-  Future<bool> showDG1(BuildContext context, final EfDG1 dg1) async {
-    return this.onDG1FileRequested(dg1);
-  }
-
-  Future<bool> _handleDG1Request(final EfDG1 dg1) async {
-    return Future<bool>.value(false);
-  }
 
   Future<AuthnData> _getAuthnData(
       BuildContext context,
@@ -90,8 +83,9 @@ class Authn /*extends State<Authn>*/ {
     assert(challenge != null);
     final dbaKeys = DBAKeys(passportID, birthDate, validUntilDate);
     final data = await PassportScanner(
-            context: context, challenge: challenge, action: action)
-        .scan(dbaKeys);
+        context: context, challenge: challenge, action: action).scan(dbaKeys);
+
+
 
     Storage storage = Storage();
     await storage.getDBAkeyStorage().setDBAKeys(dbaKeys);
@@ -122,7 +116,7 @@ class Authn /*extends State<Authn>*/ {
   }
 
   Future<bool> startAction(BuildContext context, AuthnAction action,
-      {bool fakeAuthnData = false, bool sendDG1 = false}) async {
+      {bool fakeAuthnData = false, bool sendDG1 = false, ScrollController scrollController, int maxSteps}) async {
     Storage storage = Storage();
     String checkedValues = checkValuesInStorage();
     if (checkedValues.isNotEmpty) {
@@ -162,8 +156,14 @@ class Authn /*extends State<Authn>*/ {
               storageStepScan.birth,
               storageStepScan.validUntil)
               .then((data) async {
-            //await _showBusyIndicator(context);
-            await showDataToBeSent();
+            var e =  showDataToBeSent();
+            Future.delayed(const Duration(milliseconds: 999), (){
+              scrollController.animateTo(headersHeightTillStep(maxSteps - 1), duration: Duration(milliseconds: 1000), curve: Curves.ease);
+            });
+            if (!await e) {
+              // User said no.
+              throw PassportScannerError('Get me out');
+            }
             return data;
           });
           //return false;
@@ -188,6 +188,10 @@ class Authn /*extends State<Authn>*/ {
             }
             if (sendDG1) {
               var e = this.onDG1FileRequested(data.dg1);
+              Future.delayed(const Duration(milliseconds: 999), (){
+                scrollController.animateTo(headersHeightTillStep(maxSteps - 1), duration: Duration(milliseconds: 1000), curve: Curves.ease);
+              });
+
               if (!await e) {
                 // User said no.
                 // Throw an exception just to get us out of this scope.
@@ -195,26 +199,21 @@ class Authn /*extends State<Authn>*/ {
                 throw PassportScannerError('Get me out');
               }
             }
-            else
-              showDataToBeSent();
-
-            //await _showBusyIndicator(context);
+            else {
+              var e =  showDataToBeSent();
+              Future.delayed(const Duration(milliseconds: 999), (){
+                scrollController.animateTo(headersHeightTillStep(maxSteps - 1), duration: Duration(milliseconds: 1000), curve: Curves.ease);
+              });
+              if (!await e) {
+                // User said no.
+                throw PassportScannerError('Get me out');
+              }
+            }
             return data;
           });
         }, sendEfDG1: sendDG1);
 
-      final srvMsgGreeting = await _client.requestGreeting();
       await _hideBusyIndicator();
-      /*await showAlert(
-          context: context,
-          title: Text('Attestation Succeeded'),
-          content: Text(_formatAttestationSuccess(srvMsgGreeting)),
-          actions: [
-            PlatformDialogAction(
-                child: PlatformText('Close',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
-                onPressed: () => Navigator.pop(context))
-          ]);*/
       return true;
 
     } catch (e) {
@@ -326,23 +325,23 @@ class Authn /*extends State<Authn>*/ {
     return "You're attested as $names";
   }
 
-  Future<bool> startNFCAction(BuildContext context) {
+  Future<bool> startNFCAction(BuildContext context, ScrollController scrollController, int maxSteps) {
     Storage storage = Storage();
     StepDataAttestation stepDataAttestation = storage.getStorageData(2);
 
     switch (stepDataAttestation.requestType) {
       case RequestType.ATTESTATION_REQUEST:
-        return startAction(context, AuthnAction.register);
+        return startAction(context, AuthnAction.register, scrollController: scrollController, maxSteps: maxSteps);
         break;
       case RequestType.PERSONAL_INFORMATION_REQUEST:
-        return startAction(context, AuthnAction.login, sendDG1: true);
+        return startAction(context, AuthnAction.login, sendDG1: true, scrollController: scrollController, maxSteps: maxSteps);
         break;
       case RequestType.FAKE_PERSONAL_INFORMATION_REQUEST:
         return startAction(context, AuthnAction.login,
-            fakeAuthnData: true, sendDG1: true);
+            fakeAuthnData: true, sendDG1: true, scrollController: scrollController, maxSteps: maxSteps);
         break;
       case RequestType.LOGIN:
-        return startAction(context, AuthnAction.login);
+        return startAction(context, AuthnAction.login, scrollController: scrollController, maxSteps: maxSteps);
         break;
 
       default:

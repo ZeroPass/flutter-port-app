@@ -21,6 +21,10 @@ class StepReviewForm extends StatefulWidget {
 
   @override
   _StepReviewFormState createState() => _StepReviewFormState();
+
+  void onLoad(BuildContext context){
+    var a = "rerere";
+  }
 }
 
 Widget successfullySend(BuildContext context,
@@ -64,6 +68,19 @@ Widget successfullySend(BuildContext context,
 }
 
 class _StepReviewFormState extends State<StepReviewForm> {
+
+  @override
+  void initState()
+  {
+    super.initState();
+    var po = 8;
+  }
+
+
+  @override
+  void didUpdateWidget(StepReviewForm oldWidget) {
+    super.didUpdateWidget(oldWidget);
+  }
 
   Widget getText(BuildContext context, RequestType requestType, OutsideCall outsideCall)
   {

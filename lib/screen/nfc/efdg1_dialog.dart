@@ -11,6 +11,9 @@ import 'package:flutter/material.dart';
 import 'package:dmrtd/dmrtd.dart';
 import 'package:eosio_passid_mobile_app/screen/customCard.dart';
 import 'package:eosio_passid_mobile_app/screen/requestType.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:eosio_passid_mobile_app/screen/flushbar.dart';
+import 'package:flutter/services.dart';
 
 import '../../utils/structure.dart';
 import 'uie/uiutils.dart';
@@ -90,31 +93,12 @@ class _EfDG1Dialog extends State<EfDG1Dialog> {
     }
   }
 
-  Future<T> _showBottomSheet<T>() {
-    if (widget._sheetSetter != null) {
-      return null;
-    }
-
-    return showModalBottomSheet(
-        context: context,
-        isDismissible: false,
-        useRootNavigator: true,
-        isScrollControlled: true,
-        builder: (BuildContext context) {
-          return StatefulBuilder(
-              builder: (BuildContext context, StateSetter setState) {
-            widget._sheetSetter = setState;
-            build(context); //widget
-          });
-        });
-  }
-
   @override
   Widget build(BuildContext context) {
     Storage storage = Storage();
     StepDataAttestation stepDataAttestation = storage.getStorageData(2);
     return Container(
-        height: MediaQuery.of(context).size.height * 1.2,
+        height: MediaQuery.of(context).size.height * 1.3,
         child: Padding(
             padding: EdgeInsets.all(0.0),
             child: Column(
@@ -155,8 +139,16 @@ class _EfDG1Dialog extends State<EfDG1Dialog> {
                       CardItem('• ' + item, null),
                   ]),
                   const SizedBox(height: 18),
-                  CustomCardShowHide("Raw Data",
-                      this.widget.rawData),
+                  CustomCardShowHide("Raw Data", this.widget.rawData,
+                      actions: [
+                        PlatformDialogAction(
+                          child: Text('Copy'),
+                          onPressed: () {
+                            showFlushbar(context, "Clipboard", "Item was copied to clipboard.");
+                            Clipboard.setData(ClipboardData(text: this.widget.rawData));
+                          },
+                        )
+                      ]),
                   const SizedBox(height: 30),
                   Wrap(
                       alignment: WrapAlignment.spaceAround,

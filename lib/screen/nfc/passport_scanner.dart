@@ -14,6 +14,7 @@ import 'package:passid/passid.dart';
 
 import 'authn/authn.dart';
 import 'uie/nfc_scan_dialog.dart';
+import 'dart:async';
 
 class PassportScannerError implements Exception {
   final String message;
@@ -117,7 +118,12 @@ class PassportScanner {
       }
 
       _log.debug('Scanning passport completed');
-      return AuthnData(sod: sod, dg1: dg1, dg14: dg14, dg15: dg15, csig: csig);
+      //await Future.delayed(const Duration(seconds: 4), (){});
+      Completer<AuthnData> send = new Completer<AuthnData>();
+      await _disconnect(alertMessage: formatProgressMsg('Finished', 100)).then((value) async {
+        send.complete(AuthnData(sod: sod, dg1: dg1, dg14: dg14, dg15: dg15, csig: csig));
+      });
+      return send.future;
     } on PassportScannerError {
       rethrow;
     } catch (e) {
@@ -150,7 +156,7 @@ class PassportScanner {
       if (errorMsg != null) {
         await _disconnect(errorMessage: errorMsg);
       } else {
-        await _disconnect(alertMessage: formatProgressMsg('Finished', 100));
+        //await _disconnect(alertMessage: formatProgressMsg('Finished', 100));
       }
     }
   }
@@ -209,11 +215,15 @@ class PassportScanner {
 
   Future<void> _disconnect({String alertMessage, String errorMessage}) {
     if (!Platform.isIOS) {
-      return _scanDialog.hide(
+      Completer<void> send = new Completer<void>();
+      _scanDialog.hide(
           message: alertMessage,
           errorMessage: errorMessage,
           delayClosing:
-              Duration(milliseconds: (errorMessage != null ? 3500 : 2500)));
+              Duration(milliseconds: (errorMessage != null ? 3500 : 2500))).then((value) {
+              send.complete();
+      });
+      return send.future;
     }
     return _nfc.disconnect(
         iosAlertMessage: alertMessage, iosErrorMessage: errorMessage);

@@ -5,8 +5,8 @@ import 'package:flare_flutter/provider/asset_flare.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'uiutils.dart';
 import 'package:eosio_passid_mobile_app/screen/customButton.dart';
+import 'dart:async';
 
 /// Class displays BottomSheet dialog which
 /// shows to the user NFC scanning state via [message].
@@ -47,10 +47,12 @@ class NfcScanDialog {
       {String message,
       String errorMessage,
       Duration delayClosing = const Duration(milliseconds: 2500)}) {
-    return _closeBottomSheet(
+    Completer<void> send = new Completer<void>();
+    _closeBottomSheet(
         message: message,
         errorMessage: errorMessage,
-        delayClosing: delayClosing);
+        delayClosing: delayClosing).then((value) => send.complete());
+    return send.future;
   }
 
   String _msg;
@@ -138,26 +140,19 @@ class NfcScanDialog {
                                               backgroundColor: Colors.white,
                                               callbackOnPressed: _onCancel))
                                     ]))
-                              /*makeButton(
-                                  visible: _showCancelButton,
-                                  context: context,
-                                  text: 'cancel',
-                                  margin: null,
-                                  onPressed: () async {
-                                    await _onCancel;
-                                    if (_onCancel != null) {
-                                      return await _onCancel();
-                                    }
-                                  })*/
                             ],
                           ),
                         ))));
           });
-        });
+        })/*.then((onValue){
+          var t = 9;
+    }, onError: (kva){
+          var u = 9;
+    })*/;
   }
 
-  Future<void> _closeBottomSheet(
-      {String message, String errorMessage, Duration delayClosing}) {
+  Future<void> _closeBottomSheet  (
+      {String message, String errorMessage, Duration delayClosing}) async {
     if (_sheetSetter != null) {
       if(_closingOperation != null) {
         _closingOperation.cancel();
@@ -180,17 +175,19 @@ class NfcScanDialog {
           // Delay closing dialog to display message
           _closingOperation = CancelableOperation.fromFuture(
               Future.delayed(delayClosing)
-          ).then((value) {
+          ).then((value) async {
             if (_sheetSetter != null) {
               _sheetSetter = null;
               Navigator.pop(context);
+              await Future.delayed(Duration(seconds: 1));
             }
           });
           return _closingOperation.valueOrCancellation();
         }
       }
       _sheetSetter = null;
-      Navigator.pop(context);
+      await Navigator.pop(context);
+      await Future.delayed(Duration(seconds: 1));
     }
   }
 

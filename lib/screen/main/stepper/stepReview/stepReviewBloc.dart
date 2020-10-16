@@ -16,6 +16,12 @@ class StepReviewBloc extends Bloc<StepReviewEvent, StepReviewState> {
   }
 
   @override
+  void onEvent(StepReviewEvent event) {
+    super.onEvent(event);
+  }
+
+
+  @override
   Stream<StepReviewState> mapEventToState( StepReviewEvent event) async* {
     if (event is StepReviewEmptyEvent)
       yield StepReviewEmptyState();
