@@ -12,6 +12,16 @@ abstract class StepReviewState {
 class StepReviewEmptyState extends StepReviewState{
 }
 
+class StepReviewBufferState extends StepReviewState {
+  @override
+  String toString() => 'StepReviewState:StepReviewBufferState';
+}
+
+class StepReviewNoConnectionState extends StepReviewState {
+  @override
+  String toString() => 'StepReviewState:StepReviewNoConnectionState';
+}
+
 class StepReviewWithoutDataState extends StepReviewState {
   RequestType requestType;
   OutsideCall outsideCall;

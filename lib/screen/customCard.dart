@@ -31,48 +31,6 @@ class _CustomCardState extends State<CustomCard> {
   _CustomCardState();
 
   @override
-  /*Widget build(BuildContext context) {
-    return Wrap(
-      alignment: WrapAlignment.center,
-      spacing: 0.0,
-      children: <Widget>[
-        Card(
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(23.0))),
-            elevation: 0.0, //no shadow
-            margin: EdgeInsets.symmetric(horizontal: 0.0),
-            child: Padding(
-                padding: EdgeInsets.all(14.0),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            widget.title,
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 17),
-                          )),
-                      const SizedBox(height: 5),
-                      for (CardItem element in widget.items)
-                        Row(children: <Widget>[
-                          Expanded(
-                              child: Text(
-                            element.itemTitle,
-                            style: TextStyle(fontSize: 15),
-                          )),
-                          if (element.item != null)
-                            Expanded(
-                                child: Text(element.item,
-                                    style: TextStyle(fontSize: 15)))
-                        ]),
-                    ]))),
-      ],
-    );
-  }
-}*/
-
-  @override
   Widget build(BuildContext context) {
     return Wrap(
       alignment: WrapAlignment.center,
@@ -102,7 +60,7 @@ class _CustomCardState extends State<CustomCard> {
                   text = text + element.item  + " ";
                 text = text + "\n";
               }
-              showFlushbar(context, "Clipboard", "Item was copied to clipboard.");
+              showFlushbar(context, "Clipboard", "Item was copied to clipboard.", Icons.info);
               Clipboard.setData(ClipboardData(text: text));
             },
             child: Card(

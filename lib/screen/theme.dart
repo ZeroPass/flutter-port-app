@@ -78,8 +78,15 @@ Map light = {
   "CUSTOM_CARD":
   {
     "SIZE_TEXT":17.0,
-    "COLOR_TEXT":Color(0xFF646464)
-  }
+    "COLOR_TEXT":Color(0xFF646464),
+    "COLOR_TEXT_OPEN_CLOSE":Color(0xff5768a5)
+  },
+  "BUFFER_SCREEN":
+  {
+    "DURATION_MILISECONDS": 1000,
+    "DOT_COLOR_UNACTIVE": Color(0xFFF1F1F1),
+    "DOT_COLOR_ACTIVE" : Color(0xFFa58157)
+  },
 };
 //the same valus for now
 ThemeValues DARK_VALUES= ThemeValues(themeValues: light);
@@ -165,8 +172,16 @@ class ThemeValues{
     "CUSTOM_CARD":
     {
       "SIZE_TEXT": null,
-      "COLOR_TEXT": null
-    }
+      "COLOR_TEXT": null,
+      "COLOR_TEXT_OPEN_CLOSE": null
+    },
+    "BUFFER_SCREEN":
+    {
+      "DURATION_MILISECONDS": null,
+      "DOT_COLOR_UNACTIVE": null,
+      "DOT_COLOR_ACTIVE" : null
+    },
+
   };
 
   get themeValues => _themeValues;

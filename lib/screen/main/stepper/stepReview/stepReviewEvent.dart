@@ -16,6 +16,20 @@ abstract class StepReviewEvent extends Equatable {
 class StepReviewEmptyEvent extends StepReviewEvent{
 }
 
+class StepReviewBufferEvent extends StepReviewEvent{
+  StepReviewBufferEvent();
+
+  @override
+  String toString() => 'StepReviewEvent:StepReviewBufferEvent}';
+}
+
+class StepReviewNoConnectionEvent extends StepReviewEvent{
+  StepReviewNoConnectionEvent();
+
+  @override
+  String toString() => 'StepReviewEvent:StepReviewNoConnectionEvent';
+}
+
 class StepReviewWithoutDataEvent extends StepReviewEvent{
   RequestType requestType;
   String rawData;

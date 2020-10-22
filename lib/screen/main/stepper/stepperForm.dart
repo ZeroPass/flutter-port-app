@@ -1,8 +1,6 @@
 import 'dart:io';
 
 import 'dart:async';
-import 'package:dmrtd/internal.dart';
-import 'package:eosio_passid_mobile_app/screen/flushbar.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepAttestation/stepAttestationHeader/stepAttestationHeader.dart';
 import 'package:eosio_passid_mobile_app/screen/nfc/authn/authn.dart';
 import 'package:eosio_passid_mobile_app/screen/requestType.dart';
@@ -20,11 +18,10 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
 import 'package:eosio_passid_mobile_app/utils/structure.dart';
 import "package:eosio_passid_mobile_app/screen/main/stepper/customStepper.dart";
-import 'package:eosio_passid_mobile_app/screen/nfc/authn/authn.dart';
-import 'package:eosio_passid_mobile_app/screen/nfc/efdg1_dialog.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:dmrtd/dmrtd.dart';
-import 'package:passid/passid.dart';
+import 'package:eosio_passid_mobile_app/screen/flushbar.dart';
+import 'package:eosio_passid_mobile_app/screen/theme.dart';
 
 import '../../alert.dart';
 
@@ -299,6 +296,15 @@ class _StepperFormState extends State<StepperForm> {
     return send.future;
   }
 
+  Future<bool> _showBufferScreen(BuildContext context) async {
+    StepReviewBloc stepReviewBloc = BlocProvider.of<StepReviewBloc>(context);
+    stepReviewBloc.add(StepReviewBufferEvent());
+    int durationMiliseconds = AndroidThemeST().getValues()
+        .themeValues["BUFFER_SCREEN"]["DURATION_MILISECONDS"];
+    await Future.delayed(Duration(milliseconds: durationMiliseconds), (){});
+    return true;
+  }
+
   Future<bool> _showEFDG1(
     BuildContext context,
   ) async {
@@ -356,14 +362,24 @@ class _StepperFormState extends State<StepperForm> {
         showDataToBeSent: (){
           return _showDataToBeSent(context);
         },
+        /*show bufferScreen*/
+        showBufferScreen: (){
+          return _showBufferScreen(context);
+        },
         /*show connection error*/
         onConnectionError: (SocketException e) async {
           return _showEFDG1(context);
     });
-    await authn.startNFCAction(context, _scrollController, stepperBloc.state.maxSteps).then((bool successful) {
+    Storage storage = Storage();
+    StepDataAttestation stepDataAttestation = storage.getStorageData(2);
+    RequestType requestType = stepDataAttestation.requestType;
+    bool isPublishedOnChain = AuthenticatorActions[requestType]['IS_PUBLISHED_ON_CHAIN'];
+
+    await authn.startNFCAction(context, requestType,  _scrollController, stepperBloc.state.maxSteps).then((bool successful) {
       if (!successful) {
         stepperBloc.add(StepBackToPrevious());
       } else {
+        //showFlushbar(context, "In progress", 'Establishing interaction with ' + (isPublishedOnChain?'the blockchain.': 'the server.'), Icons.info, duration: 3);
         final stepReviewBloc = BlocProvider.of<StepReviewBloc>(context);
         Storage storage = Storage();
         StepDataAttestation stepDataAttestation = storage.getStorageData(2);

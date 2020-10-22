@@ -51,11 +51,11 @@ class _CustomCardShowHideState extends State<CustomCardShowHide> {
                     child: Text(
                       widget.title,
                       style: TextStyle(
-                          color: Platform.isIOS || true //make it blue always
-                            ? CupertinoColors.activeBlue
+                          color: Platform.isIOS //make it blue always
+                            ? CupertinoColors.systemBlue
                             : AndroidThemeST()
-                                .getValues()
-                                .themeValues["CUSTOM_CARD"]["COLOR_TEXT"]),
+                              .getValues()
+                              .themeValues["CUSTOM_CARD"]["COLOR_TEXT_OPEN_CLOSE"]),
                     )))),
         _visability
             ? SizedBox(

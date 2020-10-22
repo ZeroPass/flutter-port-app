@@ -50,7 +50,7 @@ class _NoEfDG1Dialog extends State<NoEfDG1Dialog> {
                       PlatformDialogAction(
                       child: Text('Copy'),
                       onPressed: () {
-                        showFlushbar(context, "Clipboard", "Item was copied to clipboard.");
+                        showFlushbar(context, "Clipboard", "Item was copied to clipboard.", Icons.info);
                         Clipboard.setData(ClipboardData(text: this.widget.rawData));
                       },
                     )

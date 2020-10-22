@@ -3,21 +3,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:eosio_passid_mobile_app/screen/theme.dart';
 
-/*BuildContext STATIC_BUILD_CONTEXT = null;
-
-void setGlobalStaticBuildContext(BuildContext context)
+void showFlushbar(BuildContext context, String title, String message, IconData icon, {int duration = 5})
 {
-  STATIC_BUILD_CONTEXT = context;
-}*/
-
-void showFlushbar(BuildContext context, String title, String message, {int duration = 5})
-{
-  //if (STATIC_BUILD_CONTEXT == null)
-  //  throw Exception("Global variable 'STATIC_BUILD_CONTEXT' is not set");
+  if (icon == null)
+    icon = Icons.warning;
 
   Flushbar(
       icon: Icon(
-        Icons.warning,
+        icon,
         size: 28.0,
         color: Colors.white,
       ),
@@ -28,6 +21,5 @@ void showFlushbar(BuildContext context, String title, String message, {int durat
       duration:  Duration(seconds: duration),
       backgroundColor: AndroidThemeST().getValues().themeValues["FLUSHBAR"]["COLOR_BACKGROUND"],
       flushbarStyle: FlushbarStyle.FLOATING
-
-  )..show(/*STATIC_BUILD_CONTEXT*/context);
+  )..show(context);
 }

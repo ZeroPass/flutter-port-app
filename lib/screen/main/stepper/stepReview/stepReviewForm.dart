@@ -15,16 +15,44 @@ import 'package:eosio_passid_mobile_app/screen/nfc/noEfdg1Dialog.dart';
 import 'package:eosio_passid_mobile_app/screen/theme.dart';
 import 'package:flutter/services.dart';
 import 'package:eosio_passid_mobile_app/screen/flushbar.dart';
+import 'package:eosio_passid_mobile_app/screen/dots.dart';
 
 class StepReviewForm extends StatefulWidget {
   StepEnterAccountForm() {}
 
   @override
   _StepReviewFormState createState() => _StepReviewFormState();
+}
 
-  void onLoad(BuildContext context){
-    var a = "rerere";
-  }
+Widget bufferState(BuildContext context){
+  double marginOnRight = MediaQuery.of(context).size.width;
+  double percentageMarginOnRight = 0.09;
+  return Padding(
+      padding: EdgeInsets.all(0.0),
+      child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            const SizedBox(height: 30),
+            Container(
+              margin: EdgeInsets.only(right: marginOnRight * percentageMarginOnRight),
+                child:Dots(numberOfDots: 3))
+      ]
+    )
+  );
+}
+
+Widget noConnectionState(BuildContext context){
+  return Padding(
+      padding: EdgeInsets.all(0.0),
+      child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            SelectableText("no connection..."),
+            const SizedBox(height: 20),
+          ]
+      )
+  );
 }
 
 Widget successfullySend(BuildContext context,
@@ -40,26 +68,26 @@ Widget successfullySend(BuildContext context,
             SelectableText(successText),
             const SizedBox(height: 20),
             if (isPublishedOnChain)
-            CustomCardShowHide("• Transaction ID",
+            CustomCardShowHide("Transaction ID",
               transactionId,
                 actions: [
                   PlatformDialogAction(
                     child: Text('Copy'),
                     onPressed: () {
-                      showFlushbar(context, "Clipboard", "Item was copied to clipboard.");
+                      showFlushbar(context, "Clipboard", "Item was copied to clipboard.", Icons.info);
                       Clipboard.setData(ClipboardData(text: transactionId));
                     },
                   )
                 ]),
             //const SizedBox(height: 4),
-            CustomCardShowHide("• Raw Data",
+            CustomCardShowHide("Raw Data",
                 rawData,
                 actions: [
                   PlatformDialogAction(
                     child: Text('Copy'),
                     //color: Color(0xFFa58157),
                     onPressed: () {
-                      showFlushbar(context, "Clipboard", "Item was copied to clipboard.");
+                      showFlushbar(context, "Clipboard", "Item was copied to clipboard.", Icons.info);
                       Clipboard.setData(ClipboardData(text: rawData));
                     },
                   )
@@ -134,7 +162,10 @@ class _StepReviewFormState extends State<StepReviewForm> {
                             )
                           ],
                         ),
-
+                      if (state is StepReviewBufferState)
+                        bufferState(context),
+                      if(state is StepReviewNoConnectionState)
+                        noConnectionState(context),
                       if (state is StepReviewWithDataState)
                         getText(context, state.requestType, state.outsideCall),
                       if (state is StepReviewWithDataState)

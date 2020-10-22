@@ -25,6 +25,11 @@ class StepReviewBloc extends Bloc<StepReviewEvent, StepReviewState> {
   Stream<StepReviewState> mapEventToState( StepReviewEvent event) async* {
     if (event is StepReviewEmptyEvent)
       yield StepReviewEmptyState();
+    else if (event is StepReviewBufferEvent) {
+      yield StepReviewBufferState();
+    }
+    else if (event is StepReviewNoConnectionEvent)
+      yield StepReviewNoConnectionState();
     else if (event is StepReviewWithoutDataEvent)
       yield StepReviewWithoutDataState(requestType: event.requestType, rawData: event.rawData, outsideCall: event.outsideCall, sendData: event.sendData);
     else if (event is StepReviewWithDataEvent)

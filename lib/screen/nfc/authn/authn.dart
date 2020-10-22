@@ -55,12 +55,13 @@ class Authn /*extends State<Authn>*/ {
   PassIdClient _client;
   Future<bool> Function(SocketException e) onConnectionError;
   Future<bool> Function() showDataToBeSent;
+  Future<bool> Function() showBufferScreen;
   Future<bool> Function(EfDG1 dg1) onDG1FileRequested;
 
   final _log = Logger('authn.screen');
   final String _fakeName = "Larimer Daniel";
 
-  Authn({@required this.onDG1FileRequested, @required this.showDataToBeSent, @required this.onConnectionError});
+  Authn({@required this.onDG1FileRequested, @required this.showDataToBeSent, @required this.showBufferScreen, @required this.onConnectionError});
 
   Future<AuthnData> _getAuthnData(
       BuildContext context,
@@ -145,6 +146,7 @@ class Authn /*extends State<Authn>*/ {
       _client.onDG1FileRequested = this.onDG1FileRequested;
 
       if (action == AuthnAction.register) {
+        //var e =
         await _client.register((challenge) async {
           StepDataScan storageStepScan = storage.getStorageData(1);
           await _hideBusyIndicator();
@@ -164,12 +166,11 @@ class Authn /*extends State<Authn>*/ {
               // User said no.
               throw PassportScannerError('Get me out');
             }
+            await this.showBufferScreen();
             return data;
           });
-          //return false;
         });
-        //move to next step
-        //showSuccessInReviewTab();
+        //await e;
       }
       else
         await _client.login((challenge) async {
@@ -209,6 +210,7 @@ class Authn /*extends State<Authn>*/ {
                 throw PassportScannerError('Get me out');
               }
             }
+            await this.showBufferScreen();
             return data;
           });
         }, sendEfDG1: sendDG1);
@@ -325,11 +327,8 @@ class Authn /*extends State<Authn>*/ {
     return "You're attested as $names";
   }
 
-  Future<bool> startNFCAction(BuildContext context, ScrollController scrollController, int maxSteps) {
-    Storage storage = Storage();
-    StepDataAttestation stepDataAttestation = storage.getStorageData(2);
-
-    switch (stepDataAttestation.requestType) {
+  Future<bool> startNFCAction(BuildContext context, RequestType requestType,  ScrollController scrollController, int maxSteps) {
+    switch (requestType) {
       case RequestType.ATTESTATION_REQUEST:
         return startAction(context, AuthnAction.register, scrollController: scrollController, maxSteps: maxSteps);
         break;

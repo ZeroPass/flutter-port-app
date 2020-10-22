@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:eosio_passid_mobile_app/screen/theme.dart';
-import 'package:bloc/bloc.dart';
 
 class CustomChip extends StatefulWidget {
   List<String> titles;
