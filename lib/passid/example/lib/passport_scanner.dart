@@ -121,7 +121,7 @@ class PassportScanner {
       rethrow;
     } catch (e) {
       final se = e.toString().toLowerCase();
-      errorMsg = 'An error has ocurred while scanning Passport!';
+      errorMsg = 'An error has occurred while scanning Passport!';
       if (e is PassportError) {
         if (se.contains('security status not satisfied')) {
           errorMsg =
