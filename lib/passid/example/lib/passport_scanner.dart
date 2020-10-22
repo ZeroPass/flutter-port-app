@@ -127,8 +127,12 @@ class PassportScanner {
           errorMsg =
               'Failed to initiate session with passport.\nPlease, check input data!';
         }
+        if (e.code != null) {
+          errorMsg += "\n(error code: ${e.code})";
+        }
         _log.error('Failed to scan passport: ${e.message}');
       } else {
+        errorMsg = 'An unknown error has occurred while scanning Passport!';
         _log.error(
             'An exception was encountered while trying to scan Passport: $e');
       }
