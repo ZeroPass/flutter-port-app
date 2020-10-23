@@ -159,12 +159,14 @@ class SettingsNetworkUpdate extends StatelessWidget {
                   label: 'Port',
                   contentAlign: TextAlign.right,
                   initialValue: storageNode.port,
-                  autovalidate: true,
+                  //autovalidate: true,
                   validator: (value) {
                     if (value == null)
                     {
                       this.storageNode.setValidationError("port", "Field 'post' is empty.");
-                      return 'There must be a value.';
+                      return 'There must be a value.';//cd android && ./gradlew clean
+
+
                     }
                     if (value < 0)
                     {

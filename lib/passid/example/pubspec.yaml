@@ -17,7 +17,7 @@ environment:
   sdk: ">=2.2.2 <3.0.0"
 
 dependencies:
-  connectivity: ^0.4.8+5
+  connectivity: ^1.0.0
   dart_countries_states: ^0.0.8
   dmrtd:
     path: ../../dmrtd
