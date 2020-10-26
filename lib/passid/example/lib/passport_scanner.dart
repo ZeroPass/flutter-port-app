@@ -139,7 +139,8 @@ class PassportScanner {
 
       if (se.contains('timeout')) {
         errorMsg = 'Timeout while waiting for Passport tag!';
-      } else if (se.contains('tag was lost')) {
+      } else if (se.contains('tag was lost') || 
+                 se.contains('tag connection lost')) {
         errorMsg = 'Tag was lost. Please try again!';
       } else if (se.contains('invalidated by user')) {
         errorMsg = '';
