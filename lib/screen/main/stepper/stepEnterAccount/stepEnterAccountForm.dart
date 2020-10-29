@@ -1,3 +1,4 @@
+import 'package:eosio_passid_mobile_app/screen/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -135,12 +136,11 @@ class _StepEnterAccountFormState extends State<StepEnterAccountForm> {
                   stepEnterAccountBloc.validatorFunction(value, context)
                       ? stepEnterAccountBloc.validatorText
                       : null,
-              onChanged: (value) {
+              onChanged: (value) async {
                 //save to storage
                 StepDataEnterAccount storageStepEnterAccount =
                     _storage.getStorageData(0);
                 storageStepEnterAccount.accountID = _accountTextController.text.length !=0 ? _accountTextController.text : null;
-
                 //save storage
                 _storage.save();
 

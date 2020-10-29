@@ -16,7 +16,7 @@ class StepScanHeaderBloc extends Bloc<StepScanHeaderEvent, StepScanHeaderState> 
   void updateDataOnUI(){
     //check updated data
     Storage storage = Storage();
-    storage.load(callback: (isAlreadyUpdated, isValid){
+    storage.load(callback: (isAlreadyUpdated, isValid,  {String exc}){
       if (isAlreadyUpdated == true || isValid == true){
         StepDataScan storageStepScan = storage.getStorageData(1);
         if (storageStepScan.documentID != null || storageStepScan.birth != null || storageStepScan.validUntil != null )

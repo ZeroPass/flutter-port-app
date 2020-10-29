@@ -1,3 +1,4 @@
+
 import 'dart:io';
 
 import 'package:eosio_passid_mobile_app/screen/requestType.dart';
@@ -28,6 +29,7 @@ import 'package:eosio_passid_mobile_app/screen/slideToSideRoute.dart';
 //import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:device_preview/device_preview.dart' as DevPreview;
 import 'package:eosio_passid_mobile_app/screen/flushbar.dart';
+import 'package:eosio_passid_mobile_app/screen/alert.dart';
 
 var RUN_IN_DEVICE_PREVIEW_MODE = false;
 
@@ -53,17 +55,15 @@ void main() {
   //changeNavigationBarColor();
 }
 
-void fillDatabase()
+Future<void> fillDatabase() async
 {
-  print("fill database");
   Storage storage = new Storage();
-  storage.load(callback: (isAlreadyUpdated, isValid){});
+  storage.load();
 
   //to call it just one time
   if(storage.storageNodes().isNotEmpty)
     return;
 
-  print("---------------------------------------------------in fill datatbase");
   List<StorageNode> nodes = storage.storageNodes();
   StorageNode sn = new StorageNode(name: "EOS", host: "kylin.eosnode.io", port: 443, isEncryptedEndpoint: true, networkType: NetworkType.KYLIN, chainID: "abcedfdsaffdas");
   nodes.add(sn);
@@ -105,9 +105,9 @@ void fillDatabase()
 void loadDatabase({Function callbackStatus})
 {
   Storage storage = new Storage();
-  storage.load(callback: (isAlreadyUpdated, isValid){
+  storage.load(callback: (isAlreadyUpdated, isValid, {String exc}){
     if (callbackStatus != null)
-      callbackStatus(isAlreadyUpdated, isValid);
+      callbackStatus(isAlreadyUpdated, isValid, exc:exc);
   });
 }
 
@@ -116,9 +116,6 @@ class PassId extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    loadDatabase(callbackStatus: (isAlreadyUpdated, isValid){
-    });
-    fillDatabase();
     return PlatformProvider(
       //initialPlatform: initialPlatform,
         builder: (BuildContext context) => PlatformApp(
@@ -139,17 +136,34 @@ class PassId extends StatelessWidget {
   }
 }
 
+///*****************************************************************************
+///
+/// PassIdWidget
+///
+///****************************************************************************/
+
 class PassIdWidget extends StatefulWidget {
   @override
   _PassIdWidgetState createState() => _PassIdWidgetState();
 }
 
-class _PassIdWidgetState extends State<PassIdWidget>
-    with TickerProviderStateMixin {
+class _PassIdWidgetState extends State<PassIdWidget> with TickerProviderStateMixin {
   @override
-  void initState() {
+  void initState(){
     super.initState();
     initializeDateFormatting();
+    //update database
+    loadDatabase(callbackStatus: (isAlreadyUpdated, isValid, {String exc}){
+      if (isValid)
+        setState(() {});
+    });
+    fillDatabase().then((value) {
+        setState(() {});
+      });
+
+    //});
+
+
     if(!Platform.isIOS){
       SystemChrome.setEnabledSystemUIOverlays([]); // hide status bar
     }
@@ -219,8 +233,6 @@ class _PassIdWidgetState extends State<PassIdWidget>
                 create: (BuildContext context) => StepReviewHeaderBloc()),
             BlocProvider<StepperBloc>(
                 create: (BuildContext context) => StepperBloc(maxSteps: 4 /*set maximum steps you have in any/all modes*/)),
-            /*BlocProvider<AuthnBloc>(
-                create: (BuildContext context) => AuthnBloc()),*/
           ],
           child: KeyboardDismisser(
             gestures:[
@@ -256,13 +268,6 @@ class _PassIdWidgetState extends State<PassIdWidget>
               GestureType.onPanUpdateUpDirection,
               GestureType.onPanUpdateLeftDirection,
               GestureType.onPanUpdateRightDirection,
-              //GestureType.onPanStart,
-              //GestureType.onPanUpdateAnyDirection,
-              //GestureType.onPanEnd,
-              //GestureType.onPanCancel,
-              //GestureType.onScaleStart,
-              //GestureType.onScaleUpdate,
-              //GestureType.onScaleEnd
             ],
             child:Scaffold(
               //resizeToAvoidBottomInset: false,

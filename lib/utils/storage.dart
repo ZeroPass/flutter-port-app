@@ -1,3 +1,4 @@
+import 'package:eosio_passid_mobile_app/screen/flushbar.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepScan/stepScan.dart';
@@ -459,7 +460,7 @@ class StorageData {
       callback(false);
     }
   }
-  void load({Function (bool isAlreadyUpdated, bool isValid) callback}) async{
+  void load({Function (bool isAlreadyUpdated, bool isValid, {String exc}) callback}) async{
     try{
       Storage storage = Storage();
       if (storage.isUpdatedInCurrentSession) {
@@ -468,20 +469,17 @@ class StorageData {
         return;
       }
       final storageDB = new FlutterSecureStorage();
-      var test = storageDB.readAll();
-      var test1 = test.toString();
+      //await storageDB.readAll();//just to await when you run a script first time
       String value = await storageDB.read(key: "data");
       storage.fromStorageData(StorageData.fromJson(jsonDecode(value)));
       if (callback != null)
         callback(false, true);
     }
     catch (e)  {
-      print(e);
       if (callback != null)
-        callback(true, false);
+        callback(true, false, exc: e.toString());
     }
   }
-
 }
 
  StepDataListfromJson (Map<String, dynamic> list){

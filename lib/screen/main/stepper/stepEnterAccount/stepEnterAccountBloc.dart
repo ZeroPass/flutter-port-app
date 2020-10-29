@@ -64,9 +64,9 @@ class StepEnterAccountBloc extends Bloc<StepEnterAccountEvent, StepEnterAccountS
 
   //check if there is any data stored
   void updateDataOnUI(){
-      //check updated data
+      //check updated datas
       Storage storage = Storage();
-      storage.load(callback: (isAlreadyUpdated, isValid){
+      storage.load(callback: (isAlreadyUpdated, isValid, {String exc}){
         if (isAlreadyUpdated == true || isValid == true){
           StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
           if (storageStepEnterAccount.accountID != null)

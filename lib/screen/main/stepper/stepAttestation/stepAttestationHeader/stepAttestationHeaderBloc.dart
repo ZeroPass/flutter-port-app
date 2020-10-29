@@ -16,7 +16,7 @@ class StepAttestationHeaderBloc extends Bloc<StepAttestationHeaderEvent, StepAtt
   void updateDataOnUI(){
     //check updated data
     Storage storage = Storage();
-    storage.load(callback: (isAlreadyUpdated, isValid){
+    storage.load(callback: (isAlreadyUpdated, isValid,  {String exc}){
       if (isAlreadyUpdated == true || isValid == true){
         StepDataAttestation storageAttestation = storage.getStorageData(2);
           this.add(AttestationHeaderWithDataEvent(requestType: storageAttestation.requestType));
