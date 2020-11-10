@@ -24,6 +24,7 @@ flutter run --release
 ```
 # Android
 flutter build apk
+flutter build apk --release --no-shrink
 
 #iOS (on macOS host)
 flutter build ios
