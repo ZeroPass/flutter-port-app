@@ -324,12 +324,14 @@ int _NUM_OF_STEPS = 3;
 @JsonSerializable()
 class StorageData {
   bool _isUpdatedInCurrentSession;
+  bool _loggingEnabled;
   StorageNode selectedNode;
   StorageNode defaultNode;
   List<StorageNode> _nodes;
   List<StepData> _steps;
   StorageServer storageServer;
   StorageServerTemporary _storageServerTemporary;
+
 
   //this should not be stored on disc
   DBAkeyStorage dbAkeyStorage;
@@ -338,6 +340,7 @@ class StorageData {
   StorageData(){
     this._nodes = new List();
     this._isUpdatedInCurrentSession = false;
+    this._loggingEnabled = false;
     this.selectedNode = null;
     this.defaultNode = null;
     this.storageServer = null;
@@ -361,6 +364,7 @@ class StorageData {
   }
 
   void fromStorageData(StorageData item){
+    this._loggingEnabled = item._loggingEnabled;
     this.selectedNode = item.selectedNode;
     this.defaultNode = item.defaultNode;
     this._nodes = item._nodes;
@@ -372,7 +376,8 @@ class StorageData {
     this._isUpdatedInCurrentSession = item.isUpdatedInCurrentSession;
   }
 
-  StorageData StorageDataDB({StorageNode selectedNode, StorageNode defaultNode, List<StorageNode> nodes, List<StepData> steps, StorageServer storageServer, StorageServerTemporary storageServerTemporary}){
+  StorageData StorageDataDB({bool loggingEnabled, StorageNode selectedNode, StorageNode defaultNode, List<StorageNode> nodes, List<StepData> steps, StorageServer storageServer, StorageServerTemporary storageServerTemporary}){
+    this._loggingEnabled = loggingEnabled;
     this.selectedNode = selectedNode;
     this.defaultNode = defaultNode;
     this._nodes = nodes;
@@ -383,6 +388,12 @@ class StorageData {
     //updated in current session
     this._isUpdatedInCurrentSession = true;
     return this;
+  }
+
+  bool get loggingEnabled => _loggingEnabled;
+
+  set loggingEnabled(bool value) {
+    _loggingEnabled = value;
   }
 
   StorageNode getNode(){
@@ -502,6 +513,7 @@ Map<String, dynamic> StepDataListToJson (List<StepData> list){
 StorageData _$StorageDataFromJson(Map<String, dynamic> json) {
   StorageData storageData = StorageData();
   return storageData.StorageDataDB(
+    loggingEnabled: json['loggingEnabled'],
     selectedNode: StorageNode.fromJson(json['selectedNode']) as StorageNode,
     defaultNode: StorageNode.fromJson(json['defaultNode']),
     nodes: json['nodes'] != null ? (json['nodes'] as List).map(
@@ -513,6 +525,7 @@ StorageData _$StorageDataFromJson(Map<String, dynamic> json) {
 }
 
 Map<String, dynamic> _$StorageDataToJson(StorageData instance) => <String, dynamic>{
+  'loggingEnabled' : instance._loggingEnabled,
   'selectedNode': instance.selectedNode.toJson(),
   'defaultNode': instance.defaultNode.toJson(),
   'nodes': instance.storageNodes() != null?

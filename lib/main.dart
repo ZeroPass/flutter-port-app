@@ -20,30 +20,23 @@ import 'package:eosio_passid_mobile_app/screen/main/stepper/stepAttestation/step
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepReview/stepReview.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepReview/stepReviewHeader/stepReviewHeader.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:eosio_passid_mobile_app/screen/nfc/authn/authn.dart';
 import 'package:eosio_passid_mobile_app/screen/theme.dart';
 import 'package:eosio_passid_mobile_app/screen/settings/settings.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:logging/logging.dart';
 import 'package:eosio_passid_mobile_app/screen/slideToSideRoute.dart';
-//import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:device_preview/device_preview.dart' as DevPreview;
-import 'package:eosio_passid_mobile_app/screen/flushbar.dart';
-import 'package:eosio_passid_mobile_app/screen/alert.dart';
+import 'package:eosio_passid_mobile_app/utils/logging/loggerHandler.dart' as LH;
+
+import 'package:eosio_passid_mobile_app/utils/net/eosio/eosio.dart';
 
 var RUN_IN_DEVICE_PREVIEW_MODE = false;
 
 void main() {
-
   //SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
   //  systemNavigationBarColor: Colors.grey,
   //));
 
-  Logger.root.level = Level.ALL;
-  Logger.root.onRecord.listen((record) {
-    print(
-        '${record.loggerName} ${record.level.name}: ${record.time}: ${record.message}');
-  });
   runApp(
       RUN_IN_DEVICE_PREVIEW_MODE?
         DevPreview.DevicePreview(
@@ -152,6 +145,11 @@ class _PassIdWidgetState extends State<PassIdWidget> with TickerProviderStateMix
   void initState(){
     super.initState();
     initializeDateFormatting();
+
+    //clean old logger handler
+    LH.LoggerHandler loggerHandler = LH.LoggerHandler();
+    loggerHandler.cleanLegacyLogs();
+
     //update database
     loadDatabase(callbackStatus: (isAlreadyUpdated, isValid, {String exc}){
       if (isValid)
@@ -160,9 +158,6 @@ class _PassIdWidgetState extends State<PassIdWidget> with TickerProviderStateMix
     fillDatabase().then((value) {
         setState(() {});
       });
-
-    //});
-
 
     if(!Platform.isIOS){
       SystemChrome.setEnabledSystemUIOverlays([]); // hide status bar
@@ -174,10 +169,41 @@ class _PassIdWidgetState extends State<PassIdWidget> with TickerProviderStateMix
     //WidgetsBinding.instance
     //    .addPostFrameCallback((_) => widget.scaffoldContext.state.showSnackBar(SnackBar(content: Text("Your message here..")));
   }
+  void randomTests(){
+    return;
+    Logger.root.onRecord.listen((record) {
+      print('---------------${record.level.name}: ${record.time}: ${record.message}');
+    });
+
+    Keys keys = new Keys();
+    keys.add(PrivateKey("5JrEwEFv9qmqrzLBnrQ4BmUzvTQedb5WX2vgb9KRdvq71D1GNUb"));
+    StorageNode storageNode = StorageNode(name: "myNode", host: "https://api.kylin.alohaeos.com", port: 443, isEncryptedEndpoint: true, networkType: NetworkType.KYLIN, chainID: "5fff1dae8dc8e2fc4d5b23b2c7665c97f9e9d8edf2b6485a86ba311c25639191");
+    Eosio eosio = Eosio(storageNode, EosioVersion.v1, keys);
+    eosio.getNodeInfo().then((value) {
+      print ("-------------------------------------");
+      print (value);
+    });
+    
+    eosio.getTableRows("eosio", "eosio", "producers").then((Map<String, dynamic> value){
+      print(value);
+      var y = 98;
+    });
+
+
+  }
 
 @override
   Widget build(BuildContext context) {
+  Logger.root.level = Level.ALL;
+  Logger.root.onRecord.listen((record) {
+    print(
+        '${record.loggerName} ${record.level.name}: ${record.time}: ${record.message}');
+  });
+
     changeNavigationBarColor();
+
+    randomTests();
+
     return PlatformScaffold(
         appBar: PlatformAppBar(
           automaticallyImplyLeading: true,

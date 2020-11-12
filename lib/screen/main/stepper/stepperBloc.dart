@@ -11,6 +11,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
+import 'package:flutter_logs/flutter_logs.dart';
+import 'package:logging/logging.dart';
 
 
 //every step should extend this class to handle if step is filled correctly
@@ -41,6 +43,7 @@ abstract class StepData{
 class StepperBloc extends Bloc<StepperEvent, StepperState> {
   final int maxSteps;
   bool isReviewLocked;
+  final _log = Logger('passid.StepperBloc');
 
   StepperBloc({@required this.maxSteps}){
     this.isReviewLocked = true;
@@ -116,6 +119,7 @@ class StepperBloc extends Bloc<StepperEvent, StepperState> {
 
   @override
   Stream<StepperState> mapEventToState(StepperEvent event) async* {
+    _log.log(Level.INFO, "Changing the state of stepper {${event.toString()}");
     if (event is StepTapped) {
 
       if (event.step < state.maxSteps-1) // do not allow access to last step

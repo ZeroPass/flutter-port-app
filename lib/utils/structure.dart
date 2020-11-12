@@ -93,3 +93,10 @@ Future<bool> testConnection({ String host = 'google.com' }) async
   } catch(_){}
   return false;
 }
+
+class DateTimeUtil {
+  static String current(DateFormat dateFormat) {
+    final now = new DateTime.now();
+    return dateFormat.format(now);
+  }
+}

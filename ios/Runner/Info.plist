@@ -28,6 +28,10 @@
 	<string>You should never see this, please contact us</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>You should never see this, please contact us</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+    <string>FLogs would like to save photos from the app to your gallery</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>FLogs would like to access your photo gallery for uploading images to the app</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
