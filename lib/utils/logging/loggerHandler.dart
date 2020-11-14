@@ -176,9 +176,10 @@ class LoggerHandler extends LoggerHandlerInstance {
   static LoggerHandler _singleton = new LoggerHandler._internal();
 
   factory LoggerHandler(){
-    LoggerHandlerInstance();
     return _singleton;
   }
 
-  LoggerHandler._internal(){}
+  LoggerHandler._internal(){
+    LoggerHandlerInstance();
+  }
 }
