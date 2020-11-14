@@ -70,22 +70,19 @@ class LoggerHandlerInstance{
   */
 
   //ALL, TRACE, DEBUG, INFO, WARNING, ERROR, SEVERE, FATAL, OFF }
-    LogLevel classificationLogLevel(Level level){
-      return LogLevel.INFO;
-
-      //TODO:need to work with all types
-      switch(level.name){
-        case 'ALL': return LogLevel.ALL;
-        case 'OFF': return LogLevel.OFF;
-        case 'FINEST': return LogLevel.TRACE;
-        case 'FINER': return LogLevel.TRACE;
-        case 'FINE': return LogLevel.DEBUG;
-        case 'CONFIG': return LogLevel.DEBUG;
-        case 'INFO': return LogLevel.INFO;
-        case 'WARNING': return LogLevel.WARNING;
-        case 'SEVERE': return LogLevel.SEVERE;
-        case 'SHOUT': return LogLevel.FATAL;
-        default: return LogLevel.ALL;
+    LogLevel classificationLogLevel(Level level) {
+      switch(level){
+        case Level.ALL:     return LogLevel.ALL;
+        case Level.OFF:     return LogLevel.OFF;
+        case Level.FINEST:  return LogLevel.TRACE;
+        case Level.FINER:   return LogLevel.TRACE;
+        case Level.FINE:    return LogLevel.DEBUG;
+        case Level.CONFIG:  return LogLevel.DEBUG;
+        case Level.INFO:    return LogLevel.INFO;
+        case Level.WARNING: return LogLevel.WARNING;
+        case Level.SEVERE:  return LogLevel.SEVERE;
+        case Level.SHOUT:   return LogLevel.FATAL;
+        default:            return LogLevel.ALL;
       }
     }
 
