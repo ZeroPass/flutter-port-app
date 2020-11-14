@@ -22,6 +22,24 @@ class LoggerHandlerInstance{
     Storage storage = Storage();
     storage.loggingEnabled = false;
     logToAppMemory = false;
+
+    LogsConfig config = FLog.getDefaultConfigurations()
+    ..isDevelopmentDebuggingEnabled = false
+    ..timestampFormat = TimestampFormat.TIME_FORMAT_FULL_3
+    ..formatType = FormatType.FORMAT_CUSTOM
+    ..fieldOrderFormatCustom = [
+      FieldName.TIMESTAMP,
+      FieldName.CLASSNAME,
+      FieldName.LOG_LEVEL,
+      FieldName.TEXT,
+    ];
+
+    FLog.applyConfigurations(config);
+
+    Logger.root.onRecord.listen((record) {
+      if (this.logToAppMemory)
+        translate(record);
+    });
   }
 
   Future<bool> startLoggingToAppMemory() async {
@@ -58,11 +76,11 @@ class LoggerHandlerInstance{
       //TODO:need to work with all types
       switch(level.name){
         case 'ALL': return LogLevel.ALL;
-        case 'OFF': return LogLevel.ALL;
+        case 'OFF': return LogLevel.OFF;
         case 'FINEST': return LogLevel.TRACE;
         case 'FINER': return LogLevel.TRACE;
-        case 'FINE': return LogLevel.TRACE;
-        case 'CONFIG': return LogLevel.TRACE;
+        case 'FINE': return LogLevel.DEBUG;
+        case 'CONFIG': return LogLevel.DEBUG;
         case 'INFO': return LogLevel.INFO;
         case 'WARNING': return LogLevel.WARNING;
         case 'SEVERE': return LogLevel.SEVERE;
@@ -75,39 +93,40 @@ class LoggerHandlerInstance{
       if (this.logToAppMemory) {
         await FLog.logThis(text: logRecord.message,
             type: classificationLogLevel(logRecord.level),
-            className: "PassID");
+            className: logRecord.loggerName,
+            methodName: "");
       }
-      }
-
-    void initialize() async {
-      //logging library
-      //Logger.root.level = Level.ALL;
-
-      //flutter-logs library
-      /*WidgetsFlutterBinding.ensureInitialized();
-
-      //Initialize Logging
-      await FlutterLogs.initLogs(
-          logLevelsEnabled: [
-            LogLevel.INFO,
-            LogLevel.WARNING,
-            LogLevel.ERROR,
-            LogLevel.SEVERE
-          ],
-          timeStampFormat: TimeStampFormat.TIME_FORMAT_READABLE,
-          directoryStructure: DirectoryStructure.FOR_DATE,
-          logTypesEnabled: ["device","network","errors"],
-          logFileExtension: LogFileExtension.LOG,
-          logsWriteDirectoryName: "PassID",
-          logsExportDirectoryName: "PassID/Exported",
-          debugFileOperations: true,
-          isDebuggable: true);*/
-
-      Logger.root.onRecord.listen((record) {
-        if (this.logToAppMemory)
-          translate(record);
-      });
     }
+
+    // void initialize() async {
+    //   //logging library
+    //   //Logger.root.level = Level.ALL;
+
+    //   //flutter-logs library
+    //   /*WidgetsFlutterBinding.ensureInitialized();
+
+    //   //Initialize Logging
+    //   await FlutterLogs.initLogs(
+    //       logLevelsEnabled: [
+    //         LogLevel.INFO,
+    //         LogLevel.WARNING,
+    //         LogLevel.ERROR,
+    //         LogLevel.SEVERE
+    //       ],
+    //       timeStampFormat: TimeStampFormat.TIME_FORMAT_READABLE,
+    //       directoryStructure: DirectoryStructure.FOR_DATE,
+    //       logTypesEnabled: ["device","network","errors"],
+    //       logFileExtension: LogFileExtension.LOG,
+    //       logsWriteDirectoryName: "PassID",
+    //       logsExportDirectoryName: "PassID/Exported",
+    //       debugFileOperations: true,
+    //       isDebuggable: true);*/
+
+    //   Logger.root.onRecord.listen((record) {
+    //     if (this.logToAppMemory)
+    //       translate(record);
+    //   });
+    // }
 
     void cleanLogs(Function notifyOK, Function notifyError) async{
       try {
@@ -135,13 +154,14 @@ class LoggerHandlerInstance{
 
     void export({bool open = false, Function showError = null}) async{
       try {
-        List<Log> logs = await FLog.getAllLogs();
-        String logs2 = "";
-        logs.forEach((Log element) {
-          logs2 += element.toMap().toString() + '\n';
+        LogsConfig config = FLog.getDefaultConfigurations();
+        final logs = await FLog.getAllLogs();
+        var buffer = StringBuffer();
+        logs.forEach((Log log) {
+          buffer.write(Formatter.format(log, config)); // TODO: When log will be send over net make it json format e.g.: log.toMap()
         });
 
-        List<int> list = logs2.codeUnits;
+        List<int> list = buffer.toString().codeUnits;
         Uint8List bytes = Uint8List.fromList(list);
 
         var file = await DefaultCacheManager().putFile(
