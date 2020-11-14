@@ -17,7 +17,6 @@ String CACHE_KEY_NAME = "PassId";
 
 class LoggerHandlerInstance{
   bool logToAppMemory;
-  final PermissionGroup _permissionGroup = PermissionGroup.storage;
 
   LoggerHandlerInstance(){
     Storage storage = Storage();
@@ -26,15 +25,14 @@ class LoggerHandlerInstance{
   }
 
   Future<bool> startLoggingToAppMemory() async {
-    //ask for permission
-    if (await requestPermission(_permissionGroup) == false)
-      return false;
-
-    Storage storage = Storage();
-    storage.loggingEnabled = true;
-    storage.save();
-    logToAppMemory = true;
-    return true;
+    if (await Permission.storage.request().isGranted) {
+      Storage storage = Storage();
+      storage.loggingEnabled = true;
+      storage.save();
+      logToAppMemory = true;
+      return true;
+    }
+    return false;
   }
     void stopLoggingToAppMemory(Function notifyOK, Function notifyError) {
       Storage storage = Storage();
@@ -160,14 +158,6 @@ class LoggerHandlerInstance{
         if (showError != null)
           showError();
       }
-    }
-
-    Future<bool> requestPermission(PermissionGroup permission) async {
-      final List<PermissionGroup> permissions = <PermissionGroup>[permission];
-      final Map<PermissionGroup, PermissionStatus> permissionRequestResult =
-      await PermissionHandler().requestPermissions(permissions);
-      PermissionStatus ps = permissionRequestResult[PermissionGroup.storage];
-      return ps == PermissionStatus.granted ? true : false;
     }
 }
 
