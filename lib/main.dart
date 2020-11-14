@@ -95,12 +95,11 @@ Future<void> fillDatabase() async
 /*
 * To load from disc previously stored values
 */
-void loadDatabase({Function callbackStatus})
+void loadDatabase({Future<void> Function(Storage, bool, bool, {String exc}) callbackStatus})
 {
   Storage storage = new Storage();
   storage.load(callback: (isAlreadyUpdated, isValid, {String exc}){
-    if (callbackStatus != null)
-      callbackStatus(isAlreadyUpdated, isValid, exc:exc);
+    callbackStatus?.call(storage, isAlreadyUpdated, isValid, exc:exc);
   });
 }
 
@@ -141,20 +140,32 @@ class PassIdWidget extends StatefulWidget {
 }
 
 class _PassIdWidgetState extends State<PassIdWidget> with TickerProviderStateMixin {
+  final _log = Logger("main");
+
   @override
   void initState(){
     super.initState();
     initializeDateFormatting();
 
     //clean old logger handler
+    Logger.root.level = Level.ALL;
     LH.LoggerHandler loggerHandler = LH.LoggerHandler();
     loggerHandler.cleanLegacyLogs();
 
     //update database
-    loadDatabase(callbackStatus: (isAlreadyUpdated, isValid, {String exc}){
-      if (isValid)
+    loadDatabase(callbackStatus: (storage, isAlreadyUpdated, isValid, {String exc}) async {
+      if(isValid) {
+        if(storage.loggingEnabled){
+          bool isStarted = await loggerHandler.startLoggingToAppMemory();
+          if(!isStarted) {
+            print("main: couldn't start logging!");
+            loggerHandler.stopLoggingToAppMemory((){}, (){});
+          }
+        }
         setState(() {});
+      }
     });
+
     fillDatabase().then((value) {
         setState(() {});
       });
@@ -195,10 +206,10 @@ class _PassIdWidgetState extends State<PassIdWidget> with TickerProviderStateMix
 @override
   Widget build(BuildContext context) {
   Logger.root.level = Level.ALL;
-  Logger.root.onRecord.listen((record) {
-    print(
-        '${record.loggerName} ${record.level.name}: ${record.time}: ${record.message}');
-  });
+  // Logger.root.onRecord.listen((record) {
+  //   print(
+  //       '${record.loggerName} ${record.level.name}: ${record.time}: ${record.message}');
+  // });
 
     changeNavigationBarColor();
 
