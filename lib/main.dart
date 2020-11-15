@@ -205,7 +205,7 @@ class _PassIdWidgetState extends State<PassIdWidget> with TickerProviderStateMix
 
 @override
   Widget build(BuildContext context) {
-  Logger.root.level = Level.ALL;
+  // Logger.root.level = Level.ALL;
   // Logger.root.onRecord.listen((record) {
   //   print(
   //       '${record.loggerName} ${record.level.name}: ${record.time}: ${record.message}');
