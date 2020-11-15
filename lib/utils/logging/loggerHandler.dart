@@ -32,7 +32,9 @@ class LoggerHandlerInstance{
       FieldName.CLASSNAME,
       FieldName.LOG_LEVEL,
       FieldName.TEXT,
-    ];
+    ]
+    ..activeLogLevel = LogLevel.ALL;
+    
 
     FLog.applyConfigurations(config);
 
