@@ -5,8 +5,35 @@ import 'package:eosio_passid_mobile_app/utils/storage.dart';
 import 'package:eosio_passid_mobile_app/utils/structure.dart';
 import 'dart:collection';
 import 'package:logging/logging.dart';
+import 'package:dmrtd/src/extension/logging_apis.dart';
 
 enum EosioVersion { v1, v2 }
+
+class PushTrxResponse{
+  bool _isValid;
+  var _data;
+  var _error;
+
+  PushTrxResponse(this._isValid, [this._data = null, this._error = null]);
+
+  bool get isValid => _isValid;
+
+  set isValid(bool value) {
+    _isValid = value;
+  }
+
+  get data => _data;
+
+  set data(value) {
+    _data = value;
+  }
+
+  get error => _error;
+
+  set error(value) {
+    _error = value;
+  }
+}
 
 class PrivateKey{
   final _log = Logger("Private key");
@@ -22,7 +49,6 @@ class PrivateKey{
   }
 
 }
-class test{}
 
 class Keys extends ListBase<PrivateKey>{
   List<PrivateKey> _list;
@@ -42,6 +68,12 @@ class Keys extends ListBase<PrivateKey>{
     _list[index]=value;
   }
 
+  List<String> listWithStr(){
+    List<String> listStr = List<String>();
+    _list.forEach((element) {listStr.add(element.get());});
+    return listStr;
+  }
+
   Iterable<PrivateKey> myFilter(text) => _list.where( (PrivateKey e) => e.privateKey != null);
 
 }
@@ -55,7 +87,9 @@ class Eosio{
     assert(storageNode != null);
     assert(privateKeys.length > 0);
 
-    _eosClient =  EOSClient(/*storageNode.toString()*/"https://jungle2.cryptolions.io:443", StringUtil.getWithoutTypeName(version), httpTimeout: httpTimeout);
+    _eosClient =  EOSClient(storageNode.toString(), StringUtil.getWithoutTypeName(version),
+        privateKeys: privateKeys.listWithStr(),
+        httpTimeout: httpTimeout);
   }
 
   Future<dynamic> onError (String functionName,e){
@@ -63,15 +97,27 @@ class Eosio{
     return null;
   }
 
+  Future<PushTrxResponse> onErrorTrx (String functionName,e){
+    _log.log(Level.FINE, "Error in '$functionName':" + e.toString());
+    return Future.value(PushTrxResponse(false, null, e.toString()));
+  }
+
   Future<NodeInfo> getNodeInfo() async{
     try
     {
       _log.log(Level.INFO, "Get node info.");
-      await _eosClient.getInfo().then((NodeInfo nodeInfo) {
-        return nodeInfo;
-      }).catchError ((e) { return onError("getNodeInfo", e); });
+      return await _eosClient.getInfo();
     }
     catch(e){ return onError("getNodeInfo", e);}
+  }
+
+  Future<Account> getAccountInfo(String account) async{
+    try
+    {
+      _log.log(Level.INFO, "Get account info: $account");
+      return await _eosClient.getAccount(account);
+    }
+    catch(e){ return onError("getAccountInfo", e);}
   }
 
   Future<Map<String, dynamic>> getTableRows(String code, String scope, String table, {
@@ -94,20 +140,14 @@ class Eosio{
       assert(table != null && table != "");
 
       //https://developers.eos.io/manuals/eos/latest/nodeos/plugins/chain_api_plugin/api-reference/index#operation/get_table_rows
-      await _eosClient.getTableRow(code, scope, table,
-      json: json,
-      tableKey: tableKey,
-      lower: lower,
-      upper: upper,
-      indexPosition: indexPosition,
-      keyType: keyType,
-      reverse: reverse).then((Map<String, dynamic> rows) {
-        print (rows);
-        //Type type = rows.runtimeType;
-        print(rows.runtimeType);
-        return Future.value(rows);
-      }).catchError ((e) {
-        return onError("getTableRows", e); });
+      return await _eosClient.getTableRow(code, scope, table,
+                                                  json: json,
+                                                  tableKey: tableKey,
+                                                  lower: lower,
+                                                  upper: upper,
+                                                  indexPosition: indexPosition,
+                                                  keyType: keyType,
+                                                  reverse: reverse);
     }
     catch(e){
       return onError("getTableRows", e);
@@ -144,12 +184,14 @@ class Eosio{
 
     bool isValid = true;
     data.forEach((k, v) {
+      Logger("eosio;checkData").deVerbose("Key: $k; value: $v");
       if (k == null || v == null) isValid = false;
     });
+    Logger("eosio;checkData").log(Level.FINER, "{isValid:$isValid}");
     return isValid;
   }
 
-  Future<void> pushTransaction(String code, String actionName, List<Authorization> auth, Map data)async {
+  Future<PushTrxResponse> pushTransaction(String code, String actionName, List<Authorization> auth, Map data)async {
     try {
       _log.log(
           Level.INFO, "Push transaction {code: $code, action name: $actionName,"
@@ -163,11 +205,10 @@ class Eosio{
           ..data = data
       ];
       Transaction transaction = Transaction()..actions = actions;
-      _eosClient.pushTransaction(transaction, broadcast: true).then((trx) {
-        print(trx);
-      }).catchError ((e) => onError("getTableRows", e));
+      var trx = await _eosClient.pushTransaction(transaction, broadcast: true);
+      return PushTrxResponse(true, trx);
     }
-    catch(e){ onError("pushTransaction", e);}
+    catch(e){ return onErrorTrx("pushTransaction", e);}
   }
 
 }

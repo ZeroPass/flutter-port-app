@@ -1,6 +1,7 @@
 
 import 'dart:io';
 
+import 'package:eosdart/eosdart.dart';
 import 'package:eosio_passid_mobile_app/screen/requestType.dart';
 import 'package:eosio_passid_mobile_app/settings/settings.dart';
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
@@ -147,6 +148,8 @@ class _PassIdWidgetState extends State<PassIdWidget> with TickerProviderStateMix
     super.initState();
     initializeDateFormatting();
 
+    randomTests();
+
     //clean old logger handler
     Logger.root.level = Level.ALL;
     LH.LoggerHandler loggerHandler = LH.LoggerHandler();
@@ -180,27 +183,30 @@ class _PassIdWidgetState extends State<PassIdWidget> with TickerProviderStateMix
     //WidgetsBinding.instance
     //    .addPostFrameCallback((_) => widget.scaffoldContext.state.showSnackBar(SnackBar(content: Text("Your message here..")));
   }
-  void randomTests(){
-    return;
-    Logger.root.onRecord.listen((record) {
-      print('---------------${record.level.name}: ${record.time}: ${record.message}');
-    });
+  void randomTests() async{
 
     Keys keys = new Keys();
-    keys.add(PrivateKey("5JrEwEFv9qmqrzLBnrQ4BmUzvTQedb5WX2vgb9KRdvq71D1GNUb"));
-    StorageNode storageNode = StorageNode(name: "myNode", host: "https://api.kylin.alohaeos.com", port: 443, isEncryptedEndpoint: true, networkType: NetworkType.KYLIN, chainID: "5fff1dae8dc8e2fc4d5b23b2c7665c97f9e9d8edf2b6485a86ba311c25639191");
-    Eosio eosio = Eosio(storageNode, EosioVersion.v1, keys);
-    eosio.getNodeInfo().then((value) {
-      print ("-------------------------------------");
-      print (value);
-    });
+    keys.add(PrivateKey("5KVTRoGQ1kW5BxzQ6SavdppVQPwVzfQGSBdCANc5gJpX74tPyXo"));
+    StorageNode storageNode = StorageNode(name: "myNode", host: "https://api-kylin.eoslaomao.com", port: 443, isEncryptedEndpoint: true, networkType: NetworkType.KYLIN, chainID: "5fff1dae8dc8e2fc4d5b23b2c7665c97f9e9d8edf2b6485a86ba311c25639191");
+    Eosio eosio = Eosio(storageNode, EosioVersion.v1, keys, httpTimeout: 60);
     
-    eosio.getTableRows("eosio", "eosio", "producers").then((Map<String, dynamic> value){
-      print(value);
-      var y = 98;
+    eosio.getAccountInfo("frkavbajti12").then((value) {
+      print (value);
+      });
+
+    Map data = {
+      'from': 'frkavbajti12',
+      'to': 'frkavbajti13',
+      'quantity': '0.0001 EOS',
+      'memo': 'ejga test',
+    };
+
+    eosio.pushTransaction("eosio.token", "transfer", [Eosio.createAuth("frkavbajti12", "active")], data).then((PushTrxResponse value) {
+      if (value.isValid)
+        var t = 9;
+      else
+        print(value.error);
     });
-
-
   }
 
 @override
@@ -213,7 +219,7 @@ class _PassIdWidgetState extends State<PassIdWidget> with TickerProviderStateMix
 
     changeNavigationBarColor();
 
-    randomTests();
+
 
     return PlatformScaffold(
         appBar: PlatformAppBar(
