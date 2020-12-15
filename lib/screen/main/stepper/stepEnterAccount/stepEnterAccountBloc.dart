@@ -1,25 +1,29 @@
+import 'package:eosio_passid_mobile_app/constants/constants.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
 import 'package:bloc/bloc.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepper.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:async';
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
-import 'package:meta/meta.dart';
+import 'package:eosio_passid_mobile_app/utils/structure.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 
 @JsonSerializable()
 class StepDataEnterAccount extends StepData{
   String _accountID;
+  NetworkType _networkType; //default network type
 
   StepDataEnterAccount() {
     this._accountID = null;
+    this._networkType = NetworkType.MAINNET;
   }
 
 
-  StepDataEnterAccount StepDataEnterAccountFromJson({String accountID, bool hasData, bool isUnlocked})
+  StepDataEnterAccount StepDataEnterAccountFromJson({String accountID, NetworkType networkType, bool hasData, bool isUnlocked})
   {
     this.accountID = accountID;
+    this.networkType = networkType;
     this.hasData = hasData;
     this.isUnlocked = isUnlocked;
     return this;
@@ -38,12 +42,19 @@ class StepDataEnterAccount extends StepData{
 
   factory StepDataEnterAccount.fromJson(Map<String, dynamic> json) => _$StepDataEnterAccountFromJson(json);
   Map<String, dynamic> toJson() => _$StepDataEnterAccountToJson(this);
+
+  NetworkType get networkType => _networkType;
+
+  set networkType(NetworkType value) {
+    _networkType = value;
+  }
 }
 
 StepDataEnterAccount _$StepDataEnterAccountFromJson(Map<String, dynamic> json) {
   StepDataEnterAccount obj = StepDataEnterAccount();
   return obj.StepDataEnterAccountFromJson(
     accountID: json['accountID'] as String,
+    networkType: EnumUtil.fromStringEnum(NetworkType.values, json['networkType']),
     hasData: json['hasData'] as bool,
     isUnlocked: json['isUnlocked'] as bool,
   );
@@ -51,6 +62,7 @@ StepDataEnterAccount _$StepDataEnterAccountFromJson(Map<String, dynamic> json) {
 
 Map<String, dynamic> _$StepDataEnterAccountToJson(StepDataEnterAccount instance) => <String, dynamic>{
   'accountID': instance.accountID,
+  'networkType': StringUtil.getWithoutTypeName(instance.networkType),
   'hasData': instance.hasData,
   'isUnlocked': instance.isUnlocked,
 };
@@ -71,9 +83,9 @@ class StepEnterAccountBloc extends Bloc<StepEnterAccountEvent, StepEnterAccountS
           StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
           if (storageStepEnterAccount.accountID != null)
             this.add(AccountConfirmation(accountID: storageStepEnterAccount.accountID,
-                network: storage.getNode()));
+                networkType: storageStepEnterAccount.networkType));
           else
-            this.add(AccountDelete(network: storage.getNode()));
+            this.add(AccountDelete(networkType: storageStepEnterAccount.networkType));
         }
       });
 }
@@ -83,7 +95,8 @@ class StepEnterAccountBloc extends Bloc<StepEnterAccountEvent, StepEnterAccountS
   @override
   StepEnterAccountState get initialState {
     Storage storage = Storage();
-    return FullState(null, storage.getNode());
+    StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
+    return FullState(null, storageStepEnterAccount.networkType);
   }
 
     @override
@@ -154,20 +167,19 @@ class StepEnterAccountBloc extends Bloc<StepEnterAccountEvent, StepEnterAccountS
     @override
     Stream<StepEnterAccountState> mapEventToState( StepEnterAccountEvent event) async* {
       Storage storage = Storage();
+      StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
       if (event is AccountConfirmation) {
         //change data in storage
-        StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
         storageStepEnterAccount.accountID = event.accountID;
-        yield FullState(event.accountID, event.network);
+        yield FullState(event.accountID, event.networkType);
       }
       else if (event is AccountDelete) {
         //clear data in storage
-        StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
         storageStepEnterAccount.accountID = null;
         storageStepEnterAccount.hasData = false;
         storageStepEnterAccount.isUnlocked = false;
-        yield FullState(storageStepEnterAccount.accountID, storage.getNode());
+        yield FullState(storageStepEnterAccount.accountID, event.networkType);
       }
-      else yield DeletedState(storage.getNode());
+      else yield DeletedState(storageStepEnterAccount.networkType);
     }
   }

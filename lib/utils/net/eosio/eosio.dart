@@ -83,7 +83,7 @@ class Eosio{
 
   EOSClient _eosClient;
 
-  Eosio(StorageNode storageNode, EosioVersion version, Keys privateKeys, {int httpTimeout = 15}) {
+  Eosio(NodeServer storageNode, EosioVersion version, Keys privateKeys, {int httpTimeout = 15}) {
     assert(storageNode != null);
     assert(privateKeys.length > 0);
 

@@ -1,3 +1,4 @@
+import 'package:eosio_passid_mobile_app/constants/constants.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
@@ -8,19 +9,19 @@ abstract class StepEnterAccountEvent extends Equatable {
 
 class AccountConfirmation extends StepEnterAccountEvent{
   final String accountID;
-  final StorageNode network;
+  final NetworkType networkType;
 
-  AccountConfirmation({@required this.accountID, @required this.network});
+  AccountConfirmation({@required this.accountID, @required this.networkType});
 
   @override
-  List<Object> get props => [accountID, network];
+  List<Object> get props => [accountID, networkType];
 }
 
 class AccountDelete extends StepEnterAccountEvent{
-  final StorageNode network;
+  final NetworkType networkType;
 
-  AccountDelete({@required this.network});
+  AccountDelete({@required this.networkType});
 
   @override
-  List<Object> get props => [network];
+  List<Object> get props => [networkType];
 }

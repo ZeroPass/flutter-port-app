@@ -2,13 +2,15 @@ import 'package:flushbar/flushbar_route.dart';
 import 'package:flutter/material.dart';
 import 'package:eosio_passid_mobile_app/screen/theme.dart';
 import 'package:eosio_passid_mobile_app/screen/settings/network/network.dart';
+import 'package:eosio_passid_mobile_app/screen/settings/network/networkList.dart';
+import 'package:eosio_passid_mobile_app/screen/settings/logging/logging.dart';
 import 'package:card_settings/card_settings.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:eosio_passid_mobile_app/screen/slideToSideRoute.dart';
-import 'package:eosio_passid_mobile_app/utils/logging/loggerHandler.dart';
-import 'package:eosio_passid_mobile_app/screen/flushbar.dart' as CustomFlushbar;
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
+import 'package:eosio_passid_mobile_app/screen/settings/custom/customCardSettingsButton.dart';
+import 'package:eosio_passid_mobile_app/screen/settings/custom/customCardSettings.dart';
+import 'package:eosio_passid_mobile_app/screen/settings/custom/CustomCardSettingsSection.dart';
 import 'package:share/share.dart';
 
 class Settings extends StatelessWidget {
@@ -44,90 +46,36 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Container(
       child: Form(
         key: _formKey,
-        child: CardSettings(
+        child: CustomCardSettings(
           children: <CardSettingsSection>[
-            CardSettingsSection(
-            header: CardSettingsHeader(label: 'Network'),
+            CustomCardSettingsSection(
+              header: "Connections",
                 children: <CardSettingsWidget>[
-                  CardSettingsButton  (
-                    bottomSpacing: 55,
-                    label: "Node settings",
+                  CustomCardSettingsButton  (
+                    label: "Blockchain networks",
                     onPressed: (){
                       Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => SettingsNetwork()));
+                        MaterialPageRoute(builder: (context) => SettingsNetworkList()));
                   },),
-                  /*CardSettingsButton  (
-                    label: "Node  management",
-                    bottomSpacing: 3,
+                  CustomCardSettingsButton  (
+                    label: "Networks",
                     onPressed: (){
-                      //Navigator.push(context, MaterialPageRoute(builder: (context) => SettingsNetwork()));
-                    },
-                  ),*/
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => SettingsNetwork()));
+                    },),
                 ]
             ),
-            CardSettingsSection(
-                showMaterialonIOS: true,
-                divider: Divider(indent: 30, endIndent: 30,),
-                header: CardSettingsHeader(label: 'Debug log'),
+            CustomCardSettingsSection(
+                header: 'General',
                 children: <CardSettingsWidget>[
-                  CardSettingsSwitch (
-                    trueLabel: "",
-                    falseLabel: "",
-                    label: "Enable logging",
-                    initialValue: widget.enableLogging,
-                    validator:(value){
-                      if (value && widget.switch_valid == false)
-                        return "Please uncheck/check!";
-                    },
-                    onChanged: (value) async{
-                      LoggerHandler loggerHandler = LoggerHandler();
-                      if (value) {
-                        bool isAllowed = await loggerHandler.startLoggingToAppMemory();
-                        if (isAllowed == false)
-                          setState(() {
-                            widget.switch_valid = false;
-                            widget.enableLogging = false;
-                          });
-                        else {
-                          setState(() {
-                            storage.loggingEnabled= true;
-                            storage.save();
-                            widget.switch_valid = true;
-                            widget.enableLogging = value;
-                          });
-                        }
-                      }
-                      else
-                        setState(() {
-                          loggerHandler.stopLoggingToAppMemory(
-                                  () => CustomFlushbar.showFlushbar(context, "Log", "Logging is stopped. Logs were successfully deleted.", Icons.info),
-                                  () => CustomFlushbar.showFlushbar(context, "Log", "Logging is stopped. An error has occurred while deleting log files.", Icons.error)
-                          );
-                        });
-                    },
-                  ),
-                  CardSettingsButton  (
-                    label: "Share log",
-                    enabled: widget.enableLogging,
-                    visible: widget.enableLogging,
-                    //visible: enableLogging != true? false: true,
-                    onPressed: () {
-                      LoggerHandler loggerHandler = LoggerHandler();
-                      loggerHandler.export(showError: (){
-                        CustomFlushbar.showFlushbar(context, "Logging", "Cannot export the log.", Icons.error);
-                      });
-                      //Share.shareFiles(['${directory.path}/image.jpg'], text: 'Great picture');
-                    }),
-                  CardSettingsButton  (
-                    bottomSpacing: 55,
-                    label: "Open log",
-                    enabled: widget.enableLogging,
-                    visible: widget.enableLogging,
-                    onPressed: () {
-                      LoggerHandler loggerHandler = LoggerHandler();
-                      loggerHandler.export(open: true);
-                    })
-                ]
+                  CustomCardSettingsButton (
+                      bottomSpacing: 5,
+                      label: "Debug log",
+                  onPressed: (){
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => LoggingScreen()));
+                  })
+              ]
             ),
             CardSettingsSection(
                 header: CardSettingsHeader(label: 'About'),
@@ -146,4 +94,3 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 }
-

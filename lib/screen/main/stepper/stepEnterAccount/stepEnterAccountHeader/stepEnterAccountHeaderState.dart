@@ -1,41 +1,42 @@
+import 'package:eosio_passid_mobile_app/constants/constants.dart';
 import 'package:meta/meta.dart';
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
 
 
 abstract class StepEnterAccountHeaderState /*extends Equatable*/ {
   //show network name in header
-  StorageNode network;
+  NetworkType networkType;
   //show one time server icon on header
-  StorageServer server;
+  ServerCloud server;
 
-  StepEnterAccountHeaderState({this.network, this.server = null});
+  StepEnterAccountHeaderState({this.networkType, this.server = null});
 
   @override
-  List<Object> get props => [network, server];
+  List<Object> get props => [networkType, server];
 }
 
 class WithoutAccountIDState extends StepEnterAccountHeaderState {
 
-  WithoutAccountIDState({@required StorageNode network, StorageServer server = null}) : super(network: network, server: server);
+  WithoutAccountIDState({@required NetworkType networkType, ServerCloud server = null}) : super(networkType: networkType, server: server);
 
   @override
-  List<Object> get props => [network, server];
+  List<Object> get props => [networkType, server];
 
   @override
-  String toString() => 'StepEnterAccountHeaderState:WithoutAccountIDState { network: $network }';
+  String toString() => 'StepEnterAccountHeaderState:WithoutAccountIDState { network type: $networkType }';
 }
 
 class WithAccountIDState extends StepEnterAccountHeaderState {
   //show accountID in header
   String accountID;
 
-  WithAccountIDState({@required StorageNode network, @required String this.accountID, StorageServer server = null}) : super(network: network, server: server){}
+  WithAccountIDState({@required NetworkType networkType, @required String this.accountID, ServerCloud server = null}) : super(networkType: networkType, server: server){}
 
   String getAccountID(){return this.accountID;}
 
   @override
-  List<Object> get props => [accountID, network, server];
+  List<Object> get props => [accountID, networkType, server];
 
   @override
-  String toString() => 'StepEnterAccountHeaderState:WithAccountIDState { network: $network, accoundID: $accountID }';
+  String toString() => 'StepEnterAccountHeaderState:WithAccountIDState { network type: $networkType, accoundID: $accountID }';
 }

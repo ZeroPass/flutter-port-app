@@ -1,30 +1,31 @@
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
+import 'package:eosio_passid_mobile_app/constants/constants.dart';
 
 abstract class StepEnterAccountState {
   var accountID;
-  StorageNode network;
+  NetworkType networkType;
 
-  StepEnterAccountState({this.accountID = null, this.network = null});
+  StepEnterAccountState({this.accountID = null, this.networkType = null});
 
   @override
   List<Object> get props => [];
 }
 
 class DeletedState extends StepEnterAccountState {
-  DeletedState( StorageNode network ){
-    this.network = network;
+  DeletedState( NetworkType networkType ){
+    this.networkType = networkType;
   }
 
   @override
-  String toString() => 'StepEnterAccountState:DeletedState { network: $network }';
+  String toString() => 'StepEnterAccountState:DeletedState { network type: $networkType }';
 }
 
 class FullState extends StepEnterAccountState {
-  FullState(String accountID, StorageNode network ){
+  FullState(String accountID, NetworkType networkType ){
     this.accountID = accountID;
-    this.network = network;
+    this.networkType = networkType;
   }
 
   @override
-  String toString() => 'StepEnterAccountState:FullState { accountID: $accountID, network: $network }';
+  String toString() => 'StepEnterAccountState:FullState { accountID: $accountID, network type: $networkType }';
 }

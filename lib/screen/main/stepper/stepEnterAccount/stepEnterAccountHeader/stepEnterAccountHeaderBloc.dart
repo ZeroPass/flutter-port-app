@@ -1,7 +1,6 @@
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccountHeader/stepEnterAccountHeader.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
 import 'package:bloc/bloc.dart';
-import 'package:eosio_passid_mobile_app/screen/main/stepper/stepper.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:async';
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
@@ -22,7 +21,7 @@ class StepEnterAccountHeaderBloc extends Bloc<StepEnterAccountHeaderEvent, StepE
         StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
         if (storageStepEnterAccount.accountID != null && storageStepEnterAccount.accountID != "" )
           this.add(WithAccountIDEvent(accountID: storageStepEnterAccount.accountID,
-                                      network: storage.getNode()));
+                                      networkType: storageStepEnterAccount.networkType));
       }
     });
   }
@@ -30,8 +29,9 @@ class StepEnterAccountHeaderBloc extends Bloc<StepEnterAccountHeaderEvent, StepE
     @override
     StepEnterAccountHeaderState get initialState {
     Storage storage = Storage();
+    StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
     return WithoutAccountIDState(
-        network: storage.getNode(), server: Storage().getStorageServer());
+        networkType: storageStepEnterAccount.networkType, server: storage.getServerCloudSelected(networkTypeServer: null));
     }
 
     @override
@@ -48,13 +48,13 @@ class StepEnterAccountHeaderBloc extends Bloc<StepEnterAccountHeaderEvent, StepE
     Stream<StepEnterAccountHeaderState> mapEventToState( StepEnterAccountHeaderEvent event) async* {
 
       if (event is WithAccountIDEvent) {
-        yield WithAccountIDState(network: event.network, server: event.server, accountID: event.accountID);
+        yield WithAccountIDState(networkType: event.networkType, accountID: event.accountID);
       }
       else if (event is WithoutAccountIDEvent) {
-        yield WithoutAccountIDState(network: event.network, server: event.server);
+        yield WithoutAccountIDState(networkType: event.networkType);
       }
       else {
-        yield WithoutAccountIDState(network: event.network, server: event.server);
+        yield WithoutAccountIDState(networkType: event.networkType );
       }
     }
   }

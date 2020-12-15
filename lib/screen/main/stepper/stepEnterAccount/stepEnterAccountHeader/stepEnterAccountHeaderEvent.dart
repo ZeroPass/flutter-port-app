@@ -1,20 +1,21 @@
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
+import 'package:eosio_passid_mobile_app/constants/constants.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
 abstract class StepEnterAccountHeaderEvent extends Equatable{
-  StorageNode network;
-  StorageServer server;
+  NetworkType networkType;
+  ServerCloud server;
 
-  StepEnterAccountHeaderEvent({@required this.network, @required this.server});
+  StepEnterAccountHeaderEvent({@required this.networkType/*, @required this.server*/});
 }
 
 class WithoutAccountIDEvent extends StepEnterAccountHeaderEvent {
 
-  WithoutAccountIDEvent({@required StorageNode network, @required StorageServer server = null}) : super(server: server, network: network){}
+  WithoutAccountIDEvent({@required NetworkType networkType/*, @required ServerCloud server = null*/}) : super(/*server: server,*/ networkType: networkType){}
 
   @override
-  List<Object> get props => [network, server];
+  List<Object> get props => [networkType, server];
 
   @override
   String toString() => 'StepEnterAccountHeaderEvent:WithoutAccountIDEvent';
@@ -24,12 +25,12 @@ class WithoutAccountIDEvent extends StepEnterAccountHeaderEvent {
 class WithAccountIDEvent extends StepEnterAccountHeaderEvent{
   String accountID;
 
-  WithAccountIDEvent({@required StorageNode network, @required this.accountID, @required StorageServer server = null}) : super(server: server, network: network);
+  WithAccountIDEvent({@required NetworkType networkType, @required this.accountID}) : super( networkType: networkType);
 
   String getAccountID(){return this.accountID;}
 
   @override
-  List<Object> get props => [network, accountID, server];
+  List<Object> get props => [networkType, accountID, server];
 
   @override
   String toString() => 'StepEnterAccountHeaderEvent:WithAccountIDEvent';
@@ -38,10 +39,10 @@ class WithAccountIDEvent extends StepEnterAccountHeaderEvent{
 class WithAccountIDBufferEvent extends StepEnterAccountHeaderEvent{
   String accountID;
 
-  WithAccountIDBufferEvent({@required StorageNode network, @required this.accountID, @required StorageServer server = null}) : super(server: server, network: network);
+  WithAccountIDBufferEvent({@required NetworkType networkType, @required this.accountID}) : super( networkType: networkType);
 
   @override
-  List<Object> get props => [network, accountID, server];
+  List<Object> get props => [networkType, accountID, server];
 
   @override
   String toString() => 'StepEnterAccountHeaderEvent:WithAccountIDBufferEvent';

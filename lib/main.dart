@@ -3,8 +3,9 @@ import 'dart:io';
 
 import 'package:eosdart/eosdart.dart';
 import 'package:eosio_passid_mobile_app/screen/requestType.dart';
-import 'package:eosio_passid_mobile_app/settings/settings.dart';
+import 'package:eosio_passid_mobile_app/constants/constants.dart';
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
+import 'package:eosio_passid_mobile_app/utils/structure.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -32,6 +33,7 @@ import 'package:eosio_passid_mobile_app/utils/logging/loggerHandler.dart' as LH;
 import 'package:eosio_passid_mobile_app/utils/net/eosio/eosio.dart';
 
 var RUN_IN_DEVICE_PREVIEW_MODE = false;
+final _logStorage = Logger('Storage initialization');
 
 void main() {
   //SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
@@ -49,32 +51,75 @@ void main() {
   //changeNavigationBarColor();
 }
 
+Map<NetworkType, Network> fillNetworkTypes(Map<NetworkType, Network> networks){
+  _logStorage.fine("Fill network type if it's empty.");
+  if (networks != null && networks.isNotEmpty) {
+    _logStorage.fine("Netowrk types is already written in database.");
+    return null;
+  }
+
+  NetworkType.values.forEach((element) {
+    if (NETWORK_CHAINS[element] != null && NETWORK_CHAINS[element][NETWORK_CHAIN_DEFAULT] == true) {
+      _logStorage.finer("Network type: $element, "
+          "name: ${NETWORK_CHAINS[element][NETWORK_CHAIN_NAME]}"
+          "chainID: ${NETWORK_CHAINS[element][NETWORK_CHAIN_ID]}");
+
+      networks[element] = Network(networkType: element,
+          name: NETWORK_CHAINS[element][NETWORK_CHAIN_NAME],
+          chainID: NETWORK_CHAINS[element][NETWORK_CHAIN_ID]);
+    }
+  });
+  return networks;
+}
+
+
 Future<void> fillDatabase() async
 {
   Storage storage = new Storage();
-  storage.load();
+  storage.load(callback: (isAlreadyUpdated, isValid, {exc}) {
+    var test = 8;
+  });
 
   //to call it just one time
-  if(storage.storageNodes().isNotEmpty)
-    return;
+  //if(storage.nodeSet)
+  //  return;
 
-  List<StorageNode> nodes = storage.storageNodes();
-  StorageNode sn = new StorageNode(name: "EOS", host: "kylin.eosnode.io", port: 443, isEncryptedEndpoint: true, networkType: NetworkType.KYLIN, chainID: "abcedfdsaffdas");
-  nodes.add(sn);
-  storage.selectedNode = sn;
-  storage.defaultNode = sn;
+  var t = storage.nodeSet;
+  Map<NetworkType, Network> nets = fillNetworkTypes(storage.nodeSet.networks);
+  if (nets != null)
+    storage.nodeSet.networks = nets;
 
-  sn = new StorageNode(name: "EOSIO testnet", host: "eosio.eosnode.io", port: 443, isEncryptedEndpoint: true, networkType: NetworkType.EOSIO_TESTNET, chainID: "fsadfsdafasdfasd");
-  nodes.add(sn);
+  if (storage.nodeSet.nodes.isEmpty) {
+    storage.nodeSet.add(networkType: NetworkType.KYLIN,
+        isSelected: true,
+        server: NodeServer(host: "kylin.eosnode.io",
+            port: 443,
+            isEncryptedEndpoint: true));
 
-  sn = new StorageNode(name: "Jungle", host: "456786.eosnode.io", port: 443, isEncryptedEndpoint: true, networkType: NetworkType.CUSTOM, chainID: "abce5435345dsaffdas");
-  nodes.add(sn);
+    storage.nodeSet.add(networkType: NetworkType.EOSIO_TESTNET,
+        isSelected: false,
+        server: NodeServer(host: "eosio.eosnode.io",
+            port: 443,
+            isEncryptedEndpoint: true));
 
-  sn = new StorageNode(name: "ZeroPass Server", host: "mainenet.eosnode.io", port: 443, isEncryptedEndpoint: true, networkType: NetworkType.MAINNET, chainID: "abcedfdsdfgasfsdfasdfasdaffdas", notBlockchain: true);
-  nodes.add(sn);
+    storage.nodeSet.add(networkType: NetworkType.EOSIO_TESTNET,
+        isSelected: false,
+        server: NodeServer(host: "456786.eosnode.io",
+            port: 443,
+            isEncryptedEndpoint: true));
 
-  StorageServer ss = new StorageServer(name: "mainServer", host: "163.172.144.187", port: 443, isEncryptedEndpoint: true);
-  storage.storageServer = ss;
+    storage.nodeSet.add(networkType: NetworkType.MAINNET,
+        isSelected: false,
+        server: NodeServer(host: "mainenet.eosnode.io",
+            port: 443,
+            isEncryptedEndpoint: true));
+  }
+
+  if (storage.cloudSet.servers.isEmpty){
+    storage.cloudSet.add(networkTypeServer: NetworkTypeServer.MAIN_SERVER,
+    isSelected: true,
+    server: ServerCloud(name: "ZeroPass server", host: "163.172.144.187", port: 443, isEncryptedEndpoint: true));
+  }
 
   StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
   storageStepEnterAccount.isUnlocked = true;
@@ -82,15 +127,6 @@ Future<void> fillDatabase() async
   StepDataAttestation stepDataAttestation = storage.getStorageData(2);
   stepDataAttestation.requestType = RequestType.ATTESTATION_REQUEST;
   stepDataAttestation.isOutsideCall = OutsideCall(reqeustedBy: "Ultra DEX");
-
-  //storage.save();
-
-  /*var t = HTTPrequest(url:"fdsf");
-  t.getRequestJson((bool isValid, String msg ){
-    var e = isValid;
-    var w = msg;
-    var r = 0;
-  });*/
 }
 
 /*
@@ -184,12 +220,12 @@ class _PassIdWidgetState extends State<PassIdWidget> with TickerProviderStateMix
     //    .addPostFrameCallback((_) => widget.scaffoldContext.state.showSnackBar(SnackBar(content: Text("Your message here..")));
   }
   void randomTests() async{
-
-    Keys keys = new Keys();
+    return;
+    /*Keys keys = new Keys();
     keys.add(PrivateKey("5KVTRoGQ1kW5BxzQ6SavdppVQPwVzfQGSBdCANc5gJpX74tPyXo"));
     StorageNode storageNode = StorageNode(name: "myNode", host: "https://api-kylin.eoslaomao.com", port: 443, isEncryptedEndpoint: true, networkType: NetworkType.KYLIN, chainID: "5fff1dae8dc8e2fc4d5b23b2c7665c97f9e9d8edf2b6485a86ba311c25639191");
     Eosio eosio = Eosio(storageNode, EosioVersion.v1, keys, httpTimeout: 60);
-    
+
     eosio.getAccountInfo("frkavbajti12").then((value) {
       print (value);
       });
@@ -206,7 +242,7 @@ class _PassIdWidgetState extends State<PassIdWidget> with TickerProviderStateMix
         var t = 9;
       else
         print(value.error);
-    });
+    });*/
   }
 
 @override

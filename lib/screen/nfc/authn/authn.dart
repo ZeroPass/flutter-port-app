@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:dmrtd/dmrtd.dart';
 import 'package:dmrtd/extensions.dart';
+import 'package:eosio_passid_mobile_app/constants/constants.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/customStepper.dart';
 
 import 'package:flutter/cupertino.dart';
@@ -83,8 +84,6 @@ class Authn /*extends State<Authn>*/ {
     final data = await PassportScanner(
         context: context, challenge: challenge, action: action).scan(dbaKeys);
 
-
-
     Storage storage = Storage();
     await storage.getDBAkeyStorage().setDBAKeys(dbaKeys);
     //await Preferences.setDBAKeys(dbaKeys);  // Save MRZ data
@@ -95,8 +94,8 @@ class Authn /*extends State<Authn>*/ {
     String missingValuesText = '';
     Storage storage = Storage();
     StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
-    if (storageStepEnterAccount.isUnlocked == false &&
-        storage.selectedNode.name != "ZeroPass Server")
+    if (storageStepEnterAccount.isUnlocked == false
+        /*&& storage.selectedNode.name != "ZeroPass Server"*/)
       missingValuesText +=
           "- Account name is not valid.\n (Step 'Account')\n\n";
 
@@ -133,11 +132,15 @@ class Authn /*extends State<Authn>*/ {
     }
     try {
       _showBusyIndicator(context);
+      ServerCloud serverCloud = storage.getServerCloudSelected(networkTypeServer: NetworkTypeServer.MAIN_SERVER);
+      if (serverCloud == null)
+        throw Exception("ServerCloud (main server) is empty. Without server you cannot cehck passport trust chain.");
+
       final httpClient = ServerSecurityContext.getHttpClient(
-          timeout: Duration(seconds: storage.storageServer.timeoutInSeconds))
+          timeout: Duration(seconds: serverCloud.timeoutInSeconds))
         ..badCertificateCallback = badCertificateHostCheck;
 
-      _client = PassIdClient(Uri.parse(storage.storageServer.toString()),
+      _client = PassIdClient(Uri.parse(serverCloud.toString()),
           httpClient: httpClient);
       _client.onConnectionError = this.onConnectionError;
       _client.onDG1FileRequested = this.onDG1FileRequested;

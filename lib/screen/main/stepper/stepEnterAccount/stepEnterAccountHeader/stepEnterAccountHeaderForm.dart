@@ -1,3 +1,5 @@
+import 'package:eosio_passid_mobile_app/constants/constants.dart';
+import 'package:eosio_passid_mobile_app/utils/structure.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccountHeader/stepEnterAccountHeader.dart';
@@ -8,7 +10,6 @@ import 'package:eosio_passid_mobile_app/screen/customChip.dart';
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
 import 'package:eosio_passid_mobile_app/utils/size.dart';
 import 'package:eosio_passid_mobile_app/screen/theme.dart';
-import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 
 class StepEnterAccountHeaderForm extends StatefulWidget {
   StepEnterAccountHeaderForm({Key key}) : super(key: key);
@@ -28,6 +29,7 @@ class _StepEnterAccountHeaderFormState extends State<StepEnterAccountHeaderForm>
         BlocProvider.of<StepEnterAccountHeaderBloc>(context);
     final stepEnterAccountBloc = BlocProvider.of<StepEnterAccountBloc>(context);
     var storage = Storage();
+    StepDataEnterAccount stepDataEnterAccount = storage.getStorageData(0);
     return ClipOval(
       child: Material(
         //color: Colors.white, // button color
@@ -42,10 +44,10 @@ class _StepEnterAccountHeaderFormState extends State<StepEnterAccountHeaderForm>
             //stepperBloc.add(StepTapped(step: 0));
 
             //change state on step main window
-            stepEnterAccountBloc.add(AccountDelete(network: storage.getNode()));
+            stepEnterAccountBloc.add(AccountDelete(networkType: stepDataEnterAccount.networkType));
 
             //update selected node in storage
-            storage.selectedNode = storage.getDefaultNode();
+            //storage.selectedNode = storage.getDefaultNode();
 
             StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
             storageStepEnterAccount.accountID = null;
@@ -55,7 +57,7 @@ class _StepEnterAccountHeaderFormState extends State<StepEnterAccountHeaderForm>
 
             //change state on step header
             stepEnterAccountHeaderBloc.add(WithoutAccountIDEvent(
-                network: storage.getSelectedNode(), server: storage.getStorageServer()));
+                networkType: storageStepEnterAccount.networkType));
           },
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
@@ -110,18 +112,18 @@ class _StepEnterAccountHeaderFormState extends State<StepEnterAccountHeaderForm>
                 children: <Widget>[
                   Row(children: <Widget>[
                     Text("Account"),
-                    Container(child: CustomChip([truncateNetwork(state.network != null?state.network.name: "", 5)]), margin: EdgeInsets.only(left: 3.0))
+                    Container(child: CustomChip([truncateNetwork(state.networkType != null? Storage().nodeSet.networkTypeToString(state.networkType): "", 5)]), margin: EdgeInsets.only(left: 3.0))
                   ]),
                   Row(children: <Widget>[
                     Row(mainAxisAlignment:MainAxisAlignment.spaceBetween,
                             children: <Widget>[
                                 if (state is WithAccountIDState)
-                                  if(state.network.notBlockchain == false && state.accountID != null)
+                                  if(state.accountID != null)
                                     Container(child: CustomChip([truncateAccountName(state.accountID, 20)]), margin: EdgeInsets.only(left: 3.0)),
                                 //if (state.server != null)
                                 //  Container(child: CustomChip(["SERVER"]), margin: EdgeInsets.only(left: 3.0)),
                                 ]),
-                    if (state is WithAccountIDState && state.network.notBlockchain == false)
+                    if (state is WithAccountIDState)
                       deleteButton(context)
                   ])
                 ],

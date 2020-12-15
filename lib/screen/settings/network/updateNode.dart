@@ -6,23 +6,20 @@ import 'package:eosio_passid_mobile_app/constants/constants.dart';
 import 'package:eosio_passid_mobile_app/utils/structure.dart';
 import 'package:card_settings/card_settings.dart';
 import 'package:eosio_passid_mobile_app/screen/alert.dart';
-/*
-class SettingsUpdateNetwork extends StatelessWidget {
-  NetworkType networkType;
 
-  //active network; got by type
-  Network network;
+class SettingsUpdateNode extends StatelessWidget {
+  Storage storage;
+  NodeServer storageNode;
+
+
   //to check if any field has been updated
-  Network networkOnLoad;
+  NodeServer currentUpdatedValues;
 
-
-  SettingsUpdateNetwork({@required this.networkType})
+  SettingsUpdateNode({@required Storage this.storage, @required NodeServer this.storageNode})
   {
-    Storage storage = Storage();
-    this.network = storage.nodeSet.networks[this.networkType];
-    this.networkOnLoad = new Network.clone(network);
+    this.currentUpdatedValues = new NodeServer.clone(this.storageNode);
     //init validation fields
-    //this.storageNode.initValidation(); TODO
+    this.storageNode.initValidation();
   }
 
   void onButtonPressedDelete() {}
@@ -81,15 +78,15 @@ class SettingsUpdateNetwork extends StatelessWidget {
         cupertino: (_,__) => CupertinoPageScaffoldData(resizeToAvoidBottomInset: false),
         appBar: PlatformAppBar(
           //automaticallyImplyLeading: true,
-          title: Text("Update network", style: TextStyle(color: Colors.white)),
+          title: Text("Edit", style: TextStyle(color: Colors.white)),
           trailingActions: <Widget>[
             PlatformIconButton(
                 cupertino: (_,__) => CupertinoIconButtonData(
                   icon: Icon(
-                    CupertinoIcons.delete,
-                    color: Colors.white,
-                    size: 30
-                  ), 
+                      CupertinoIcons.delete,
+                      color: Colors.white,
+                      size: 30
+                  ),
                   padding: EdgeInsets.only(right: 20),
                 ),
                 materialIcon: Icon(Icons.delete_outline, size: 35.0),
@@ -102,10 +99,10 @@ class SettingsUpdateNetwork extends StatelessWidget {
             PlatformIconButton(
                 cupertino: (_,__) => CupertinoIconButtonData(
                   icon: Icon( // Save icon
-                    const IconData(0xf41F, fontPackage: CupertinoIcons.iconFontPackage, fontFamily: CupertinoIcons.iconFont),
-                    color: Colors.white,
-                    size: 35
-                  ), 
+                      const IconData(0xf41F, fontPackage: CupertinoIcons.iconFontPackage, fontFamily: CupertinoIcons.iconFont),
+                      color: Colors.white,
+                      size: 35
+                  ),
                   padding: EdgeInsets.all(0),
                 ),
                 androidIcon: Icon(Icons.save, size: 35.0),
@@ -121,48 +118,77 @@ class SettingsUpdateNetwork extends StatelessWidget {
         body: WillPopScope(
           onWillPop: () => onWillPop(context),
           child: Form(
-            key: _formKey,
-            child:
-            CardSettings(
-              children: <CardSettingsSection>[
-            CardSettingsSection(
-            children: <CardSettingsWidget>[
-              CardSettingsText(
-                  label: 'Name',
-                  contentAlign: TextAlign.right,
-                  initialValue: this.network.name,
-                  autovalidate: true,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      this.storageNode.setValidationError("name", "Field 'Title' is empty.");
-                      return 'Title is required.';
-                    }
-                    this.storageNode.setValidationCorrect("name");
-                    this.currentUpdatedValues.host = value;
-                    return null;
-                  }
-              ),
-              CardSettingsText(
-                  label: 'Chain ID  2',
-                  contentAlign: TextAlign.right,
-                  initialValue: storageNode.host,
-                  autocorrect: false,
-                  autovalidate: true,
-                  validator: (value) {
-                    if (!(value.startsWith('http:') || value.startsWith('https:'))) {
-                      this.storageNode.setValidationError("host", "Field 'Host' is not valid.");
-                      return "Host must start with 'http(s)://'";
-                    }
-                    this.storageNode.setValidationCorrect("host");
-                    this.currentUpdatedValues.host = value;
-                    return null;
-                  }
-              ),
+              key: _formKey,
+              child:
+              CardSettings(
+                  children: <CardSettingsSection>[
+                    CardSettingsSection(
+                      children: <CardSettingsWidget>[
+                        CardSettingsText(
+                            label: 'Name',
+                            contentAlign: TextAlign.right,
+                            initialValue: storageNode.nameWithUrl(),
+                            autovalidate: true,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                this.storageNode.setValidationError("name", "Field 'Title' is empty.");
+                                return 'Title is required.';
+                              }
+                              this.storageNode.setValidationCorrect("name");
+                              this.currentUpdatedValues.host = value;
+                              return null;
+                            }
+                        ),
+                        CardSettingsText(
+                            label: 'Host',
+                            contentAlign: TextAlign.right,
+                            initialValue: storageNode.host,
+                            autocorrect: false,
+                            autovalidate: true,
+                            validator: (value) {
+                              if (!(value.startsWith('http:') || value.startsWith('https:'))) {
+                                this.storageNode.setValidationError("host", "Field 'Host' is not valid.");
+                                return "Host must start with 'http(s)://'";
+                              }
+                              this.storageNode.setValidationCorrect("host");
+                              this.currentUpdatedValues.host = value;
+                              return null;
+                            }
+                        ),
+                        CardSettingsInt(
+                            label: 'Port',
+                            contentAlign: TextAlign.right,
+                            initialValue: storageNode.port,
+                            //autovalidate: true,
+                            validator: (value) {
+                              if (value == null)
+                              {
+                                this.storageNode.setValidationError("port", "Field 'post' is empty.");
+                                return 'There must be a value.';//cd android && ./gradlew clean
 
-              CardSettingsText(
+
+                              }
+                              if (value < 0)
+                              {
+                                this.storageNode.setValidationError("port", "Field 'post' is negative.");
+                                return 'Port need to be unsigned.';
+                              }
+                              this.storageNode.setValidationCorrect("port");
+                              this.currentUpdatedValues.port = value;
+                              return null;
+                            }
+                        ),
+                        CardSettingsSwitch(
+                          label: 'Encrypted connection',
+                          contentAlign: TextAlign.right,
+                          initialValue: storageNode.isEncryptedEndpoint,
+                          onSaved: (value) =>
+                          this.currentUpdatedValues.isEncryptedEndpoint = value,
+                        ),
+                        /*CardSettingsText(
                   label: 'Chain ID',
                   contentAlign: TextAlign.right,
-                  initialValue: this.currentNetwork,
+                  initialValue: storageNode.network.chainID,
                   enabled: this.currentUpdatedValues.network.networkType == NetworkType.CUSTOM? true : false,
                   visible: this.currentUpdatedValues.network.networkType == NetworkType.CUSTOM? true : false,
                   autovalidate: true,
@@ -176,13 +202,12 @@ class SettingsUpdateNetwork extends StatelessWidget {
                     if (this.currentUpdatedValues.network.networkType ==
                         NetworkType.CUSTOM)
                       this.currentUpdatedValues.network.chainID = value;
-                  }),
-            ],
-          ),
-        ]
-        )
+                  }),*/
+                      ],
+                    ),
+                  ]
+              )
           ),
         ));
   }
 }
-*/

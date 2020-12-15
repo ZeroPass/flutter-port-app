@@ -63,12 +63,11 @@ class StepperBloc extends Bloc<StepperEvent, StepperState> {
           StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
           //show data on header if there is valid value
           if (storageStepEnterAccount.accountID == null || storageStepEnterAccount.accountID == "")
-            stepEnterAccountHeaderBloc.add(WithoutAccountIDEvent(network: storage.getSelectedNode(), server: storage.getStorageServer()));
+            stepEnterAccountHeaderBloc.add(WithoutAccountIDEvent(networkType: storageStepEnterAccount.networkType));
           else {
             stepEnterAccountHeaderBloc.add(WithAccountIDEvent(
                 accountID: storageStepEnterAccount.accountID,
-                server: storage.getStorageServer(),
-                network: storage.getSelectedNode()));
+                networkType: storageStepEnterAccount.networkType));
           }
           }
         break;

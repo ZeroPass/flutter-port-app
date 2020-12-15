@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:dmrtd/dmrtd.dart';
+import 'package:eosio_passid_mobile_app/constants/constants.dart';
 import 'package:intl/intl.dart';
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
 
@@ -50,10 +51,12 @@ final Map<DgTag, String> mapDgTagName = {
 bool badCertificateHostCheck(X509Certificate cert, String host, int port) {
   // TODO: in the future do not allow self signed certificates without signed host field.
   Storage storage = Storage();
-  final srvUrl = storage.storageServer.host;
+  var server = storage.getServerCloud(networkTypeServer: NetworkTypeServer.MAIN_SERVER);
+  if (server = null)
+    throw ("Server is not found in the database");
+  final srvUrl = server.selected != null? server.selected : server.servers.first;
   if (srvUrl != null) {
-    print(host ==  storage.storageServer.host);
-    return host ==  storage.storageServer.host; // TODO: certificate should be also checked in case bad selfsigned certificate is the case
+    return host ==  srvUrl; // TODO: certificate should be also checked in case bad selfsigned certificate is the case
   }
   return false;
 }

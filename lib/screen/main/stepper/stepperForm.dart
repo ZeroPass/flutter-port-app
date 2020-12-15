@@ -134,7 +134,7 @@ class _StepperFormState extends State<StepperForm> {
           //step 1(Account Name)
           StepDataEnterAccount storageStepEnterAccount =
               storage.getStorageData(0);
-          if (storage.selectedNode.name == "ZeroPass Server") return "";
+          //if (storage.selectedNode.name == "ZeroPass Server") return "";
           if (storageStepEnterAccount.isUnlocked == false)
             return "Account is not valid.";
           return "";

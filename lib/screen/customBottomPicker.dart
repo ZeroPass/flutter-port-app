@@ -1,8 +1,8 @@
 import 'package:dmrtd/src/utils.dart';
 import 'package:eosio_passid_mobile_app/utils/structure.dart';
+import 'package:eosio_passid_mobile_app/constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:eosio_passid_mobile_app/screen/requestType.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
 import 'package:flutter/foundation.dart';
@@ -28,14 +28,18 @@ class BottomPickerStructure{
   List<BottomPickerElement> elements = List();
 
 
-  void importStorageNodeList(List<StorageNode> nodes, [StorageNode selectedNode = null, String title = null, String message = null]){
+  void importNetworkList(NetworkNodeSet networkNodeSet, NetworkType selectedNetwork, [String title = null, String message = null]){
     this.isValid = true;
     this.title = (title == null ? "" : title);
     this.message = (message == null ? "" : message);
 
-    for(var item in nodes)
-      this.elements.add(BottomPickerElement(name: item.name,
-          isSelected: (selectedNode != null && item.name == selectedNode.name?true:false)));
+    if (networkNodeSet.nodes == null || networkNodeSet.nodes.isEmpty)
+      throw Exception("No networks in database");
+
+    networkNodeSet.nodes.forEach((key, value) =>
+      this.elements.add(BottomPickerElement(name: Storage().nodeSet.networkTypeIsPredefined(key) ?  Storage().nodeSet.networkTypeToString(key) :  StringUtil.getWithoutTypeName(key),
+          key: StringUtil.getWithoutTypeName(key),
+          isSelected: key == selectedNetwork)));
   }
 
   void importStorageRequestList(Map<RequestType, dynamic> authenticatorActions, [RequestType selectedRequest = null, String title = null, String message = null]){
@@ -51,7 +55,7 @@ class BottomPickerStructure{
     });
   }
 
-  void importstorageServerList(List<StorageServer> nodes, [StorageServer selectedServer = null]){
+  void importstorageServerList(List<ServerCloud> nodes, [ServerCloud selectedServer = null]){
     this.isValid = true;
     this.title = (title == null ? "" : title);
     this.message = (message == null ? "" : message);

@@ -73,19 +73,18 @@ class LoggerHandlerInstance{
 
   //ALL, TRACE, DEBUG, INFO, WARNING, ERROR, SEVERE, FATAL, OFF }
     LogLevel classificationLogLevel(Level level) {
-      switch(level){
-        case Level.ALL:     return LogLevel.ALL;
-        case Level.OFF:     return LogLevel.OFF;
-        case Level.FINEST:  return LogLevel.TRACE;
-        case Level.FINER:   return LogLevel.TRACE;
-        case Level.FINE:    return LogLevel.DEBUG;
-        case Level.CONFIG:  return LogLevel.DEBUG;
-        case Level.INFO:    return LogLevel.INFO;
-        case Level.WARNING: return LogLevel.WARNING;
-        case Level.SEVERE:  return LogLevel.SEVERE;
-        case Level.SHOUT:   return LogLevel.FATAL;
-        default:            return LogLevel.ALL;
-      }
+      if (level == Level.ALL) return LogLevel.ALL;
+      if (level == Level.OFF) return LogLevel.OFF;
+      if (level == Level.FINEST) return LogLevel.TRACE;
+      if (level == Level.FINER) return LogLevel.TRACE;
+      if (level == Level.FINE) return LogLevel.DEBUG;
+      if (level == Level.CONFIG) return LogLevel.DEBUG;
+      if (level == Level.INFO) return LogLevel.INFO;
+      if (level == Level.WARNING) return LogLevel.WARNING;
+      if (level == Level.SEVERE) return LogLevel.SEVERE;
+      if (level == Level.SHOUT) return LogLevel.FATAL;
+      else
+        return LogLevel.ALL;
     }
 
     void translate(LogRecord logRecord) async{
