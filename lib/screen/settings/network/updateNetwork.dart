@@ -6,21 +6,28 @@ import 'package:eosio_passid_mobile_app/constants/constants.dart';
 import 'package:eosio_passid_mobile_app/utils/structure.dart';
 import 'package:card_settings/card_settings.dart';
 import 'package:eosio_passid_mobile_app/screen/alert.dart';
-/*
+import 'package:eosio_passid_mobile_app/screen/settings/custom/customCardSettingsButton.dart';
+import 'package:eosio_passid_mobile_app/screen/settings/custom/CustomCardSettingsSection.dart';
+import 'package:eosio_passid_mobile_app/screen/settings/custom/customCardSettings.dart';
+import 'package:eosio_passid_mobile_app/screen/settings/network/server/updateServer.dart';
+import 'package:logging/logging.dart';
+import 'package:eosio_passid_mobile_app/screen/slideToSideRoute.dart';
+
 class SettingsUpdateNetwork extends StatelessWidget {
+  final _log = Logger('Settings.SettingsUpdateNetwork');
   NetworkType networkType;
 
   //active network; got by type
   Network network;
   //to check if any field has been updated
-  Network networkOnLoad;
+  Network networkToUpdate;
 
 
   SettingsUpdateNetwork({@required this.networkType})
   {
     Storage storage = Storage();
     this.network = storage.nodeSet.networks[this.networkType];
-    this.networkOnLoad = new Network.clone(network);
+    this.networkToUpdate = new Network.clone(network);
     //init validation fields
     //this.storageNode.initValidation(); TODO
   }
@@ -29,10 +36,14 @@ class SettingsUpdateNetwork extends StatelessWidget {
 
   void onButtonPressedSave(BuildContext context)
   {
+    Storage storage = Storage();
+
     //copy values to storage if there is any change
-    if (!this.storageNode.compare(this.currentUpdatedValues))
-      this.storageNode.clone(this.currentUpdatedValues);// = new StorageNode.clone(this.currentUpdatedValues);
-    storage.save();
+    if (!this.network.compare(this.networkToUpdate)) {
+      this.network.clone(this.networkToUpdate); // = new StorageNode.clone(this.currentUpdatedValues);
+      storage.nodeSet.networks[this.networkType].clone(this.networkToUpdate);
+      storage.save();
+    }
     showAlert(
         context: context,
         title: Text("The data have been saved successfully"),
@@ -40,13 +51,13 @@ class SettingsUpdateNetwork extends StatelessWidget {
   }
 
   Future<bool> onWillPop(BuildContext context) {
-    if (!this.storageNode.compare(this.currentUpdatedValues)) {
+    if (!this.network.compare(this.networkToUpdate)) {
       showAlert(
           context: context,
-          title: Text("The data have been saved successfully"),
+          title: Text("The data has been changed."),
           actions: [
             PlatformDialogAction(
-                child: PlatformText('Cancel'),
+                child: PlatformText('Back'),
                 onPressed: () {
                   Navigator.pop(context);
                 }),
@@ -54,7 +65,7 @@ class SettingsUpdateNetwork extends StatelessWidget {
                 child: PlatformText('Save and go',
                     style: TextStyle(fontWeight: FontWeight.bold)),
                 onPressed: () {
-                  this.storageNode = new NodeServer.clone(this.currentUpdatedValues);
+                  this.network = new Network.clone(this.networkToUpdate);
                   Navigator.pop(context);
                 })
           ]);
@@ -64,18 +75,27 @@ class SettingsUpdateNetwork extends StatelessWidget {
   }
 
 
+  dynamic returnList(){
+    Storage storage = Storage();
+    var t = ListView.builder(
+        shrinkWrap: true,
+        itemCount: storage.nodeSet.nodes[this.networkType].servers.length,
+        itemBuilder: (BuildContext context, int idx) {
+          return CustomCardSettingsButton(label: storage.nodeSet.nodes[this.networkType].servers[idx].toString(),
+              onPressed: (){
+                final page = SettingsUpdateServer(networkType: this.networkType, server: storage.nodeSet.nodes[this.networkType].servers[idx] );
+                Navigator.of(context).push(SlideToSideRoute(page));
+              });
+        });
+    return t;
+  }
+
 
   @override
   Widget build(BuildContext context) {
     final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
     Storage storage = Storage();
-
-    List<String> chainsKeys = [];
-    List<String> chainsValues = [];
-    storage.nodeSet.nodes.forEach((key, value) {
-      chainsKeys.add(StringUtil.getWithoutTypeName(key));
-      chainsValues.add(value.toString());
-    });
+    returnList();
     return PlatformScaffold(
         material: (_,__) => MaterialScaffoldData(resizeToAvoidBottomInset: false),
         cupertino: (_,__) => CupertinoPageScaffoldData(resizeToAvoidBottomInset: false),
@@ -122,67 +142,77 @@ class SettingsUpdateNetwork extends StatelessWidget {
           onWillPop: () => onWillPop(context),
           child: Form(
             key: _formKey,
-            child:
-            CardSettings(
-              children: <CardSettingsSection>[
-            CardSettingsSection(
-            children: <CardSettingsWidget>[
+            child: Column(children: <Widget>[
+              CustomCardSettings(children: <CardSettingsSection>[
+                CustomCardSettingsSection(children: <CardSettingsWidget>[
               CardSettingsText(
                   label: 'Name',
                   contentAlign: TextAlign.right,
-                  initialValue: this.network.name,
+                  initialValue: this.networkToUpdate.name,
                   autovalidate: true,
+                  enabled: this.networkToUpdate.networkType == NetworkType.CUSTOM ? true : false,
                   validator: (value) {
+                    _log.finer("Change name: $value");
+                    if (this.networkToUpdate.networkType != NetworkType.CUSTOM) {
+                      _log.finest("Cannot change the name; network type is not custom.");
+                      return "You cannot change the name, because it is predefined.";
+                    }
                     if (value == null || value.isEmpty) {
-                      this.storageNode.setValidationError("name", "Field 'Title' is empty.");
+                      _log.finest("Change name; value is null.");
+                      this.networkToUpdate.setValidationError("name", "Field 'Name' is empty.");
                       return 'Title is required.';
                     }
-                    this.storageNode.setValidationCorrect("name");
-                    this.currentUpdatedValues.host = value;
+                    this.networkToUpdate.setValidationCorrect("name");
+                    this.networkToUpdate.name = value;
                     return null;
-                  }
+                  },
               ),
-              CardSettingsText(
-                  label: 'Chain ID  2',
-                  contentAlign: TextAlign.right,
-                  initialValue: storageNode.host,
-                  autocorrect: false,
-                  autovalidate: true,
-                  validator: (value) {
-                    if (!(value.startsWith('http:') || value.startsWith('https:'))) {
-                      this.storageNode.setValidationError("host", "Field 'Host' is not valid.");
-                      return "Host must start with 'http(s)://'";
-                    }
-                    this.storageNode.setValidationCorrect("host");
-                    this.currentUpdatedValues.host = value;
-                    return null;
-                  }
-              ),
-
               CardSettingsText(
                   label: 'Chain ID',
                   contentAlign: TextAlign.right,
-                  initialValue: this.currentNetwork,
-                  enabled: this.currentUpdatedValues.network.networkType == NetworkType.CUSTOM? true : false,
-                  visible: this.currentUpdatedValues.network.networkType == NetworkType.CUSTOM? true : false,
+                  initialValue: this.networkToUpdate.chainID,
+                  enabled: this.networkToUpdate.networkType == NetworkType.CUSTOM ? true : false,
                   autovalidate: true,
                   validator: (value) {
-                    if (this.currentUpdatedValues.network.networkType !=
-                        NetworkType.CUSTOM)
-                      return "You cannot change chain id. Network type is not selected as custom.";
+                    _log.finer("Chain ID: $value");
+                    this.networkToUpdate.chainID = "kva";
+                    if (this.networkToUpdate.networkType != NetworkType.CUSTOM) {
+                      _log.finest("Cannot change 'Chain ID'; network type is not custom.");
+                      return "You cannot change 'Chain ID', because it is predefined.";
+                    }
+                    if (value == null || value.isEmpty) {
+                      _log.finest("Change 'Chain ID''; value is null.");
+                      this.networkToUpdate.setValidationError("chainID", "Field 'Chain ID' is empty.");
+                      return '"Chain ID" is required.';
+                    }
+                    this.networkToUpdate.setValidationCorrect("chainID");
+                    this.networkToUpdate.chainID = value;
                     return null;
                   },
                   onSaved: (value) {
-                    if (this.currentUpdatedValues.network.networkType ==
-                        NetworkType.CUSTOM)
-                      this.currentUpdatedValues.network.chainID = value;
+                    if (this.networkToUpdate.networkType == NetworkType.CUSTOM)
+                      this.networkToUpdate.chainID = value;
                   }),
+
             ],
           ),
         ]
-        )
+        ),
+              Text("Nodes"),
+              Container(
+                  child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: storage.nodeSet.nodes[this.networkType].servers.length,
+                      itemBuilder: (BuildContext context, int idx) {
+                        return CustomCardSettingsButton(label: storage.nodeSet.nodes[this.networkType].servers[idx].toString(),
+                        onPressed: (){
+                          final page = SettingsUpdateServer(networkType: this.networkType, server: storage.nodeSet.nodes[this.networkType].servers[idx] );
+                          Navigator.of(context).push(SlideToSideRoute(page));
+                        });
+                  })
+              )
+            ])
           ),
         ));
   }
 }
-*/

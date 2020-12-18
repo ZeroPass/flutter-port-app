@@ -4,7 +4,6 @@ import 'package:eosio_passid_mobile_app/screen/main/stepper/stepScan/stepScan.da
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepper.dart';
 import 'package:dmrtd/src/extension/string_apis.dart';
 import 'package:dmrtd/src/extension/datetime_apis.dart';
-import 'package:eosio_passid_mobile_app/screen/requestType.dart';
 import 'package:eosio_passid_mobile_app/utils/structure.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:meta/meta.dart';
@@ -155,6 +154,9 @@ class Network {
   NetworkType networkType;
   String chainID;
 
+  //do not need to be stored - just to check if field is correct in settings section
+  Map<String, Map<String, dynamic>> validation;
+
   Network({@required this.networkType, this.name = null, this.chainID = null}) {
     _log.info(
         "Network constructor: network type: $networkType, name: $name, chainID: $chainID");
@@ -184,28 +186,57 @@ class Network {
     }
   }
 
+  Map<String, dynamic> fillValidationUnit(String name) {
+    Map<String, dynamic> structure = {
+      'isValid': true,
+      'errorMsg': null
+    };
+    return structure;
+  }
+
+  void initValidation() {
+    validation = new Map();
+    //init validation values on true
+    validation['name'] = fillValidationUnit('name');
+    validation['networkType'] = fillValidationUnit('networkType');
+    validation['chainID'] = fillValidationUnit('chainID');
+  }
+
+  void setValidationError(String field, String errorMsg) {
+    if (this.validation.containsKey(field)) {
+      this.validation[field]['isValid'] = false;
+      this.validation[field]['errorMsg'] = errorMsg;
+    }
+  }
+
+  void setValidationCorrect(String field) {
+    if (this.validation.containsKey(field) &&
+        !this.validation[field]['isValid']) {
+      this.validation[field]['isValid'] = true;
+      this.validation[field]['errorMsg'] = null;
+    }
+  }
+
+  bool compare(Network network) {
+    return (this.name == network.name &&
+                this.networkType == network.networkType &&
+                this.chainID == network.chainID ) ?
+    true : false;
+  }
+
+
   Network.clone(Network network):
     this(networkType: network.networkType,
         name: network.name,
         chainID: network.chainID);
 
-  /*
 
-    Server.clone(Server server) :
-        this(
-          host: server.host,
-          port: server.port,
-          isEncryptedEndpoint: server.isEncryptedEndpoint,
-          timeoutInSeconds: server.timeoutInSeconds);
-
-  void clone(Server server) {
-    this.host = server.host;
-    this.port = server.port;
-    this.isEncryptedEndpoint = server.isEncryptedEndpoint;
-    this.timeoutInSeconds = server.timeoutInSeconds;
+  void clone(Network network) {
+    this.networkType = network.networkType;
+    this.name = network.name;
+    this.chainID = network.chainID;
   }
 
-   */
 
   factory Network.fromJson(Map<String, dynamic> json) => _$NetworkFromJson(json);
 
@@ -571,8 +602,6 @@ Map<String, dynamic> _$NetworkCloudSetToJson(NetworkCloudSet instance) => <Strin
 };
 
 
-//////////////////////////////
-
 /*
  * Node server - connection to node
  */
@@ -599,6 +628,10 @@ class NodeServer extends Server {
   NodeServer.clone(NodeServer server) {
     _log.debug("clone; server:$server");
     super.clone(server);
+  }
+
+  bool compareInherited(NodeServer nodeServer) {
+    return super.compare(nodeServer) ? true : false;
   }
 
   factory NodeServer.fromJson(Map<String, dynamic> json) => _$NodeServerFromJson(json);
@@ -642,6 +675,18 @@ class ServerCloud extends Server {
     super.clone(server);
     this.name = server.name;
   }
+  bool compareInherited(ServerCloud serverCloud) {
+    return (super.compare(serverCloud) &&
+            this.name == serverCloud.name) ?
+        true : false;
+  }
+
+  void initValidation() {
+    super.initValidation();
+    //init validation values on true
+    validation['name'] = fillValidationUnit('name');
+  }
+
   factory ServerCloud.fromJson(Map<String, dynamic> json) =>
       _$ServerCloudFromJson(json);
 

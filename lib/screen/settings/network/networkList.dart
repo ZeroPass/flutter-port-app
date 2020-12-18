@@ -24,27 +24,11 @@ class SettingsNetworkList extends StatelessWidget {
         body: ListView.builder(
             itemCount: networks.length,
             itemBuilder: (BuildContext context, int idx) {
-              return CustomCardSettingsButton(label: networks[idx].name, onPressed: (){});
-                
-                /*PlatformWidget(
-                  cupertino: (_, __) => CupertinoListTile(
-                      leading: Icon(Icons.cloud),
-                      title: Text(networks[idx].name),
-                      subtitle: Text(networks[idx].chainID),
-                      onTap: () {
-                        //open 'update network' panel
-                        //final page = SettingsNetworkUpdate(storage: storage, storageNode: storageNodes[idx]);
-                        //Navigator.of(context).push(SlideToSideRoute(page));
-                      }),
-                  material: (_, __) => ListTile(
-                      leading: Icon(Icons.cloud),
-                      title: Text(networks[idx].name),
-                      subtitle: Text(networks[idx].chainID),
-                      onTap: () {
-                        //open 'update network' panel
-                        //final page = SettingsNetworkUpdate(storage: storage, storageNode: storageNodes[idx]);
-                        //Navigator.of(context).push(SlideToSideRoute(page));
-                      }))*/;
+              return CustomCardSettingsButton(label: networks[idx].name,
+                  onPressed: (){
+                    final page = SettingsUpdateNetwork(networkType: networks[idx].networkType);
+                    Navigator.of(context).push(SlideToSideRoute(page));
+                  });
             }));
   }
 }
