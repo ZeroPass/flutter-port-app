@@ -59,14 +59,18 @@ Map<NetworkType, Network> fillNetworkTypes(Map<NetworkType, Network> networks){
   }
 
   NetworkType.values.forEach((element) {
-    if (NETWORK_CHAINS[element] != null && NETWORK_CHAINS[element][NETWORK_CHAIN_DEFAULT] == true) {
+    if (NETWORK_CHAINS[element] != null) {
       _logStorage.finer("Network type: $element, "
           "name: ${NETWORK_CHAINS[element][NETWORK_CHAIN_NAME]}"
           "chainID: ${NETWORK_CHAINS[element][NETWORK_CHAIN_ID]}");
-
+      if ( NETWORK_CHAINS[element][NETWORK_CHAIN_DEFAULT] == true)
       networks[element] = Network(networkType: element,
           name: NETWORK_CHAINS[element][NETWORK_CHAIN_NAME],
           chainID: NETWORK_CHAINS[element][NETWORK_CHAIN_ID]);
+      else
+        networks[element] = Network(networkType: element,
+            name: "Custom",
+            chainID: "Write you own chainID.");
     }
   });
   return networks;
@@ -76,57 +80,65 @@ Map<NetworkType, Network> fillNetworkTypes(Map<NetworkType, Network> networks){
 Future<void> fillDatabase() async
 {
   Storage storage = new Storage();
-  storage.load(callback: (isAlreadyUpdated, isValid, {exc}) {
-    var test = 8;
-  });
+
+  Map<NetworkType, Network> nets = fillNetworkTypes(storage.nodeSet.networks);
+  if (nets != null)
+    storage.nodeSet.networks = nets;
+
+  await storage.load(callback: (isAlreadyUpdated, isValid, {exc}) {
+    if (storage.nodeSet.nodes.isEmpty) {
+      storage.nodeSet.add(networkType: NetworkType.KYLIN,
+          isSelected: true,
+          server: NodeServer(host: "kylin.eosnode.io",
+              port: 443,
+              isEncryptedEndpoint: true));
+
+      storage.nodeSet.add(networkType: NetworkType.EOSIO_TESTNET,
+          isSelected: false,
+          server: NodeServer(host: "eosio.eosnode.io",
+              port: 443,
+              isEncryptedEndpoint: true));
+
+      storage.nodeSet.add(networkType: NetworkType.EOSIO_TESTNET,
+          isSelected: false,
+          server: NodeServer(host: "456786.eosnode.io",
+              port: 443,
+              isEncryptedEndpoint: true));
+
+      storage.nodeSet.add(networkType: NetworkType.MAINNET,
+          isSelected: false,
+          server: NodeServer(host: "mainenet.eosnode.io",
+              port: 443,
+              isEncryptedEndpoint: true));
+
+      storage.nodeSet.add(networkType: NetworkType.CUSTOM,
+          isSelected: false,
+          server: NodeServer(host: "custom.eosnode.io",
+              port: 443,
+              isEncryptedEndpoint: true));
+    }
+
+    if (storage.cloudSet.servers.isEmpty){
+      storage.cloudSet.add(networkTypeServer: NetworkTypeServer.MAIN_SERVER,
+          isSelected: true,
+          server: ServerCloud(name: "ZeroPass server", host: "163.172.144.187", port: 443, isEncryptedEndpoint: true));
+    }
+
+    StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
+    storageStepEnterAccount.isUnlocked = true;
+
+    StepDataAttestation stepDataAttestation = storage.getStorageData(2);
+    stepDataAttestation.requestType = RequestType.ATTESTATION_REQUEST;
+    stepDataAttestation.isOutsideCall = OutsideCall(reqeustedBy: "Ultra DEX");
+
+
+  });/**/
 
   //to call it just one time
   //if(storage.nodeSet)
   //  return;
 
-  var t = storage.nodeSet;
-  Map<NetworkType, Network> nets = fillNetworkTypes(storage.nodeSet.networks);
-  if (nets != null)
-    storage.nodeSet.networks = nets;
-
-  if (storage.nodeSet.nodes.isEmpty) {
-    storage.nodeSet.add(networkType: NetworkType.KYLIN,
-        isSelected: true,
-        server: NodeServer(host: "kylin.eosnode.io",
-            port: 443,
-            isEncryptedEndpoint: true));
-
-    storage.nodeSet.add(networkType: NetworkType.EOSIO_TESTNET,
-        isSelected: false,
-        server: NodeServer(host: "eosio.eosnode.io",
-            port: 443,
-            isEncryptedEndpoint: true));
-
-    storage.nodeSet.add(networkType: NetworkType.EOSIO_TESTNET,
-        isSelected: false,
-        server: NodeServer(host: "456786.eosnode.io",
-            port: 443,
-            isEncryptedEndpoint: true));
-
-    storage.nodeSet.add(networkType: NetworkType.MAINNET,
-        isSelected: false,
-        server: NodeServer(host: "mainenet.eosnode.io",
-            port: 443,
-            isEncryptedEndpoint: true));
-  }
-
-  if (storage.cloudSet.servers.isEmpty){
-    storage.cloudSet.add(networkTypeServer: NetworkTypeServer.MAIN_SERVER,
-    isSelected: true,
-    server: ServerCloud(name: "ZeroPass server", host: "163.172.144.187", port: 443, isEncryptedEndpoint: true));
-  }
-
-  StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
-  storageStepEnterAccount.isUnlocked = true;
-
-  StepDataAttestation stepDataAttestation = storage.getStorageData(2);
-  stepDataAttestation.requestType = RequestType.ATTESTATION_REQUEST;
-  stepDataAttestation.isOutsideCall = OutsideCall(reqeustedBy: "Ultra DEX");
+  storage.save();
 }
 
 /*

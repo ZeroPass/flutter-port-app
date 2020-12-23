@@ -302,7 +302,7 @@ class Networks{
       if (item.compare(server)){
         _log.debug("Server found. Delete it from list.");
         _servers.remove(item);
-        if(_selected.compare(server)){
+        if(_selected != null && _selected.compare(server)){
           _log.debug("Server has been set as selected. Remove that mark.");
           _selected = _servers.length > 0? _servers.first : null;
         }
@@ -370,7 +370,7 @@ NetworksCloud _$NetworksCloudFromJson(Map<String, dynamic> json) =>
           ? (json['servers'] as List).map(
               (e) => ServerCloud.fromJson(e as Map<String, dynamic>)).toList()
           : null,
-      selected:ServerCloud.fromJson(json['selected'])
+      selected:json['selected'] != null? ServerCloud.fromJson(json['selected']) : null
   );
 
 Map<String, dynamic> _$NetworksCloudToJson(NetworksCloud instance) => <String, dynamic>{
@@ -402,7 +402,7 @@ NetworksNode _$NetworksNodeFromJson(Map<String, dynamic> json) {
           ? (json['servers'] as List).map(
               (e) => NodeServer.fromJson(e as Map<String, dynamic>)).toList()
           : null,
-      selected: NodeServer.fromJson(json['selected'])
+      selected: json['selected'] != null? NodeServer.fromJson(json['selected']) : null
   );
 }
 Map<String, dynamic> _$NetworksNodeToJson(NetworksNode instance) => <String, dynamic>{
@@ -455,12 +455,22 @@ class NetworkNodeSet{
     nodes.add(server);
   }
 
+  void deleteNetwork(NetworkType networkType){
+    _log.debug("Delete network; networkType: $networkType");
+    if (_nodes.containsKey(networkType) == false){
+      _log.debug("No network type found in map of nodes.");
+    }
+    else {
+      _nodes.remove(networkType);
+    }
+  }
+
   //add remove, update, etc
 
   factory NetworkNodeSet.fromJson(Map<String, dynamic> json) => _$NetworkNodeSetFromJson(json);
   Map<String, dynamic> toJson() => _$NetworkNodeSetToJson(this);
 
-  static Map<NetworkType, NetworksNode> parseMapNodes(Map<String,String> m){
+  static Map<NetworkType, NetworksNode> parseMapNodes(Map<String,dynamic> m){
     Logger("Parse map nodes").debug("map: $m");
     if(m==null){
       Logger("Parse map").warning("Map is empty");
@@ -468,12 +478,14 @@ class NetworkNodeSet{
     }
     Map<NetworkType, NetworksNode> result ={};
     for(String key in m.keys){
-      result[EnumUtil.fromStringEnum(NetworkType.values, key)]=NetworksNode.fromJson( jsonDecode(m[key]));
+    var u = m[key];
+    //var u1 = jsonDecode(m[key]);
+    result[EnumUtil.fromStringEnum(NetworkType.values, key)]=NetworksNode.fromJson(m[key]);
     }
     return result;
   }
 
-  static Map<NetworkType, Network> parseMapNetworks(Map<String,String> m){
+  static Map<NetworkType, Network> parseMapNetworks(Map<String,dynamic> m){
     Logger("Parse map network").debug("map: $m");
     if(m==null){
       Logger("Parse map").warning("Map is empty");
@@ -481,33 +493,33 @@ class NetworkNodeSet{
     }
     Map<NetworkType, Network> result ={};
     for(String key in m.keys){
-      result[EnumUtil.fromStringEnum(NetworkType.values, key)]=Network.fromJson( jsonDecode(m[key]));
+      result[EnumUtil.fromStringEnum(NetworkType.values, key)]=Network.fromJson( m[key]);
     }
     return result;
   }
 
-  static Map<String, String> toStringMapNodes(Map<NetworkType, NetworksNode> m){
+  static Map<String, dynamic> toStringMapNodes(Map<NetworkType, NetworksNode> m){
     Logger("ToStringMap nodes").debug("map: $m");
     if(m==null) {
       Logger("ToStringMap").warning("Map is empty");
       return null;
     }
-    Map<String, String> result ={};
+    Map<String, dynamic> result ={};
     m.forEach((key, value) {
-      result[StringUtil.getWithoutTypeName(key)]=m[key].toJson().toString();
+      result[StringUtil.getWithoutTypeName(key)]=m[key].toJson();
     });
     return result;
   }
 
-  static Map<String, String> toStringMapNewtorks(Map<NetworkType, Network> m){
+  static Map<String, dynamic> toStringMapNewtorks(Map<NetworkType, Network> m){
     Logger("ToStringMapnetworks").debug("map: $m");
     if(m==null) {
       Logger("ToStringMap").warning("Map is empty");
       return null;
     }
-    Map<String, String> result ={};
+    Map<String, dynamic> result ={};
     m.forEach((key, value) {
-      result[StringUtil.getWithoutTypeName(key)]=m[key].toJson().toString();
+      result[StringUtil.getWithoutTypeName(key)]=m[key].toJson();
     });
     return result;
   }
@@ -536,7 +548,7 @@ Map<String, dynamic> _$NetworkNodeSetToJson(NetworkNodeSet instance) => <String,
 class NetworkCloudSet{
   final _log = Logger("NetworkCloudSet");
 
-  @JsonKey(fromJson: parseMap, toJson: toStringMap)
+  //@JsonKey(fromJson: parseMap, toJson: toStringMap)
   Map<NetworkTypeServer, NetworksCloud> _servers;
 
   NetworkCloudSet (){
@@ -565,28 +577,28 @@ class NetworkCloudSet{
   factory NetworkCloudSet.fromJson(Map<String, dynamic> json) => _$NetworkCloudSetFromJson(json);
   Map<String, dynamic> toJson() => _$NetworkCloudSetToJson(this);
 
-  static Map<NetworkType, NetworksNode> parseMap(Map<String,String> m){
+  static Map<NetworkTypeServer, NetworksCloud> parseMap(Map<String, dynamic> m){
     Logger("Parse map").debug("map: $m");
     if(m==null){
       Logger("Parse map").warning("Map is empty");
       return null;
     }
-    Map<NetworkType, NetworksNode> result ={};
+    Map<NetworkTypeServer, NetworksCloud> result ={};
     for(String key in m.keys){
-      result[EnumUtil.fromStringEnum(NetworkType.values, key)]=NetworksNode.fromJson( jsonDecode(m[key]));
+      result[EnumUtil.fromStringEnum(NetworkTypeServer.values, key)]=NetworksCloud.fromJson( m[key]);
     }
     return result;
   }
 
-  static Map<String, String> toStringMap(Map<NetworkType, NetworksNode> m){
+  static Map<String, dynamic> toStringMap(Map<NetworkTypeServer, NetworksCloud> m){
     Logger("ToStringMap").debug("map: $m");
     if(m==null) {
       Logger("ToStringMap").warning("Map is empty");
       return null;
     }
-    Map<String, String> result ={};
+    Map<String, dynamic> result ={};
     m.forEach((key, value) {
-      result[StringUtil.getWithoutTypeName(key)]=m[key].toJson().toString();
+      result[StringUtil.getWithoutTypeName(key)]=m[key].toJson();
     });
     return result;
   }
@@ -594,11 +606,11 @@ class NetworkCloudSet{
 
 
 NetworkCloudSet _$NetworkCloudSetFromJson(Map<String, dynamic> json) =>
-    NetworkCloudSet.load(servers: json['servers']);// NetworkNodeSet.parseMap(json['nodes'])
+    NetworkCloudSet.load(servers: NetworkCloudSet.parseMap(json['servers']));// NetworkNodeSet.parseMap(json['nodes'])
 
 
 Map<String, dynamic> _$NetworkCloudSetToJson(NetworkCloudSet instance) => <String, dynamic>{
-  'servers': instance.servers
+  'servers': NetworkCloudSet.toStringMap(instance.servers)
 };
 
 
@@ -791,7 +803,7 @@ class StorageData {
         "loggingEnabled: $loggingEnabled,"
         "steps: $steps,"
         "networkNodeSet: $nodeSet,"
-        "snetworkCloudSet: $cloudSet");
+        "networkCloudSet: $cloudSet");
     this._loggingEnabled = loggingEnabled;
     this._steps = steps;
     this._nodeSet = nodeSet;
@@ -950,7 +962,10 @@ class StorageData {
       if (value == null){
         _log.info("Nothing has been stored in the database yet.");
         callback(true, false, exc: "Nothing has been stored in the database yet.");
+        return;
       }
+
+      var t = jsonDecode(value);
       storage.fromStorageData(StorageData.fromJson(jsonDecode(value)));
       if (callback != null)
         callback(false, true);

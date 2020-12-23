@@ -1,18 +1,26 @@
-import 'package:cupertino_list_tile/cupertino_list_tile.dart';
-import 'package:eosio_passid_mobile_app/constants/constants.dart';
 import 'package:eosio_passid_mobile_app/screen/settings/network/updateNetwork.dart';
 import 'package:eosio_passid_mobile_app/screen/settings/custom/customCardSettingsButton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
 import 'package:eosio_passid_mobile_app/screen/slideToSideRoute.dart';
+import 'package:logging/logging.dart';
 
 class SettingsNetworkList extends StatelessWidget {
+  final _log = Logger('Settings.SettingsNetworkList');
+
   @override
   Widget build(BuildContext context) {
     var storage = Storage();
-    //List<NodeServer> storageNodes = storage.nodeSet.nodes[NetworkType.MAINNET].servers;
-    List<Network> networks = storage.nodeSet.networks.values.toList();
+    List<Network> networks = List<Network>();
+    _log.fine("Merge two 'maps', show only elements which are in both maps.");
+    storage.nodeSet.networks.forEach((key, value){
+      if (storage.nodeSet.nodes.containsKey(key)){
+        _log.finest("NetworkType is in both dict: $key");
+        networks.add(value);
+      }
+    });
+
     return PlatformScaffold(
         material: (_, __) =>
             MaterialScaffoldData(resizeToAvoidBottomInset: false),

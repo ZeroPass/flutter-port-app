@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
 import 'package:eosio_passid_mobile_app/constants/constants.dart';
-import 'package:eosio_passid_mobile_app/utils/structure.dart';
 import 'package:card_settings/card_settings.dart';
 import 'package:eosio_passid_mobile_app/screen/alert.dart';
 import 'package:eosio_passid_mobile_app/screen/settings/custom/customCardSettingsButton.dart';
 import 'package:eosio_passid_mobile_app/screen/settings/custom/CustomCardSettingsSection.dart';
+import 'package:eosio_passid_mobile_app/screen/settings/custom/CustomCardSettingsButtonDelete.dart';
 import 'package:eosio_passid_mobile_app/screen/settings/custom/customCardSettings.dart';
 import 'package:eosio_passid_mobile_app/screen/settings/network/server/updateServer.dart';
 import 'package:logging/logging.dart';
@@ -29,12 +29,33 @@ class SettingsUpdateNetwork extends StatelessWidget {
     this.network = storage.nodeSet.networks[this.networkType];
     this.networkToUpdate = new Network.clone(network);
     //init validation fields
-    //this.storageNode.initValidation(); TODO
+    this.network.initValidation();
   }
 
-  void onButtonPressedDelete() {}
+  void onButtonPressedDelete({@required BuildContext context}) async {
+    _log.fine("Button 'delete' clicked");
+    bool answer = await showAlert<bool>(
+        context: context,
+        title: Text("Are you sure you want to delete a network?"),
+        actions: <PlatformDialogAction>[
+          PlatformDialogAction(
+              child: PlatformText('No'),
+              onPressed: () => Navigator.pop(context, false)
+          ),
+          PlatformDialogAction(
+              child: PlatformText('Yes'),
+              onPressed: () => Navigator.pop(context, true)
+          ),
+        ],
+        closeOnBackPressed: true);
+    if (await answer){
+      Storage storage = Storage();
+      storage.nodeSet.nodes.remove(this.networkType);
+      storage.save();
+    }
+  }
 
-  void onButtonPressedSave(BuildContext context)
+  void onButtonPressedSave({@required BuildContext context, bool showNotification = true})
   {
     Storage storage = Storage();
 
@@ -44,32 +65,35 @@ class SettingsUpdateNetwork extends StatelessWidget {
       storage.nodeSet.networks[this.networkType].clone(this.networkToUpdate);
       storage.save();
     }
+    if (showNotification)
     showAlert(
         context: context,
         title: Text("The data have been saved successfully"),
         closeOnBackPressed: true);
   }
 
-  Future<bool> onWillPop(BuildContext context) {
+  Future<bool> onWillPop(BuildContext context) async {
     if (!this.network.compare(this.networkToUpdate)) {
-      showAlert(
+      bool answer = await showAlert<bool>(
           context: context,
           title: Text("The data has been changed."),
           actions: [
             PlatformDialogAction(
                 child: PlatformText('Back'),
                 onPressed: () {
-                  Navigator.pop(context);
+                  Navigator.pop(context, false);
+                  return false;
                 }),
             PlatformDialogAction(
                 child: PlatformText('Save and go',
                     style: TextStyle(fontWeight: FontWeight.bold)),
                 onPressed: () {
-                  this.network = new Network.clone(this.networkToUpdate);
-                  Navigator.pop(context);
+                  onButtonPressedSave(context: context, showNotification: false);
+                  Navigator.pop(context, true);
+                  return true;
                 })
           ]);
-      return new Future.value(false);
+      return new Future.value(answer);
     } else
       return new Future.value(true);
   }
@@ -105,22 +129,6 @@ class SettingsUpdateNetwork extends StatelessWidget {
           trailingActions: <Widget>[
             PlatformIconButton(
                 cupertino: (_,__) => CupertinoIconButtonData(
-                  icon: Icon(
-                    CupertinoIcons.delete,
-                    color: Colors.white,
-                    size: 30
-                  ), 
-                  padding: EdgeInsets.only(right: 20),
-                ),
-                materialIcon: Icon(Icons.delete_outline, size: 35.0),
-                material: (_,__) => MaterialIconButtonData(tooltip: 'Delete'),
-                onPressed: () {
-                  /*final page = Settings();
-                Navigator.of(context).push(SlideToSideRoute(page));
-              */
-                }),
-            PlatformIconButton(
-                cupertino: (_,__) => CupertinoIconButtonData(
                   icon: Icon( // Save icon
                     const IconData(0xf41F, fontPackage: CupertinoIcons.iconFontPackage, fontFamily: CupertinoIcons.iconFont),
                     color: Colors.white,
@@ -131,10 +139,7 @@ class SettingsUpdateNetwork extends StatelessWidget {
                 androidIcon: Icon(Icons.save, size: 35.0),
                 material: (_, __) => MaterialIconButtonData(tooltip: 'Save'),
                 onPressed: () {
-                  onButtonPressedSave(context);
-                  /*final page = Settings();
-                Navigator.of(context).push(SlideToSideRoute(page));
-              */
+                  onButtonPressedSave(showNotification: true, context: context);
                 })
           ],
         ),
@@ -147,6 +152,7 @@ class SettingsUpdateNetwork extends StatelessWidget {
                 CustomCardSettingsSection(children: <CardSettingsWidget>[
               CardSettingsText(
                   label: 'Name',
+                  maxLength: 64,
                   contentAlign: TextAlign.right,
                   initialValue: this.networkToUpdate.name,
                   autovalidate: true,
@@ -159,16 +165,17 @@ class SettingsUpdateNetwork extends StatelessWidget {
                     }
                     if (value == null || value.isEmpty) {
                       _log.finest("Change name; value is null.");
-                      this.networkToUpdate.setValidationError("name", "Field 'Name' is empty.");
+                      this.network.setValidationError("name", "Field 'Name' is empty.");
                       return 'Title is required.';
                     }
-                    this.networkToUpdate.setValidationCorrect("name");
+                    this.network.setValidationCorrect("name");
                     this.networkToUpdate.name = value;
                     return null;
                   },
               ),
               CardSettingsText(
                   label: 'Chain ID',
+                  maxLength: 64,
                   contentAlign: TextAlign.right,
                   initialValue: this.networkToUpdate.chainID,
                   enabled: this.networkToUpdate.networkType == NetworkType.CUSTOM ? true : false,
@@ -182,10 +189,10 @@ class SettingsUpdateNetwork extends StatelessWidget {
                     }
                     if (value == null || value.isEmpty) {
                       _log.finest("Change 'Chain ID''; value is null.");
-                      this.networkToUpdate.setValidationError("chainID", "Field 'Chain ID' is empty.");
+                      this.network.setValidationError("chainID", "Field 'Chain ID' is empty.");
                       return '"Chain ID" is required.';
                     }
-                    this.networkToUpdate.setValidationCorrect("chainID");
+                    this.network.setValidationCorrect("chainID");
                     this.networkToUpdate.chainID = value;
                     return null;
                   },
@@ -198,7 +205,10 @@ class SettingsUpdateNetwork extends StatelessWidget {
           ),
         ]
         ),
-              Text("Nodes"),
+        Container(
+          margin: EdgeInsets.only(top: 20),
+            child:Text("Nodes",
+                  style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold))),
               Container(
                   child: ListView.builder(
                       shrinkWrap: true,
@@ -210,7 +220,11 @@ class SettingsUpdateNetwork extends StatelessWidget {
                           Navigator.of(context).push(SlideToSideRoute(page));
                         });
                   })
-              )
+              ),
+            if (this.networkType == NetworkType.CUSTOM)
+              CustomCardSettingsButtonDelete(onPressed: (){
+                onButtonPressedDelete(context: context);
+              })
             ])
           ),
         ));

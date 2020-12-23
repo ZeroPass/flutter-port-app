@@ -3,22 +3,31 @@ import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
 import 'package:eosio_passid_mobile_app/constants/constants.dart';
-import 'package:eosio_passid_mobile_app/utils/structure.dart';
 import 'package:card_settings/card_settings.dart';
 import 'package:eosio_passid_mobile_app/screen/alert.dart';
 import 'package:eosio_passid_mobile_app/screen/settings/custom/CustomCardSettingsButtonDelete.dart';
 import 'package:logging/logging.dart';
 
-class SettingsUpdateServer extends StatelessWidget {
-  final _log = Logger('Settings.SettingsUpdateServer');
+class SettingsUpdateCloud extends StatelessWidget {
+  final _log = Logger('Settings.SettingsUpdateCloud');
 
-  NetworkType networkType;
+  NetworkTypeServer networkTypeServer;
   Server server;
   //to check if any field has been updated
   Server serverToUpdate;
 
-  SettingsUpdateServer({@required this.networkType, @required this.server})
+  SettingsUpdateCloud({@required this.networkTypeServer})
   {
+    if (this.networkTypeServer != NetworkTypeServer.MAIN_SERVER)
+      throw Exception("Not correct network type server");
+
+    Storage storage = Storage();
+    if (storage.cloudSet.servers[NetworkTypeServer.MAIN_SERVER] == null ||
+        storage.cloudSet.servers[NetworkTypeServer.MAIN_SERVER].servers == null ||
+        storage.cloudSet.servers[NetworkTypeServer.MAIN_SERVER].servers.length == 0)
+      throw Exception("Not server defined");
+
+    this.server = storage.cloudSet.servers[NetworkTypeServer.MAIN_SERVER].servers.first;
     this.serverToUpdate = new Server.clone(server);
     //init validation fields
     this.server.initValidation();
@@ -42,11 +51,11 @@ class SettingsUpdateServer extends StatelessWidget {
         closeOnBackPressed: true);
     if ( await answer){
       Storage storage = Storage();
-      for (var element in storage.nodeSet.nodes[this.networkType].servers){
+      for (var element in storage.cloudSet.servers[this.networkTypeServer].servers){
         if (this.server.compare(element)){
           _log.finest("Element found in database.");
           element.clone(serverToUpdate);
-          storage.nodeSet.nodes[this.networkType].delete(element);
+          storage.cloudSet.servers[this.networkTypeServer].delete(element);
           storage.save();
           Navigator.pop(context);
           break;
@@ -63,7 +72,7 @@ class SettingsUpdateServer extends StatelessWidget {
     //copy values to storage if there is any change
     if (!this.server.compare(this.serverToUpdate)) {
       _log.finer("No data has been changed since last save/open.");
-        for (var element in storage.nodeSet.nodes[this.networkType].servers){
+      for (var element in storage.cloudSet.servers[this.networkTypeServer].servers){
         if (this.server.compare(element)){
           _log.finest("Element found in database. Clone the new data to this element.");
           element.clone(serverToUpdate);
@@ -181,7 +190,7 @@ class SettingsUpdateServer extends StatelessWidget {
         cupertino: (_,__) => CupertinoPageScaffoldData(resizeToAvoidBottomInset: false),
         appBar: PlatformAppBar(
           //automaticallyImplyLeading: true,
-          title: Text("Update network", style: TextStyle(color: Colors.white)),
+          title: Text("Update server", style: TextStyle(color: Colors.white)),
           trailingActions: <Widget>[
             PlatformIconButton(
                 cupertino: (_,__) => CupertinoIconButtonData(

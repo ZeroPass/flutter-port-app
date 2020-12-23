@@ -1,3 +1,4 @@
+import 'package:eosio_passid_mobile_app/constants/constants.dart';
 import 'package:flushbar/flushbar_route.dart';
 import 'package:flutter/material.dart';
 import 'package:eosio_passid_mobile_app/screen/theme.dart';
@@ -11,6 +12,7 @@ import 'package:eosio_passid_mobile_app/utils/storage.dart';
 import 'package:eosio_passid_mobile_app/screen/settings/custom/customCardSettingsButton.dart';
 import 'package:eosio_passid_mobile_app/screen/settings/custom/customCardSettings.dart';
 import 'package:eosio_passid_mobile_app/screen/settings/custom/CustomCardSettingsSection.dart';
+import 'package:eosio_passid_mobile_app/screen/settings/network/server/updateCloud.dart';
 import 'package:share/share.dart';
 
 class Settings extends StatelessWidget {
@@ -61,7 +63,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     label: "Networks",
                     onPressed: (){
                       Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => SettingsNetwork()));
+                          MaterialPageRoute(builder: (context) => SettingsUpdateCloud(networkTypeServer: NetworkTypeServer.MAIN_SERVER)));
                     },),
                 ]
             ),
