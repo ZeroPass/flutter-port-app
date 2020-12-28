@@ -34,8 +34,11 @@ dependencies:
   cupertino_icons: ^0.1.3
   dart_countries_states: ^0.0.8
   date_format: ^1.0.8
+  passid:
+    path: lib/passid
   dmrtd:
-    path: lib/dmrtd
+    git:
+      url: https://github.com/ZeroPass/dmrtd.git
   equatable: ^1.1.1
   flare_flutter: ^2.0.3
   http: ^0.12.1
@@ -54,8 +57,6 @@ dependencies:
   json_serializable: ^3.3.0
   cupertino_list_tile: ^0.1.2
   meta: ^1.1.8
-  passid:
-    path: lib/passid
   shared_preferences: ^0.5.7+1
   flushbar: ^1.10.4
   eosdart: ^0.4.7
