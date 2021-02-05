@@ -9,6 +9,7 @@ import 'package:eosio_passid_mobile_app/screen/settings/custom/customCardSetting
 import 'package:eosio_passid_mobile_app/screen/settings/custom/CustomCardSettingsSection.dart';
 import 'package:eosio_passid_mobile_app/screen/settings/custom/CustomCardSettingsButtonDelete.dart';
 import 'package:eosio_passid_mobile_app/screen/settings/custom/customCardSettings.dart';
+import 'package:eosio_passid_mobile_app/screen/settings/custom/serverList.dart';
 import 'package:eosio_passid_mobile_app/screen/settings/network/server/updateServer.dart';
 import 'package:logging/logging.dart';
 import 'package:eosio_passid_mobile_app/screen/slideToSideRoute.dart';
@@ -133,7 +134,7 @@ class SettingsUpdateNetwork extends StatelessWidget {
                     const IconData(0xf41F, fontPackage: CupertinoIcons.iconFontPackage, fontFamily: CupertinoIcons.iconFont),
                     color: Colors.white,
                     size: 35
-                  ), 
+                  ),
                   padding: EdgeInsets.all(0),
                 ),
                 androidIcon: Icon(Icons.save, size: 35.0),
@@ -210,16 +211,25 @@ class SettingsUpdateNetwork extends StatelessWidget {
             child:Text("Nodes",
                   style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold))),
               Container(
-                  child: ListView.builder(
+                  child: ServerList(servers: storage.nodeSet.nodes[this.networkType].servers, networkType: this.networkType)
+
+                /*ListView.builder(
                       shrinkWrap: true,
                       itemCount: storage.nodeSet.nodes[this.networkType].servers.length,
                       itemBuilder: (BuildContext context, int idx) {
                         return CustomCardSettingsButton(label: storage.nodeSet.nodes[this.networkType].servers[idx].toString(),
                         onPressed: (){
                           final page = SettingsUpdateServer(networkType: this.networkType, server: storage.nodeSet.nodes[this.networkType].servers[idx] );
-                          Navigator.of(context).push(SlideToSideRoute(page));
+                          Navigator.of(context).push(SlideToSideRoute(page)).then((value) {
+                            //refresh the screen
+                            setState(() {
+
+                            });
+
+                            var u = 5;
+                          });
                         });
-                  })
+                  })*/
               ),
             if (this.networkType == NetworkType.CUSTOM)
               CustomCardSettingsButtonDelete(onPressed: (){

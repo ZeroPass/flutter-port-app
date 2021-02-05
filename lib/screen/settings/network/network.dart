@@ -1,4 +1,4 @@
-import 'package:cupertino_list_tile/cupertino_list_tile.dart';
+ import 'package:cupertino_list_tile/cupertino_list_tile.dart';
 import 'package:eosio_passid_mobile_app/constants/constants.dart';
 import 'package:eosio_passid_mobile_app/screen/settings/network/updateNetwork.dart';
 import 'package:flutter/material.dart';

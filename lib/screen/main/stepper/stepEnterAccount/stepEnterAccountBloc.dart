@@ -88,8 +88,7 @@ class StepEnterAccountBloc extends Bloc<StepEnterAccountEvent, StepEnterAccountS
             this.add(AccountDelete(networkType: storageStepEnterAccount.networkType));
         }
       });
-}
-
+  }
   var validatorText = '';
 
   @override

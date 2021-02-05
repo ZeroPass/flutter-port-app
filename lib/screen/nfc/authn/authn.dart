@@ -57,7 +57,7 @@ class Authn /*extends State<Authn>*/ {
   Future<bool> Function(EfDG1 dg1) onDG1FileRequested;
 
   final _log = Logger('authn.screen');
-  final String _fakeName = "Larimer Daniel";
+  final String _fakeName = "Trump Melania";
 
   Authn({@required this.onDG1FileRequested, @required this.showDataToBeSent, @required this.showBufferScreen, @required this.onConnectionError});
 

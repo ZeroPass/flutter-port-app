@@ -131,7 +131,6 @@ Future<void> fillDatabase() async
     stepDataAttestation.requestType = RequestType.ATTESTATION_REQUEST;
     stepDataAttestation.isOutsideCall = OutsideCall(reqeustedBy: "Ultra DEX");
 
-
   });/**/
 
   //to call it just one time

@@ -52,12 +52,11 @@ bool badCertificateHostCheck(X509Certificate cert, String host, int port) {
   // TODO: in the future do not allow self signed certificates without signed host field.
   Storage storage = Storage();
   var server = storage.getServerCloud(networkTypeServer: NetworkTypeServer.MAIN_SERVER);
-  if (server = null)
+  if (server == null)
     throw ("Server is not found in the database");
   final srvUrl = server.selected != null? server.selected : server.servers.first;
-  if (srvUrl != null) {
-    return host ==  srvUrl; // TODO: certificate should be also checked in case bad selfsigned certificate is the case
-  }
+  if (srvUrl != null)
+    return host ==  srvUrl.host; // TODO: certificate should be also checked in case bad selfsigned certificate is the case
   return false;
 }
 

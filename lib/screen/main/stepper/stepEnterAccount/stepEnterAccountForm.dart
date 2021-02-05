@@ -12,7 +12,6 @@ import 'package:eosio_passid_mobile_app/utils/size.dart';
 import 'package:eosio_passid_mobile_app/screen/theme.dart';
 
 class StepEnterAccountForm extends StatefulWidget {
-  StepEnterAccountForm() {}
 
   @override
   _StepEnterAccountFormState createState() => _StepEnterAccountFormState();
@@ -20,7 +19,7 @@ class StepEnterAccountForm extends StatefulWidget {
 
 class _StepEnterAccountFormState extends State<StepEnterAccountForm> {
   TextEditingController _accountTextController;
-  var _storage;
+  Storage _storage;
 
   _StepEnterAccountFormState() {
     this._accountTextController = TextEditingController();
@@ -108,7 +107,6 @@ class _StepEnterAccountFormState extends State<StepEnterAccountForm> {
 
     final stepperBloc = BlocProvider.of<StepperBloc>(context);
     return Form(
-        autovalidate: true,
         child: Column(children: <Widget>[
           selectNetworkWithTile(context, state, stepEnterAccountBloc),
           //if (storage.selectedNode.name != "ZeroPass Server")

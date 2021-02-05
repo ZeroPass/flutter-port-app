@@ -7,7 +7,7 @@ abstract class StepEnterAccountHeaderEvent extends Equatable{
   NetworkType networkType;
   ServerCloud server;
 
-  StepEnterAccountHeaderEvent({@required this.networkType/*, @required this.server*/});
+  StepEnterAccountHeaderEvent({@required this.networkType});
 }
 
 class WithoutAccountIDEvent extends StepEnterAccountHeaderEvent {

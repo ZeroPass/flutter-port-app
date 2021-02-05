@@ -8,6 +8,7 @@ import 'package:card_settings/card_settings.dart';
 import 'package:eosio_passid_mobile_app/screen/alert.dart';
 import 'package:eosio_passid_mobile_app/screen/settings/custom/CustomCardSettingsButtonDelete.dart';
 import 'package:logging/logging.dart';
+import 'package:eosio_passid_mobile_app/screen/flushbar.dart';
 
 class SettingsUpdateServer extends StatelessWidget {
   final _log = Logger('Settings.SettingsUpdateServer');
@@ -73,7 +74,13 @@ class SettingsUpdateServer extends StatelessWidget {
               showAlert(
                   context: context,
                   title: Text("The data have been saved successfully"),
-                  closeOnBackPressed: true);
+                  closeOnBackPressed: true,
+                  actions: [
+                    PlatformDialogAction(
+                      child: PlatformText('OK',
+                          style: TextStyle(fontWeight: FontWeight.bold)),
+                      onPressed: () => Navigator.pop(context))
+                  ]);
           });
           break;
         }

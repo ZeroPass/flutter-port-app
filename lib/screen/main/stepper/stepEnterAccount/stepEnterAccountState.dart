@@ -21,7 +21,7 @@ class DeletedState extends StepEnterAccountState {
 }
 
 class FullState extends StepEnterAccountState {
-  FullState(String accountID, NetworkType networkType ){
+  FullState(String accountID, NetworkType networkType){
     this.accountID = accountID;
     this.networkType = networkType;
   }

@@ -8,7 +8,7 @@ import 'package:eosio_passid_mobile_app/utils/storage.dart';
 
 class StepEnterAccountHeaderBloc extends Bloc<StepEnterAccountHeaderEvent, StepEnterAccountHeaderState> {
 
-  StepEnterAccountHeaderBloc(){
+  StepEnterAccountHeaderBloc() {
     updateDataOnUI();
   }
 
@@ -22,6 +22,8 @@ class StepEnterAccountHeaderBloc extends Bloc<StepEnterAccountHeaderEvent, StepE
         if (storageStepEnterAccount.accountID != null && storageStepEnterAccount.accountID != "" )
           this.add(WithAccountIDEvent(accountID: storageStepEnterAccount.accountID,
                                       networkType: storageStepEnterAccount.networkType));
+        else
+          this.add(WithoutAccountIDEvent(networkType: storageStepEnterAccount.networkType));
       }
     });
   }
@@ -31,17 +33,9 @@ class StepEnterAccountHeaderBloc extends Bloc<StepEnterAccountHeaderEvent, StepE
     Storage storage = Storage();
     StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
     return WithoutAccountIDState(
-        networkType: storageStepEnterAccount.networkType, server: storage.getServerCloudSelected(networkTypeServer: null));
-    }
-
-    @override
-    void onError(Object error, StackTrace stacktrace) {
-      super.onError(error, stacktrace);
-    }
-
-    @override
-    void onTransition(Transition<StepEnterAccountHeaderEvent, StepEnterAccountHeaderState> transition) {
-      super.onTransition(transition);
+        networkType: storageStepEnterAccount.networkType,
+        server: storage.getServerCloudSelected(networkTypeServer: null)
+    );
     }
 
     @override

@@ -92,7 +92,6 @@ class _StepperFormState extends State<StepperForm> {
           content: StepReviewForm(),
           state: _getState(3, currentStep, isLastStep: true),
           isActive: (3 == currentStep ? true : false)
-          //isActive: false
           )
     ];
   }
