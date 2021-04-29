@@ -8,7 +8,7 @@ import 'package:eosio_passid_mobile_app/utils/storage.dart';
 
 class StepScanHeaderBloc extends Bloc<StepScanHeaderEvent, StepScanHeaderState> {
   //final int maxSteps;
-  StepScanHeaderBloc(){
+  StepScanHeaderBloc() : super(WithoutDataState()) {
     updateDataOnUI();
   }
 
@@ -27,8 +27,8 @@ class StepScanHeaderBloc extends Bloc<StepScanHeaderEvent, StepScanHeaderState> 
     });
   }
 
-  @override
-  StepScanHeaderState get initialState => WithoutDataState();
+  //@override
+  //StepScanHeaderState get initialState => WithoutDataState();
 
   @override
   void onError(Object error, StackTrace stacktrace) {
@@ -39,7 +39,6 @@ class StepScanHeaderBloc extends Bloc<StepScanHeaderEvent, StepScanHeaderState> 
   void onTransition(Transition<StepScanHeaderEvent, StepScanHeaderState> transition) {
     super.onTransition(transition);
   }
-
 
   @override
   Stream<StepScanHeaderState> mapEventToState( StepScanHeaderEvent event) async* {

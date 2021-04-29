@@ -143,36 +143,10 @@ class SettingsUpdateServer extends StatelessWidget {
       return null;
     }
 
-    if (value.contains("http:\/\/")){
-      _log.finest("http in string");
-      value= value.substring(7);
-      this.serverToUpdate.isEncryptedEndpoint = false;
-    }
-    else if (value.contains("https:\/\/")){
-      _log.finest("https in string;");
-      value = value.substring(8);
-      this.serverToUpdate.isEncryptedEndpoint = true;
-    }
-    else{
-      _log.finest("No http in string. Automatic set as https in database.");
-      this.serverToUpdate.isEncryptedEndpoint = true;
-    }
-
-    if (value.lastIndexOf(new RegExp(r'(:\d)')) > 0){
-      _log.finest("Port detected.");
-      String port = value.substring(value.lastIndexOf(new RegExp(r'(:\d)')) + 1);
-      _log.finest("Port: $port");
-      this.serverToUpdate.port = int.parse(port);
-      value = value.substring(0, value.lastIndexOf(new RegExp(r'(:\d)')));
-    }
-    else{
-      _log.finest("No port detected");
-      this.serverToUpdate.port = this.serverToUpdate.isEncryptedEndpoint? 443 :80;
-    }
 
     _log.finest("Parsed host is: $value");
     this.server.setValidationCorrect("host");
-    this.serverToUpdate.host = value;
+    this.serverToUpdate.host = Uri(host:value);
     return null;
   }
 
@@ -199,7 +173,7 @@ class SettingsUpdateServer extends StatelessWidget {
                   ),
                   padding: EdgeInsets.all(0),
                 ),
-                androidIcon: Icon(Icons.save, size: 35.0),
+                materialIcon: Icon(Icons.save, size: 35.0),
                 material: (_, __) => MaterialIconButtonData(tooltip: 'Save'),
                 onPressed: () {
                   onButtonPressedSave(showNotification: true, context: context);

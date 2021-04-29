@@ -5,10 +5,10 @@ import 'dart:async';
 
 class StepReviewBloc extends Bloc<StepReviewEvent, StepReviewState> {
 
-  StepReviewBloc(){}
+  StepReviewBloc() : super(StepReviewEmptyState()) {}
 
-  @override
-  StepReviewState get initialState => StepReviewEmptyState();
+  //@override
+  //StepReviewState get initialState => StepReviewEmptyState();
 
   @override
   void onTransition(Transition<StepReviewEvent, StepReviewState> transition) {

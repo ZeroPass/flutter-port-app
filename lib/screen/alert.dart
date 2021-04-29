@@ -30,7 +30,7 @@ Future<T> showAlert<T>(
     closeOnBackPressed = false}) async {
   return showPlatformDialog<T>(
     context: context,
-    androidBarrierDismissible: dismissible,
+    barrierDismissible: dismissible,
     builder: (BuildContext context) {
       return WillPopScope(
           onWillPop: () async =>

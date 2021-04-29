@@ -18,21 +18,21 @@ class ConnectorAPI extends ConnectionAdapterMaintenance with ConnectionAdapterAP
   PassIdApi passIdApi;
   final _log = Logger('ConnectionAPI; ConnectionAdapterMaintenance, ConnectionAdapterAPI');
 
-  ConnectionAPI(String url, int port, int timeout/*in milliseconds*/){
-    _log.fine("Connection API; url: $url, port: $port, timeout: $timeout");
-    this._connectMaintenance(url, port, timeout);
-    this._connect(url, port, timeout);
+  ConnectionAPI(Uri url, int timeout/*in milliseconds*/){
+    _log.fine("Connection API; url: $url, timeout: $timeout");
+    this._connectMaintenance(url, timeout);
+    this._connect(url, timeout);
   }
 
   @override
-  void _connectMaintenance(String url, int port, int timeout/*in milliseconds*/){
-    _log.debug("ConnectionAPI.connectMaintenance with data: url:$url, port:$port, timeout:$timeout");
+  void _connectMaintenance(Uri url, int timeout/*in milliseconds*/){
+    _log.debug("ConnectionAPI.connectMaintenance with data: url:$url, timeout:$timeout");
   }
 
   @override
-  void _connect(String url, int port, int timeout/*in milliseconds*/){
-    _log.debug("ConnectionAPI.connect with data: url:$url, port:$port, timeout:$timeout");
-    passIdApi = PassIdApi(Uri.parse(url));
+  void _connect(Uri url, int timeout/*in milliseconds*/){
+    _log.debug("ConnectionAPI.connect with data: url:$url, timeout:$timeout");
+    passIdApi = PassIdApi(url);
   }
 
   @override

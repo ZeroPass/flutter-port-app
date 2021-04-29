@@ -45,12 +45,14 @@ class StepperBloc extends Bloc<StepperEvent, StepperState> {
   bool isReviewLocked;
   final _log = Logger('passid.StepperBloc');
 
-  StepperBloc({@required this.maxSteps}){
+  //StepperBloc():super();
+
+  StepperBloc({@required this.maxSteps}):super(StepperState(step: 0, maxSteps: maxSteps)){
     this.isReviewLocked = true;
   }
 
-  @override
-  StepperState get initialState => StepperState(step: 0, maxSteps: maxSteps);
+  //@override
+  //StepperState get initialState => StepperState(step: 0, maxSteps: maxSteps);
 
 
   bool liveModifyHeader (int step, var context, {bool dataInStep}) {
@@ -85,7 +87,6 @@ class StepperBloc extends Bloc<StepperEvent, StepperState> {
                 birth: storageStepScan.birth,
                 validUntil: storageStepScan.validUntil));
           }
-          //statements;
         }
         break;
 

@@ -137,7 +137,7 @@ class SettingsUpdateNetwork extends StatelessWidget {
                   ),
                   padding: EdgeInsets.all(0),
                 ),
-                androidIcon: Icon(Icons.save, size: 35.0),
+                materialIcon: Icon(Icons.save, size: 35.0),
                 material: (_, __) => MaterialIconButtonData(tooltip: 'Save'),
                 onPressed: () {
                   onButtonPressedSave(showNotification: true, context: context);
@@ -212,29 +212,12 @@ class SettingsUpdateNetwork extends StatelessWidget {
                   style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold))),
               Container(
                   child: ServerList(servers: storage.nodeSet.nodes[this.networkType].servers, networkType: this.networkType)
-
-                /*ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: storage.nodeSet.nodes[this.networkType].servers.length,
-                      itemBuilder: (BuildContext context, int idx) {
-                        return CustomCardSettingsButton(label: storage.nodeSet.nodes[this.networkType].servers[idx].toString(),
-                        onPressed: (){
-                          final page = SettingsUpdateServer(networkType: this.networkType, server: storage.nodeSet.nodes[this.networkType].servers[idx] );
-                          Navigator.of(context).push(SlideToSideRoute(page)).then((value) {
-                            //refresh the screen
-                            setState(() {
-
-                            });
-
-                            var u = 5;
-                          });
-                        });
-                  })*/
               ),
             if (this.networkType == NetworkType.CUSTOM)
               CustomCardSettingsButtonDelete(onPressed: (){
                 onButtonPressedDelete(context: context);
-              })
+              }),
+
             ])
           ),
         ));

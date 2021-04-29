@@ -22,9 +22,7 @@ import 'package:dmrtd/src/extension/logging_apis.dart';
  */
 @JsonSerializable(nullable: false)
 class Server {
-  String host;
-  int port;
-  bool isEncryptedEndpoint;
+  Uri host;
   int timeoutInSeconds;
 
   //do not need to be stored - just to check if field is correct in settings section
@@ -32,42 +30,27 @@ class Server {
 
   Server({
     @required this.host,
-    @required this.port,
-    @required this.isEncryptedEndpoint,
     this.timeoutInSeconds = 15
-  }) {
-    //remove http(s) part of host
-    this.host = this.host.toLowerCase();
-    this.host = this.host.replaceFirst("https://", "");
-    this.host = this.host.replaceFirst("http://", "");
-  }
+  });
 
   Server.clone(Server server) :
         this(
           host: server.host,
-          port: server.port,
-          isEncryptedEndpoint: server.isEncryptedEndpoint,
           timeoutInSeconds: server.timeoutInSeconds);
 
   void clone(Server server) {
     this.host = server.host;
-    this.port = server.port;
-    this.isEncryptedEndpoint = server.isEncryptedEndpoint;
     this.timeoutInSeconds = server.timeoutInSeconds;
   }
 
   Server.deserialization(Map<String, dynamic> json){
-    this.host = json['host'] as String;
-    this.isEncryptedEndpoint = json['isEncryptedEndpoint'] as bool;
-    this.port = json['port'] as int;
+    this.host = json['host'] as Uri;
     this.timeoutInSeconds = json['timeoutInSeconds'] as int;
   }
 
   bool compare(Server server) {
     return (
         this.host == server.host &&
-            this.port == server.port &&
-            this.isEncryptedEndpoint == server.isEncryptedEndpoint &&
             this.timeoutInSeconds == server.timeoutInSeconds) ?
     true : false;
   }
@@ -84,9 +67,6 @@ class Server {
     validation = new Map();
     //init validation values on true
     validation['host'] = fillValidationUnit('host');
-    validation['isEncryptedEndpoint'] =
-        fillValidationUnit('isEncryptedEndpoint');
-    validation['port'] = fillValidationUnit('port');
     validation['timeoutInSeconds'] = fillValidationUnit('timeoutInSeconds');
   }
 
@@ -118,31 +98,20 @@ class Server {
   }
 
   String toString() {
-    String prefix = (this.isEncryptedEndpoint) ? "https://" : "http://";
-    String port = (this.port != null) ? ":" + this.port.toString() : "";
-    return prefix + this.host + port;
-  }
-
-  //name of the object
-  String nameWithUrl() {
-    return toString();
+    return this.host.toString();
   }
 }
 
 Server _$ServerFromJson(Map<String, dynamic> json) {
   return Server(
-      host: json['host'] as String,
-      isEncryptedEndpoint: json['isEncryptedEndpoint'] as bool,
-      port: json['port'] as int,
+      host: Uri.encodeFull(json['host']) as Uri,
       timeoutInSeconds: json['timeoutInSeconds'] as int
   );
 }
 
 Map<String, dynamic> _$ServerToJson(Server instance) =>
     <String, dynamic>{
-      'host': instance.host,
-      'isEncryptedEndpoint': instance.isEncryptedEndpoint,
-      'port': instance.port,
+      'host': instance.host.toString(),
       'timeoutInSeconds': instance.timeoutInSeconds
     };
 
@@ -622,17 +591,12 @@ class NodeServer extends Server {
   final _log = Logger("Server");
 
   NodeServer({
-    @required String host,
-    @required int port,
-    @required bool isEncryptedEndpoint,
-    //@required this.network,
+    @required Uri host,
     int timeoutInSeconds = 15
   }) : super(host: host,
-      port: port,
-      isEncryptedEndpoint: isEncryptedEndpoint,
       timeoutInSeconds: timeoutInSeconds) {}
 
-  NodeServer.deserialization(Map<String, dynamic> server/*, Network network*/) : super.deserialization(server){
+  NodeServer.deserialization(Map<String, dynamic> server) : super.deserialization(server){
     _log.debug("deserialization; server:$server");
     //this.network = network;
   }
@@ -668,13 +632,9 @@ class ServerCloud extends Server {
   String name;
 
   ServerCloud({ @required this.name,
-    @required String host,
-    @required int port,
-    @required bool isEncryptedEndpoint,
+    @required Uri host,
     int timeoutInSeconds = 15
   }) : super(host: host,
-      port: port,
-      isEncryptedEndpoint: isEncryptedEndpoint,
       timeoutInSeconds: timeoutInSeconds);
 
   ServerCloud.deserialization(Map<String, dynamic> server, String name) : super.deserialization(server){

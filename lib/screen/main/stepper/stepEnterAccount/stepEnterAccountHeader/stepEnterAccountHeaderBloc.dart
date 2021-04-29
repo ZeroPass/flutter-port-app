@@ -1,6 +1,8 @@
+import 'package:eosio_passid_mobile_app/constants/constants.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccountHeader/stepEnterAccountHeader.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
 import 'package:bloc/bloc.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:async';
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
@@ -8,7 +10,7 @@ import 'package:eosio_passid_mobile_app/utils/storage.dart';
 
 class StepEnterAccountHeaderBloc extends Bloc<StepEnterAccountHeaderEvent, StepEnterAccountHeaderState> {
 
-  StepEnterAccountHeaderBloc() {
+  StepEnterAccountHeaderBloc({@required NetworkType networkType}): super(WithoutAccountIDState(networkType: networkType)){
     updateDataOnUI();
   }
 

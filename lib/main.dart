@@ -29,8 +29,8 @@ import 'package:logging/logging.dart';
 import 'package:eosio_passid_mobile_app/screen/slideToSideRoute.dart';
 import 'package:device_preview/device_preview.dart' as DevPreview;
 import 'package:eosio_passid_mobile_app/utils/logging/loggerHandler.dart' as LH;
-
-import 'package:eosio_passid_mobile_app/utils/net/eosio/eosio.dart';
+import 'package:eosio_passid_mobile_app/connection/tools/eosio/eosio.dart';
+import 'package:eosio_passid_mobile_app/connection/connectors/connectorChainEOS.dart';
 
 var RUN_IN_DEVICE_PREVIEW_MODE = false;
 final _logStorage = Logger('Storage initialization');
@@ -89,39 +89,29 @@ Future<void> fillDatabase() async
     if (storage.nodeSet.nodes.isEmpty) {
       storage.nodeSet.add(networkType: NetworkType.KYLIN,
           isSelected: true,
-          server: NodeServer(host: "kylin.eosnode.io",
-              port: 443,
-              isEncryptedEndpoint: true));
+          server: NodeServer(host: Uri.parse("https://kylin.eosnode.io:443")));
 
       storage.nodeSet.add(networkType: NetworkType.EOSIO_TESTNET,
           isSelected: false,
-          server: NodeServer(host: "eosio.eosnode.io",
-              port: 443,
-              isEncryptedEndpoint: true));
+          server: NodeServer(host: Uri.parse("https://eosio.eosnode.io:443")));
 
       storage.nodeSet.add(networkType: NetworkType.EOSIO_TESTNET,
           isSelected: false,
-          server: NodeServer(host: "456786.eosnode.io",
-              port: 443,
-              isEncryptedEndpoint: true));
+          server: NodeServer(host: Uri.parse("https://456786.eosnode.io:443")));
 
       storage.nodeSet.add(networkType: NetworkType.MAINNET,
           isSelected: false,
-          server: NodeServer(host: "mainenet.eosnode.io",
-              port: 443,
-              isEncryptedEndpoint: true));
+          server: NodeServer(host: Uri.parse("https://mainenet.eosnode.io:443")));
 
       storage.nodeSet.add(networkType: NetworkType.CUSTOM,
           isSelected: false,
-          server: NodeServer(host: "custom.eosnode.io",
-              port: 443,
-              isEncryptedEndpoint: true));
+          server: NodeServer(host: Uri.parse("https://custom.eosnode.io:443")));
     }
 
     if (storage.cloudSet.servers.isEmpty){
       storage.cloudSet.add(networkTypeServer: NetworkTypeServer.MAIN_SERVER,
           isSelected: true,
-          server: ServerCloud(name: "ZeroPass server", host: "163.172.144.187", port: 443, isEncryptedEndpoint: true));
+          server: ServerCloud(name: "ZeroPass server", host: Uri.parse("https://163.172.144.187")));
     }
 
     StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
@@ -132,6 +122,16 @@ Future<void> fillDatabase() async
     stepDataAttestation.isOutsideCall = OutsideCall(reqeustedBy: "Ultra DEX");
 
   });/**/
+  
+  Keys keys= Keys();
+  keys.add(PrivateKey(TEST_PRIVATE_KEY));
+
+  /*ConnectorChainEOS cce = ConnectorChainEOS(Uri.parse('https://84.255.244.192'), 5000, keys);
+  cce.ping(1).then((value){
+    print(value);
+    var t = 9;
+
+  });*/
 
   //to call it just one time
   //if(storage.nodeSet)
@@ -164,10 +164,10 @@ class PassId extends StatelessWidget {
               DefaultMaterialLocalizations.delegate,
               DefaultWidgetsLocalizations.delegate
             ],
-            android: (_) => MaterialAppData(
+            material: (_, __) => MaterialAppData(
                 theme: AndroidTheme().getLight(),
                 darkTheme: AndroidTheme().getDark()),
-            ios: (_) => CupertinoAppData(
+            cupertino: (_, __) => CupertinoAppData(
               theme: iosThemeData(),
 
             ),
@@ -266,6 +266,9 @@ class _PassIdWidgetState extends State<PassIdWidget> with TickerProviderStateMix
 
     changeNavigationBarColor();
 
+    Storage storage = Storage();
+    StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
+    StepDataAttestation stepDataAttestation = storage.getStorageData(2);
 
 
     return PlatformScaffold(
@@ -294,7 +297,7 @@ class _PassIdWidgetState extends State<PassIdWidget> with TickerProviderStateMix
                 ), 
                 padding: EdgeInsets.all(0),
               ),
-              androidIcon: Icon(Icons.menu, size: 30.0),
+              materialIcon: Icon(Icons.menu, size: 30.0),
               material: (_,__) => MaterialIconButtonData(tooltip: 'Settings'),
               onPressed: () {
                 final page = Settings();
@@ -306,17 +309,17 @@ class _PassIdWidgetState extends State<PassIdWidget> with TickerProviderStateMix
         body: MultiBlocProvider(
           providers: [
             BlocProvider<StepEnterAccountHeaderBloc>(
-                create: (BuildContext context) => StepEnterAccountHeaderBloc()),
+                create: (BuildContext context) => StepEnterAccountHeaderBloc(networkType: storageStepEnterAccount.networkType)),
             BlocProvider<StepScanHeaderBloc>(
                 create: (BuildContext context) => StepScanHeaderBloc()),
             BlocProvider<StepEnterAccountBloc>(
-                create: (BuildContext context) => StepEnterAccountBloc()),
+                create: (BuildContext context) => StepEnterAccountBloc(networkType: storageStepEnterAccount.networkType)),
             BlocProvider<StepScanBloc>(
                 create: (BuildContext context) => StepScanBloc()),
             BlocProvider<StepAttestationBloc>(
-                create: (BuildContext context) => StepAttestationBloc()),
+                create: (BuildContext context) => StepAttestationBloc(requestType: stepDataAttestation.requestType)),
             BlocProvider<StepAttestationHeaderBloc>(
-                create: (BuildContext context) => StepAttestationHeaderBloc()),
+                create: (BuildContext context) => StepAttestationHeaderBloc(requestType: stepDataAttestation.requestType)),
             BlocProvider<StepReviewBloc>(
                 create: (BuildContext context) => StepReviewBloc()),
             BlocProvider<StepReviewHeaderBloc>(

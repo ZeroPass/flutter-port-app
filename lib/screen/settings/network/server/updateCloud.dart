@@ -71,7 +71,6 @@ class SettingsUpdateCloud extends StatelessWidget {
 
     //copy values to storage if there is any change
     if (!this.server.compare(this.serverToUpdate)) {
-      _log.finer("No data has been changed since last save/open.");
       for (var element in storage.cloudSet.servers[this.networkTypeServer].servers){
         if (this.server.compare(element)){
           _log.finest("Element found in database. Clone the new data to this element.");
@@ -88,6 +87,8 @@ class SettingsUpdateCloud extends StatelessWidget {
         }
       }
     }
+    else
+      _log.finer("No data has been changed since last save/open.");
   }
 
   Future<bool> onWillPop(BuildContext context) async {
@@ -134,51 +135,21 @@ class SettingsUpdateCloud extends StatelessWidget {
     _log.finer("URL: $value");
     if (value == null || value.isEmpty) {
       _log.finest("URL; value is null.");
-      //this.serverToUpdate.setValidationError("name", "Field 'url' is empty.");
-      //return 'URL is required.';
-      return null;
-    }
-    if (RegExp(r'[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&=]*)').hasMatch(value) == false){
-      _log.finest("URL; regular expression does not match.");
-      //this.serverToUpdate.setValidationError("name", "Field 'URL' not match regular expression.");
-      //return 'Not valid URL address.';
-      return null;
+      this.serverToUpdate.setValidationError("name", "Field 'url' is empty.");
+      return 'URL is required.';
     }
 
-    if (value.contains("http:\/\/")){
-      _log.finest("http in string");
-      value= value.substring(7);
-      this.serverToUpdate.isEncryptedEndpoint = false;
+    try {
+      this.serverToUpdate.host = Uri.parse(value);
     }
-    else if (value.contains("https:\/\/")){
-      _log.finest("https in string;");
-      value = value.substring(8);
-      this.serverToUpdate.isEncryptedEndpoint = true;
+    catch(e){
+      if (value.length > 5)
+        return "Not valid URL addresss";
     }
-    else{
-      _log.finest("No http in string. Automatic set as https in database.");
-      this.serverToUpdate.isEncryptedEndpoint = true;
-    }
-
-    if (value.lastIndexOf(new RegExp(r'(:\d)')) > 0){
-      _log.finest("Port detected.");
-      String port = value.substring(value.lastIndexOf(new RegExp(r'(:\d)')) + 1);
-      _log.finest("Port: $port");
-      this.serverToUpdate.port = int.parse(port);
-      value = value.substring(0, value.lastIndexOf(new RegExp(r'(:\d)')));
-    }
-    else{
-      _log.finest("No port detected");
-      this.serverToUpdate.port = this.serverToUpdate.isEncryptedEndpoint? 443 :80;
-    }
-
-    _log.finest("Parsed host is: $value");
-    this.server.setValidationCorrect("host");
-    this.serverToUpdate.host = value;
     return null;
   }
 
-  String initialValue(){
+  String initialValue(){/**/
     return this.serverToUpdate.toString();
   }
 
@@ -201,7 +172,7 @@ class SettingsUpdateCloud extends StatelessWidget {
                   ),
                   padding: EdgeInsets.all(0),
                 ),
-                androidIcon: Icon(Icons.save, size: 35.0),
+                materialIcon: Icon(Icons.save, size: 35.0),
                 material: (_, __) => MaterialIconButtonData(tooltip: 'Save'),
                 onPressed: () {
                   onButtonPressedSave(showNotification: true, context: context);
@@ -210,8 +181,8 @@ class SettingsUpdateCloud extends StatelessWidget {
         ),
         body: WillPopScope(
           onWillPop: () => onWillPop(context),
+          key: _formKey,
           child: Form(
-              key: _formKey,
               child: Column(children: [
                 CardSettings(
                     children: <CardSettingsSection>[
@@ -225,9 +196,9 @@ class SettingsUpdateCloud extends StatelessWidget {
                             //autovalidate: true,
                             //enabled: this.networkType == NetworkType.CUSTOM ? true : false,
 
-                            validator: (value) {
-                              return onChanged(value);
-                            },
+                            //validator: (value) {
+                            //  return validator(value);
+                            //},
                             onChanged: (value){
                               return onChanged(value);
                             },

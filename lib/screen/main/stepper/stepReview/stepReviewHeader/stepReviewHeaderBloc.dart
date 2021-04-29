@@ -5,10 +5,10 @@ import 'dart:async';
 
 class StepReviewHeaderBloc extends Bloc<StepReviewHeaderEvent, StepReviewHeaderState> {
 
-  StepEnterAccountHeaderBloc(){}
+  StepReviewHeaderBloc() : super(StepReviewHeaderWithoutDataState()){}
 
-    @override
-    StepReviewHeaderState get initialState => StepReviewHeaderWithoutDataState();
+    //@override
+    //StepReviewHeaderState get initialState => StepReviewHeaderWithoutDataState();
 
 
     @override

@@ -105,7 +105,7 @@ class SettingsUpdateNode extends StatelessWidget {
                   ),
                   padding: EdgeInsets.all(0),
                 ),
-                androidIcon: Icon(Icons.save, size: 35.0),
+                materialIcon: Icon(Icons.save, size: 35.0),
                 material: (_, __) => MaterialIconButtonData(tooltip: 'Save'),
                 onPressed: () {
                   onButtonPressedSave(context);
@@ -125,24 +125,9 @@ class SettingsUpdateNode extends StatelessWidget {
                     CardSettingsSection(
                       children: <CardSettingsWidget>[
                         CardSettingsText(
-                            label: 'Name',
-                            contentAlign: TextAlign.right,
-                            initialValue: storageNode.nameWithUrl(),
-                            autovalidate: true,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                this.storageNode.setValidationError("name", "Field 'Title' is empty.");
-                                return 'Title is required.';
-                              }
-                              this.storageNode.setValidationCorrect("name");
-                              this.currentUpdatedValues.host = value;
-                              return null;
-                            }
-                        ),
-                        CardSettingsText(
                             label: 'Host',
                             contentAlign: TextAlign.right,
-                            initialValue: storageNode.host,
+                            initialValue: storageNode.host.toString(),
                             autocorrect: false,
                             autovalidate: true,
                             validator: (value) {
@@ -151,58 +136,10 @@ class SettingsUpdateNode extends StatelessWidget {
                                 return "Host must start with 'http(s)://'";
                               }
                               this.storageNode.setValidationCorrect("host");
-                              this.currentUpdatedValues.host = value;
+                              this.currentUpdatedValues.host = Uri(host:value);
                               return null;
                             }
                         ),
-                        CardSettingsInt(
-                            label: 'Port',
-                            contentAlign: TextAlign.right,
-                            initialValue: storageNode.port,
-                            //autovalidate: true,
-                            validator: (value) {
-                              if (value == null)
-                              {
-                                this.storageNode.setValidationError("port", "Field 'post' is empty.");
-                                return 'There must be a value.';//cd android && ./gradlew clean
-
-
-                              }
-                              if (value < 0)
-                              {
-                                this.storageNode.setValidationError("port", "Field 'post' is negative.");
-                                return 'Port need to be unsigned.';
-                              }
-                              this.storageNode.setValidationCorrect("port");
-                              this.currentUpdatedValues.port = value;
-                              return null;
-                            }
-                        ),
-                        CardSettingsSwitch(
-                          label: 'Encrypted connection',
-                          contentAlign: TextAlign.right,
-                          initialValue: storageNode.isEncryptedEndpoint,
-                          onSaved: (value) =>
-                          this.currentUpdatedValues.isEncryptedEndpoint = value,
-                        ),
-                        /*CardSettingsText(
-                  label: 'Chain ID',
-                  contentAlign: TextAlign.right,
-                  initialValue: storageNode.network.chainID,
-                  enabled: this.currentUpdatedValues.network.networkType == NetworkType.CUSTOM? true : false,
-                  visible: this.currentUpdatedValues.network.networkType == NetworkType.CUSTOM? true : false,
-                  autovalidate: true,
-                  validator: (value) {
-                    if (this.currentUpdatedValues.network.networkType !=
-                        NetworkType.CUSTOM)
-                      return "You cannot change chain id. Network type is not selected as custom.";
-                    return null;
-                  },
-                  onSaved: (value) {
-                    if (this.currentUpdatedValues.network.networkType ==
-                        NetworkType.CUSTOM)
-                      this.currentUpdatedValues.network.chainID = value;
-                  }),*/
                       ],
                     ),
                   ]

@@ -105,7 +105,7 @@ Map<String, dynamic> _$StepDataAttestationToJson(StepDataAttestation instance) =
 
 
 class StepAttestationBloc extends Bloc<StepAttestationEvent, StepAttestationState> {
-  StepAttestationBloc();
+  StepAttestationBloc({RequestType requestType}): super(AttestationWithDataState(requestType: requestType));
 
   @override
   StepAttestationState get initialState {

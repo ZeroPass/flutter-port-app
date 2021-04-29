@@ -44,7 +44,7 @@ class APIresponse{
 
 
 abstract class ConnectionAdapterMaintenance{
-  void _connectMaintenance(String url, int port, int timeout/*in milliseconds*/);
+  void _connectMaintenance(Uri url, int timeout/*in milliseconds*/);
 
   Future<APIresponse> uploadCSCA(String cscaBinary);
   Future<APIresponse> removeCSCA(String cscaBinary);
@@ -55,7 +55,7 @@ abstract class ConnectionAdapterMaintenance{
 
 
 abstract class ConnectionAdapterAPI{
-  void _connect(String url, int port, int timeout/*in milliseconds*/);
+  void _connect(Uri url, int timeout/*in milliseconds*/);
 
   Future<int> ping(int ping);
   Future<ProtoChallenge> getChallenge();

@@ -15,7 +15,7 @@ String formatDate(DateTime date, {Locale locale}) {
 
 /// Returns [Locale] or null.
 Locale getLocaleOf(BuildContext ctx) {
-  return Localizations.localeOf(ctx, nullOk: true);
+  return Localizations.localeOf(ctx/*, nullOk: true*/);
 }
 
 Container makeButton(
@@ -92,7 +92,7 @@ Future<void> hideBusyDialog(GlobalKey dialogKey,
 
 Future<DateTime> pickDate(BuildContext context, DateTime firstDate,
     DateTime initDate, DateTime lastDate) async {
-  final locale = Localizations.localeOf(context, nullOk: true);
+  final locale = Localizations.localeOf(context/*, nullOk: true*/);
   final DateTime picked = await showDatePicker(
       context: context,
       firstDate: firstDate,

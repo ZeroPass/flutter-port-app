@@ -7,6 +7,7 @@ import 'dart:async';
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
 import 'package:eosio_passid_mobile_app/utils/structure.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:meta/meta.dart';
 
 
 @JsonSerializable()
@@ -70,9 +71,16 @@ Map<String, dynamic> _$StepDataEnterAccountToJson(StepDataEnterAccount instance)
 
 class StepEnterAccountBloc extends Bloc<StepEnterAccountEvent, StepEnterAccountState> {
 
-  StepEnterAccountBloc(){
+  StepEnterAccountBloc({@required NetworkType networkType}): super(FullState(null, networkType)){
     this.updateDataOnUI();
   }
+
+  /*StepEnterAccountState defaultState(){
+    Storage storage = Storage();
+    StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
+    return FullState(null, storageStepEnterAccount.networkType);
+  }*/
+
 
   //check if there is any data stored
   void updateDataOnUI(){
@@ -91,12 +99,12 @@ class StepEnterAccountBloc extends Bloc<StepEnterAccountEvent, StepEnterAccountS
   }
   var validatorText = '';
 
-  @override
+  /*@override
   StepEnterAccountState get initialState {
     Storage storage = Storage();
     StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
     return FullState(null, storageStepEnterAccount.networkType);
-  }
+  }*/
 
     @override
     void onTransition(Transition<StepEnterAccountEvent, StepEnterAccountState> transition) {

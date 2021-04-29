@@ -25,8 +25,8 @@ class SettingsNetwork extends StatelessWidget {
               return PlatformWidget(
                   cupertino: (_, __) => CupertinoListTile(
                       leading: Icon(Icons.cloud),
-                      title: Text(storageNodes[idx].nameWithUrl()),
-                      subtitle: Text(storageNodes[idx].host),
+                      title: Text(storageNodes[idx].toString()),
+                      //subtitle: Text(storageNodes[idx].host),
                       onTap: () {
                         //open 'update network' panel
                         //final page = SettingsNetworkUpdate(
@@ -35,8 +35,8 @@ class SettingsNetwork extends StatelessWidget {
                       }),
                   material: (_, __) => ListTile(
                       leading: Icon(Icons.cloud),
-                      title: Text(storageNodes[idx].nameWithUrl()),
-                      subtitle: Text(storageNodes[idx].host),
+                      title: Text(storageNodes[idx].toString()),
+                      //subtitle: Text(storageNodes[idx].host),
                       onTap: () {
                         //open 'update network' panel
                         //final page = SettingsNetworkUpdate(

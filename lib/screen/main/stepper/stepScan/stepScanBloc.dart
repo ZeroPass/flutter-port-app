@@ -71,7 +71,7 @@ Map<String, dynamic> _$StepDataScanToJson(StepDataScan instance) => <String, dyn
 
 class StepScanBloc extends Bloc<StepScanEvent, StepScanState> {
 
-  StepScanBloc() {
+  StepScanBloc(): super(StateScan()) {
     this.updateDataOnUI();
   }
 
@@ -92,8 +92,8 @@ class StepScanBloc extends Bloc<StepScanEvent, StepScanState> {
 
   var validatorText = '';
 
-  @override
-  StepScanState get initialState => StateScan();
+  //@override
+  //StepScanState get initialState => StateScan();
 
   //separate function because of async function
   bool validatorFunction (String value, var context) {
