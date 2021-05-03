@@ -1,3 +1,4 @@
+import 'package:eosio_passid_mobile_app/screen/customButton.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
@@ -71,6 +72,20 @@ class SettingsUpdateNetwork extends StatelessWidget {
         context: context,
         title: Text("The data have been saved successfully"),
         closeOnBackPressed: true);
+  }
+
+  void onButtonPressedNewItem({@required BuildContext context, bool showNotification = true})
+  {
+    Storage storage = Storage();
+
+    final page = SettingsUpdateServer(networkType: this.networkType);
+    Navigator.of(context).push(SlideToSideRoute(page));
+
+    if (showNotification)
+      showAlert(
+          context: context,
+          title: Text("The data have been saved successfully"),
+          closeOnBackPressed: true);
   }
 
   Future<bool> onWillPop(BuildContext context) async {
@@ -217,7 +232,11 @@ class SettingsUpdateNetwork extends StatelessWidget {
               CustomCardSettingsButtonDelete(onPressed: (){
                 onButtonPressedDelete(context: context);
               }),
+            CustomButton(title: "Add new",
 
+                callbackOnPressed: () {
+                  onButtonPressedSave(showNotification: true, context: context);
+                })
             ])
           ),
         ));

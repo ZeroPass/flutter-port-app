@@ -18,9 +18,13 @@ class SettingsUpdateServer extends StatelessWidget {
   //to check if any field has been updated
   Server serverToUpdate;
 
-  SettingsUpdateServer({@required this.networkType, @required this.server})
+  SettingsUpdateServer({@required this.networkType, this.server})
   {
-    this.serverToUpdate = new Server.clone(server);
+    if (this.server == null)
+      this.serverToUpdate = new Server();
+
+    else
+      this.serverToUpdate = new Server.clone(server);
     //init validation fields
     this.server.initValidation();
   }

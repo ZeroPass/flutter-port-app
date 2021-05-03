@@ -15,7 +15,7 @@ class CustomButton extends StatefulWidget {
   CustomButton({@required this.title, @required this.callbackOnPressed, this.fontColor, this.backgroundColor = Colors.white, this.fontSize, this.minWidth = 44.0})
   {
     if (this.fontColor == null)
-      this.fontSize =  AndroidThemeST().getValues().themeValues["BUTTON"]["COLOR"];
+      this.fontSize =  AndroidThemeST().getValues().themeValues["BUTTON"]["SIZE_TEXT"];
 
     if (this.fontSize == null)
       this.fontSize =  AndroidThemeST().getValues().themeValues["BUTTON"]["SIZE_TEXT"];
