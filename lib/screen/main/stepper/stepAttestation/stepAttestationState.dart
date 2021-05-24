@@ -27,3 +27,16 @@ class AttestationWithDataState extends StepAttestationState {
   String toString() => 'StepAttestationState:AttestationWithDataState { request type: $requestType}';
 }
 
+class AttestationWithDataOutsideCallState extends StepAttestationState {
+  //NFCDeviceData deviceData;
+  RequestType requestType;
+
+  AttestationWithDataOutsideCallState({@required this.requestType});
+
+  @override
+  List<Object> get props => [requestType];
+
+  @override
+  String toString() => 'StepAttestationState:AttestationWithDataOutsideCallState { request type: $requestType}';
+}
+

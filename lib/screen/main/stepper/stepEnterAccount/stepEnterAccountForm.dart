@@ -1,4 +1,5 @@
 import 'package:eosio_passid_mobile_app/constants/constants.dart';
+import 'package:eosio_passid_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccountHeader/stepEnterAccountHeader.dart';
 import 'package:eosio_passid_mobile_app/utils/structure.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -29,8 +30,15 @@ class _StepEnterAccountFormState extends State<StepEnterAccountForm> {
   //update fields in account form
   void updateFields() {
     var storage = Storage();
-    StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
-    _accountTextController.text = storageStepEnterAccount.accountID != null ? storageStepEnterAccount.accountID : "";
+
+    if (storage.outsideCall.isOutsideCall)
+      _accountTextController.text = storage.outsideCall.structV1.accountID;
+    else {
+      StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
+      _accountTextController.text =
+      storageStepEnterAccount.accountID != null ? storageStepEnterAccount
+          .accountID : "";
+    }
   }
 
   //clear fields in account form
@@ -70,6 +78,14 @@ class _StepEnterAccountFormState extends State<StepEnterAccountForm> {
     });
   }
 
+  //different text when state is in outside call
+  String selectNetworkText(StepEnterAccountState state){
+    if (state is FullStateOutsideCall)
+      return NETWORK_CHAINS[NetworkType.CUSTOM][NETWORK_CHAIN_NAME];
+    else
+      return truncateNetwork(Storage().nodeSet.networkTypeToString(state.networkType), 15);
+  }
+
   Widget selectNetworkWithTile(var context,
       StepEnterAccountState state,
       var stepEnterAccountBloc) {
@@ -85,7 +101,7 @@ class _StepEnterAccountFormState extends State<StepEnterAccountForm> {
                   fontSize: AndroidThemeST().getValues().themeValues["TILE_BAR"]
                       ["SIZE_TEXT"]),
             ),
-            Text(Storage().nodeSet.networkTypeToString(state.networkType),
+            Text(selectNetworkText(state),
                 style: TextStyle(
                     fontSize: AndroidThemeST()
                         .getValues()
@@ -93,8 +109,12 @@ class _StepEnterAccountFormState extends State<StepEnterAccountForm> {
                     color: AndroidThemeST().getValues().themeValues["TILE_BAR"]
                         ["COLOR_TEXT"]))
           ]),
-      trailing: Icon(Icons.expand_more),
-      onTap: () => selectNetwork(context, state, stepEnterAccountBloc),
+      trailing: (!(state is FullStateOutsideCall))?Icon(Icons.expand_more) : null,
+      onTap: () {
+        //do not allow when state is in the outside call
+        if (!(state is FullStateOutsideCall))
+          selectNetwork(context, state, stepEnterAccountBloc);
+      },
     );
   }
 
@@ -103,7 +123,7 @@ class _StepEnterAccountFormState extends State<StepEnterAccountForm> {
       var stepEnterAccountBloc)
   {
     if (state is DeletedState) emptyFields();
-    if (state is FullState) updateFields();
+    if (state is FullState || state is FullStateOutsideCall) updateFields();
 
     final stepperBloc = BlocProvider.of<StepperBloc>(context);
     return Form(
@@ -111,8 +131,10 @@ class _StepEnterAccountFormState extends State<StepEnterAccountForm> {
           selectNetworkWithTile(context, state, stepEnterAccountBloc),
           //if (storage.selectedNode.name != "ZeroPass Server")
             TextFormField(
+              readOnly: state is FullStateOutsideCall ? true : false,
               controller: _accountTextController,
               decoration: InputDecoration(
+                //border: InputBorder.none,
                 labelText: 'Account name',
               ),
               inputFormatters: <TextInputFormatter>[
@@ -125,8 +147,7 @@ class _StepEnterAccountFormState extends State<StepEnterAccountForm> {
                       : null,
               onChanged: (value) async {
                 //save to storage
-                StepDataEnterAccount storageStepEnterAccount =
-                    _storage.getStorageData(0);
+                StepDataEnterAccount storageStepEnterAccount = _storage.getStorageData(0);
                 storageStepEnterAccount.accountID = _accountTextController.text.length !=0 ? _accountTextController.text : null;
                 //save storage
                 _storage.save();

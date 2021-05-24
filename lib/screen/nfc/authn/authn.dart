@@ -113,7 +113,9 @@ class Authn /*extends State<Authn>*/ {
   }
 
   Future<bool> startAction(BuildContext context, AuthnAction action,
+      String accountName, NetworkType networkType,
       {bool fakeAuthnData = false, bool sendDG1 = false, ScrollController scrollController, int maxSteps}) async {
+    //TODO: accountName is not implemented
     Storage storage = Storage();
     String checkedValues = checkValuesInStorage();
     if (checkedValues.isNotEmpty) {
@@ -130,6 +132,13 @@ class Authn /*extends State<Authn>*/ {
                 onPressed: () => Navigator.pop(context))
           ]);
     }
+    //outside call verifications
+    if (storage.outsideCall.isOutsideCall){
+      //TODO: check if there is any
+
+
+    }
+
     try {
       _showBusyIndicator(context);
       ServerCloud serverCloud = storage.getServerCloudSelected(networkTypeServer: NetworkTypeServer.MAIN_SERVER);
@@ -327,20 +336,20 @@ class Authn /*extends State<Authn>*/ {
     return "You're attested as $names";
   }
 
-  Future<bool> startNFCAction(BuildContext context, RequestType requestType,  ScrollController scrollController, int maxSteps) {
+  Future<bool> startNFCAction(BuildContext context, RequestType requestType, String accountName, NetworkType networkType,  ScrollController scrollController, int maxSteps) {
     switch (requestType) {
       case RequestType.ATTESTATION_REQUEST:
-        return startAction(context, AuthnAction.register, scrollController: scrollController, maxSteps: maxSteps);
+        return startAction(context, AuthnAction.register, accountName, networkType, scrollController: scrollController, maxSteps: maxSteps);
         break;
       case RequestType.PERSONAL_INFORMATION_REQUEST:
-        return startAction(context, AuthnAction.login, sendDG1: true, scrollController: scrollController, maxSteps: maxSteps);
+        return startAction(context, AuthnAction.login, accountName, networkType, sendDG1: true, scrollController: scrollController, maxSteps: maxSteps);
         break;
       case RequestType.FAKE_PERSONAL_INFORMATION_REQUEST:
-        return startAction(context, AuthnAction.login,
+        return startAction(context, AuthnAction.login, accountName, networkType,
             fakeAuthnData: true, sendDG1: true, scrollController: scrollController, maxSteps: maxSteps);
         break;
       case RequestType.LOGIN:
-        return startAction(context, AuthnAction.login, scrollController: scrollController, maxSteps: maxSteps);
+        return startAction(context, AuthnAction.login, accountName, networkType, scrollController: scrollController, maxSteps: maxSteps);
         break;
 
       default:

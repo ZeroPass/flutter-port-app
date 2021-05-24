@@ -13,6 +13,7 @@ import 'package:eosio_passid_mobile_app/screen/settings/custom/customCardSetting
 import 'package:eosio_passid_mobile_app/screen/settings/custom/customCardSettings.dart';
 import 'package:eosio_passid_mobile_app/screen/settings/custom/CustomCardSettingsSection.dart';
 import 'package:eosio_passid_mobile_app/screen/settings/network/server/updateCloud.dart';
+import 'package:eosio_passid_mobile_app/screen/qr/QRscreen.dart';
 import 'package:share/share.dart';
 
 class Settings extends StatelessWidget {
@@ -76,7 +77,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   onPressed: (){
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) => LoggingScreen()));
-                  })
+                  }),
+                  CustomCardSettingsButton (
+                      bottomSpacing: 5,
+                      label: "Scanning QR",
+                      onPressed: (){
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) => QRscreen()));
+                      })
               ]
             ),
             CardSettingsSection(

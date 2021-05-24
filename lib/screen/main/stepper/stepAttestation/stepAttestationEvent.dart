@@ -30,3 +30,16 @@ class AttestationWithDataEvent extends StepAttestationEvent{
   @override
   String toString() => 'StepAttestationEvent:AttestationWithDataEvent {requestType: $requestType}';
 }
+
+class AttestationWithDataOutsideCallEvent extends StepAttestationEvent{
+  //NFCDeviceData deviceData;
+  RequestType requestType;
+
+  AttestationWithDataOutsideCallEvent({@required this.requestType});
+
+  @override
+  List<Object> get props => [requestType];
+
+  @override
+  String toString() => 'StepAttestationEvent:AttestationWithDataOutsideCallEvent {requestType: $requestType}';
+}

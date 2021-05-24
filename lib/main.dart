@@ -30,16 +30,16 @@ import 'package:eosio_passid_mobile_app/screen/slideToSideRoute.dart';
 import 'package:device_preview/device_preview.dart' as DevPreview;
 import 'package:eosio_passid_mobile_app/utils/logging/loggerHandler.dart' as LH;
 import 'package:eosio_passid_mobile_app/connection/tools/eosio/eosio.dart';
+import 'package:eosio_passid_mobile_app/screen/qr/readQR.dart';
+import 'package:eosio_passid_mobile_app/screen/main/warningBar.dart';
+
 import 'package:eosio_passid_mobile_app/connection/connectors/connectorChainEOS.dart';
+import 'package:eosio_passid_mobile_app/screen/qr/structure.dart';
 
 var RUN_IN_DEVICE_PREVIEW_MODE = false;
 final _logStorage = Logger('Storage initialization');
 
 void main() {
-  //SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-  //  systemNavigationBarColor: Colors.grey,
-  //));
-
   runApp(
       RUN_IN_DEVICE_PREVIEW_MODE?
         DevPreview.DevicePreview(
@@ -108,6 +108,8 @@ Future<void> fillDatabase() async
           server: NodeServer(host: Uri.parse("https://custom.eosnode.io:443")));
     }
 
+
+
     if (storage.cloudSet.servers.isEmpty){
       storage.cloudSet.add(networkTypeServer: NetworkTypeServer.MAIN_SERVER,
           isSelected: true,
@@ -119,23 +121,20 @@ Future<void> fillDatabase() async
 
     StepDataAttestation stepDataAttestation = storage.getStorageData(2);
     stepDataAttestation.requestType = RequestType.ATTESTATION_REQUEST;
-    stepDataAttestation.isOutsideCall = OutsideCall(reqeustedBy: "Ultra DEX");
+    storage.outsideCall = OutsideCallV0dot1();
+    storage.outsideCall.set(qRserverStructure:
+                            QRserverStructure(accountID: "testacc",
+                                              requestType: RequestType.FAKE_PERSONAL_INFORMATION_REQUEST,
+                                              host: Server(host: Uri.parse("https://test-server.io"))));
 
-  });/**/
+    //var ttt1 = storage.outsideCall.structV1.toJson();
+    //var rrr1 = QRserverStructure.fromJson(ttt1);
+    //var y = 9;
+
+  });
   
   Keys keys= Keys();
   keys.add(PrivateKey(TEST_PRIVATE_KEY));
-
-  /*ConnectorChainEOS cce = ConnectorChainEOS(Uri.parse('https://84.255.244.192'), 5000, keys);
-  cce.ping(1).then((value){
-    print(value);
-    var t = 9;
-
-  });*/
-
-  //to call it just one time
-  //if(storage.nodeSet)
-  //  return;
 
   storage.save();
 }
@@ -153,9 +152,15 @@ void loadDatabase({Future<void> Function(Storage, bool, bool, {String exc}) call
 
 class PassId extends StatelessWidget {
 
+  dynamic routes = {
+    '/home' : (context) => PassIdWidget(),
+    '/QR' : (context) => ReadQR()
+    };
+
   @override
   Widget build(BuildContext context) {
-
+    Storage storage = Storage();
+    StepDataAttestation stepDataAttestation = storage.getStorageData(2);
     return PlatformProvider(
       //initialPlatform: initialPlatform,
         builder: (BuildContext context) => PlatformApp(
@@ -166,12 +171,13 @@ class PassId extends StatelessWidget {
             ],
             material: (_, __) => MaterialAppData(
                 theme: AndroidTheme().getLight(),
-                darkTheme: AndroidTheme().getDark()),
+                darkTheme: AndroidTheme().getDark(),
+                routes: routes),
             cupertino: (_, __) => CupertinoAppData(
-              theme: iosThemeData(),
-
-            ),
-            home: PassIdWidget()));
+                theme: iosThemeData(),
+                routes: routes),
+            home: PassIdWidget()
+    ));
 
   }
 }
@@ -227,8 +233,6 @@ class _PassIdWidgetState extends State<PassIdWidget> with TickerProviderStateMix
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
-    //WidgetsBinding.instance
-    //    .addPostFrameCallback((_) => widget.scaffoldContext.state.showSnackBar(SnackBar(content: Text("Your message here..")));
   }
   void randomTests() async{
     return;
@@ -258,11 +262,6 @@ class _PassIdWidgetState extends State<PassIdWidget> with TickerProviderStateMix
 
 @override
   Widget build(BuildContext context) {
-  // Logger.root.level = Level.ALL;
-  // Logger.root.onRecord.listen((record) {
-  //   print(
-  //       '${record.loggerName} ${record.level.name}: ${record.time}: ${record.message}');
-  // });
 
     changeNavigationBarColor();
 
@@ -337,7 +336,7 @@ class _PassIdWidgetState extends State<PassIdWidget> with TickerProviderStateMix
               GestureType.onSecondaryTapUp,
               GestureType.onSecondaryTapCancel,
               GestureType.onDoubleTap,
-              GestureType. onLongPress,
+              GestureType.onLongPress,
               GestureType.onLongPressStart,
               GestureType.onLongPressMoveUpdate,
               GestureType.onLongPressUp,
@@ -364,7 +363,13 @@ class _PassIdWidgetState extends State<PassIdWidget> with TickerProviderStateMix
             ],
             child:Scaffold(
               //resizeToAvoidBottomInset: false,
-            body:StepperForm()),
+            body:Column(
+
+                children: <Widget>[
+                  WarningBar(outsideCall: storage.outsideCall),
+                  new Expanded(child: StepperForm())
+                ])
+            )
         ))
     );
   }

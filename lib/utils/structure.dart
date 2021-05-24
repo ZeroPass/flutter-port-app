@@ -19,6 +19,12 @@ class EnumUtil {
   }
 }
 
+class DoubleUtil{
+  static double fromInt(int value){
+    return value + .0;
+  }
+}
+
 class MapUtil {
   static bool contains<T>(Map structure, T requestType) {
     return structure.containsKey(requestType);

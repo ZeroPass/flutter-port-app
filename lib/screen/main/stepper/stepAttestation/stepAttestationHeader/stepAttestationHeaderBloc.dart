@@ -20,24 +20,22 @@ class StepAttestationHeaderBloc extends Bloc<StepAttestationHeaderEvent, StepAtt
     storage.load(callback: (isAlreadyUpdated, isValid,  {String exc}){
       if (isAlreadyUpdated == true || isValid == true){
         StepDataAttestation storageAttestation = storage.getStorageData(2);
+
+        if (storage.outsideCall.isOutsideCall)
+          this.add(AttestationHeaderWithDataOutsideCallEvent(requestType: storage.outsideCall.structV1.requestType));
+        else
           this.add(AttestationHeaderWithDataEvent(requestType: storageAttestation.requestType));
       }
     });
   }
-
-  /*@override
-  StepAttestationHeaderState get initialState {
-    Storage storage = Storage();
-    StepDataAttestation stepDataAttestation = storage.getStorageData(2);
-    return AttestationHeaderWithDataState(
-        requestType: stepDataAttestation.requestType);
-  }*/
-
   @override
   Stream<StepAttestationHeaderState> mapEventToState(
       StepAttestationHeaderEvent event) async* {
     if (event is AttestationHeaderWithDataEvent) {
       yield AttestationHeaderWithDataState(requestType: event.requestType);
+    }
+    else if (event is AttestationHeaderWithDataOutsideCallEvent) {
+      yield AttestationHeaderWithDataOutsideCallState(requestType: event.requestType);
     }
   }
 }

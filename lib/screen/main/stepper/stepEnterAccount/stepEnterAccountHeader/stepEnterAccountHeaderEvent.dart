@@ -36,6 +36,20 @@ class WithAccountIDEvent extends StepEnterAccountHeaderEvent{
   String toString() => 'StepEnterAccountHeaderEvent:WithAccountIDEvent';
 }
 
+class WithAccountIDOutsideCallEvent extends StepEnterAccountHeaderEvent{
+  String accountID;
+
+  WithAccountIDOutsideCallEvent({@required NetworkType networkType, @required this.accountID}) : super( networkType: networkType);
+
+  String getAccountID(){return this.accountID;}
+
+  @override
+  List<Object> get props => [networkType, accountID, server];
+
+  @override
+  String toString() => 'StepEnterAccountHeaderEvent:WithAccountIDOutsideCallEvent';
+}
+
 class WithAccountIDBufferEvent extends StepEnterAccountHeaderEvent{
   String accountID;
 

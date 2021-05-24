@@ -29,3 +29,13 @@ class FullState extends StepEnterAccountState {
   @override
   String toString() => 'StepEnterAccountState:FullState { accountID: $accountID, network type: $networkType }';
 }
+
+class FullStateOutsideCall extends StepEnterAccountState {
+  FullStateOutsideCall(String accountID, NetworkType networkType){
+    this.accountID = accountID;
+    this.networkType = networkType;
+  }
+
+  @override
+  String toString() => 'StepEnterAccountState:FullStateOutsideCall { accountID: $accountID, network type: $networkType }';
+}

@@ -17,6 +17,16 @@ class AccountConfirmation extends StepEnterAccountEvent{
   List<Object> get props => [accountID, networkType];
 }
 
+class AccountConfirmationOutsideCall extends StepEnterAccountEvent{
+  final String accountID;
+  final NetworkType networkType;
+
+  AccountConfirmationOutsideCall({@required this.accountID, @required this.networkType});
+
+  @override
+  List<Object> get props => [accountID, networkType];
+}
+
 class AccountDelete extends StepEnterAccountEvent{
   final NetworkType networkType;
 

@@ -721,7 +721,11 @@ class StorageData {
   NetworkNodeSet _nodeSet;
   NetworkCloudSet _cloudSet;
 
-  //this should not be stored on disc
+  //these should not be stored on disc
+  OutsideCallV0dot1 _outsideCall;
+
+
+
   DBAkeyStorage dbAkeyStorage;
 
 
@@ -739,6 +743,8 @@ class StorageData {
     this._steps[0] = StepDataEnterAccount();
     this._steps[1] = StepDataScan();
     this._steps[2] = StepDataAttestation();
+
+    this._outsideCall = OutsideCallV0dot1();
   }
 
   bool get isUpdatedInCurrentSession => _isUpdatedInCurrentSession;
@@ -786,6 +792,11 @@ class StorageData {
     return selectedNode != null ? selectedNode : defaultNode;
   }*/
 
+  OutsideCallV0dot1 get outsideCall => _outsideCall;
+
+  set outsideCall(OutsideCallV0dot1 value) {
+    _outsideCall = value;
+  }
 
   List<StepData> getStorageDataAll() {
     return _steps;
@@ -925,7 +936,6 @@ class StorageData {
         return;
       }
 
-      var t = jsonDecode(value);
       storage.fromStorageData(StorageData.fromJson(jsonDecode(value)));
       if (callback != null)
         callback(false, true);

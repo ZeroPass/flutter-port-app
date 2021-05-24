@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
-class StepperState extends Equatable {
+class StepperState /*extends Equatable*/ {
   final int step;
   final int previousStep;
   final int maxSteps;

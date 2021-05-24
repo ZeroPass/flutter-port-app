@@ -33,7 +33,10 @@ class _StepAttestationHeaderFormState extends State<StepAttestationHeaderForm> {
                     Text("Request type "),
                     //Text(AuthenticatorActions[state.requestType]),
                     if (state is AttestationHeaderWithDataState)
+                      Container(child: CustomChip([AuthenticatorActions[state.requestType]['NAME']]), margin: EdgeInsets.only(left: 3.0)),
+                    if (state is AttestationHeaderWithDataOutsideCallState)
                       Container(child: CustomChip([AuthenticatorActions[state.requestType]['NAME']]), margin: EdgeInsets.only(left: 3.0))
+
                   ]),
             ]
           ));

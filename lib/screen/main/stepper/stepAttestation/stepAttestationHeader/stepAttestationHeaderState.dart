@@ -7,6 +7,7 @@ abstract class StepAttestationHeaderState /*extends Equatable*/ {
   @override
   String toString() => 'StepAttestationHeaderState';
 }
+
 class AttestationHeaderWithDataState extends StepAttestationHeaderState {
   //show request type
   RequestType requestType;
@@ -18,4 +19,17 @@ class AttestationHeaderWithDataState extends StepAttestationHeaderState {
 
   @override
   String toString() => 'StepAttestationHeaderWithDataState:AttestationHeaderState { request type: $requestType }';
+}
+
+class AttestationHeaderWithDataOutsideCallState extends StepAttestationHeaderState {
+  //show request type
+  RequestType requestType;
+
+  AttestationHeaderWithDataOutsideCallState({@required this.requestType});
+
+  @override
+  List<Object> get props => [requestType];
+
+  @override
+  String toString() => 'AttestationHeaderWithDataOutsideCallState:AttestationHeaderState { request type: $requestType }';
 }

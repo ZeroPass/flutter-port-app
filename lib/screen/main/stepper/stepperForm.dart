@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'dart:async';
+import 'package:eosio_passid_mobile_app/constants/constants.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepAttestation/stepAttestationHeader/stepAttestationHeader.dart';
 import 'package:eosio_passid_mobile_app/screen/nfc/authn/authn.dart';
 import 'package:eosio_passid_mobile_app/screen/requestType.dart';
@@ -225,13 +226,13 @@ class _StepperFormState extends State<StepperForm> {
             ref_block_prefix:0
             max_net_usage_words:0
             max_cpu_usage_ms:0
-            delay_sec:0
+            delay_sec:0 
             context_free_actions:
             actions:Array[0] []
             transaction_extensions:
             signatures:
             context_free_data""",
-        outsideCall: stepDataAttestation.isOutsideCall,
+        outsideCall: storage.outsideCall,
         sendData: (bool isDataSent) {
           send.complete(isDataSent);
         }
@@ -264,7 +265,7 @@ class _StepperFormState extends State<StepperForm> {
     Completer<bool> send = new Completer<bool>();
     stepReviewBloc.add(StepReviewWithoutDataEvent(
         requestType: stepDataAttestation.requestType,
-        outsideCall: stepDataAttestation.isOutsideCall,
+        outsideCall: storage.outsideCall,
         rawData: """trx:
               receipt:
               status:'executed'
@@ -371,14 +372,23 @@ class _StepperFormState extends State<StepperForm> {
     });
     Storage storage = Storage();
     StepDataAttestation stepDataAttestation = storage.getStorageData(2);
+    StepDataEnterAccount stepDataEnterAccount = storage.getStorageData(0);
     RequestType requestType = stepDataAttestation.requestType;
     bool isPublishedOnChain = AuthenticatorActions[requestType]['IS_PUBLISHED_ON_CHAIN'];
 
-    await authn.startNFCAction(context, requestType,  _scrollController, stepperBloc.state.maxSteps).then((bool successful) {
+    String accountID = storage.outsideCall.isOutsideCall?
+                  storage.outsideCall.structV1.accountID:
+                  stepDataEnterAccount.accountID;
+
+    NetworkType networkType = storage.outsideCall.isOutsideCall?
+                  NetworkType.CUSTOM:
+                  stepDataEnterAccount.networkType;
+
+
+    await authn.startNFCAction(context, requestType, accountID, networkType, _scrollController, stepperBloc.state.maxSteps).then((bool successful) {
       if (!successful) {
         stepperBloc.add(StepBackToPrevious());
       } else {
-        //showFlushbar(context, "In progress", 'Establishing interaction with ' + (isPublishedOnChain?'the blockchain.': 'the server.'), Icons.info, duration: 3);
         final stepReviewBloc = BlocProvider.of<StepReviewBloc>(context);
         Storage storage = Storage();
         StepDataAttestation stepDataAttestation = storage.getStorageData(2);
@@ -450,7 +460,7 @@ class _StepperFormState extends State<StepperForm> {
               StepDataAttestation stepDataAttestation =
                   storage.getStorageData(2);
 
-              int stepJumps = stepDataAttestation.isOutsideCall.isOutsideCall &&
+              int stepJumps = storage.outsideCall.isOutsideCall &&
                       state.step == 1
                   ? 2
                   : 1;
@@ -460,7 +470,6 @@ class _StepperFormState extends State<StepperForm> {
                 stepperBloc.add(StepContinue(stepsJump: stepJumps));
             },
             controlsBuilder: (BuildContext context,
-
                 {VoidCallback onStepContinue, VoidCallback onStepCancel}) {
               return Visibility(
                   visible: state.step != state.maxSteps,

@@ -110,7 +110,7 @@ class _StepReviewFormState extends State<StepReviewForm> {
     super.didUpdateWidget(oldWidget);
   }
 
-  Widget getText(BuildContext context, RequestType requestType, OutsideCall outsideCall)
+  Widget getText(BuildContext context, RequestType requestType, OutsideCallV0dot1 outsideCall)
   {
     bool isPublishedOnChain = AuthenticatorActions[requestType]['IS_PUBLISHED_ON_CHAIN'];
     return Align(
@@ -118,8 +118,8 @@ class _StepReviewFormState extends State<StepReviewForm> {
         child:
         Text(
       'Review what data will be send to ' +
-          (outsideCall.isOutsideCall && false
-              ? outsideCall.requestedBy
+          (outsideCall.isOutsideCall
+              ? outsideCall.structV1.host
               : ( isPublishedOnChain?'the blockchain.': 'the server.')),
       style: TextStyle(
           color: AndroidThemeST()

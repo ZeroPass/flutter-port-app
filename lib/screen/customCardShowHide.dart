@@ -95,9 +95,6 @@ class _CustomCardShowHideState extends State<CustomCardShowHide> {
                               )
                           ],
               ))))
-            /*const SizedBox(height: 30),
-
-          */
             : new Container(), //element is not visable; 'show' only containter
       ],
     );

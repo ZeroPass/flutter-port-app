@@ -21,7 +21,15 @@ class StepEnterAccountHeaderBloc extends Bloc<StepEnterAccountHeaderEvent, StepE
     storage.load(callback: (isAlreadyUpdated, isValid,  {String exc}){
       if (isAlreadyUpdated == true || isValid == true){
         StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
-        if (storageStepEnterAccount.accountID != null && storageStepEnterAccount.accountID != "" )
+
+        if (storage.outsideCall.isOutsideCall) {
+          //updating network type:custom ; set the name of server
+          NetworkChains.updateNetworkChainCustomAdd(url: storage.outsideCall.structV1.host.host);
+          this.add(WithAccountIDOutsideCallEvent(
+              accountID: storage.outsideCall.structV1.accountID,
+              networkType: NetworkType.CUSTOM));
+        }
+        else if (storageStepEnterAccount.accountID != null && storageStepEnterAccount.accountID != "" )
           this.add(WithAccountIDEvent(accountID: storageStepEnterAccount.accountID,
                                       networkType: storageStepEnterAccount.networkType));
         else
@@ -45,6 +53,9 @@ class StepEnterAccountHeaderBloc extends Bloc<StepEnterAccountHeaderEvent, StepE
 
       if (event is WithAccountIDEvent) {
         yield WithAccountIDState(networkType: event.networkType, accountID: event.accountID);
+      }
+      else if (event is WithAccountIDOutsideCallEvent) {
+        yield WithAccountIDOutsideCallState(networkType: event.networkType, accountID: event.accountID);
       }
       else if (event is WithoutAccountIDEvent) {
         yield WithoutAccountIDState(networkType: event.networkType);

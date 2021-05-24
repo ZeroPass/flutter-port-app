@@ -1,3 +1,7 @@
+import 'package:flutter/cupertino.dart';
+import 'package:logging/logging.dart';
+import 'package:dmrtd/src/extension/logging_apis.dart';
+
 enum NetworkType{ MAINNET, KYLIN, EOSIO_TESTNET, JUNGLE, CUSTOM}
 enum NetworkTypeServer { MAIN_SERVER, TEMPORARY_SERVER }
 
@@ -20,3 +24,30 @@ var NETWORK_CHAINS ={
 };
 
 var TEST_PRIVATE_KEY = '5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3';
+
+
+final _log = Logger("UpdateNetworkChain");
+
+class NetworkChains {
+    static void updateNetworkChainCustomAdd({@required Uri url}) {
+        _log.debug("Updating network chain with value: $url.");
+        NETWORK_CHAINS.update(NetworkType.CUSTOM, (value) {
+            value.update(NETWORK_CHAIN_NAME, (value) {
+                _log.debug("Updated successfully");
+                return url.toString();
+            });
+            return value;
+        });
+    }
+
+    static void updateNetworkChainCustomRemove() {
+        _log.debug("Deleting value on network chain.");
+        NETWORK_CHAINS.update(NetworkType.CUSTOM, (value) {
+            value.update(NETWORK_CHAIN_NAME, (value) {
+                _log.debug("Updated successfully");
+                return null;
+            });
+            return value;
+        });
+    }
+}

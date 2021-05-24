@@ -101,7 +101,6 @@ class StepperBloc extends Bloc<StepperEvent, StepperState> {
       case 3:
         {
           final stepReviewHeaderBloc = BlocProvider.of<StepReviewHeaderBloc>(context);
-          StepDataAttestation storageStepAttestation = storage.getStorageData(2);
           if (dataInStep)
             stepReviewHeaderBloc.add(StepReviewHeaderWithDataEvent());
           else

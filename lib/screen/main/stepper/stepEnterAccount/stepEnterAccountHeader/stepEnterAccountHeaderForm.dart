@@ -11,6 +11,21 @@ import 'package:eosio_passid_mobile_app/utils/storage.dart';
 import 'package:eosio_passid_mobile_app/utils/size.dart';
 import 'package:eosio_passid_mobile_app/screen/theme.dart';
 
+String truncateNetwork(String networkName, int length)
+{
+  if (length < 0)
+    return networkName;
+  //we check with length + 3 because of three dots
+  if (networkName.length > length + 3)
+  {
+    networkName = networkName.substring(0, networkName.indexOf(" ") > 0? networkName.indexOf(" "): networkName.length);
+    if (networkName.length > length)
+      return networkName.substring(0, length) + "...";
+    return networkName;
+  }
+  return networkName;
+}
+
 class StepEnterAccountHeaderForm extends StatefulWidget {
   StepEnterAccountHeaderForm({Key key}) : super(key: key);
 
@@ -69,21 +84,6 @@ class _StepEnterAccountHeaderFormState extends State<StepEnterAccountHeaderForm>
     );
   }
 
-  String truncateNetwork(String networkName, int length)
-  {
-    if (length < 0)
-      return networkName;
-    //we check with length + 3 because of three dots
-    if (networkName.length > length + 3)
-    {
-      networkName = networkName.substring(0, networkName.indexOf(" ") > 0? networkName.indexOf(" "): networkName.length);
-      if (networkName.length > length)
-        return networkName.substring(0, length) + "...";
-      return networkName;
-    }
-    return networkName;
-  }
-
   String truncateAccountName(String accountName, int length)
   {
     if (length < 0)
@@ -92,6 +92,20 @@ class _StepEnterAccountHeaderFormState extends State<StepEnterAccountHeaderForm>
     if (accountName.length > length + 3)
         return accountName.substring(0, length) + "...";
     return accountName;
+  }
+
+  //different text when state is in outside call
+  String selectNetworkText(StepEnterAccountHeaderState state){
+    if (state is WithAccountIDOutsideCallState) {
+      String url = NETWORK_CHAINS[NetworkType.CUSTOM][NETWORK_CHAIN_NAME];
+      String withoutHTTP = url
+                          .replaceAll("https://", "")
+                          .replaceAll("http://", "");
+      return truncateNetwork(
+          withoutHTTP, 18);
+    }
+    else
+      return truncateNetwork(state.networkType != null? Storage().nodeSet.networkTypeToString(state.networkType): "", 5);
   }
 
   @override
@@ -110,7 +124,7 @@ class _StepEnterAccountHeaderFormState extends State<StepEnterAccountHeaderForm>
                 children: <Widget>[
                   Row(children: <Widget>[
                     Text("Account"),
-                    Container(child: CustomChip([truncateNetwork(state.networkType != null? Storage().nodeSet.networkTypeToString(state.networkType): "", 5)]), margin: EdgeInsets.only(left: 3.0))
+                    Container(child: CustomChip([selectNetworkText(state)]), margin: EdgeInsets.only(left: 3.0))
                   ]),
                   Row(children: <Widget>[
                     Row(mainAxisAlignment:MainAxisAlignment.spaceBetween,
@@ -118,9 +132,10 @@ class _StepEnterAccountHeaderFormState extends State<StepEnterAccountHeaderForm>
                                 if (state is WithAccountIDState)
                                   if(state.accountID != null)
                                     Container(child: CustomChip([truncateAccountName(state.accountID, 20)]), margin: EdgeInsets.only(left: 3.0)),
-                                //if (state.server != null)
-                                //  Container(child: CustomChip(["SERVER"]), margin: EdgeInsets.only(left: 3.0)),
-                                ]),
+                                if (state is WithAccountIDOutsideCallState)
+                                  if(state.accountID != null)
+                                    Container(child: CustomChip([truncateAccountName(state.accountID, 20)]), margin: EdgeInsets.only(left: 3.0)),
+                            ]),
                     if (state is WithAccountIDState)
                       deleteButton(context)
                   ])

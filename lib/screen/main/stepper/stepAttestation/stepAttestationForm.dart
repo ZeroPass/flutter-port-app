@@ -61,8 +61,12 @@ String truncateRequestType(RequestType requestType, int length)
 Widget selectRequestTypeWithTile(var context,
                               StepAttestationState state,
                               var stepAttestationBloc) {
-  var storage = Storage();
-  StepDataAttestation stepDataAttestation = storage.getStorageData(2);
+  RequestType requestType = RequestType.LOGIN;
+  if (state is AttestationWithDataState)
+    requestType = state.requestType;
+  else if (state is AttestationWithDataOutsideCallState)
+    requestType = state.requestType;
+
   return ListTile(
     dense: true,
     contentPadding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
@@ -75,7 +79,7 @@ Widget selectRequestTypeWithTile(var context,
                 fontSize: AndroidThemeST().getValues().themeValues["TILE_BAR"]
                 ["SIZE_TEXT"]),
           ),
-          Text(truncateRequestType(stepDataAttestation.requestType, 10),
+          Text(truncateRequestType(requestType, 10),
               style: TextStyle(
                   fontSize: AndroidThemeST()
                       .getValues()
@@ -83,8 +87,11 @@ Widget selectRequestTypeWithTile(var context,
                   color: AndroidThemeST().getValues().themeValues["TILE_BAR"]
                   ["COLOR_TEXT"]))
         ]),
-    trailing: Icon(Icons.expand_more),
-    onTap: () => selectRequestType(context, state, stepAttestationBloc),
+    trailing: (!(state is AttestationWithDataOutsideCallState)) ?Icon(Icons.expand_more) : null,
+    onTap: () {
+      if (!(state is AttestationWithDataOutsideCallState))
+        selectRequestType(context, state, stepAttestationBloc);
+    },
   );
 }
 
@@ -139,7 +146,8 @@ class _StepAttestationFormState extends State<StepAttestationForm> {
             child: Column(
                   children: <Widget>[
                     selectRequestTypeWithTile(context, state, stepAttestiationBloc),
-                    dataDescription(context),
+                    if (!(state is AttestationWithDataOutsideCallState))
+                      dataDescription(context),
                   ],
               )
         );

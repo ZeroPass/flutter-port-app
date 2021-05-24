@@ -40,3 +40,18 @@ class WithAccountIDState extends StepEnterAccountHeaderState {
   @override
   String toString() => 'StepEnterAccountHeaderState:WithAccountIDState { network type: $networkType, accoundID: $accountID }';
 }
+
+class WithAccountIDOutsideCallState extends StepEnterAccountHeaderState {
+  //show accountID in header
+  String accountID;
+
+  WithAccountIDOutsideCallState({@required NetworkType networkType, @required String this.accountID, ServerCloud server = null}) : super(networkType: networkType, server: server){}
+
+  String getAccountID(){return this.accountID;}
+
+  @override
+  List<Object> get props => [accountID, networkType, server];
+
+  @override
+  String toString() => 'StepEnterAccountHeaderState:WithAccountIDOutsideCallState { network type: $networkType, accoundID: $accountID }';
+}

@@ -1,4 +1,5 @@
 import 'package:eosio_passid_mobile_app/constants/constants.dart';
+import 'package:eosio_passid_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
 import 'package:bloc/bloc.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepper.dart';
@@ -75,21 +76,26 @@ class StepEnterAccountBloc extends Bloc<StepEnterAccountEvent, StepEnterAccountS
     this.updateDataOnUI();
   }
 
-  /*StepEnterAccountState defaultState(){
-    Storage storage = Storage();
-    StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
-    return FullState(null, storageStepEnterAccount.networkType);
-  }*/
-
+  //check if there is outside call
+  bool checkOutsideCall(OutsideCallV0dot1 outsideCallV0dot1){
+    return outsideCallV0dot1.isOutsideCall?true:false;
+  }
 
   //check if there is any data stored
   void updateDataOnUI(){
-      //check updated datas
+      //check updated data
       Storage storage = Storage();
       storage.load(callback: (isAlreadyUpdated, isValid, {String exc}){
         if (isAlreadyUpdated == true || isValid == true){
           StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
-          if (storageStepEnterAccount.accountID != null)
+          if (storage.outsideCall.isOutsideCall) {
+            //updating network type:custom ; set the name of server
+            NetworkChains.updateNetworkChainCustomAdd(url: storage.outsideCall.structV1.host.host);
+            this.add(AccountConfirmationOutsideCall(
+                accountID: storage.outsideCall.structV1.accountID,
+                networkType: NetworkType.CUSTOM));
+          }
+          else if (storageStepEnterAccount.accountID != null)
             this.add(AccountConfirmation(accountID: storageStepEnterAccount.accountID,
                 networkType: storageStepEnterAccount.networkType));
           else
@@ -97,14 +103,8 @@ class StepEnterAccountBloc extends Bloc<StepEnterAccountEvent, StepEnterAccountS
         }
       });
   }
-  var validatorText = '';
 
-  /*@override
-  StepEnterAccountState get initialState {
-    Storage storage = Storage();
-    StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
-    return FullState(null, storageStepEnterAccount.networkType);
-  }*/
+  var validatorText = '';
 
     @override
     void onTransition(Transition<StepEnterAccountEvent, StepEnterAccountState> transition) {
@@ -175,11 +175,19 @@ class StepEnterAccountBloc extends Bloc<StepEnterAccountEvent, StepEnterAccountS
     Stream<StepEnterAccountState> mapEventToState( StepEnterAccountEvent event) async* {
       Storage storage = Storage();
       StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
+
       if (event is AccountConfirmation) {
         //change data in storage
         storageStepEnterAccount.accountID = event.accountID;
         yield FullState(event.accountID, event.networkType);
       }
+
+      else if (event is AccountConfirmationOutsideCall) {
+        //change data in storage outside call
+        //storageStepEnterAccount.accountID = event.accountID;
+        yield FullStateOutsideCall(event.accountID, event.networkType);
+      }
+
       else if (event is AccountDelete) {
         //clear data in storage
         storageStepEnterAccount.accountID = null;

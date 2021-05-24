@@ -19,3 +19,15 @@ class AttestationHeaderWithDataEvent extends StepAttestationHeaderEvent {
   @override
   String toString() => 'StepAttestationHeaderEvent:AttestationHeaderWithDataEvent {request type: $requestType}';
 }
+
+class AttestationHeaderWithDataOutsideCallEvent extends StepAttestationHeaderEvent {
+  RequestType requestType;
+
+  @override
+  List<Object> get props => [requestType];
+
+  AttestationHeaderWithDataOutsideCallEvent({@required this.requestType});
+
+  @override
+  String toString() => 'StepAttestationHeaderEvent:AttestationHeaderWithDataOutsideCallEvent {request type: $requestType}';
+}

@@ -87,6 +87,15 @@ Map light = {
     "DOT_COLOR_UNACTIVE": Color(0xFFF1F1F1),
     "DOT_COLOR_ACTIVE" : Color(0xFFa58157)
   },
+  "QR_SCREEN":
+  {
+    "COLOR_FOCUS_BORDER": Color(0xFFa58157)
+  },
+  "OUTSIDE_CALL":
+  {
+    "BAR_BACKGROUND_COLOR": Color(0xFFa58157),
+    "BAR_TEXT_COLOR": Colors.white
+  },
 };
 //the same valus for now
 ThemeValues DARK_VALUES= ThemeValues(themeValues: light);
@@ -181,6 +190,15 @@ class ThemeValues{
       "DOT_COLOR_UNACTIVE": null,
       "DOT_COLOR_ACTIVE" : null
     },
+    "QR_SCREEN":
+    {
+      "COLOR_FOCUS_BORDER": null
+    },
+    "OUTSIDE_CALL":
+    {
+      "BAR_BACKGROUND_COLOR": null,
+      "BAR_TEXT_COLOR": null
+    },
 
   };
 
@@ -243,7 +261,8 @@ class AndroidTheme extends CustomTheme{
         buttonTheme: ButtonThemeData(
           buttonColor: Color(0xFFa58157),
           textTheme: ButtonTextTheme.primary,
-        )
+        ),
+      buttonColor: Color(0xFFa58157),
     );
   }
 
