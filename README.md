@@ -1,4 +1,4 @@
-# EOSIO PassID Mobile App
+# Port Mobile App
 
 ## Installation
 
@@ -33,7 +33,7 @@ flutter build ios
 ## Usage
 
 * Fill the data in this [function](/lib/main.dart#L31)
-  - configure EOS nodes like [here](/lib/main.dart#L47-L48) (IP address, port, encryption connection check and network type(chainID))
+  - configure blockchain nodes like [here](/lib/main.dart#L47-L48) (IP address, port, encryption connection check and network type(chainID))
   - set [StorageServer](/lib/main.dart#L56-L57) (IP address, port and encryption connection check)
 * Run the project from your IDE
 ## Libraries
