@@ -17,7 +17,7 @@ import 'package:eosio_passid_mobile_app/screen/theme.dart';
 class WarningBar extends StatefulWidget {
   OutsideCallV0dot1 outsideCall;
 
-  WarningBar({@required this.outsideCall});
+  WarningBar({required this.outsideCall});
 
   @override
   _WarningBarState createState() => _WarningBarState();
@@ -38,7 +38,7 @@ class _WarningBarState extends State<WarningBar> {
 
     Storage storage = Storage();
 
-    stepperBloc.add(StepTapped(step: 0));
+    stepperBloc.add(StepTapped(step: 0, previousStep: 0));
 
     stepEnterAccountBloc.updateDataOnUI();
     stepEnterAccountHeaderBloc.updateDataOnUI();

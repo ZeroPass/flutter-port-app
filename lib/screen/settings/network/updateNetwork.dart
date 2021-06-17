@@ -17,26 +17,32 @@ import 'package:eosio_passid_mobile_app/screen/slideToSideRoute.dart';
 
 class SettingsUpdateNetwork extends StatelessWidget {
   final _log = Logger('Settings.SettingsUpdateNetwork');
-  NetworkType networkType;
+  late NetworkType networkType;
 
   //active network; got by type
-  Network network;
+  late Network network;
   //to check if any field has been updated
-  Network networkToUpdate;
+  late Network networkToUpdate;
 
 
-  SettingsUpdateNetwork({@required this.networkType})
+  SettingsUpdateNetwork({required this.networkType})
   {
     Storage storage = Storage();
-    this.network = storage.nodeSet.networks[this.networkType];
-    this.networkToUpdate = new Network.clone(network);
+    if (storage.nodeSet.networks[this.networkType] == null){
+      this.network = Network(networkType: this.networkType);
+      this.networkToUpdate = Network(networkType: this.networkType);
+    }
+    else {
+      this.network = storage.nodeSet.networks[this.networkType]!;
+      this.networkToUpdate = new Network.clone(network);
+    }
     //init validation fields
     this.network.initValidation();
   }
 
-  void onButtonPressedDelete({@required BuildContext context}) async {
+  void onButtonPressedDelete({required BuildContext context}) async {
     _log.fine("Button 'delete' clicked");
-    bool answer = await showAlert<bool>(
+    bool? answer = await showAlert<bool>(
         context: context,
         title: Text("Are you sure you want to delete a network?"),
         actions: <PlatformDialogAction>[
@@ -50,21 +56,21 @@ class SettingsUpdateNetwork extends StatelessWidget {
           ),
         ],
         closeOnBackPressed: true);
-    if (await answer){
+    if (answer != null && answer){
       Storage storage = Storage();
       storage.nodeSet.nodes.remove(this.networkType);
       storage.save();
     }
   }
 
-  void onButtonPressedSave({@required BuildContext context, bool showNotification = true})
+  void onButtonPressedSave({required BuildContext context, bool showNotification = true})
   {
     Storage storage = Storage();
 
     //copy values to storage if there is any change
     if (!this.network.compare(this.networkToUpdate)) {
       this.network.clone(this.networkToUpdate); // = new StorageNode.clone(this.currentUpdatedValues);
-      storage.nodeSet.networks[this.networkType].clone(this.networkToUpdate);
+      storage.nodeSet.networks[this.networkType]!.clone(this.networkToUpdate);
       storage.save();
     }
     if (showNotification)
@@ -74,7 +80,7 @@ class SettingsUpdateNetwork extends StatelessWidget {
         closeOnBackPressed: true);
   }
 
-  void onButtonPressedNewItem({@required BuildContext context, bool showNotification = true})
+  void onButtonPressedNewItem({required BuildContext context, bool showNotification = true})
   {
     Storage storage = Storage();
 
@@ -90,7 +96,7 @@ class SettingsUpdateNetwork extends StatelessWidget {
 
   Future<bool> onWillPop(BuildContext context) async {
     if (!this.network.compare(this.networkToUpdate)) {
-      bool answer = await showAlert<bool>(
+      bool? answer = await showAlert<bool>(
           context: context,
           title: Text("The data has been changed."),
           actions: [
@@ -98,7 +104,7 @@ class SettingsUpdateNetwork extends StatelessWidget {
                 child: PlatformText('Back'),
                 onPressed: () {
                   Navigator.pop(context, false);
-                  return false;
+                  //return false;
                 }),
             PlatformDialogAction(
                 child: PlatformText('Save and go',
@@ -106,10 +112,10 @@ class SettingsUpdateNetwork extends StatelessWidget {
                 onPressed: () {
                   onButtonPressedSave(context: context, showNotification: false);
                   Navigator.pop(context, true);
-                  return true;
+                  //return true;
                 })
           ]);
-      return new Future.value(answer);
+      return new Future.value(answer ?? false);
     } else
       return new Future.value(true);
   }
@@ -119,11 +125,11 @@ class SettingsUpdateNetwork extends StatelessWidget {
     Storage storage = Storage();
     var t = ListView.builder(
         shrinkWrap: true,
-        itemCount: storage.nodeSet.nodes[this.networkType].servers.length,
+        itemCount: storage.nodeSet.nodes[this.networkType]!.servers.length,
         itemBuilder: (BuildContext context, int idx) {
-          return CustomCardSettingsButton(label: storage.nodeSet.nodes[this.networkType].servers[idx].toString(),
+          return CustomCardSettingsButton(label: storage.nodeSet.nodes[this.networkType]!.servers[idx].toString(),
               onPressed: (){
-                final page = SettingsUpdateServer(networkType: this.networkType, server: storage.nodeSet.nodes[this.networkType].servers[idx] );
+                final page = SettingsUpdateServer(networkType: this.networkType, server: storage.nodeSet.nodes[this.networkType]!.servers[idx] );
                 Navigator.of(context).push(SlideToSideRoute(page));
               });
         });
@@ -165,7 +171,7 @@ class SettingsUpdateNetwork extends StatelessWidget {
             key: _formKey,
             child: Column(children: <Widget>[
               CustomCardSettings(children: <CardSettingsSection>[
-                CustomCardSettingsSection(children: <CardSettingsWidget>[
+                CardSettingsSection(children: <CardSettingsWidget>[
               CardSettingsText(
                   label: 'Name',
                   maxLength: 64,
@@ -214,7 +220,7 @@ class SettingsUpdateNetwork extends StatelessWidget {
                   },
                   onSaved: (value) {
                     if (this.networkToUpdate.networkType == NetworkType.CUSTOM)
-                      this.networkToUpdate.chainID = value;
+                      this.networkToUpdate.chainID = value?? "Undefined";
                   }),
 
             ],
@@ -226,7 +232,7 @@ class SettingsUpdateNetwork extends StatelessWidget {
             child:Text("Nodes",
                   style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold))),
               Container(
-                  child: ServerList(servers: storage.nodeSet.nodes[this.networkType].servers, networkType: this.networkType)
+                  child: ServerList(servers: storage.nodeSet.nodes[this.networkType]!.servers, networkType: this.networkType)
               ),
             if (this.networkType == NetworkType.CUSTOM)
               CustomCardSettingsButtonDelete(onPressed: (){

@@ -1,12 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:card_settings/card_settings.dart';
-import 'package:flutter/foundation.dart';
 
+
+//not in use anymore
+/*
 Widget CustomCardSettingsSection({
-        @required List<CardSettingsWidget> children,
-        @required String header = null,
-        Divider divider = null
+        required List<CardSettingsWidget> children,
+        String? header,
+        Divider? divider
 })
 {
     if (divider == null)
@@ -19,3 +21,4 @@ Widget CustomCardSettingsSection({
     );
 
   }
+*/

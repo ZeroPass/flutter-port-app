@@ -1,7 +1,5 @@
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
 import 'package:eosio_passid_mobile_app/screen/requestType.dart';
-import 'package:meta/meta.dart';
-import 'package:flutter/material.dart';
 import 'package:dmrtd/dmrtd.dart';
 
 abstract class StepReviewState {
@@ -24,11 +22,11 @@ class StepReviewNoConnectionState extends StepReviewState {
 
 class StepReviewWithoutDataState extends StepReviewState {
   RequestType requestType;
-  OutsideCall outsideCall;
+  OutsideCallV0dot1 outsideCall;
   String rawData;
   Function(bool) sendData;
 
-  StepReviewWithoutDataState({@required this.requestType, @required this.rawData, @required this.outsideCall, @required this.sendData});
+  StepReviewWithoutDataState({required this.requestType, required this.rawData, required this.outsideCall, required this.sendData});
 
   @override
   String toString() => 'StepReviewState:StepReviewWithoutDataState {outside call: $outsideCall, raw data: $rawData,}}';
@@ -39,10 +37,10 @@ class StepReviewWithDataState extends StepReviewState {
   EfDG1 dg1;
   String msg;
   String rawData;
-  OutsideCall outsideCall;
+  OutsideCallV0dot1 outsideCall;
   Function(bool) sendData;
 
-  StepReviewWithDataState({@required this.requestType, @required this.dg1, @required this.msg, @required this.rawData, @required this.outsideCall, @required this.sendData});
+  StepReviewWithDataState({required this.requestType, required this.dg1, required this.msg, required this.rawData, required this.outsideCall, required this.sendData});
 
   @override
   String toString() => 'StepReviewState:StepReviewWithDataState {requestType: $requestType, dg1: filled, message: $msg, raw data: $rawData, outside call: $outsideCall}}';
@@ -52,7 +50,7 @@ class StepReviewCompletedState extends StepReviewState{
   RequestType requestType;
   String transactionID;
   String rawData;
-  StepReviewCompletedState({@required this.requestType, @required this.transactionID, @required this.rawData});
+  StepReviewCompletedState({required this.requestType, required this.transactionID, required this.rawData});
 
   @override
   String toString() => 'StepReviewState:StepReviewCompletedState {requestType: $requestType, transaction id: $transactionID, rawData: $rawData}}';

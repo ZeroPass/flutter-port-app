@@ -11,7 +11,7 @@ class ServerList extends StatefulWidget {
   List<Server> servers;
   NetworkType networkType;
 
-  ServerList({@required this.servers, @required this.networkType});
+  ServerList({required this.servers, required this.networkType});
 
   @override
   _ServerList createState() => _ServerList();

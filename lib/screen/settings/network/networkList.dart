@@ -12,7 +12,7 @@ class SettingsNetworkList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var storage = Storage();
-    List<Network> networks = List<Network>();
+    List<Network> networks = List<Network>.empty(growable: true);
     _log.fine("Merge two 'maps', show only elements which are in both maps.");
     storage.nodeSet.networks.forEach((key, value){
       if (storage.nodeSet.nodes.containsKey(key)){

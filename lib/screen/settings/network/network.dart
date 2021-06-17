@@ -10,7 +10,12 @@ class SettingsNetwork extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var storage = Storage();
-    List<NodeServer> storageNodes = storage.nodeSet.nodes[NetworkType.MAINNET].servers;
+
+    if ( storage.nodeSet.nodes[NetworkType.MAINNET] == null ||
+          storage.nodeSet.nodes[NetworkType.MAINNET]!.servers != null)
+      throw Exception("SettingsNetwork.build; server list is null");
+
+    List<Server> storageNodes = storage.nodeSet.nodes[NetworkType.MAINNET]!.servers;
     return PlatformScaffold(
         material: (_, __) =>
             MaterialScaffoldData(resizeToAvoidBottomInset: false),

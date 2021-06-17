@@ -9,9 +9,9 @@ import 'package:json_annotation/json_annotation.dart';
 
 @JsonSerializable()
 class StepDataScan extends StepData{
-  String _documentID;
-  DateTime _validUntil;
-  DateTime _birth;
+  late String? _documentID;
+  late DateTime? _validUntil;
+  late DateTime? _birth;
 
   StepDataScan(){
     _documentID = null;
@@ -19,31 +19,54 @@ class StepDataScan extends StepData{
     _birth = null;
   }
 
-  StepDataScan StepDataScanFromJson({String documentID, DateTime birth, DateTime validUntil, bool hasData, bool isUnlocked}){
-    this.documentID = documentID;
-    this.birth = birth;
-    this.validUntil = validUntil;
+  StepDataScan StepDataScanFromJson({String? documentID, DateTime? birth, DateTime? validUntil, required bool hasData, required bool isUnlocked}){
+    this._documentID = documentID;
+    this._birth = birth;
+    this._validUntil = validUntil;
     this.hasData = hasData;
     this.isUnlocked = isUnlocked;
     return this;
   }
 
-  String get documentID => _documentID;
+  bool isValidDocumentID() => _documentID == null? false: true;
 
-  set documentID(String value) {
+  String getDocumentID(){
+    if (this._documentID != null)
+      return this._documentID!;
+    else
+      throw Exception("StepDataScan:documentID is null");
+  }
+
+  set documentID(String? value) {
     _documentID = value;
   }
 
-  DateTime get validUntil => _validUntil;
 
-  set validUntil(DateTime value) {
-    _validUntil = value;
+  bool isValidBirth() => _birth == null? false: true;
+
+  DateTime getBirth(){
+    if (this._birth != null)
+      return this._birth!;
+    else
+      throw Exception("StepDataScan:birth is null");
   }
 
-  DateTime get birth => _birth;
-
-  set birth(DateTime value) {
+  set birth(DateTime? value) {
     _birth = value;
+  }
+
+
+  bool isValidValidUntil() => _validUntil == null? false: true;
+
+  DateTime getValidUntil(){
+    if (this._validUntil != null)
+      return this._validUntil!;
+    else
+      throw Exception("StepDataScan:validUntil is null");
+  }
+
+  set validUntil(DateTime? value) {
+    _validUntil = value;
   }
 
   factory StepDataScan.fromJson(Map<String, dynamic> json) => _$StepDataScanFromJson(json);
@@ -62,9 +85,9 @@ StepDataScan _$StepDataScanFromJson(Map<String, dynamic> json) {
 }
 
 Map<String, dynamic> _$StepDataScanToJson(StepDataScan instance) => <String, dynamic>{
-  'documentID': instance.documentID != null ? instance.documentID: null,
-  'birth': instance.birth != null ? instance.birth.toIso8601String() : null,
-  'validUntil': instance.validUntil != null ? instance.validUntil.toIso8601String() : null,
+  'documentID': instance.isValidDocumentID() ? instance.getDocumentID(): null,
+  'birth': instance.isValidBirth() ? instance.getBirth().toIso8601String() : null,
+  'validUntil': instance.isValidValidUntil() ? instance.getValidUntil().toIso8601String() : null,
   'hasData': instance.hasData,
   'isUnlocked': instance.isUnlocked,
 };
@@ -79,12 +102,12 @@ class StepScanBloc extends Bloc<StepScanEvent, StepScanState> {
   void updateDataOnUI(){
     //check updated data
     Storage storage = Storage();
-    storage.load(callback: (isAlreadyUpdated, isValid,  {String exc}){
+    storage.load(callback: (isAlreadyUpdated, isValid,  {String? exc}){
       if (isAlreadyUpdated == true || isValid == true){
-        StepDataScan storageStepScan = storage.getStorageData(1);
-        this.add(WithDataScan(documentID: storageStepScan.documentID,
-            birth: storageStepScan.birth,
-            validUntil: storageStepScan.validUntil));
+        StepDataScan storageStepScan = storage.getStorageData(1) as StepDataScan;
+        this.add(WithDataScan(documentID: storageStepScan.isValidDocumentID()?storageStepScan.getDocumentID(): null,
+            birth: storageStepScan.isValidBirth()?storageStepScan.getBirth(): null,
+            validUntil: storageStepScan.isValidValidUntil()?storageStepScan.getValidUntil(): null));
       }
     });
   }
@@ -99,7 +122,7 @@ class StepScanBloc extends Bloc<StepScanEvent, StepScanState> {
   bool validatorFunction (String value, var context) {
     //next button locked
     var storage = Storage();
-    StepDataScan storageStepScan = storage.getStorageData(1);
+    StepDataScan storageStepScan = storage.getStorageData(1) as StepDataScan;
     //Default value is false. If string passes all conditions then we change it on true
     storageStepScan.isUnlocked = false;
     validatorText = '';

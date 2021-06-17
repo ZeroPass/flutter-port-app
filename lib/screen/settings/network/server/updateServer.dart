@@ -13,25 +13,26 @@ import 'package:eosio_passid_mobile_app/screen/flushbar.dart';
 class SettingsUpdateServer extends StatelessWidget {
   final _log = Logger('Settings.SettingsUpdateServer');
 
-  NetworkType networkType;
-  Server server;
+  late NetworkType networkType;
+  late Server? server;
   //to check if any field has been updated
-  Server serverToUpdate;
+  late Server serverToUpdate;
 
-  SettingsUpdateServer({@required this.networkType, this.server})
+  SettingsUpdateServer({required this.networkType, this.server})
   {
-    if (this.server == null)
-      this.serverToUpdate = new Server();
-
+    if (this.server == null) {
+      this.server = new Server(host: Uri.base);
+      this.serverToUpdate = new Server(host: Uri.base);
+    }
     else
-      this.serverToUpdate = new Server.clone(server);
+      this.serverToUpdate = new Server.clone(server!);
     //init validation fields
-    this.server.initValidation();
+    this.server!.initValidation();
   }
 
-  void onButtonPressedDelete({@required BuildContext context}) async {
+  void onButtonPressedDelete({required BuildContext context}) async {
     _log.fine("Button 'delete' clicked");
-    bool answer = await showAlert<bool>(
+    bool? answer = await showAlert<bool>(
         context: context,
         title: Text("Are you sure you want to delete na item?"),
         actions: <PlatformDialogAction>[
@@ -45,13 +46,19 @@ class SettingsUpdateServer extends StatelessWidget {
           ),
         ],
         closeOnBackPressed: true);
-    if ( await answer){
+    if ( answer != null && answer){
       Storage storage = Storage();
-      for (var element in storage.nodeSet.nodes[this.networkType].servers){
-        if (this.server.compare(element)){
+
+      if (storage.nodeSet.nodes[this.networkType] == null ||
+          storage.nodeSet.nodes[this.networkType]!.servers == null ||
+          storage.nodeSet.nodes[this.networkType]!.servers.length == 0)
+        throw Exception("Not defined - nodeSet");
+
+      for (var element in storage.nodeSet.nodes[this.networkType]!.servers){
+        if (this.server!.compare(element)){
           _log.finest("Element found in database.");
           element.clone(serverToUpdate);
-          storage.nodeSet.nodes[this.networkType].delete(element);
+          storage.nodeSet.nodes[this.networkType]!.delete(element);
           storage.save();
           Navigator.pop(context);
           break;
@@ -60,19 +67,24 @@ class SettingsUpdateServer extends StatelessWidget {
     }
   }
 
-  void onButtonPressedSave({@required BuildContext context, bool showNotification = true})
+  void onButtonPressedSave({required BuildContext context, bool showNotification = true})
   {
     _log.fine("Save clicked");
     Storage storage = Storage();
 
     //copy values to storage if there is any change
-    if (!this.server.compare(this.serverToUpdate)) {
+    if (!this.server!.compare(this.serverToUpdate)) {
       _log.finer("No data has been changed since last save/open.");
-        for (var element in storage.nodeSet.nodes[this.networkType].servers){
-        if (this.server.compare(element)){
+      if (storage.nodeSet.nodes[this.networkType] == null ||
+          storage.nodeSet.nodes[this.networkType]!.servers == null ||
+          storage.nodeSet.nodes[this.networkType]!.servers.length == 0)
+        throw Exception("Not defined - nodeSet");
+
+        for (var element in storage.nodeSet.nodes[this.networkType]!.servers){
+        if (this.server!.compare(element)){
           _log.finest("Element found in database. Clone the new data to this element.");
           element.clone(serverToUpdate);
-          this.server.clone(this.serverToUpdate);
+          this.server!.clone(this.serverToUpdate);
           storage.save(callback: (successfull){
             if (successfull && showNotification && context != null)
               showAlert(
@@ -93,8 +105,8 @@ class SettingsUpdateServer extends StatelessWidget {
   }
 
   Future<bool> onWillPop(BuildContext context) async {
-    if (!this.server.compare(this.serverToUpdate)) {
-      bool answer = await showAlert<bool>(
+    if (!this.server!.compare(this.serverToUpdate)) {
+      bool? answer = await showAlert<bool>(
           context: context,
           title: Text("The data has been changed."),
           actions: [
@@ -102,7 +114,7 @@ class SettingsUpdateServer extends StatelessWidget {
                 child: PlatformText('Back'),
                 onPressed: () {
                   Navigator.pop(context, false);
-                  return false;
+                  //return false;
                 }),
             PlatformDialogAction(
                 child: PlatformText('Save and go',
@@ -110,7 +122,7 @@ class SettingsUpdateServer extends StatelessWidget {
                 onPressed: () {
                   onButtonPressedSave(context: context, showNotification: false);
                   Navigator.pop(context, true);
-                  return true;
+                  //return true;
                 })
           ]);
       return new Future.value(answer);
@@ -118,7 +130,7 @@ class SettingsUpdateServer extends StatelessWidget {
       return new Future.value(true);
   }
 
-  String validator(String value){
+  /*String validator(String value){
     _log.finer("URL: $value");
     if (value == null || value.isEmpty) {
       _log.finest("URL; value is null.");
@@ -130,28 +142,29 @@ class SettingsUpdateServer extends StatelessWidget {
       this.serverToUpdate.setValidationError("name", "Field 'URL' not match regular expression.");
       return 'Not valid URL address.';
     }
-  }
+    return '';
+  }*/
 
-  String onChanged(String value){
+  String onChanged(String? value){
     _log.finer("URL: $value");
     if (value == null || value.isEmpty) {
       _log.finest("URL; value is null.");
-      //this.serverToUpdate.setValidationError("name", "Field 'url' is empty.");
-      //return 'URL is required.';
-      return null;
+      this.serverToUpdate.setValidationError("name", "Field 'url' is empty.");
+      return 'URL is required.';
+      //return null;
     }
     if (RegExp(r'[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&=]*)').hasMatch(value) == false){
       _log.finest("URL; regular expression does not match.");
       //this.serverToUpdate.setValidationError("name", "Field 'URL' not match regular expression.");
-      //return 'Not valid URL address.';
-      return null;
+      return 'Not valid URL address.';
+     // return null;
     }
 
 
     _log.finest("Parsed host is: $value");
-    this.server.setValidationCorrect("host");
+    this.server!.setValidationCorrect("host");
     this.serverToUpdate.host = Uri(host:value);
-    return null;
+    return '';
   }
 
   String initialValue(){
@@ -205,7 +218,7 @@ class SettingsUpdateServer extends StatelessWidget {
                               return onChanged(value);
                             },
                             onChanged: (value){
-                              return onChanged(value);
+                              onChanged(value);
                             },
                           ),
                         ],

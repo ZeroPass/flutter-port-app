@@ -16,7 +16,7 @@ import 'package:sembast/sembast.dart';
 String CACHE_KEY_NAME = "PassId";
 
 class LoggerHandlerInstance{
-  bool logToAppMemory;
+  late bool logToAppMemory;
 
   LoggerHandlerInstance(){
     Storage storage = Storage();
@@ -89,7 +89,7 @@ class LoggerHandlerInstance{
 
     void translate(LogRecord logRecord) async{
       if (this.logToAppMemory) {
-        await FLog.logThis(text: logRecord.message,
+        FLog.logThis(text: logRecord.message,
             type: classificationLogLevel(logRecord.level),
             className: logRecord.loggerName,
             methodName: "");
@@ -150,7 +150,7 @@ class LoggerHandlerInstance{
       ]);
     }
 
-    void export({bool open = false, Function showError = null}) async{
+    void export({bool open = false, Function? showError}) async{
       try {
         LogsConfig config = FLog.getDefaultConfigurations();
         final logs = await FLog.getAllLogs();

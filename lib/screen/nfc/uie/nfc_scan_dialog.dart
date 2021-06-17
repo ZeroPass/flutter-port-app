@@ -1,12 +1,11 @@
-//  Created by smlu, copyright © 2020 ZeroPass. All rights reserved.
+//  Created by Crt Vavros, copyright © 2021 ZeroPass. All rights reserved.
 import 'package:async/async.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flare_flutter/provider/asset_flare.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:eosio_passid_mobile_app/screen/customButton.dart';
-import 'dart:async';
+import 'uiutils.dart';
 
 /// Class displays BottomSheet dialog which
 /// shows to the user NFC scanning state via [message].
@@ -20,15 +19,15 @@ class NfcScanDialog {
   /// Constructs new [NfcScanDialog] using [context] and optionally
   /// [onCancel] callback which is called when user presses cancel button.
   /// If callback [onCancel] is not provided or null the cancel button will be hidden.
-  NfcScanDialog(this.context, {Function() onCancel}) : _onCancelCB = onCancel {
+  NfcScanDialog(this.context, {Function()? onCancel}) : _onCancelCB = onCancel {
     _showCancelButton = _onCancelCB != null;
   }
 
   /// Shows bottom dialog with optionally [message] string.
-  Future<T> show<T>({String message}) {
-    return _showBottomSheet<T>(message).then((value) async {
+  Future<T?> show<T>({String? message}) {
+    return _showBottomSheet<T>(message)!.then((value) async {
       if (_closingOperation != null) {
-        await _closingOperation.cancel();
+        await _closingOperation!.cancel();
         _closingOperation = null;
       }
       else if (_sheetSetter != null) {
@@ -44,37 +43,35 @@ class NfcScanDialog {
   /// If [message] or [errorMessage] is provided closing dialog will be delayed for [delayClosing] period.
   /// If both [message] and [errorMessage] are set the [errorMessage] will be used.
   Future<void> hide(
-      {String message,
-      String errorMessage,
-      Duration delayClosing = const Duration(milliseconds: 2500)}) {
-    Completer<void> send = new Completer<void>();
-    _closeBottomSheet(
+      {String? message,
+        String? errorMessage,
+        Duration delayClosing = const Duration(milliseconds: 2500)}) {
+    return _closeBottomSheet(
         message: message,
         errorMessage: errorMessage,
-        delayClosing: delayClosing).then((value) => send.complete());
-    return send.future;
+        delayClosing: delayClosing);
   }
 
-  String _msg;
+  String _msg = '';
   String _iconAnimation = _IconAnimations.animWaiting;
-  StateSetter _sheetSetter;
+  StateSetter? _sheetSetter;
 
-  CancelableOperation _closingOperation;
-  final Function _onCancelCB;
-  bool _showCancelButton;
+  CancelableOperation? _closingOperation;
+  final Function? _onCancelCB;
+  late bool _showCancelButton;
 
   void _setMessage(final String msg) {
     if (_sheetSetter != null) {
-      _sheetSetter(() {
+      _sheetSetter!(() {
         _iconAnimation = _IconAnimations.animScanning;
-        _msg = msg ?? '';
+        _msg = msg;
       });
     } else {
-      _msg = msg ?? '';
+      _msg = msg;
     }
   }
 
-  Future<T> _showBottomSheet<T>(String msg) {
+  Future<T?>? _showBottomSheet<T>(String? msg) {
     if (_sheetSetter != null) {
       return null;
     }
@@ -87,80 +84,70 @@ class NfcScanDialog {
         //backgroundColor: Colors.white,
         isDismissible: false,
         useRootNavigator: true,
-        /*shape:RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(25.0)),*/
+        shape:
+        RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.0)),
         builder: (BuildContext context) {
           return StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {
-            _sheetSetter = setState;
-            return WillPopScope(
-                onWillPop: () async => false,
-                child: Container(
-                    height: MediaQuery.of(context).size.width,
-                    child: Padding(
-                        padding: EdgeInsets.all(30.0),
-                        child: Center(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.max,
-                            children: <Widget>[
-                              Text('Ready to Scan',
-                                  style: TextStyle(
-                                      fontSize: 25, color: Colors.grey)),
-                              const SizedBox(height: 30),
-                              Container(
-                                  width: 100,
-                                  height: 100,
-                                  child: FlareActor.asset(
-                                    _IconAnimations.file,
-                                    alignment: Alignment.center,
-                                    fit: BoxFit.cover,
-                                    animation: _iconAnimation,
-                                  )),
-                              const SizedBox(height: 15),
-                              ConstrainedBox(
-                                  constraints: BoxConstraints(minHeight: 60),
-                                  child: Row(children: <Widget>[
-                                    Expanded(
-                                        child: Text(_msg,
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(fontSize: 16)))
-                                  ])),
-                              const SizedBox(height: 10),
-                              if (_showCancelButton)
-                                Container(
-                                    width: MediaQuery.of(context).size.width,
-                                    margin: null,
-                                    alignment: Alignment.center,
-                                    child: Row(children: <Widget>[
-                                      Expanded(
-                                          child: CustomButton(
-                                              title: "Cancel",
-                                              fontColor: Colors.blue,
-                                              backgroundColor: Colors.white,
-                                              callbackOnPressed: _onCancel))
-                                    ]))
-                            ],
-                          ),
-                        ))));
-          });
-        })/*.then((onValue){
-          var t = 9;
-    }, onError: (kva){
-          var u = 9;
-    })*/;
+                _sheetSetter = setState;
+                return WillPopScope(
+                    onWillPop: () async => false,
+                    child: Container(
+                        height: MediaQuery.of(context).size.width,
+                        child: Padding(
+                            padding: EdgeInsets.all(30.0),
+                            child: Center(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.max,
+                                children: <Widget>[
+                                  Text('Ready to Scan',
+                                      style: TextStyle(
+                                          fontSize: 25, color: Colors.grey)),
+                                  const SizedBox(height: 30),
+                                  Container(
+                                      width: 100,
+                                      height: 100,
+                                      child: FlareActor.asset(
+                                        _IconAnimations.file,
+                                        alignment: Alignment.center,
+                                        fit: BoxFit.cover,
+                                        animation: _iconAnimation,
+                                      )),
+                                  const SizedBox(height: 15),
+                                  ConstrainedBox(
+                                      constraints: BoxConstraints(minHeight: 60),
+                                      child: Row(children: <Widget>[
+                                        Expanded(
+                                            child: Text(_msg,
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(fontSize: 16)))
+                                      ])),
+                                  const SizedBox(height: 10),
+                                  makeButton(
+                                      visible: _showCancelButton,
+                                      context: context,
+                                      text: 'CANCEL',
+                                      margin: null,
+                                      onPressed: _onCancel
+                                  )
+                                ],
+                              ),
+                            ))));
+              });
+        });
   }
 
-  Future<void> _closeBottomSheet  (
-      {String message, String errorMessage, Duration delayClosing}) async {
+  Future<void> _closeBottomSheet(
+      {String? message, String? errorMessage, Duration? delayClosing}) {
     if (_sheetSetter != null) {
       if(_closingOperation != null) {
-        _closingOperation.cancel();
+        _closingOperation!.cancel();
         _closingOperation = null;
       }
 
       if ((message != null || errorMessage != null)) {
-        _sheetSetter(() {
+        _sheetSetter!(() {
           _showCancelButton = false;
           if (errorMessage != null) {
             _msg = errorMessage;
@@ -175,33 +162,32 @@ class NfcScanDialog {
           // Delay closing dialog to display message
           _closingOperation = CancelableOperation.fromFuture(
               Future.delayed(delayClosing)
-          ).then((value) async {
+          ).then((value) {
             if (_sheetSetter != null) {
               _sheetSetter = null;
               Navigator.pop(context);
-              await Future.delayed(Duration(seconds: 1));
             }
           });
-          return _closingOperation.valueOrCancellation();
+          return _closingOperation!.valueOrCancellation();
         }
       }
       _sheetSetter = null;
-      await Navigator.pop(context);
-      await Future.delayed(Duration(seconds: 1));
+      Navigator.pop(context);
     }
+    return Future.value(null);
   }
 
   Future<void> _onCancel() async {
     await _closeBottomSheet();
     if (_onCancelCB != null) {
-      return await _onCancelCB();
+      return await _onCancelCB!();
     }
   }
 }
 
 class _IconAnimations {
   static final file =
-      AssetFlare(bundle: rootBundle, name: 'assets/anim/nfc.flr');
+  AssetFlare(bundle: rootBundle, name: 'assets/anim/nfc.flr');
   static const animWaiting  = 'nfc';
   static const animScanning = 'nfc';
   static const animSuccess  = 'checkmark';

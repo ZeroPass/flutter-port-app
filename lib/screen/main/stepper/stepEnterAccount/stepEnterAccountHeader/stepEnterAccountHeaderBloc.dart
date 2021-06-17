@@ -10,7 +10,7 @@ import 'package:eosio_passid_mobile_app/utils/storage.dart';
 
 class StepEnterAccountHeaderBloc extends Bloc<StepEnterAccountHeaderEvent, StepEnterAccountHeaderState> {
 
-  StepEnterAccountHeaderBloc({@required NetworkType networkType}): super(WithoutAccountIDState(networkType: networkType)){
+  StepEnterAccountHeaderBloc({required NetworkType networkType}): super(WithoutAccountIDState(networkType: networkType)){
     updateDataOnUI();
   }
 
@@ -18,18 +18,18 @@ class StepEnterAccountHeaderBloc extends Bloc<StepEnterAccountHeaderEvent, StepE
   void updateDataOnUI(){
     //check updated data
     Storage storage = Storage();
-    storage.load(callback: (isAlreadyUpdated, isValid,  {String exc}){
+    storage.load(callback: (isAlreadyUpdated, isValid,  {String? exc}){
       if (isAlreadyUpdated == true || isValid == true){
-        StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
+        StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0) as StepDataEnterAccount;
 
         if (storage.outsideCall.isOutsideCall) {
           //updating network type:custom ; set the name of server
-          NetworkChains.updateNetworkChainCustomAdd(url: storage.outsideCall.structV1.host.host);
+          NetworkChains.updateNetworkChainCustomAdd(url: storage.outsideCall.getStructV1()!.host.host);
           this.add(WithAccountIDOutsideCallEvent(
-              accountID: storage.outsideCall.structV1.accountID,
+              accountID: storage.outsideCall.getStructV1()!.accountID,
               networkType: NetworkType.CUSTOM));
         }
-        else if (storageStepEnterAccount.accountID != null && storageStepEnterAccount.accountID != "" )
+        else if (storageStepEnterAccount.accountID != "" )
           this.add(WithAccountIDEvent(accountID: storageStepEnterAccount.accountID,
                                       networkType: storageStepEnterAccount.networkType));
         else
@@ -41,10 +41,11 @@ class StepEnterAccountHeaderBloc extends Bloc<StepEnterAccountHeaderEvent, StepE
     @override
     StepEnterAccountHeaderState get initialState {
     Storage storage = Storage();
-    StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
+    StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0) as StepDataEnterAccount;
     return WithoutAccountIDState(
         networkType: storageStepEnterAccount.networkType,
-        server: storage.getServerCloudSelected(networkTypeServer: null)
+        server: storage.getServerCloudSelected(networkTypeServer: NetworkTypeServer.MAIN_SERVER/*TODO: check if this is correct*/
+        )
     );
     }
 

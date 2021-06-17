@@ -119,7 +119,7 @@ class _StepReviewFormState extends State<StepReviewForm> {
         Text(
       'Review what data will be send to ' +
           (outsideCall.isOutsideCall
-              ? outsideCall.structV1.host
+              ? outsideCall.getStructV1()!.host.toString()
               : ( isPublishedOnChain?'the blockchain.': 'the server.')),
       style: TextStyle(
           color: AndroidThemeST()

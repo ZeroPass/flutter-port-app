@@ -19,17 +19,17 @@ final _logOutsideCall = Logger("OutsideCall");
 
 @JsonSerializable()
 class OutsideCall{
-  bool _isOutsideCall;
+  late bool _isOutsideCall;
 
-  OutsideCall OutsideCallFromJson({bool isOutsideCall, Server requestedBy})
+  OutsideCall OutsideCallFromJson({required bool isOutsideCall/*, required Server requestedBy*/})
   {
     this._isOutsideCall = isOutsideCall;
     return this;
   }
 
-  OutsideCall({@required bool isOutsideCall})
+  OutsideCall({required bool isOutsideCall})
   {
-    _logOutsideCall.debug("Setting outside call var: $_isOutsideCall .");
+    _logOutsideCall.debug("Setting outside call var: $isOutsideCall .");
     _isOutsideCall = isOutsideCall;
   }
 
@@ -54,10 +54,8 @@ class OutsideCall{
 }
 
 OutsideCall _$OutsideCallFromJson(Map<String, dynamic> json) {
-  OutsideCall obj = OutsideCall();
-  return obj.OutsideCallFromJson(
-        isOutsideCall: json['isOutsideCall'] as bool
-  );
+  OutsideCall obj = OutsideCall(isOutsideCall: json['isOutsideCall'] as bool);
+  return obj;
 }
 
 Map<String, dynamic> _$OutsideCallToJson(OutsideCall instance) => <String, dynamic>{
@@ -68,28 +66,26 @@ final _logOutsideCallV0dot1 = Logger("OutsideCallV0dot1");
 
 @JsonSerializable()
 class OutsideCallV0dot1 extends OutsideCall{
-  QRserverStructure _structV1; //can be null
+  late QRserverStructure? _structV1;
 
   OutsideCallV0dot1 () : super(isOutsideCall: false){
     _logOutsideCallV0dot1.debug("Constructor: setting outside call to false");
     this._structV1 = null;
   }
 
-  void set({@required QRserverStructure qRserverStructure}) {
+  void setV0dot1({required QRserverStructure qRserverStructure}){
     _logOutsideCallV0dot1.debug("Setting structure to oustside call");
     super.set();
-    if (qRserverStructure == null)
-      throw Exception("QRserverStructure must not be null when you set outside call");
     this.structV1 = qRserverStructure;
   }
 
   void remove() {
     _logOutsideCallV0dot1.debug("Removing outside call v1");
     super.remove();
-    this.structV1 = null;
+    this._structV1 = null;
   }
 
-  QRserverStructure get structV1 => _structV1;
+  QRserverStructure? getStructV1() => _structV1;//can be null
 
   set structV1(QRserverStructure value) {
     _structV1 = value;
@@ -98,15 +94,14 @@ class OutsideCallV0dot1 extends OutsideCall{
 
 @JsonSerializable()
 class StepDataAttestation extends StepData{
-  RequestType _requestType;
+  late RequestType _requestType;
   //OutsideCallV0dot1 _isOutsideCall;
 
-  StepDataAttestation({@required RequestType requestType}) {
-    if (this.requestType == null)
-      this._requestType = RequestType.ATTESTATION_REQUEST; //default request type
+  StepDataAttestation({RequestType? requestType}) {
+      this._requestType = requestType?? RequestType.ATTESTATION_REQUEST;
   }
 
-  StepDataAttestation StepDataAttestationFromJson({RequestType requestType})
+  StepDataAttestation StepDataAttestationFromJson({required RequestType requestType})
   {
     this.requestType = requestType;
     return this;
@@ -115,7 +110,7 @@ class StepDataAttestation extends StepData{
   RequestType get requestType => _requestType;
 
   set requestType(RequestType value) {
-      if (requestType == null || MapUtil.contains(AuthenticatorActions, value) == false)
+      if (MapUtil.contains(AuthenticatorActions, value) == false)
         throw Exception("StepDataAttestation:requestType:setter; not valid AuthenticatorAction");
       this._requestType = value;
   }
@@ -137,19 +132,19 @@ Map<String, dynamic> _$StepDataAttestationToJson(StepDataAttestation instance) =
 
 
 class StepAttestationBloc extends Bloc<StepAttestationEvent, StepAttestationState> {
-  StepAttestationBloc({RequestType requestType}): super(AttestationWithDataState(requestType: requestType)) {
+  StepAttestationBloc({required RequestType requestType}): super(AttestationWithDataState(requestType: requestType)) {
     this.updateDataOnUI();
   }
     //check if there is any data stored
     void updateDataOnUI(){
       //check updated data
       Storage storage = Storage();
-      storage.load(callback: (isAlreadyUpdated, isValid, {String exc}){
+      storage.load(callback: (isAlreadyUpdated, isValid, {String? exc}){
         if (isAlreadyUpdated == true || isValid == true){
           if (storage.outsideCall.isOutsideCall)
-            this.add(AttestationWithDataOutsideCallEvent(requestType: storage.outsideCall.structV1.requestType));
+            this.add(AttestationWithDataOutsideCallEvent(requestType: storage.outsideCall.getStructV1()!.requestType));
           else {
-            StepDataAttestation stepDataAttestation = storage.getStorageData(2);
+            StepDataAttestation stepDataAttestation = storage.getStorageData(2) as StepDataAttestation;
             this.add(AttestationWithDataEvent(
                 requestType: stepDataAttestation.requestType == null ?
                 RequestType.ATTESTATION_REQUEST : stepDataAttestation

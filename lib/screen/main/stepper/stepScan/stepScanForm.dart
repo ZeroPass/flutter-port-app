@@ -10,19 +10,19 @@ import 'package:eosio_passid_mobile_app/screen/customDatePicker.dart';
 import 'package:eosio_passid_mobile_app/screen/theme.dart';
 
 class StepScanForm extends StatefulWidget {
-  StepScanForm({Key key}) : super(key: key);
+  StepScanForm() : super();
 
   @override
   _StepScanFormState createState() => _StepScanFormState();
 }
 
 class _StepScanFormState extends State<StepScanForm> {
-  TextEditingController _passportIdTextController = TextEditingController();
-  TextEditingController _birthTextController = TextEditingController();
-  TextEditingController _validUntilTextController = TextEditingController();
-  bool _allowExpiredPassport; // = false;
+  late TextEditingController _passportIdTextController;
+  late TextEditingController _birthTextController;
+  late TextEditingController _validUntilTextController;
+  late bool _allowExpiredPassport;
 
-  _StepScanFormState({Key key}) {
+  _StepScanFormState() {
     _passportIdTextController = TextEditingController();
     _birthTextController = TextEditingController();
     _validUntilTextController = TextEditingController();
@@ -32,14 +32,14 @@ class _StepScanFormState extends State<StepScanForm> {
   //update fields in account form
   void updateFields() {
     var storage = Storage();
-    StepDataScan storageStepScan = storage.getStorageData(1);
+    StepDataScan storageStepScan = storage.getStorageData(1) as StepDataScan;
     _passportIdTextController.text =
-        storageStepScan.documentID != null ? storageStepScan.documentID : "";
-    _birthTextController.text = storageStepScan.birth != null
-        ? CustomDatePicker.formatDate(storageStepScan.birth)
+        storageStepScan.isValidDocumentID() ? storageStepScan.getDocumentID() : "";
+    _birthTextController.text = storageStepScan.isValidBirth()
+        ? CustomDatePicker.formatDate(storageStepScan.getBirth())
         : "";
-    _validUntilTextController.text = storageStepScan.validUntil != null
-        ? CustomDatePicker.formatDate(storageStepScan.validUntil)
+    _validUntilTextController.text = storageStepScan.isValidValidUntil()
+        ? CustomDatePicker.formatDate(storageStepScan.getValidUntil())
         : "";
   }
 
@@ -60,8 +60,9 @@ class _StepScanFormState extends State<StepScanForm> {
     return BlocBuilder(
       bloc: stepScanBloc,
       builder: (BuildContext context, StepScanState state) {
-        updateFields();
+
         if (state is StateScan) emptyFields();
+        updateFields();
 
         return Form(
             key: _formKey,
@@ -86,9 +87,9 @@ class _StepScanFormState extends State<StepScanForm> {
                 ],
                 textInputAction: TextInputAction.done,
                 textCapitalization: TextCapitalization.characters,
-                validator: (value) => RegExp(r"^[a-zA-Z0-9]*$").hasMatch(value)
-                    ? null
-                    : "Special characters not allowed.",
+                validator: (value) =>value != null?RegExp(r"^[a-zA-Z0-9]*$").hasMatch(value)
+                    ? null : "Special characters not allowed."
+                    : null,
 
                 onChanged: (value) {
                   if (_passportIdTextController.text != value.toUpperCase())
@@ -97,7 +98,7 @@ class _StepScanFormState extends State<StepScanForm> {
                         .copyWith(text: value.toUpperCase());
 
                   //save to storage
-                  StepDataScan storageStepScan = storage.getStorageData(1);
+                  StepDataScan storageStepScan = storage.getStorageData(1) as StepDataScan;
                   storageStepScan.documentID = _passportIdTextController.text;
                   storage.save();
 
@@ -106,13 +107,13 @@ class _StepScanFormState extends State<StepScanForm> {
               ),
               SizedBox(height: 17),
               CustomDatePicker(
-                "Date of Birth",
-                DateTime(DateTime.now().year - 90),
-                DateTime(DateTime.now().year - 10, DateTime.now().month,
+                text: "Date of Birth",
+                firstDate: DateTime(DateTime.now().year - 90),
+                lastDate: DateTime(DateTime.now().year - 10, DateTime.now().month,
                     DateTime.now().day),
-                /*callback*/ (selectedDate) {
+                callbackOnDatePicked: /*callback*/ (selectedDate) {
                   //save to storage
-                  StepDataScan storageStepScan = storage.getStorageData(1);
+                  StepDataScan storageStepScan = storage.getStorageData(1) as StepDataScan;
                   storageStepScan.birth = selectedDate;
                   //save storage
                   storage.save();
@@ -120,9 +121,9 @@ class _StepScanFormState extends State<StepScanForm> {
                   //update header
                   stepperBloc.liveModifyHeader(1, context);
                 },
-                /*callback*/ (String value) {
-                  StepDataScan storageStepScan = storage.getStorageData(1);
-                  if (value == null || value == "")
+                callbackOnUpdate: /*callback*/ (String value) {
+                  StepDataScan storageStepScan = storage.getStorageData(1) as StepDataScan;
+                  if (value == "")
                     storageStepScan.birth = null;
                   else {
                     try {
@@ -138,18 +139,18 @@ class _StepScanFormState extends State<StepScanForm> {
                   //update header
                   stepperBloc.liveModifyHeader(1, context);
                 },
-                _birthTextController,
+                textEditingController: _birthTextController,
               ),
               SizedBox(height: 17),//temp raised from 17
               CustomDatePicker(
-                    "Date of Expiry",
-                  (this._allowExpiredPassport)
+                    text:"Date of Expiry",
+                    firstDate:  (this._allowExpiredPassport)
                     ? DateTime(DateTime.now().year - 90)
                     : DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day + 1),
-                  DateTime(DateTime.now().year + 10),
-                    /*callback*/ (selectedDate) {
+                  lastDate: DateTime(DateTime.now().year + 10),
+                  callbackOnDatePicked: /*callback*/ (selectedDate) {
                   //save to storage
-                  StepDataScan storageStepScan = storage.getStorageData(1);
+                  StepDataScan storageStepScan = storage.getStorageData(1) as StepDataScan;
                   storageStepScan.validUntil = selectedDate;
                   //save storage
                   storage.save();
@@ -157,9 +158,9 @@ class _StepScanFormState extends State<StepScanForm> {
                   //update header
                   stepperBloc.liveModifyHeader(1, context);
                   },
-                    /*callback*/ (String value) {
-                  StepDataScan storageStepScan = storage.getStorageData(1);
-                  if (value == null || value == "")
+                  callbackOnUpdate:  /*callback*/ (String value) {
+                  StepDataScan storageStepScan = storage.getStorageData(1) as StepDataScan;
+                  if (value == "")
                     storageStepScan.validUntil = null;
                   else {
                     try {
@@ -174,7 +175,9 @@ class _StepScanFormState extends State<StepScanForm> {
 
                   //update header
                   stepperBloc.liveModifyHeader(1, context);
-                }, _validUntilTextController),
+                  },
+                  textEditingController: _validUntilTextController
+                  ),
 
               Row( mainAxisAlignment: MainAxisAlignment.end, children:[
                 SelectableText(

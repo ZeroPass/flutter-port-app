@@ -11,7 +11,7 @@ import 'package:eosio_passid_mobile_app/screen/theme.dart';
 import "package:intl/intl.dart";
 
 class StepScanHeaderForm extends StatefulWidget {
-  StepScanHeaderForm({Key key}) : super(key: key);
+  StepScanHeaderForm() : super();
 
   @override
   _StepScanHeaderFormState createState() =>
@@ -22,14 +22,14 @@ class _StepScanHeaderFormState
     extends State<StepScanHeaderForm> {
   //Stepper steps
 
-  _StepScanHeaderFormState({Key key});
+  _StepScanHeaderFormState();
 
   Widget deleteButton(BuildContext context) {
     final stepperBloc = BlocProvider.of<StepperBloc>(context);
     final stepScanHeaderBloc = BlocProvider.of<StepScanHeaderBloc>(context);
     final stepScanBloc = BlocProvider.of<StepScanBloc>(context);
     var storage = Storage();
-    StepDataScan storageStepScan = storage.getStorageData(1);
+    StepDataScan storageStepScan = storage.getStorageData(1) as StepDataScan;
     return ClipOval(
       child: Material(
         //color: Colors.white, // button color
@@ -41,7 +41,7 @@ class _StepScanHeaderFormState
           highlightColor: Colors.green,
           onTap: () {
             //change state on stepper
-            stepperBloc.add(StepTapped(step: 1));
+            stepperBloc.add(StepTapped(step: 1, previousStep: stepperBloc.state.previousStep/* ?? 1*/));
 
             //update selected node in storage
             storageStepScan.documentID = null;
@@ -89,12 +89,12 @@ class _StepScanHeaderFormState
                         alignment: Alignment.centerRight,
                         transform: new Matrix4.identity()..scale(0.8),
                         child:*/ Row(children: <Widget>[
-                          if (state is WithDataState && state.documentID != null && state.documentID.isNotEmpty)
-                            Container(child: CustomChip(['No.']), margin: EdgeInsets.only(left: 3.0)),
+                          if (state is WithDataState && state.documentID != null && state.isValidDocumentID())
+                            Container(child: CustomChip(titles: ['No.']), margin: EdgeInsets.only(left: 3.0)),
                           if (state is WithDataState && state.birth != null)
-                            Container(child: CustomChip(['Birth']), margin: EdgeInsets.only(left: 3.0)),
+                            Container(child: CustomChip(titles: ['Birth']), margin: EdgeInsets.only(left: 3.0)),
                           if (state is WithDataState && state.validUntil != null)
-                            Container(child: CustomChip(['Expiry']), margin: EdgeInsets.only(left: 3.0)),
+                            Container(child: CustomChip(titles: ['Expiry']), margin: EdgeInsets.only(left: 3.0)),
 
                     ]),
                     //),

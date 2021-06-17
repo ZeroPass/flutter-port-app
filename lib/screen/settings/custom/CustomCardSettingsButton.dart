@@ -1,26 +1,24 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:card_settings/card_settings.dart';
-import 'package:eosio_passid_mobile_app/utils/storage.dart';
-import 'package:flutter/foundation.dart';
 import 'package:card_settings/interfaces/minimum_field_properties.dart';
 
 
 class CustomCardSettingsButton extends StatefulWidget implements IMinimumFieldSettings {
   @override
   final bool showMaterialonIOS;
-  String label;
-  bool enabled;
-  bool visible;
-  double bottomSpacing;
-  Function onPressed;
+  late String label;
+  late bool enabled;
+  late bool visible;
+  late double bottomSpacing;
+  late Function() onPressed;
 
   CustomCardSettingsButton({
-    @required this.label,
+    required this.label,
     this.enabled = true,
     this.visible = true,
     this.bottomSpacing = 5.0,
-    @required this.onPressed,
+    required this.onPressed,
     this.showMaterialonIOS = true //not yet in use
   }){}
 

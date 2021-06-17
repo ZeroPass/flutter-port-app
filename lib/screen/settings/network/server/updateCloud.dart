@@ -11,31 +11,31 @@ import 'package:logging/logging.dart';
 class SettingsUpdateCloud extends StatelessWidget {
   final _log = Logger('Settings.SettingsUpdateCloud');
 
-  NetworkTypeServer networkTypeServer;
-  Server server;
+  late NetworkTypeServer networkTypeServer;
+  late Server server;
   //to check if any field has been updated
-  Server serverToUpdate;
+  late Server serverToUpdate;
 
-  SettingsUpdateCloud({@required this.networkTypeServer})
+  SettingsUpdateCloud({required this.networkTypeServer})
   {
     if (this.networkTypeServer != NetworkTypeServer.MAIN_SERVER)
       throw Exception("Not correct network type server");
 
     Storage storage = Storage();
     if (storage.cloudSet.servers[NetworkTypeServer.MAIN_SERVER] == null ||
-        storage.cloudSet.servers[NetworkTypeServer.MAIN_SERVER].servers == null ||
-        storage.cloudSet.servers[NetworkTypeServer.MAIN_SERVER].servers.length == 0)
+        storage.cloudSet.servers[NetworkTypeServer.MAIN_SERVER]!.servers == null ||
+        storage.cloudSet.servers[NetworkTypeServer.MAIN_SERVER]!.servers.length == 0)
       throw Exception("Not server defined");
 
-    this.server = storage.cloudSet.servers[NetworkTypeServer.MAIN_SERVER].servers.first;
+    this.server = storage.cloudSet.servers[NetworkTypeServer.MAIN_SERVER]!.servers.first;
     this.serverToUpdate = new Server.clone(server);
     //init validation fields
     this.server.initValidation();
   }
 
-  void onButtonPressedDelete({@required BuildContext context}) async {
+  void onButtonPressedDelete({required BuildContext context}) async {
     _log.fine("Button 'delete' clicked");
-    bool answer = await showAlert<bool>(
+    bool? answer = await showAlert<bool>(
         context: context,
         title: Text("Are you sure you want to delete na item?"),
         actions: <PlatformDialogAction>[
@@ -49,13 +49,18 @@ class SettingsUpdateCloud extends StatelessWidget {
           ),
         ],
         closeOnBackPressed: true);
-    if ( await answer){
+    if (answer!= null && answer){
       Storage storage = Storage();
-      for (var element in storage.cloudSet.servers[this.networkTypeServer].servers){
+      if (storage.cloudSet.servers[NetworkTypeServer.MAIN_SERVER] == null ||
+          storage.cloudSet.servers[NetworkTypeServer.MAIN_SERVER]!.servers == null ||
+          storage.cloudSet.servers[NetworkTypeServer.MAIN_SERVER]!.servers.length == 0)
+        throw Exception("Not server defined");
+
+      for (var element in storage.cloudSet.servers[this.networkTypeServer]!.servers){
         if (this.server.compare(element)){
           _log.finest("Element found in database.");
           element.clone(serverToUpdate);
-          storage.cloudSet.servers[this.networkTypeServer].delete(element);
+          storage.cloudSet.servers[this.networkTypeServer]!.delete(element);
           storage.save();
           Navigator.pop(context);
           break;
@@ -64,14 +69,19 @@ class SettingsUpdateCloud extends StatelessWidget {
     }
   }
 
-  void onButtonPressedSave({@required BuildContext context, bool showNotification = true})
+  void onButtonPressedSave({required BuildContext context, bool showNotification = true})
   {
     _log.fine("Save clicked");
     Storage storage = Storage();
 
     //copy values to storage if there is any change
     if (!this.server.compare(this.serverToUpdate)) {
-      for (var element in storage.cloudSet.servers[this.networkTypeServer].servers){
+      if (storage.cloudSet.servers[NetworkTypeServer.MAIN_SERVER] == null ||
+          storage.cloudSet.servers[NetworkTypeServer.MAIN_SERVER]!.servers == null ||
+          storage.cloudSet.servers[NetworkTypeServer.MAIN_SERVER]!.servers.length == 0)
+        throw Exception("Not server defined");
+
+      for (var element in storage.cloudSet.servers[this.networkTypeServer]!.servers){
         if (this.server.compare(element)){
           _log.finest("Element found in database. Clone the new data to this element.");
           element.clone(serverToUpdate);
@@ -93,7 +103,7 @@ class SettingsUpdateCloud extends StatelessWidget {
 
   Future<bool> onWillPop(BuildContext context) async {
     if (!this.server.compare(this.serverToUpdate)) {
-      bool answer = await showAlert<bool>(
+      bool? answer = await showAlert<bool>(
           context: context,
           title: Text("The data has been changed."),
           actions: [
@@ -101,7 +111,7 @@ class SettingsUpdateCloud extends StatelessWidget {
                 child: PlatformText('Back'),
                 onPressed: () {
                   Navigator.pop(context, false);
-                  return false;
+                  //return false;
                 }),
             PlatformDialogAction(
                 child: PlatformText('Save and go',
@@ -109,10 +119,10 @@ class SettingsUpdateCloud extends StatelessWidget {
                 onPressed: () {
                   onButtonPressedSave(context: context, showNotification: false);
                   Navigator.pop(context, true);
-                  return true;
+                  //return true;
                 })
           ]);
-      return new Future.value(answer);
+      return new Future.value(answer ?? false);
     } else
       return new Future.value(true);
   }
@@ -129,6 +139,7 @@ class SettingsUpdateCloud extends StatelessWidget {
       this.serverToUpdate.setValidationError("name", "Field 'URL' not match regular expression.");
       return 'Not valid URL address.';
     }
+    return '';
   }
 
   String onChanged(String value){
@@ -146,7 +157,7 @@ class SettingsUpdateCloud extends StatelessWidget {
       if (value.length > 5)
         return "Not valid URL addresss";
     }
-    return null;
+    return '';
   }
 
   String initialValue(){/**/
@@ -200,7 +211,7 @@ class SettingsUpdateCloud extends StatelessWidget {
                             //  return validator(value);
                             //},
                             onChanged: (value){
-                              return onChanged(value);
+                              onChanged(value);
                             },
                           ),
                         ],

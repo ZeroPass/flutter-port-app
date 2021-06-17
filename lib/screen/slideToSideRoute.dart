@@ -11,7 +11,7 @@ class SlideToSideRoute<T> extends PageRoute<T> {
   Color get barrierColor => Colors.black;
 
   @override
-  String get barrierLabel => null;
+  String get barrierLabel => "";
 
   final Widget child;
   final Direction direction;

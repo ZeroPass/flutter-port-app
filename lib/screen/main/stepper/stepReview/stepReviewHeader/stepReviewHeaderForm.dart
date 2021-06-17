@@ -6,10 +6,9 @@ import 'package:flutter/cupertino.dart';
 import "package:eosio_passid_mobile_app/screen/main/stepper/stepper.dart";
 import 'package:eosio_passid_mobile_app/utils/size.dart';
 import 'package:eosio_passid_mobile_app/screen/theme.dart';
-import 'package:eosio_passid_mobile_app/utils/storage.dart';
 
 class StepReviewHeaderForm extends StatefulWidget {
-  StepReviewHeaderForm({Key key}) : super(key: key);
+  StepReviewHeaderForm() : super();
 
   @override
   _StepReviewHeaderFormState createState() => _StepReviewHeaderFormState();
@@ -34,7 +33,7 @@ Widget deleteButton(BuildContext context) {
           stepperBloc.isReviewLocked = true;
 
           //change state on stepper
-          stepperBloc.add(StepTapped(step: stepperBloc.state.previousStep ?? 1));
+          stepperBloc.add(StepTapped(step: stepperBloc.state.previousStep /*?? 1*/, previousStep: 0));
 
           //change state on step main window
           stepReviewBloc.add(StepReviewEmptyEvent());
@@ -55,7 +54,7 @@ Widget deleteButton(BuildContext context) {
 }
 
 class _StepReviewHeaderFormState extends State<StepReviewHeaderForm> {
-  _StepReviewHeaderFormState({Key key});
+  _StepReviewHeaderFormState();
 
   @override
   Widget build(BuildContext context) {

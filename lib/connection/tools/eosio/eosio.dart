@@ -1,5 +1,6 @@
 import 'dart:async';
 
+//import 'package:eosdart/eosdart.dart';
 import 'package:eosdart/eosdart.dart';
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
 import 'package:eosio_passid_mobile_app/utils/structure.dart';
@@ -11,10 +12,10 @@ enum EosioVersion { v1, v2 }
 
 class PushTrxResponse{
   bool _isValid;
-  var _data;
-  var _error;
+  String? _data;
+  String? _error;
 
-  PushTrxResponse(this._isValid, [this._data = null, this._error = null]);
+  PushTrxResponse(this._isValid, [this._data, this._error]);
 
   bool get isValid => _isValid;
 
@@ -41,9 +42,8 @@ class PrivateKey{
 
   PrivateKey(this.privateKey) {
     //you can put here any restrictions (length, type, etc)
-    if (this.privateKey == null)
-      throw FormatException("Private key must be valid - not null.");
   }
+
   String get(){
     return privateKey;
   }
@@ -53,7 +53,7 @@ class PrivateKey{
 class Keys extends ListBase<PrivateKey>{
   List<PrivateKey> _list;
 
-  Keys() : _list = new List();
+  Keys() : _list = new List.empty(growable: true);
 
 
   void set length(int l) {
@@ -69,7 +69,7 @@ class Keys extends ListBase<PrivateKey>{
   }
 
   List<String> listWithStr(){
-    List<String> listStr = List<String>();
+    List<String> listStr = List<String>.empty(growable: true);
     _list.forEach((element) {listStr.add(element.get());});
     return listStr;
   }
@@ -81,7 +81,7 @@ class Keys extends ListBase<PrivateKey>{
 class Eosio{
   final _log = Logger("Eosio");
 
-  EOSClient _eosClient;
+  late EOSClient _eosClient;
 
   Eosio(NodeServer storageNode, EosioVersion version, Keys privateKeys, {int httpTimeout = 15}) {
     assert(storageNode != null);
@@ -94,7 +94,7 @@ class Eosio{
 
   Future<dynamic> onError (String functionName,e){
     _log.log(Level.FINE, "Error in '$functionName':" + e.toString());
-    return null;
+    return Future.value({'isValid': false, 'exp': e.toString()});
   }
 
   Future<PushTrxResponse> onErrorTrx (String functionName,e){
@@ -102,7 +102,7 @@ class Eosio{
     return Future.value(PushTrxResponse(false, null, e.toString()));
   }
 
-  Future<NodeInfo> getNodeInfo() async{
+  Future<dynamic> getNodeInfo() async{
     try
     {
       _log.log(Level.INFO, "Get node info.");
@@ -111,7 +111,7 @@ class Eosio{
     catch(e){ return onError("getNodeInfo", e);}
   }
 
-  Future<Account> getAccountInfo(String account) async{
+  Future<dynamic> getAccountInfo(String account) async{
     try
     {
       _log.log(Level.INFO, "Get account info: $account");
@@ -150,7 +150,8 @@ class Eosio{
                                                   reverse: reverse);
     }
     catch(e){
-      return onError("getTableRows", e);
+      onError("getTableRows", e);
+      return Future.value({'isValid': false, 'exp': e.toString()});
     }
   }
 
@@ -170,7 +171,7 @@ class Eosio{
     assert(permissions != null && permissions.length > 0);
     assert(actors.length == permissions.length);
 
-    List<Authorization> auths = new List<Authorization>();
+    List<Authorization> auths = new List<Authorization>.empty(growable: true);
     for(var i = 0; i<actors.length; i++){
       auths.add(createAuth(actors[i], permissions[i]));
     }
@@ -210,5 +211,4 @@ class Eosio{
     }
     catch(e){ return onErrorTrx("pushTransaction", e);}
   }
-
 }

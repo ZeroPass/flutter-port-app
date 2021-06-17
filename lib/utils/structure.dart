@@ -15,7 +15,10 @@ class EnumUtil {
   static T fromStringEnum<T>(Iterable<T> values, String stringType) {
     return values.firstWhere(
             (f)=> "${f.toString().substring(f.toString().indexOf('.')+1)}".toString()
-            == stringType, orElse: () => null);
+            == stringType, orElse: ()
+    {
+      throw Exception("EnumUtil.fromStringEnum; not found");
+    });
   }
 }
 
@@ -60,7 +63,7 @@ bool badCertificateHostCheck(X509Certificate cert, String host, int port) {
   var server = storage.getServerCloud(networkTypeServer: NetworkTypeServer.MAIN_SERVER);
   if (server == null)
     throw ("Server is not found in the database");
-  final srvUrl = server.selected != null? server.selected : server.servers.first;
+  Server srvUrl = server.selected.isSetted()? server.selected.getSelected() : server.servers.first;
   if (srvUrl != null)
     return host ==  srvUrl.host; // TODO: certificate should be also checked in case bad selfsigned certificate is the case
   return false;
@@ -84,7 +87,7 @@ String formatProgressMsg(String message, int percentProgress) {
 String formatDgTagSet(final Set<DgTag> tags) {
   var str = '[';
   for(final t in tags) {
-    str += mapDgTagName[t] + ', ';
+    str += mapDgTagName[t]! + ', ';
   }
   return str.substring(0, str.length -2) + ']';
 }

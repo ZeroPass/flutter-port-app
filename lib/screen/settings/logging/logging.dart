@@ -10,10 +10,13 @@ import 'package:eosio_passid_mobile_app/screen/settings/custom/customCardSetting
 import "dart:io" show Platform;
 
 class LoggingScreen extends StatefulWidget {
-  bool enableLogging;
-  bool switch_valid = true;
+  late bool enableLogging;
+  late bool switch_valid;
 
-  LoggingScreen();
+  LoggingScreen(){
+    enableLogging = false;
+    switch_valid = true;
+  }
 
   @override
   _LoggingScreen createState() => _LoggingScreen();
@@ -59,7 +62,7 @@ class _LoggingScreen extends State<LoggingScreen> {
                           label: "Enable logging",
                           initialValue: widget.enableLogging,
                           validator: (value) {
-                            if (value && widget.switch_valid == false)
+                            if (/*value &&*/ widget.switch_valid == false)
                               return "Please uncheck/check!";
                           },
                           onChanged: (value) async {

@@ -7,15 +7,15 @@
 import 'package:dmrtd/src/extension/logging_apis.dart';
 import 'package:logging/logging.dart';
 import 'package:dmrtd/dmrtd.dart';
-import 'package:passid/src/proto/session.dart';
+import 'package:port/src/proto/session.dart';
 import 'dart:async';
 
-import 'package:passid/passid.dart';
-import 'package:passid/internal.dart';
+import 'package:port/port.dart';
+import 'package:port/internal.dart';
 import 'package:eosio_passid_mobile_app/connection/connection.dart';
 
 class ConnectorAPI extends ConnectionAdapterMaintenance with ConnectionAdapterAPI{
-  PassIdApi passIdApi;
+  late PortApi portApi;
   final _log = Logger('ConnectionAPI; ConnectionAdapterMaintenance, ConnectionAdapterAPI');
 
   ConnectionAPI(Uri url, int timeout/*in milliseconds*/){
@@ -32,7 +32,7 @@ class ConnectorAPI extends ConnectionAdapterMaintenance with ConnectionAdapterAP
   @override
   void _connect(Uri url, int timeout/*in milliseconds*/){
     _log.debug("ConnectionAPI.connect with data: url:$url, timeout:$timeout");
-    passIdApi = PassIdApi(url);
+    portApi = PortApi(url);
   }
 
   @override
@@ -63,59 +63,59 @@ class ConnectorAPI extends ConnectionAdapterMaintenance with ConnectionAdapterAP
   Future<int> ping(int ping) async {
     _log.debug("ConnectionAPI.ping");
     Completer<int> send = new Completer<int>();
-    passIdApi.ping(ping).then((pong) {
+    portApi.ping(ping).then((pong) {
       send.complete(pong);
     });
-    send.future;
+    return send.future;
   }
 
   @override
   Future<ProtoChallenge> getChallenge() async {
     _log.debug("ConnectionAPI.getChallenge");
     Completer<ProtoChallenge> send = new Completer<ProtoChallenge>();
-    passIdApi.getChallenge().then((challenge) {
+    portApi.getChallenge().then((challenge) {
       send.complete(challenge);
     });
-    send.future;
+    return send.future;
   }
 
   @override
   Future<void> cancelChallenge(ProtoChallenge protoChallenge) async {
     _log.debug("ConnectionAPI.cancelChallenge");
     Completer<void> send = new Completer<void>();
-    passIdApi.cancelChallenge(protoChallenge).then((session) {
+    portApi.cancelChallenge(protoChallenge).then((session) {
       send.complete();
     });
-    send.future;
+    return send.future;
   }
 
   @override
-  Future<Session> register(final EfSOD sod, final EfDG15 dg15, final CID cid, final ChallengeSignature csig, {EfDG14 dg14}) async {
+  Future<Session> register(final EfSOD sod, final EfDG15 dg15, final CID cid, final ChallengeSignature csig, {EfDG14? dg14}) async {
     _log.debug("ConnectionAPI.register");
     Completer<Session> send = new Completer<Session>();
-    passIdApi.register(sod, dg15, cid, csig, dg14: dg14).then((session) {
+    portApi.register(sod, dg15, cid, csig, dg14: dg14).then((session) {
       send.complete(session);
     });
-    send.future;
+    return send.future;
   }
 
   @override
-  Future<Session> login(UserId uid, CID cid, ChallengeSignature csig, { EfDG1 dg1 }) async {
+  Future<Session> login(UserId uid, CID cid, ChallengeSignature csig, { EfDG1? dg1 }) async {
     _log.debug("ConnectionAPI.login");
     Completer<Session> send = new Completer<Session>();
-    passIdApi.login(uid, cid, csig, dg1: dg1).then((session) {
+    portApi.login(uid, cid, csig, dg1: dg1).then((session) {
       send.complete(session);
     });
-    send.future;
+    return send.future;
   }
 
   @override
   Future<String> sayHello(Session session) async {
     _log.debug("ConnectionAPI.sayHello");
     Completer<String> send = new Completer<String>();
-    passIdApi.sayHello(session).then((session) {
+    portApi.sayHello(session).then((session) {
       send.complete(session);
     });
-    send.future;
+    return send.future;
   }
 }

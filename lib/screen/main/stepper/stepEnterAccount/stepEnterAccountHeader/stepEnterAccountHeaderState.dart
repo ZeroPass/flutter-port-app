@@ -7,20 +7,20 @@ abstract class StepEnterAccountHeaderState /*extends Equatable*/ {
   //show network name in header
   NetworkType networkType;
   //show one time server icon on header
-  ServerCloud server;
+  late ServerCloud? server;
 
-  StepEnterAccountHeaderState({this.networkType, this.server = null});
+  StepEnterAccountHeaderState({required this.networkType, this.server});
 
-  @override
-  List<Object> get props => [networkType, server];
+  //@override
+  //List<Object> get props => [networkType, server];
 }
 
 class WithoutAccountIDState extends StepEnterAccountHeaderState {
 
-  WithoutAccountIDState({@required NetworkType networkType, ServerCloud server = null}) : super(networkType: networkType, server: server);
+  WithoutAccountIDState({required NetworkType networkType, ServerCloud? server}) : super(networkType: networkType, server: server);
 
-  @override
-  List<Object> get props => [networkType, server];
+  //@override
+  //List<Object> get props => [networkType, server];
 
   @override
   String toString() => 'StepEnterAccountHeaderState:WithoutAccountIDState { network type: $networkType }';
@@ -30,12 +30,12 @@ class WithAccountIDState extends StepEnterAccountHeaderState {
   //show accountID in header
   String accountID;
 
-  WithAccountIDState({@required NetworkType networkType, @required String this.accountID, ServerCloud server = null}) : super(networkType: networkType, server: server){}
+  WithAccountIDState({required NetworkType networkType, required String this.accountID, ServerCloud? server}) : super(networkType: networkType, server: server){}
 
   String getAccountID(){return this.accountID;}
 
-  @override
-  List<Object> get props => [accountID, networkType, server];
+  //@override
+  //List<Object> get props => [accountID, networkType, server];
 
   @override
   String toString() => 'StepEnterAccountHeaderState:WithAccountIDState { network type: $networkType, accoundID: $accountID }';
@@ -45,12 +45,12 @@ class WithAccountIDOutsideCallState extends StepEnterAccountHeaderState {
   //show accountID in header
   String accountID;
 
-  WithAccountIDOutsideCallState({@required NetworkType networkType, @required String this.accountID, ServerCloud server = null}) : super(networkType: networkType, server: server){}
+  WithAccountIDOutsideCallState({required NetworkType networkType, required String this.accountID, ServerCloud? server}) : super(networkType: networkType, server: server){}
 
   String getAccountID(){return this.accountID;}
 
-  @override
-  List<Object> get props => [accountID, networkType, server];
+  //@override
+  //List<Object> get props => [accountID, networkType, server];
 
   @override
   String toString() => 'StepEnterAccountHeaderState:WithAccountIDOutsideCallState { network type: $networkType, accoundID: $accountID }';

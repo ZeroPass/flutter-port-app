@@ -29,7 +29,7 @@ var TEST_PRIVATE_KEY = '5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3';
 final _log = Logger("UpdateNetworkChain");
 
 class NetworkChains {
-    static void updateNetworkChainCustomAdd({@required Uri url}) {
+    static void updateNetworkChainCustomAdd({required Uri url}) {
         _log.debug("Updating network chain with value: $url.");
         NETWORK_CHAINS.update(NetworkType.CUSTOM, (value) {
             value.update(NETWORK_CHAIN_NAME, (value) {

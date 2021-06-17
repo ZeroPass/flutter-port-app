@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
-abstract class StepScanEvent extends Equatable {
+abstract class StepScanEvent /*extends Equatable*/ {
   StepScanEvent();
 }
 
@@ -18,16 +18,15 @@ class NoDataScan extends StepScanEvent {
 }
 
 class WithDataScan extends StepScanEvent{
-  //not in use
   //show documentID on header
-  String documentID;
+  String? documentID;
   //show birth on header
-  DateTime birth;
+  DateTime? birth;
   //show valid until on header
-  DateTime validUntil;
+  DateTime? validUntil;
 
-  WithDataScan({@required this.documentID, @required this.birth, @required this.validUntil });
+  WithDataScan({required this.documentID, required this.birth, required this.validUntil });
 
-  @override
-  List<Object> get props => [documentID, birth, validUntil];
+  //@override
+  //List<Object> get props => [documentID, birth, validUntil];
 }

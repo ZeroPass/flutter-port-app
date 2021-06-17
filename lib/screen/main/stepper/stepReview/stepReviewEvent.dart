@@ -33,10 +33,10 @@ class StepReviewNoConnectionEvent extends StepReviewEvent{
 class StepReviewWithoutDataEvent extends StepReviewEvent{
   RequestType requestType;
   String rawData;
-  OutsideCall outsideCall;
+  OutsideCallV0dot1 outsideCall;
   Function(bool) sendData;
 
-  StepReviewWithoutDataEvent({@required this.requestType, @required this.rawData,  @required this.outsideCall, @required this.sendData});
+  StepReviewWithoutDataEvent({required this.requestType, required this.rawData,  required this.outsideCall, required this.sendData});
 
   @override
   String toString() => 'StepReviewEvent:StepReviewWithoutDataEvent {outside call: $outsideCall, raw data, $rawData}}';
@@ -47,10 +47,10 @@ class StepReviewWithDataEvent extends StepReviewEvent{
   EfDG1 dg1;
   String msg;
   String rawData;
-  OutsideCall outsideCall;
+  OutsideCallV0dot1 outsideCall;
   Function(bool) sendData;
 
-  StepReviewWithDataEvent({@required this.requestType, @required this.dg1, @required this.msg, @required this.rawData, @required this.outsideCall, @required this.sendData});
+  StepReviewWithDataEvent({required this.requestType, required this.dg1, required this.msg, required this.rawData, required this.outsideCall, required this.sendData});
 
   @override
   String toString() => 'StepReviewEvent:StepReviewWithDataEvent {requestType: $requestType, dg1: filled, message: msg, raw data: $rawData, outside call: $outsideCall}}';
@@ -60,7 +60,7 @@ class StepReviewCompletedEvent extends StepReviewEvent{
   RequestType requestType;
   String transactionID;
   String rawData;
-  StepReviewCompletedEvent({@required this.requestType, @required this.transactionID, @required this.rawData});
+  StepReviewCompletedEvent({required this.requestType, required this.transactionID, required this.rawData});
 
   @override
   String toString() => 'StepReviewEvent:StepReviewCompletedEvent {requestType: $requestType,  transaction id: $transactionID, rawData: $rawData}}';

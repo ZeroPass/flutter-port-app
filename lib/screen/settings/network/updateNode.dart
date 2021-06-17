@@ -8,16 +8,16 @@ import 'package:card_settings/card_settings.dart';
 import 'package:eosio_passid_mobile_app/screen/alert.dart';
 
 class SettingsUpdateNode extends StatelessWidget {
-  Storage storage;
-  NodeServer storageNode;
+  late Storage storage;
+  late NodeServer storageNode;
 
 
   //to check if any field has been updated
-  NodeServer currentUpdatedValues;
+  late NodeServer currentUpdatedValues;
 
-  SettingsUpdateNode({@required Storage this.storage, @required NodeServer this.storageNode})
+  SettingsUpdateNode({required this.storage, required this.storageNode})
   {
-    this.currentUpdatedValues = new NodeServer.clone(this.storageNode);
+    this.currentUpdatedValues = new NodeServer.clone(server: this.storageNode);
     //init validation fields
     this.storageNode.initValidation();
   }
@@ -51,7 +51,7 @@ class SettingsUpdateNode extends StatelessWidget {
                 child: PlatformText('Save and go',
                     style: TextStyle(fontWeight: FontWeight.bold)),
                 onPressed: () {
-                  this.storageNode = new NodeServer.clone(this.currentUpdatedValues);
+                  this.storageNode = new NodeServer.clone(server: this.currentUpdatedValues);
                   Navigator.pop(context);
                 })
           ]);
@@ -131,6 +131,7 @@ class SettingsUpdateNode extends StatelessWidget {
                             autocorrect: false,
                             autovalidate: true,
                             validator: (value) {
+                              value = value ?? '';
                               if (!(value.startsWith('http:') || value.startsWith('https:'))) {
                                 this.storageNode.setValidationError("host", "Field 'Host' is not valid.");
                                 return "Host must start with 'http(s)://'";

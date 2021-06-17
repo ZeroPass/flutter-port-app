@@ -16,13 +16,13 @@ class StepScanHeaderBloc extends Bloc<StepScanHeaderEvent, StepScanHeaderState> 
   void updateDataOnUI(){
     //check updated data
     Storage storage = Storage();
-    storage.load(callback: (isAlreadyUpdated, isValid,  {String exc}){
+    storage.load(callback: (isAlreadyUpdated, isValid,  {String? exc}){
       if (isAlreadyUpdated == true || isValid == true){
-        StepDataScan storageStepScan = storage.getStorageData(1);
-        if (storageStepScan.documentID != null || storageStepScan.birth != null || storageStepScan.validUntil != null )
-        this.add(WithDataEvent(documentID: storageStepScan.documentID,
-            birth: storageStepScan.birth,
-            validUntil: storageStepScan.validUntil));
+        StepDataScan storageStepScan = storage.getStorageData(1) as StepDataScan;
+        if (storageStepScan.isValidDocumentID() || storageStepScan.isValidBirth() || storageStepScan.isValidValidUntil())
+        this.add(WithDataEvent(documentID: storageStepScan.isValidDocumentID() ? storageStepScan.getDocumentID() : null,
+            birth: storageStepScan.isValidBirth() ? storageStepScan.getBirth() : null,
+            validUntil: storageStepScan.isValidValidUntil() ? storageStepScan.getValidUntil() : null));
       }
     });
   }

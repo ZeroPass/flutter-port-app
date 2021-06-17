@@ -6,12 +6,18 @@ import 'package:bloc/bloc.dart';
 
 class CardItem {
   String _itemTitle;
-  String _item;
+  String? _item;
 
   CardItem(this._itemTitle, this._item);
 
-  String get item => _item;
+  bool isValidItem () => this._item != null;
 
+  String getItem() {
+    if (_item != null)
+      return this._item!;
+    else
+      throw Exception("CardItem.getItem is null");
+  }
   String get itemTitle => _itemTitle;
 }
 
@@ -20,7 +26,7 @@ class CustomCard extends StatefulWidget {
   List<CardItem> items;
   bool copyToClipboard;
 
-  CustomCard(@required this.title, @required this.items,
+  CustomCard(this.title, this.items,
       [this.copyToClipboard = false]);
 
   @override
@@ -56,8 +62,8 @@ class _CustomCardState extends State<CustomCard> {
               String text = "";
               for (CardItem element in widget.items) {
                 text = text + element.itemTitle + " ";
-                if (element.item != null)
-                  text = text + element.item  + " ";
+                if (element.isValidItem())
+                  text = text + element.getItem()  + " ";
                 text = text + "\n";
               }
               showFlushbar(context, "Clipboard", "Item was copied to clipboard.", Icons.info);
@@ -80,9 +86,9 @@ class _CustomCardState extends State<CustomCard> {
                                 element.itemTitle,
                                 style: TextStyle(fontSize: 15),
                               )),
-                              if (element.item != null)
+                              if (element.isValidItem())
                                 Expanded(
-                                    child: Text(element.item,
+                                    child: Text(element.getItem(),
                                         style: TextStyle(fontSize: 15)))
                             ]),
                         ])))),

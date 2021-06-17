@@ -18,7 +18,8 @@ import 'package:logging/logging.dart';
 //every step should extend this class to handle if step is filled correctly
 //we are going to use this class to save data for later use
 abstract class StepData{
-  bool _isUnlocked;
+  late bool _isUnlocked;
+  late bool _hasData;
 
   StepData(){
     _isUnlocked = false;
@@ -31,8 +32,6 @@ abstract class StepData{
     _isUnlocked = value;
   }
 
-  bool _hasData;
-
   bool get hasData => _hasData;
 
   set hasData(bool value) {
@@ -42,12 +41,12 @@ abstract class StepData{
 
 class StepperBloc extends Bloc<StepperEvent, StepperState> {
   final int maxSteps;
-  bool isReviewLocked;
+  late bool isReviewLocked;
   final _log = Logger('passid.StepperBloc');
 
   //StepperBloc():super();
 
-  StepperBloc({@required this.maxSteps}):super(StepperState(step: 0, maxSteps: maxSteps)){
+  StepperBloc({required this.maxSteps}):super(StepperState(step: 0, previousStep: 0, maxSteps: maxSteps)){
     this.isReviewLocked = true;
   }
 
@@ -55,14 +54,14 @@ class StepperBloc extends Bloc<StepperEvent, StepperState> {
   //StepperState get initialState => StepperState(step: 0, maxSteps: maxSteps);
 
 
-  bool liveModifyHeader (int step, var context, {bool dataInStep}) {
+  bool liveModifyHeader (int step, var context, {bool dataInStep = false}) {
     var storage = Storage();
     switch (step) {
       case 0:
         {
           //step 1
           final stepEnterAccountHeaderBloc = BlocProvider.of<StepEnterAccountHeaderBloc>(context);
-          StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
+          StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0) as StepDataEnterAccount;
           //show data on header if there is valid value
           if (storageStepEnterAccount.accountID == null || storageStepEnterAccount.accountID == "")
             stepEnterAccountHeaderBloc.add(WithoutAccountIDEvent(networkType: storageStepEnterAccount.networkType));
@@ -77,15 +76,17 @@ class StepperBloc extends Bloc<StepperEvent, StepperState> {
       case 1:
         {
           final stepScanHeaderBloc = BlocProvider.of<StepScanHeaderBloc>(context);
-          StepDataScan storageStepScan = storage.getStorageData(1);
+          StepDataScan storageStepScan = storage.getStorageData(1) as StepDataScan;
           //show data on header if there is valid value
-          if (storageStepScan.documentID == null && storageStepScan.birth == null && storageStepScan.validUntil == null)
+          if (storageStepScan.isValidDocumentID() == false &&
+              storageStepScan.isValidBirth() == false &&
+              storageStepScan.isValidValidUntil() == false)
             stepScanHeaderBloc.add(NoDataEvent());
           else {
             stepScanHeaderBloc.add(WithDataEvent(
-                documentID: storageStepScan.documentID,
-                birth: storageStepScan.birth,
-                validUntil: storageStepScan.validUntil));
+                documentID: storageStepScan.isValidDocumentID() ? storageStepScan.getDocumentID(): null,
+                birth: storageStepScan.isValidBirth() ? storageStepScan.getBirth(): null,
+                validUntil: storageStepScan.isValidValidUntil() ? storageStepScan.getValidUntil(): null));
           }
         }
         break;
@@ -93,7 +94,7 @@ class StepperBloc extends Bloc<StepperEvent, StepperState> {
       case 2:
         {
           final stepAttestationHeaderBloc = BlocProvider.of<StepAttestationHeaderBloc>(context);
-          StepDataAttestation storageStepAttestation = storage.getStorageData(2);
+          StepDataAttestation storageStepAttestation = storage.getStorageData(2) as StepDataAttestation;
           stepAttestationHeaderBloc.add(AttestationHeaderWithDataEvent(requestType: storageStepAttestation.requestType));
         }
         break;
@@ -114,6 +115,7 @@ class StepperBloc extends Bloc<StepperEvent, StepperState> {
         }
         break;
     }
+    return true;
   }
 
   @override

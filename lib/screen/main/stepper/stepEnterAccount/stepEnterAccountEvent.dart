@@ -11,7 +11,7 @@ class AccountConfirmation extends StepEnterAccountEvent{
   final String accountID;
   final NetworkType networkType;
 
-  AccountConfirmation({@required this.accountID, @required this.networkType});
+  AccountConfirmation({required this.accountID, required this.networkType});
 
   @override
   List<Object> get props => [accountID, networkType];
@@ -21,7 +21,7 @@ class AccountConfirmationOutsideCall extends StepEnterAccountEvent{
   final String accountID;
   final NetworkType networkType;
 
-  AccountConfirmationOutsideCall({@required this.accountID, @required this.networkType});
+  AccountConfirmationOutsideCall({required this.accountID, required this.networkType});
 
   @override
   List<Object> get props => [accountID, networkType];
@@ -30,7 +30,7 @@ class AccountConfirmationOutsideCall extends StepEnterAccountEvent{
 class AccountDelete extends StepEnterAccountEvent{
   final NetworkType networkType;
 
-  AccountDelete({@required this.networkType});
+  AccountDelete({required this.networkType});
 
   @override
   List<Object> get props => [networkType];

@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'dart:async';
 import 'package:eosio_passid_mobile_app/constants/constants.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepAttestation/stepAttestationHeader/stepAttestationHeader.dart';
@@ -18,13 +17,13 @@ import 'package:eosio_passid_mobile_app/screen/main/stepper/stepAttestation/step
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
 import 'package:eosio_passid_mobile_app/utils/structure.dart';
-import "package:eosio_passid_mobile_app/screen/main/stepper/customStepper.dart";
+import "package:eosio_passid_mobile_app/screen/main/stepper/customStepper1.dart";
 import 'package:connectivity/connectivity.dart';
 import 'package:dmrtd/dmrtd.dart';
-import 'package:eosio_passid_mobile_app/screen/flushbar.dart';
 import 'package:eosio_passid_mobile_app/screen/theme.dart';
 
 import '../../alert.dart';
+import 'customStepper.dart';
 
 List<String> BUTTON_NEXT_TITLE = [
   "Continue",
@@ -33,28 +32,23 @@ List<String> BUTTON_NEXT_TITLE = [
   ""
 ];
 
-Widget getButtonNextTitle({@required int stepIndex}) {
+Widget getButtonNextTitle({required int stepIndex}) {
   if (stepIndex > BUTTON_NEXT_TITLE.length - 1)
     throw FormatException("step index is larger than number of all steps");
   return Text(BUTTON_NEXT_TITLE.elementAt(stepIndex));
 }
 
 class StepperForm extends StatefulWidget {
-  bool isMagnetLink;
+  late bool isMagnetLink;
 
-  StepperForm({isMagnetLink = null}) {
-    this.isMagnetLink =
-        isMagnetLink == null || isMagnetLink == false ? false : true;
-  }
-
-
+  StepperForm({this.isMagnetLink = false}) {}
 
   @override
   _StepperFormState createState() => _StepperFormState();
 }
 
 class _StepperFormState extends State<StepperForm> {
-  ScrollController _scrollController;
+  late ScrollController _scrollController;
 
   List<StepState> listState = [
     StepState.indexed,
@@ -122,7 +116,7 @@ class _StepperFormState extends State<StepperForm> {
     ];
   }
 
-  _StepperFormState({Key key}){
+  _StepperFormState(){
     this._scrollController =  new ScrollController();
   }
 
@@ -133,35 +127,33 @@ class _StepperFormState extends State<StepperForm> {
         {
           //step 1(Account Name)
           StepDataEnterAccount storageStepEnterAccount =
-              storage.getStorageData(0);
+              storage.getStorageData(0) as StepDataEnterAccount;
           //if (storage.selectedNode.name == "ZeroPass Server") return "";
           if (storageStepEnterAccount.isUnlocked == false)
             return "Account is not valid.";
           return "";
         }
-        break;
 
       case 1:
         {
           //step 2(Scan)
-          StepDataScan storageStepScan = storage.getStorageData(1);
+          StepDataScan storageStepScan = storage.getStorageData(1) as StepDataScan;
           String errorMessage = "";
-          if (storageStepScan.documentID == null ||
-              storageStepScan.documentID == "")
+          if (storageStepScan.isValidDocumentID() == false)
             errorMessage += "Passport No. is not valid.\n";
-          if (storageStepScan.birth == null)
+          if (storageStepScan.isValidBirth() == false)
             errorMessage += "Date of Birth is empty.\n";
-          if (storageStepScan.validUntil == null)
+          if (storageStepScan.isValidValidUntil() == false)
             errorMessage += "Date of Expiry' is empty.\n";
           return errorMessage;
-          break;
         }
 
       case 2:
         //step 3(Atttestation)
         String errorMessage = "";
         return errorMessage;
-        break;
+      default:
+        return'';
     }
   }
 
@@ -196,9 +188,9 @@ class _StepperFormState extends State<StepperForm> {
   }
 
   Future<bool> _showDG1Dialog(BuildContext context, final EfDG1 dg1, Function renderingDone,
-      {String msg = null}) {
+      {String? msg}) {
     Storage storage = new Storage();
-    StepDataAttestation stepDataAttestation = storage.getStorageData(2);
+    StepDataAttestation stepDataAttestation = storage.getStorageData(2) as StepDataAttestation;
 
     StepperBloc stepperBloc = BlocProvider.of<StepperBloc>(context);
     StepReviewBloc stepReviewBloc = BlocProvider.of<StepReviewBloc>(context);
@@ -207,7 +199,7 @@ class _StepperFormState extends State<StepperForm> {
     stepReviewBloc.add(StepReviewWithDataEvent(
         requestType: stepDataAttestation.requestType,
         dg1: dg1,
-        msg: msg,
+        msg: msg ?? '',
         rawData: """trx:
               receipt:
               status:'executed'
@@ -248,9 +240,9 @@ class _StepperFormState extends State<StepperForm> {
     return send.future;
   }
 
-  Future<bool> _showDataToBeSent(BuildContext context) async {
+  Future<bool?> _showDataToBeSent(BuildContext context) async {
     Storage storage = new Storage();
-    StepDataAttestation stepDataAttestation = storage.getStorageData(2);
+    StepDataAttestation stepDataAttestation = storage.getStorageData(2) as StepDataAttestation;
 
     StepperBloc stepperBloc = BlocProvider.of<StepperBloc>(context);
     StepReviewBloc stepReviewBloc = BlocProvider.of<StepReviewBloc>(context);
@@ -321,7 +313,7 @@ class _StepperFormState extends State<StepperForm> {
       msg = 'Failed to connect to server.\n'
           'Check server connection settings.';
     }
-    return showAlert<bool>(
+    bool? response = await  showAlert<bool>(
         context: context,
         title: Text(title),
         content: Text(msg),
@@ -333,6 +325,7 @@ class _StepperFormState extends State<StepperForm> {
                       fontWeight: FontWeight.bold)),
               onPressed: () => Navigator.pop(context, false))
         ]);
+    return response ?? false;
   }
 
   bool isStepNFC(var stepperBloc, int stepJumps) {
@@ -349,7 +342,7 @@ class _StepperFormState extends State<StepperForm> {
         : false);
   }
 
-  Future<bool> callNFC(BuildContext context, var stepperBloc) async {
+  Future<bool?> callNFC(BuildContext context, var stepperBloc) async {
     Authn authn = Authn(
         /*show DG1 step*/
         onDG1FileRequested: (EfDG1 dg1) {
@@ -371,13 +364,13 @@ class _StepperFormState extends State<StepperForm> {
           return _showEFDG1(context);
     });
     Storage storage = Storage();
-    StepDataAttestation stepDataAttestation = storage.getStorageData(2);
-    StepDataEnterAccount stepDataEnterAccount = storage.getStorageData(0);
+    StepDataAttestation stepDataAttestation = storage.getStorageData(2) as StepDataAttestation;
+    StepDataEnterAccount stepDataEnterAccount = storage.getStorageData(0) as StepDataEnterAccount;
     RequestType requestType = stepDataAttestation.requestType;
     bool isPublishedOnChain = AuthenticatorActions[requestType]['IS_PUBLISHED_ON_CHAIN'];
 
     String accountID = storage.outsideCall.isOutsideCall?
-                  storage.outsideCall.structV1.accountID:
+                  storage.outsideCall.getStructV1()!.accountID:
                   stepDataEnterAccount.accountID;
 
     NetworkType networkType = storage.outsideCall.isOutsideCall?
@@ -385,13 +378,13 @@ class _StepperFormState extends State<StepperForm> {
                   stepDataEnterAccount.networkType;
 
 
-    await authn.startNFCAction(context, requestType, accountID, networkType, _scrollController, stepperBloc.state.maxSteps).then((bool successful) {
-      if (!successful) {
+    await authn.startNFCAction(context, requestType, accountID, networkType, _scrollController, stepperBloc.state.maxSteps).then((bool? successful) {
+      if (successful == null || !successful) {
         stepperBloc.add(StepBackToPrevious());
       } else {
         final stepReviewBloc = BlocProvider.of<StepReviewBloc>(context);
         Storage storage = Storage();
-        StepDataAttestation stepDataAttestation = storage.getStorageData(2);
+        StepDataAttestation stepDataAttestation = storage.getStorageData(2) as StepDataAttestation;
         String transactionId =
             "9c5a433fa32f58f1f5e35dTEMP234be0565ff1f37fe0781121ee9ba4962b789a";
         String dataInRaw = """trx:
@@ -427,6 +420,7 @@ class _StepperFormState extends State<StepperForm> {
       //review header; cleaning process
       stepperBloc.liveModifyHeader(3, context, dataInStep: false);
     });
+    return Future.value(true);
   }
 
   @override
@@ -448,7 +442,7 @@ class _StepperFormState extends State<StepperForm> {
               if (this.isStepNFC(stepperBloc, 0) &&
                   !isClickedOnNFC(stepperBloc, step))
                 stepperBloc.liveModifyHeader(3, context, dataInStep: false);
-              stepperBloc.add(StepTapped(step: step));
+              stepperBloc.add(StepTapped(step: step, previousStep: state.previousStep));
               //_scrollController.jumpTo(_scrollController.position.maxScrollExtent);
             },
             onStepCancel: () {
@@ -458,7 +452,7 @@ class _StepperFormState extends State<StepperForm> {
               //_scrollController.jumpTo(_scrollController.position.maxScrollExtent);
               Storage storage = Storage();
               StepDataAttestation stepDataAttestation =
-                  storage.getStorageData(2);
+                  storage.getStorageData(2) as StepDataAttestation;
 
               int stepJumps = storage.outsideCall.isOutsideCall &&
                       state.step == 1
@@ -467,18 +461,18 @@ class _StepperFormState extends State<StepperForm> {
               if (this.isStepNFC(stepperBloc, stepJumps))
                 callNFC(context, stepperBloc);
               else
-                stepperBloc.add(StepContinue(stepsJump: stepJumps));
+                stepperBloc.add(StepContinue(stepsJump: stepJumps, previousStep: state.previousStep));
             },
             controlsBuilder: (BuildContext context,
-                {VoidCallback onStepContinue, VoidCallback onStepCancel}) {
+                {VoidCallback? onStepContinue, VoidCallback? onStepCancel}) {
               return Visibility(
                   visible: state.step != state.maxSteps,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.end,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: <Widget>[
-                      if (state.step <
-                          stepperBloc.maxSteps - 1) //do not show on last step
+                      if (state.step < stepperBloc.maxSteps - 1 &&
+                          onStepContinue != null) //do not show on last step
                         showButtonNext(context, state.step, onStepContinue)
                     ],
                   ));

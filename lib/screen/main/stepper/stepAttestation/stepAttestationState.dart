@@ -18,7 +18,7 @@ class AttestationWithDataState extends StepAttestationState {
   //NFCDeviceData deviceData;
   RequestType requestType;
 
-  AttestationWithDataState({@required this.requestType});
+  AttestationWithDataState({required this.requestType});
 
   @override
   List<Object> get props => [requestType];
@@ -31,7 +31,7 @@ class AttestationWithDataOutsideCallState extends StepAttestationState {
   //NFCDeviceData deviceData;
   RequestType requestType;
 
-  AttestationWithDataOutsideCallState({@required this.requestType});
+  AttestationWithDataOutsideCallState({required this.requestType});
 
   @override
   List<Object> get props => [requestType];

@@ -1,11 +1,11 @@
 
+import 'dart:async';
 import 'dart:io';
 
 import 'package:eosdart/eosdart.dart';
 import 'package:eosio_passid_mobile_app/screen/requestType.dart';
 import 'package:eosio_passid_mobile_app/constants/constants.dart';
 import 'package:eosio_passid_mobile_app/utils/storage.dart';
-import 'package:eosio_passid_mobile_app/utils/structure.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -27,7 +27,7 @@ import 'package:eosio_passid_mobile_app/screen/settings/settings.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:logging/logging.dart';
 import 'package:eosio_passid_mobile_app/screen/slideToSideRoute.dart';
-import 'package:device_preview/device_preview.dart' as DevPreview;
+//import 'package:device_preview/device_preview.dart' as DevPreview;
 import 'package:eosio_passid_mobile_app/utils/logging/loggerHandler.dart' as LH;
 import 'package:eosio_passid_mobile_app/connection/tools/eosio/eosio.dart';
 import 'package:eosio_passid_mobile_app/screen/qr/readQR.dart';
@@ -39,13 +39,15 @@ import 'package:eosio_passid_mobile_app/screen/qr/structure.dart';
 var RUN_IN_DEVICE_PREVIEW_MODE = false;
 final _logStorage = Logger('Storage initialization');
 
+final GlobalKey<ScaffoldState> _SCAFFOLD_KEY = GlobalKey<ScaffoldState>();
+
 void main() {
   runApp(
-      RUN_IN_DEVICE_PREVIEW_MODE?
+      /*RUN_IN_DEVICE_PREVIEW_MODE?
         DevPreview.DevicePreview(
           enabled: !kReleaseMode,
           builder: (context) => PassId(),
-        ):
+        ):*/
         PassId()
   );
   //changeNavigationBarColor();
@@ -54,19 +56,20 @@ void main() {
 Map<NetworkType, Network> fillNetworkTypes(Map<NetworkType, Network> networks){
   _logStorage.fine("Fill network type if it's empty.");
   if (networks != null && networks.isNotEmpty) {
-    _logStorage.fine("Netowrk types is already written in database.");
-    return null;
+    _logStorage.fine("Main.fillNetworkTypes;Netowrk types is already written in database.");
+    throw Exception("Main.fillNetworkTypes;Netowrk types is already written in database.");
   }
 
   NetworkType.values.forEach((element) {
-    if (NETWORK_CHAINS[element] != null) {
+    if (NETWORK_CHAINS[element] != null && NETWORK_CHAINS[element]![NETWORK_CHAIN_NAME] != null
+        && NETWORK_CHAINS[element]![NETWORK_CHAIN_ID] != null) {
       _logStorage.finer("Network type: $element, "
-          "name: ${NETWORK_CHAINS[element][NETWORK_CHAIN_NAME]}"
-          "chainID: ${NETWORK_CHAINS[element][NETWORK_CHAIN_ID]}");
-      if ( NETWORK_CHAINS[element][NETWORK_CHAIN_DEFAULT] == true)
+          "name: ${NETWORK_CHAINS[element]![NETWORK_CHAIN_NAME]}"
+          "chainID: ${NETWORK_CHAINS[element]![NETWORK_CHAIN_ID]}");
+      if ( NETWORK_CHAINS[element]![NETWORK_CHAIN_DEFAULT] == true)
       networks[element] = Network(networkType: element,
-          name: NETWORK_CHAINS[element][NETWORK_CHAIN_NAME],
-          chainID: NETWORK_CHAINS[element][NETWORK_CHAIN_ID]);
+          name: NETWORK_CHAINS[element]![NETWORK_CHAIN_NAME] as String,
+          chainID: NETWORK_CHAINS[element]![NETWORK_CHAIN_ID] as String);
       else
         networks[element] = Network(networkType: element,
             name: "Custom",
@@ -84,8 +87,8 @@ Future<void> fillDatabase() async
   Map<NetworkType, Network> nets = fillNetworkTypes(storage.nodeSet.networks);
   if (nets != null)
     storage.nodeSet.networks = nets;
-
-  await storage.load(callback: (isAlreadyUpdated, isValid, {exc}) {
+  Completer<bool> send = new Completer<bool>();
+  await storage.load(callback: (bool isAlreadyUpdated, bool isValid, {String? exc}) {
     if (storage.nodeSet.nodes.isEmpty) {
       storage.nodeSet.add(networkType: NetworkType.KYLIN,
           isSelected: true,
@@ -108,45 +111,50 @@ Future<void> fillDatabase() async
           server: NodeServer(host: Uri.parse("https://custom.eosnode.io:443")));
     }
 
-
-
     if (storage.cloudSet.servers.isEmpty){
       storage.cloudSet.add(networkTypeServer: NetworkTypeServer.MAIN_SERVER,
           isSelected: true,
           server: ServerCloud(name: "ZeroPass server", host: Uri.parse("https://163.172.144.187")));
+
+      storage.cloudSet.servers[NetworkTypeServer.MAIN_SERVER]!.selected.set(server:
+      ServerCloud(name: "ZeroPass server", host: Uri.parse("https://163.172.144.187")));
+
+      ServerCloud? serverCloud = storage.getServerCloudSelected(networkTypeServer: NetworkTypeServer.MAIN_SERVER);
     }
 
-    StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
+    ServerCloud? serverCloud = storage.getServerCloudSelected(networkTypeServer: NetworkTypeServer.MAIN_SERVER);
+
+    StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0) as StepDataEnterAccount;
     storageStepEnterAccount.isUnlocked = true;
 
-    StepDataAttestation stepDataAttestation = storage.getStorageData(2);
+    StepDataAttestation stepDataAttestation = storage.getStorageData(2) as StepDataAttestation ;
     stepDataAttestation.requestType = RequestType.ATTESTATION_REQUEST;
-    storage.outsideCall = OutsideCallV0dot1();
-    storage.outsideCall.set(qRserverStructure:
-                            QRserverStructure(accountID: "testacc",
-                                              requestType: RequestType.FAKE_PERSONAL_INFORMATION_REQUEST,
-                                              host: Server(host: Uri.parse("https://test-server.io"))));
+    //storage.outsideCall = OutsideCallV0dot1();
+    //storage.outsideCall.setV0dot1(qRserverStructure:
+    //                        QRserverStructure(accountID: "testacc",
+    //                                          requestType: RequestType.FAKE_PERSONAL_INFORMATION_REQUEST,
+    //                                          host: Server(host: Uri.parse("https://test-server.io"))));
 
-    //var ttt1 = storage.outsideCall.structV1.toJson();
-    //var rrr1 = QRserverStructure.fromJson(ttt1);
-    //var y = 9;
 
   });
   
   Keys keys= Keys();
   keys.add(PrivateKey(TEST_PRIVATE_KEY));
-
+  ServerCloud? serverCloud = storage.getServerCloudSelected(networkTypeServer: NetworkTypeServer.MAIN_SERVER);
   storage.save();
+
+  Storage storage1 = Storage();
+  var r = 9;
 }
 
 /*
 * To load from disc previously stored values
 */
-void loadDatabase({Future<void> Function(Storage, bool, bool, {String exc}) callbackStatus})
+void loadDatabase({required Future<void> Function(Storage, bool, bool, {String? exc}) callbackStatus})
 {
   Storage storage = new Storage();
-  storage.load(callback: (isAlreadyUpdated, isValid, {String exc}){
-    callbackStatus?.call(storage, isAlreadyUpdated, isValid, exc:exc);
+  storage.load(callback: (isAlreadyUpdated, isValid, {String? exc}){
+    callbackStatus.call(storage, isAlreadyUpdated, isValid, exc:exc);
   });
 }
 
@@ -160,11 +168,11 @@ class PassId extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Storage storage = Storage();
-    StepDataAttestation stepDataAttestation = storage.getStorageData(2);
+    StepDataAttestation stepDataAttestation = storage.getStorageData(2) as StepDataAttestation;
     return PlatformProvider(
       //initialPlatform: initialPlatform,
         builder: (BuildContext context) => PlatformApp(
-            title: 'PassID',
+            title: 'Port',
             localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
               DefaultMaterialLocalizations.delegate,
               DefaultWidgetsLocalizations.delegate
@@ -209,7 +217,7 @@ class _PassIdWidgetState extends State<PassIdWidget> with TickerProviderStateMix
     loggerHandler.cleanLegacyLogs();
 
     //update database
-    loadDatabase(callbackStatus: (storage, isAlreadyUpdated, isValid, {String exc}) async {
+    loadDatabase(callbackStatus: (storage, isAlreadyUpdated, isValid, {String? exc}) async {
       if(isValid) {
         if(storage.loggingEnabled){
           bool isStarted = await loggerHandler.startLoggingToAppMemory();
@@ -266,11 +274,11 @@ class _PassIdWidgetState extends State<PassIdWidget> with TickerProviderStateMix
     changeNavigationBarColor();
 
     Storage storage = Storage();
-    StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
-    StepDataAttestation stepDataAttestation = storage.getStorageData(2);
-
+    StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0) as StepDataEnterAccount;
+    StepDataAttestation stepDataAttestation = storage.getStorageData(2) as StepDataAttestation;
 
     return PlatformScaffold(
+        key: _SCAFFOLD_KEY,
         appBar: PlatformAppBar(
           automaticallyImplyLeading: true,
           title: Row(

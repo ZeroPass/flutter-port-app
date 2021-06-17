@@ -11,14 +11,14 @@ import 'package:eosio_passid_mobile_app/utils/storage.dart';
 import 'package:eosio_passid_mobile_app/utils/size.dart';
 
 class StepAttestationHeaderForm extends StatefulWidget {
-  StepAttestationHeaderForm({Key key}) : super(key: key);
+  StepAttestationHeaderForm() : super();
 
   @override
   _StepAttestationHeaderFormState createState() => _StepAttestationHeaderFormState();
   }
 
 class _StepAttestationHeaderFormState extends State<StepAttestationHeaderForm> {
-  _StepAttestationHeaderFormState({Key key});
+  _StepAttestationHeaderFormState();
   @override
   Widget build(BuildContext context) {
     final stepAttestationHeaderBloc =
@@ -33,9 +33,9 @@ class _StepAttestationHeaderFormState extends State<StepAttestationHeaderForm> {
                     Text("Request type "),
                     //Text(AuthenticatorActions[state.requestType]),
                     if (state is AttestationHeaderWithDataState)
-                      Container(child: CustomChip([AuthenticatorActions[state.requestType]['NAME']]), margin: EdgeInsets.only(left: 3.0)),
+                      Container(child: CustomChip(titles:[AuthenticatorActions[state.requestType]['NAME']]), margin: EdgeInsets.only(left: 3.0)),
                     if (state is AttestationHeaderWithDataOutsideCallState)
-                      Container(child: CustomChip([AuthenticatorActions[state.requestType]['NAME']]), margin: EdgeInsets.only(left: 3.0))
+                      Container(child: CustomChip(titles:[AuthenticatorActions[state.requestType]['NAME']]), margin: EdgeInsets.only(left: 3.0))
 
                   ]),
             ]

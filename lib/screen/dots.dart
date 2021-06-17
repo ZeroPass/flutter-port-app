@@ -7,15 +7,15 @@ import 'dart:async';
 class Dots extends StatefulWidget {
   int numberOfDots;
 
-  Dots({@required this.numberOfDots});
+  Dots({required this.numberOfDots});
 
   @override
   _DotsState createState() => _DotsState();
 }
 
 class _DotsState extends State<Dots> {
-  double activeDot;
-  Timer timer;
+  late double activeDot;
+  late Timer timer;
 
   @override
   void initState() {
@@ -50,7 +50,6 @@ class _DotsState extends State<Dots> {
         activeColor: AndroidThemeST().getValues()
             .themeValues["BUFFER_SCREEN"]["DOT_COLOR_ACTIVE"],
       ),
-
     );
   }
 }

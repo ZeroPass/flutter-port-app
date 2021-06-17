@@ -13,16 +13,16 @@ import 'package:meta/meta.dart';
 
 @JsonSerializable()
 class StepDataEnterAccount extends StepData{
-  String _accountID;
-  NetworkType _networkType; //default network type
+  late String _accountID;
+  late NetworkType _networkType; //default network type
 
   StepDataEnterAccount() {
-    this._accountID = null;
+    this._accountID = '';
     this._networkType = NetworkType.MAINNET;
   }
 
 
-  StepDataEnterAccount StepDataEnterAccountFromJson({String accountID, NetworkType networkType, bool hasData, bool isUnlocked})
+  StepDataEnterAccount StepDataEnterAccountFromJson({required String accountID, required NetworkType networkType, required bool hasData,required bool isUnlocked})
   {
     this.accountID = accountID;
     this.networkType = networkType;
@@ -72,7 +72,7 @@ Map<String, dynamic> _$StepDataEnterAccountToJson(StepDataEnterAccount instance)
 
 class StepEnterAccountBloc extends Bloc<StepEnterAccountEvent, StepEnterAccountState> {
 
-  StepEnterAccountBloc({@required NetworkType networkType}): super(FullState(null, networkType)){
+  StepEnterAccountBloc({required NetworkType networkType}): super(FullState(networkType: networkType)){
     this.updateDataOnUI();
   }
 
@@ -85,14 +85,14 @@ class StepEnterAccountBloc extends Bloc<StepEnterAccountEvent, StepEnterAccountS
   void updateDataOnUI(){
       //check updated data
       Storage storage = Storage();
-      storage.load(callback: (isAlreadyUpdated, isValid, {String exc}){
+      storage.load(callback: (isAlreadyUpdated, isValid, {String? exc}){
         if (isAlreadyUpdated == true || isValid == true){
-          StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
+          StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0) as StepDataEnterAccount;
           if (storage.outsideCall.isOutsideCall) {
             //updating network type:custom ; set the name of server
-            NetworkChains.updateNetworkChainCustomAdd(url: storage.outsideCall.structV1.host.host);
+            NetworkChains.updateNetworkChainCustomAdd(url: storage.outsideCall.getStructV1()!.host.host);
             this.add(AccountConfirmationOutsideCall(
-                accountID: storage.outsideCall.structV1.accountID,
+                accountID: storage.outsideCall.getStructV1()!.accountID,
                 networkType: NetworkType.CUSTOM));
           }
           else if (storageStepEnterAccount.accountID != null)
@@ -117,7 +117,7 @@ class StepEnterAccountBloc extends Bloc<StepEnterAccountEvent, StepEnterAccountS
 
       //next button locked
       var storage = Storage();
-      StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
+      StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0) as StepDataEnterAccount;
       //write accountID value to storage - no matter if it is correct
       //storageStepEnterAccount.accountID = value;
 
@@ -174,26 +174,26 @@ class StepEnterAccountBloc extends Bloc<StepEnterAccountEvent, StepEnterAccountS
     @override
     Stream<StepEnterAccountState> mapEventToState( StepEnterAccountEvent event) async* {
       Storage storage = Storage();
-      StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
+      StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0) as StepDataEnterAccount;
 
       if (event is AccountConfirmation) {
         //change data in storage
         storageStepEnterAccount.accountID = event.accountID;
-        yield FullState(event.accountID, event.networkType);
+        yield FullState(accountID: event.accountID, networkType: event.networkType);
       }
 
       else if (event is AccountConfirmationOutsideCall) {
         //change data in storage outside call
         //storageStepEnterAccount.accountID = event.accountID;
-        yield FullStateOutsideCall(event.accountID, event.networkType);
+        yield FullStateOutsideCall(accountID: event.accountID, networkType:event.networkType);
       }
 
       else if (event is AccountDelete) {
         //clear data in storage
-        storageStepEnterAccount.accountID = null;
+        storageStepEnterAccount.accountID = "";
         storageStepEnterAccount.hasData = false;
         storageStepEnterAccount.isUnlocked = false;
-        yield FullState(storageStepEnterAccount.accountID, event.networkType);
+        yield FullState(accountID: storageStepEnterAccount.accountID, networkType:event.networkType);
       }
       else yield DeletedState(storageStepEnterAccount.networkType);
     }

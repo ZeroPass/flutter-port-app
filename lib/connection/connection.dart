@@ -1,14 +1,13 @@
 import 'dart:async';
-import 'package:flutter/foundation.dart';
-import 'package:passid/internal.dart';
-import 'package:passid/passid.dart';
-import 'package:passid/src/proto/session.dart';
+import 'package:port/internal.dart';
+import 'package:port/port.dart';
+import 'package:port/src/proto/session.dart';
 import 'package:dmrtd/dmrtd.dart';
 
 class Connection{
   dynamic _connector;
 
-  Connection ({@required dynamic connector}):
+  Connection ({required dynamic connector}):
   this._connector = connector;
 
 

@@ -22,16 +22,17 @@ import 'package:dmrtd/src/extension/logging_apis.dart';
  */
 @JsonSerializable(nullable: false)
 class Server {
-  Uri host;
-  int timeoutInSeconds;
+  late Uri host;
+  late int timeoutInSeconds;
 
   //do not need to be stored - just to check if field is correct in settings section
-  Map<String, Map<String, dynamic>> validation;
+  late Map<String, Map<String, dynamic>> validation;
 
   Server({
-    @required this.host,
+    required this.host,
     this.timeoutInSeconds = 15
-  });
+  }):
+  validation = Map<String, Map<String, dynamic>>();
 
   Server.clone(Server server) :
         this(
@@ -46,6 +47,7 @@ class Server {
   Server.deserialization(Map<String, dynamic> json){
     this.host = json['host'] as Uri;
     this.timeoutInSeconds = json['timeoutInSeconds'] as int;
+    this.validation = Map<String, Map<String, dynamic>>();
   }
 
   bool compare(Server server) {
@@ -71,17 +73,18 @@ class Server {
   }
 
   void setValidationError(String field, String errorMsg) {
-    if (this.validation.containsKey(field)) {
-      this.validation[field]['isValid'] = false;
-      this.validation[field]['errorMsg'] = errorMsg;
+    if (this.validation.containsKey(field) && this.validation[field] != null) {
+      this.validation[field]!['isValid'] = false;
+      this.validation[field]!['errorMsg'] = errorMsg;
     }
   }
 
   void setValidationCorrect(String field) {
     if (this.validation.containsKey(field) &&
-        !this.validation[field]['isValid']) {
-      this.validation[field]['isValid'] = true;
-      this.validation[field]['errorMsg'] = null;
+        this.validation[field] != null &&
+        !this.validation[field]!['isValid']) {
+      this.validation[field]!['isValid'] = true;
+      this.validation[field]!['errorMsg'] = null;
     }
   }
 
@@ -119,36 +122,38 @@ Map<String, dynamic> _$ServerToJson(Server instance) =>
 @JsonSerializable()
 class Network {
   final _log = Logger('Storage.Network');
-  String name;
-  NetworkType networkType;
-  String chainID;
+  late String name;
+  late NetworkType networkType;
+  late String chainID;
 
   //do not need to be stored - just to check if field is correct in settings section
-  Map<String, Map<String, dynamic>> validation;
+  late Map<String, Map<String, dynamic>> validation;
 
-  Network({@required this.networkType, this.name = null, this.chainID = null}) {
+  Network({required this.networkType, String? name, String? chainID}) {
     _log.info(
         "Network constructor: network type: $networkType, name: $name, chainID: $chainID");
 
-    if (this.networkType == NetworkType.CUSTOM) {
-      if (this.chainID == null || this.chainID == '') {
-        _log.error("Invalid chain ID");
-        throw Exception('Storage.Netork; invalid chainID');
-      }
+    this.validation = Map<String, Map<String, dynamic>>();
 
-      if (this.name == null || this.name == '') {
-        _log.error("Invalid network name");
-        throw Exception('Storage.Netork; invalid network name');
+    if (this.networkType == NetworkType.CUSTOM) {
+      if (name == null || chainID == null) {
+        _log.error("Invalid name or chain ID");
+        throw Exception('Storage.Netork; invalid name or chainID');
       }
+      //this.networkType is already defined
+      this.name = name;
+      this.chainID = chainID;
     }
     else {
-      var network = NETWORK_CHAINS[this.networkType];
-      if (network[NETWORK_CHAIN_NAME] == null ||
+      var network = NETWORK_CHAINS[this.networkType] ?? Map<String, dynamic>();
+
+      /*if (network[NETWORK_CHAIN_NAME] == null ||
           network[NETWORK_CHAIN_NAME] == '' ||
-          network[NETWORK_CHAIN_ID] == null || network[NETWORK_CHAIN_ID] == '')
+          network[NETWORK_CHAIN_ID] == null ||
+          network[NETWORK_CHAIN_ID] == '')
         _log.error("Predefined network name or chain is not valid: "
             "network: ${network[NETWORK_CHAIN_NAME]}"
-            "chaindID: ${network[NETWORK_CHAIN_ID]}");
+            "chaindID: ${network[NETWORK_CHAIN_ID]}");*/
 
       this.name = network[NETWORK_CHAIN_NAME];
       this.chainID = network[NETWORK_CHAIN_ID];
@@ -172,17 +177,17 @@ class Network {
   }
 
   void setValidationError(String field, String errorMsg) {
-    if (this.validation.containsKey(field)) {
-      this.validation[field]['isValid'] = false;
-      this.validation[field]['errorMsg'] = errorMsg;
+    if (this.validation.containsKey(field) && this.validation[field] != null) {
+      this.validation[field]!['isValid'] = false;
+      this.validation[field]!['errorMsg'] = errorMsg;
     }
   }
 
   void setValidationCorrect(String field) {
-    if (this.validation.containsKey(field) &&
-        !this.validation[field]['isValid']) {
-      this.validation[field]['isValid'] = true;
-      this.validation[field]['errorMsg'] = null;
+    if (this.validation.containsKey(field) && this.validation[field] != null
+        && !this.validation[field]!['isValid']) {
+      this.validation[field]!['isValid'] = true;
+      this.validation[field]!['errorMsg'] = null;
     }
   }
 
@@ -225,19 +230,148 @@ Map<String, dynamic> _$NetworkToJson(Network instance) => <String, dynamic>{
   'chainID': instance.chainID
 };
 
+class SelectedServer<T>{
+  final _log = Logger('Storage.SelectedServer');
+  late bool _isSelected;
+  late T? _selected;
+
+  SelectedServer({T? server}){
+    _log.debug("Selected server: $server");
+    _isSelected =  (server == null)? false: true;
+    _selected = server;
+  }
+
+  SelectedServer.load({required bool isSelected, required T? server}){
+    _log.debug("Load selected server; is selected: $_isSelected, server: $server");
+    _isSelected =  isSelected;
+    _selected = server;
+  }
+
+  void set ({required T server})
+  {
+    _log.debug("Set selected server: $server");
+    _isSelected = true;
+    _selected = server;
+  }
+
+  void remove ()
+  {
+    _log.debug("Remove selected server");
+    _isSelected = false;
+  }
+
+  bool isSetted(){
+    _log.debug("Is selected server setted: $_isSelected");
+    return _isSelected;
+  }
+
+  T getSelected(){
+    if (_selected != null)
+      return _selected!;
+    else
+      throw Exception("No server selected");
+  }
+
+  bool compare ({required T server}){
+    if (isSetted()) {
+      if (T == Server)
+        return (server! as Server).compare((_selected as Server));
+      else
+        return false;
+    }
+    else
+      return false;
+  }
+
+  /*SelectedServer.fromJson(Map<String, dynamic> json) {
+    //var value = _$SelectedServerFromJson(json);
+    //throw Exception ("");
+    if (T is NodeServer)
+       _$SelectedServerFromJson<NodeServer>(json);
+    else
+      throw Exception ("");
+    //}
+  }*/
+
+  Map<String, dynamic> toJson() {
+      if (_selected is NodeServer)
+        return _$SelectedServerToJson<NodeServer>(this);
+      else if (_isSelected is ServerCloud)
+        return _$SelectedServerToJson<ServerCloud>(this);
+      else
+        throw Exception ("SelectedServer.toJson; unknown generic format");
+    }
+}
+
+class SelectedServerNodeServer extends SelectedServer<NodeServer>{
+
+  SelectedServerNodeServer() : super();
+
+  SelectedServerNodeServer.load ({required bool isSelected, required NodeServer? server}){
+    SelectedServer.load(isSelected: isSelected, server: server) as SelectedServerNodeServer;
+  }
+
+  factory SelectedServerNodeServer.fromJson(Map<String, dynamic> json){
+    return SelectedServerNodeServer.load(isSelected: json['isSelected'] as bool,
+                        server: json['selected'] as NodeServer);
+  }
+
+}
+
+class SelectedServerServerCloud extends SelectedServer<ServerCloud>{
+
+  SelectedServerServerCloud() : super();
+
+  SelectedServerServerCloud.load ({required bool isSelected, required ServerCloud? server}){
+    SelectedServer.load(isSelected: isSelected, server: server) as SelectedServerServerCloud;
+  }
+
+  factory SelectedServerServerCloud.fromJson(Map<String, dynamic> json){
+    return SelectedServerServerCloud.load(isSelected: json['isSelected'] as bool,
+        server: json['selected'] as ServerCloud);
+  }
+
+}
+
+class SelectedServerNetwork extends SelectedServer<Network>{
+
+  SelectedServerNetwork() : super();
+
+  SelectedServerNetwork.load ({required bool isSelected, required Network? server}){
+    SelectedServer.load(isSelected: isSelected, server: server) as SelectedServerServerCloud;
+  }
+
+  factory SelectedServerNetwork.fromJson(Map<String, dynamic> json){
+    return SelectedServerNetwork.load(isSelected: json['isSelected'] as bool,
+        server: json['selected'] as Network);
+  }
+
+}
+
+/*R _$SelectedServerFromJson<R, T>(Map<String, dynamic> json) =>
+    SelectedServer.load(
+          isSelected: json['isSelected'] as bool,
+          server: json['selected'] as T);*/
+
+Map<String, dynamic> _$SelectedServerToJson<T>(SelectedServer instance) => <String, dynamic>{
+  'isSelected': instance._isSelected,
+  'selected': instance._selected,
+};
+
+
 @JsonSerializable()
 class Networks{
   final _log = Logger('Storage.Networks');
-  List<Server> _servers;
-  Server _selected = null;
+  late List<Server> _servers;
+  late SelectedServer  _selected;
 
   Networks(){
     _log.debug("Netowks.init");
-    _servers = List<Server>();
+    _servers = List<Server>.empty(growable: true);
   }
 
 
-  Networks.load({List<Server> servers, Server selected}){
+  Networks.load({required List<Server> servers,required SelectedServer selected}){
     _log.debug("Netowks.load; list of servers: $servers, selected server: $selected");
     _servers = servers;
     _selected = selected;
@@ -247,11 +381,16 @@ class Networks{
     _servers = value;
   }
 
-  Server get selected => _selected;
+  SelectedServer get selected => _selected;
 
-  set selected(Server value) {
+  set selected(SelectedServer value) {
     _selected = value;
   }
+
+  bool isSelected() => _selected.isSetted();
+
+  Server  getSelected() => _selected.getSelected();
+
 
   bool add(Server server){
     _log.info("Adding new server to storage; storage:$server");
@@ -271,9 +410,9 @@ class Networks{
       if (item.compare(server)){
         _log.debug("Server found. Delete it from list.");
         _servers.remove(item);
-        if(_selected != null && _selected.compare(server)){
+        if(_selected.compare(server: server)){
           _log.debug("Server has been set as selected. Remove that mark.");
-          _selected = _servers.length > 0? _servers.first : null;
+          _selected.remove();
         }
         return true;
       }
@@ -288,14 +427,13 @@ class Networks{
     for (Server item in _servers){
       if (item.compare(server)){
         _log.debug("Server found in list. Add server to selected server");
-        this._selected = server;
+        this._selected.set(server: server);
         return;
       }
     }
-
     _log.info("Server not found in list. Add server to list and mark as selected");
     _servers.add(server);
-    this._selected = server;
+    this._selected.set(server: server);
   }
 
   factory Networks.fromJson(Map<String, dynamic> json) => _$NetworksFromJson(json);
@@ -310,21 +448,23 @@ Networks _$NetworksFromJson(Map<String, dynamic> json) =>
         servers: json['servers'] != null
             ? (json['servers'] as List).map(
                 (e) => Server.fromJson(e as Map<String, dynamic>)).toList()
-            : null,
-        selected:Server.fromJson(json['selected'])
+            : List<Server>.empty(growable: true),
+        selected:SelectedServerNetwork.fromJson(json['selected'])
     );
 
 Map<String, dynamic> _$NetworksToJson(Networks instance) => <String, dynamic>{
   'servers': instance.servers != null ?
   instance.servers.map((item) => item.toJson()).toList() : null,
-  'selected': instance.selected
+  'selected': instance.selected.toJson()
 };
 
 @JsonSerializable()
 class NetworksCloud extends Networks {
-  NetworksCloud() : super();
+  NetworksCloud() : super(){
+    super.selected = SelectedServerServerCloud();
+  }
 
-  NetworksCloud.load({List<ServerCloud> servers, ServerCloud selected}) : super() {
+  NetworksCloud.load({required List<ServerCloud> servers, required SelectedServerServerCloud selected}) : super() {
     super.servers = servers;
     super.selected = selected;
   }
@@ -335,11 +475,11 @@ class NetworksCloud extends Networks {
 
 NetworksCloud _$NetworksCloudFromJson(Map<String, dynamic> json) =>
   NetworksCloud.load(
-      servers: json['servers'] != null
-          ? (json['servers'] as List).map(
-              (e) => ServerCloud.fromJson(e as Map<String, dynamic>)).toList()
-          : null,
-      selected:json['selected'] != null? ServerCloud.fromJson(json['selected']) : null
+      servers:
+           (json['servers'] as List).map(
+              (e) => ServerCloud.fromJson(e as Map<String, dynamic>)).toList(),
+          //: List.empty(growable: true),
+      selected: SelectedServerServerCloud.fromJson(json['selected'])
   );
 
 Map<String, dynamic> _$NetworksCloudToJson(NetworksCloud instance) => <String, dynamic>{
@@ -352,9 +492,11 @@ Map<String, dynamic> _$NetworksCloudToJson(NetworksCloud instance) => <String, d
 class NetworksNode extends Networks {
   final _log = Logger("Networks:NetworksNode");
 
-  NetworksNode(): super();
+  NetworksNode(): super(){
+    super.selected = SelectedServerNodeServer();
+  }
 
-  NetworksNode.load({List<NodeServer> servers, NodeServer selected}) {
+  NetworksNode.load({required List<NodeServer> servers, required SelectedServerNodeServer selected}) {
     _log.debug("Init NetworksNode; servers: $servers, selected: $selected");
     super.servers = servers;
     super.selected = selected;
@@ -367,11 +509,11 @@ class NetworksNode extends Networks {
 NetworksNode _$NetworksNodeFromJson(Map<String, dynamic> json) {
   Logger("Networks:NetworksNode").debug("NetworksNodeFromJson; json: $json");
   return NetworksNode.load(
-      servers: json['servers'] != null
-          ? (json['servers'] as List).map(
-              (e) => NodeServer.fromJson(e as Map<String, dynamic>)).toList()
-          : null,
-      selected: json['selected'] != null? NodeServer.fromJson(json['selected']) : null
+      servers: //json['servers'] != null ?
+          (json['servers'] as List).map(
+              (e) => NodeServer.fromJson(e as Map<String, dynamic>)).toList(),
+          //: List.empty(growable: true),
+      selected: SelectedServerNodeServer.fromJson(json['selected'])
   );
 }
 Map<String, dynamic> _$NetworksNodeToJson(NetworksNode instance) => <String, dynamic>{
@@ -384,15 +526,16 @@ Map<String, dynamic> _$NetworksNodeToJson(NetworksNode instance) => <String, dyn
 class NetworkNodeSet{
   final _log = Logger("NetworkNodeSet");
 
-  Map<NetworkType, NetworksNode> _nodes;
-  Map<NetworkType, Network> _networks ;
+  late Map<NetworkType, NetworksNode> _nodes;
+  late Map<NetworkType, Network> _networks ;
 
   NetworkNodeSet() : super(){
     _nodes = Map<NetworkType, NetworksNode>();
     _networks = Map<NetworkType, Network>();
+    var t = 9;
   }
 
-  NetworkNodeSet.load ({Map<NetworkType, NetworksNode> nodes, Map<NetworkType, Network> networks}){
+  NetworkNodeSet.load ({required Map<NetworkType, NetworksNode> nodes, required Map<NetworkType, Network> networks}){
     _nodes = nodes;
     _networks = networks;
   }
@@ -413,14 +556,18 @@ class NetworkNodeSet{
     if (_networks[networkType] == null)
       throw ("Network type '$networkType' is not in database.");
 
-    _log.finest("The name of network type: ${_networks[networkType].name}");
-    return _networks[networkType].name;
+    if (_networks[networkType] != null) {
+      _log.finest("The name of network type: ${_networks[networkType]!.name}");
+      return _networks[networkType]!.name;
+    }
+    else
+      throw Exception("NetworkNodeSet.networkTypeToString; Under network type: $networkType there is no record");
   }
 
-  void add({NetworkType networkType, NodeServer server, bool isSelected = false }){
+  void add({required NetworkType networkType, required NodeServer server, bool isSelected = false }){
     _log.debug("add; networkType: $networkType, server: $server, is selected: $isSelected");
     _nodes[networkType] ??= NetworksNode();
-    NetworksNode nodes = _nodes[networkType];
+    NetworksNode nodes = _nodes[networkType]!;
     nodes.add(server);
   }
 
@@ -441,10 +588,6 @@ class NetworkNodeSet{
 
   static Map<NetworkType, NetworksNode> parseMapNodes(Map<String,dynamic> m){
     Logger("Parse map nodes").debug("map: $m");
-    if(m==null){
-      Logger("Parse map").warning("Map is empty");
-      return null;
-    }
     Map<NetworkType, NetworksNode> result ={};
     for(String key in m.keys){
     var u = m[key];
@@ -456,10 +599,6 @@ class NetworkNodeSet{
 
   static Map<NetworkType, Network> parseMapNetworks(Map<String,dynamic> m){
     Logger("Parse map network").debug("map: $m");
-    if(m==null){
-      Logger("Parse map").warning("Map is empty");
-      return null;
-    }
     Map<NetworkType, Network> result ={};
     for(String key in m.keys){
       result[EnumUtil.fromStringEnum(NetworkType.values, key)]=Network.fromJson( m[key]);
@@ -469,26 +608,24 @@ class NetworkNodeSet{
 
   static Map<String, dynamic> toStringMapNodes(Map<NetworkType, NetworksNode> m){
     Logger("ToStringMap nodes").debug("map: $m");
-    if(m==null) {
-      Logger("ToStringMap").warning("Map is empty");
-      return null;
-    }
     Map<String, dynamic> result ={};
     m.forEach((key, value) {
-      result[StringUtil.getWithoutTypeName(key)]=m[key].toJson();
+      if (m[key] != null)
+        result[StringUtil.getWithoutTypeName(key)]=m[key]!.toJson();
+      else
+        throw Exception("ToStringMap nodes; null value");
     });
     return result;
   }
 
   static Map<String, dynamic> toStringMapNewtorks(Map<NetworkType, Network> m){
     Logger("ToStringMapnetworks").debug("map: $m");
-    if(m==null) {
-      Logger("ToStringMap").warning("Map is empty");
-      return null;
-    }
     Map<String, dynamic> result ={};
     m.forEach((key, value) {
-      result[StringUtil.getWithoutTypeName(key)]=m[key].toJson();
+      if (m[key] != null)
+        result[StringUtil.getWithoutTypeName(key)]=m[key]!.toJson();
+      else
+        throw Exception("toStringMapNewtorks; null value");
     });
     return result;
   }
@@ -518,13 +655,13 @@ class NetworkCloudSet{
   final _log = Logger("NetworkCloudSet");
 
   //@JsonKey(fromJson: parseMap, toJson: toStringMap)
-  Map<NetworkTypeServer, NetworksCloud> _servers;
+  late Map<NetworkTypeServer, NetworksCloud> _servers;
 
   NetworkCloudSet (){
     _servers = Map<NetworkTypeServer, NetworksCloud>();
   }
 
-  NetworkCloudSet.load ({Map<NetworkTypeServer, NetworksCloud> servers}){
+  NetworkCloudSet.load ({required Map<NetworkTypeServer, NetworksCloud> servers}){
     _servers = servers;
   }
 
@@ -534,10 +671,10 @@ class NetworkCloudSet{
     _servers = value;
   }
 
-  void add({NetworkTypeServer networkTypeServer, ServerCloud server, bool isSelected = false }){
+  void add({required NetworkTypeServer networkTypeServer, required ServerCloud server, bool isSelected = false }){
     _log.debug("add; networkTypeServer: $networkTypeServer, server: $server, is selected: $isSelected");
     _servers[networkTypeServer] ??= NetworksCloud();
-    NetworksCloud clouds = servers[networkTypeServer];
+    NetworksCloud clouds = servers[networkTypeServer]!;
     clouds.add(server);
   }
 
@@ -548,10 +685,6 @@ class NetworkCloudSet{
 
   static Map<NetworkTypeServer, NetworksCloud> parseMap(Map<String, dynamic> m){
     Logger("Parse map").debug("map: $m");
-    if(m==null){
-      Logger("Parse map").warning("Map is empty");
-      return null;
-    }
     Map<NetworkTypeServer, NetworksCloud> result ={};
     for(String key in m.keys){
       result[EnumUtil.fromStringEnum(NetworkTypeServer.values, key)]=NetworksCloud.fromJson( m[key]);
@@ -561,13 +694,12 @@ class NetworkCloudSet{
 
   static Map<String, dynamic> toStringMap(Map<NetworkTypeServer, NetworksCloud> m){
     Logger("ToStringMap").debug("map: $m");
-    if(m==null) {
-      Logger("ToStringMap").warning("Map is empty");
-      return null;
-    }
     Map<String, dynamic> result ={};
     m.forEach((key, value) {
-      result[StringUtil.getWithoutTypeName(key)]=m[key].toJson();
+      if (m[key] != null)
+        result[StringUtil.getWithoutTypeName(key)]=m[key]!.toJson();
+      else
+        throw Exception("toStringMap; null value");
     });
     return result;
   }
@@ -591,19 +723,18 @@ class NodeServer extends Server {
   final _log = Logger("Server");
 
   NodeServer({
-    @required Uri host,
+    required Uri host,
     int timeoutInSeconds = 15
   }) : super(host: host,
-      timeoutInSeconds: timeoutInSeconds) {}
+      timeoutInSeconds: timeoutInSeconds);
 
   NodeServer.deserialization(Map<String, dynamic> server) : super.deserialization(server){
     _log.debug("deserialization; server:$server");
-    //this.network = network;
   }
 
-  NodeServer.clone(NodeServer server) {
+  NodeServer.clone({required NodeServer server}) : super.clone(server)
+  {
     _log.debug("clone; server:$server");
-    super.clone(server);
   }
 
   bool compareInherited(NodeServer nodeServer) {
@@ -629,24 +760,24 @@ Map<String, dynamic> _$NodeServerToJson(NodeServer instance) => {
 @JsonSerializable()
 class ServerCloud extends Server {
   final _log = Logger("ServerCloud");
-  String name;
+  late String name;
 
-  ServerCloud({ @required this.name,
-    @required Uri host,
+  ServerCloud({ required this.name,
+    required Uri host,
     int timeoutInSeconds = 15
   }) : super(host: host,
       timeoutInSeconds: timeoutInSeconds);
 
-  ServerCloud.deserialization(Map<String, dynamic> server, String name) : super.deserialization(server){
+  ServerCloud.deserialization({required Map<String, dynamic> server, required String name}) : super.deserialization(server){
     _log.debug("deserialization; server: $server, name: $name");
     this.name = name;
   }
 
-  ServerCloud.clone(ServerCloud server) {
+  ServerCloud.clone(ServerCloud server):super.clone(server) {
     _log.debug("clone; server: $server");
-    super.clone(server);
     this.name = server.name;
   }
+
   bool compareInherited(ServerCloud serverCloud) {
     return (super.compare(serverCloud) &&
             this.name == serverCloud.name) ?
@@ -667,8 +798,8 @@ class ServerCloud extends Server {
 
 ServerCloud _$ServerCloudFromJson(Map<String, dynamic> json) =>
     ServerCloud.deserialization(
-      json['server'],
-      json['name'] as String);
+      server: json['server'],
+      name: json['name'] as String);
 
 
 Map<String, dynamic> _$ServerCloudToJson(ServerCloud instance) =>
@@ -678,15 +809,15 @@ Map<String, dynamic> _$ServerCloudToJson(ServerCloud instance) =>
   };
 
 class DBAkeyStorage {
-  static SharedPreferences prefs;
+  late SharedPreferences prefs;
 
   void init() async {
-    if (prefs == null) {
+    //if (prefs == null) {
       prefs = await SharedPreferences.getInstance();
-    }
+    //}
   }
 
-  DBAKeys getDBAKeys() {
+  DBAKeys? getDBAKeys() {
     final data = prefs.getString("dbaKeys");
     if (data == null) {
       return null;
@@ -715,18 +846,15 @@ int _NUM_OF_STEPS = 3;
 @JsonSerializable()
 class StorageData {
   final _log = Logger('StorageData');
-  bool _isUpdatedInCurrentSession;
-  bool _loggingEnabled;
-  List<StepData> _steps;
-  NetworkNodeSet _nodeSet;
-  NetworkCloudSet _cloudSet;
+  late bool _isUpdatedInCurrentSession;
+  late bool _loggingEnabled;
+  late List<StepData> _steps;
+  late NetworkNodeSet _nodeSet;
+  late NetworkCloudSet _cloudSet;
 
-  //these should not be stored on disc
-  OutsideCallV0dot1 _outsideCall;
-
-
-
-  DBAkeyStorage dbAkeyStorage;
+  //should not be stored on disc
+  late OutsideCallV0dot1 _outsideCall;
+  late DBAkeyStorage dbAkeyStorage;
 
 
   StorageData() {
@@ -738,11 +866,11 @@ class StorageData {
     this.dbAkeyStorage = DBAkeyStorage();
     this.dbAkeyStorage.init();
 
-    this._steps = new List(_NUM_OF_STEPS);
-    //initialize every step
-    this._steps[0] = StepDataEnterAccount();
-    this._steps[1] = StepDataScan();
-    this._steps[2] = StepDataAttestation();
+    this._steps = new List.from([
+      StepDataEnterAccount(),//0
+      StepDataScan(),//1
+      StepDataAttestation()//2
+    ]);
 
     this._outsideCall = OutsideCallV0dot1();
   }
@@ -764,7 +892,7 @@ class StorageData {
   }
 
   StorageData StorageDataDB(
-      {bool loggingEnabled, List<StepData> steps, NetworkNodeSet nodeSet, NetworkCloudSet cloudSet}) {
+      {required bool loggingEnabled, required List<StepData> steps, required NetworkNodeSet nodeSet, required NetworkCloudSet cloudSet}) {
     _log.debug("StorageDataDB:constructor;"
         "loggingEnabled: $loggingEnabled,"
         "steps: $steps,"
@@ -786,12 +914,6 @@ class StorageData {
     _loggingEnabled = value;
   }
 
-  /*NodeServer getNode() {
-    NodeServer defaultNode = this.getDefaultNode();
-    NodeServer selectedNode = this.getSelectedNode();
-    return selectedNode != null ? selectedNode : defaultNode;
-  }*/
-
   OutsideCallV0dot1 get outsideCall => _outsideCall;
 
   set outsideCall(OutsideCallV0dot1 value) {
@@ -805,37 +927,37 @@ class StorageData {
   StepData getStorageData(int index) {
     //out of array
     if (index > _NUM_OF_STEPS)
-      return null;
+      throw Exception("StepData.getStorageData; index out of range");
 
     return _steps[index];
   }
 
   //add so storage list
-  void addServerNode({NodeServer item, NetworkType networkType, bool isSelected = false}) {
+  void addServerNode({required NodeServer item,required NetworkType networkType, bool isSelected = false}) {
     this._nodeSet.add(networkType: networkType, server: item, isSelected: isSelected );
   }
 
   //get list of nodes stored in storage;
-  NetworksNode getServerNodes({@required NetworkType networkType}) {
+  NetworksNode getServerNodes({required NetworkType networkType}) {
     _log.finer("Get nodes with type: $networkType");
-    if (_nodeSet.nodes.containsKey(networkType))
-      return _nodeSet.nodes[networkType];
+    if (_nodeSet.nodes.containsKey(networkType) && _nodeSet.nodes[networkType] != null)
+      return _nodeSet.nodes[networkType]!;
     else{
       _log.debug("No nodes with this type");
-      return null;
+      throw Exception("StorageData.getServerNodes; No nodes with this type");
     }
   }
 
-  NodeServer getServerNodeSelected({@required NetworkType networkType}) {
+  NodeServer? getServerNodeSelected({required NetworkType networkType}) {
     _log.debug("Get selected node with type: $networkType");
-    if (_nodeSet.nodes.containsKey(networkType)) {
-      if (_nodeSet.nodes[networkType].selected != null){
+    if (_nodeSet.nodes.containsKey(networkType) && _nodeSet.nodes[networkType] != null) {
+      if (_nodeSet.nodes[networkType]!.selected.isSetted()){
         _log.debug("Selected node is found in database.");
-        return _nodeSet.nodes[networkType].selected;
+        return _nodeSet.nodes[networkType]!.selected.getSelected();
       }
-      else if (_nodeSet.nodes[networkType].servers.isNotEmpty){
+      else if (_nodeSet.nodes[networkType]!.servers.isNotEmpty){
         _log.debug("Selected node is not found in database. Return first one in the list.");
-        return _nodeSet.nodes[networkType].servers.first;
+        return _nodeSet.nodes[networkType]!.servers.first as NodeServer;
       }
       else
         {
@@ -855,7 +977,7 @@ class StorageData {
     return this.defaultNode;
   }*/
 
-  NetworksCloud getServerCloud({@required NetworkTypeServer networkTypeServer}) {
+  NetworksCloud? getServerCloud({required NetworkTypeServer networkTypeServer}) {
     _log.finer("Get network servers with type: $networkTypeServer");
     if (_cloudSet.servers.containsKey(networkTypeServer))
       return _cloudSet.servers[networkTypeServer];
@@ -865,16 +987,16 @@ class StorageData {
     }
   }
 
-  ServerCloud getServerCloudSelected({@required NetworkTypeServer networkTypeServer}) {
+  ServerCloud? getServerCloudSelected({required NetworkTypeServer networkTypeServer}) {
     _log.debug("Get selected server with type: $networkTypeServer");
     if (_cloudSet.servers.containsKey(networkTypeServer)) {
-      if (_cloudSet.servers[networkTypeServer].selected != null){
+      if (_cloudSet.servers[networkTypeServer]!.selected.isSetted()){
         _log.debug("Selected server is found in database.");
-        return _cloudSet.servers[networkTypeServer].selected;
+        return _cloudSet.servers[networkTypeServer]!.getSelected() as ServerCloud;
       }
-      else if (_cloudSet.servers[networkTypeServer].servers.isNotEmpty){
+      else if (_cloudSet.servers[networkTypeServer]!.servers.isNotEmpty){
         _log.debug("Selected server is not found in database. Return first one in the list.");
-        return _cloudSet.servers[networkTypeServer].servers.first;
+        return _cloudSet.servers[networkTypeServer]!.servers.first as ServerCloud;
       }
       else
       {
@@ -899,7 +1021,7 @@ class StorageData {
   Map<String, dynamic> toJson() => _$StorageDataToJson(this);
 
   //save to local storage
-  void save({Function callback(bool) = null}) async {
+  void save({Function (bool)? callback}) async {
     try {
       _log.info("Save");
       Map<String, dynamic> value = this.toJson();
@@ -914,12 +1036,12 @@ class StorageData {
     catch (e) {
       _log.error("Save: exception; exc: ${e.toString()}");
       if (callback != null)
-        callback(false);
+      callback(false);
     }
   }
 
-  void load(
-      {Function (bool isAlreadyUpdated, bool isValid, {String exc}) callback}) async {
+  Future<void> load(
+      {Function (bool isAlreadyUpdated, bool isValid, {String? exc})? callback}) async {
     try {
       Storage storage = Storage();
       if (storage.isUpdatedInCurrentSession) {
@@ -929,21 +1051,24 @@ class StorageData {
       }
       final storageDB = new FlutterSecureStorage();
       //await storageDB.readAll();//just to await when you run a script first time
-      String value = await storageDB.read(key: "data");
+      String? value = await storageDB.read(key: "data");
       if (value == null){
         _log.info("Nothing has been stored in the database yet.");
-        callback(true, false, exc: "Nothing has been stored in the database yet.");
+        if (callback != null)
+          callback(true, false, exc: "Nothing has been stored in the database yet.");
         return;
       }
 
       storage.fromStorageData(StorageData.fromJson(jsonDecode(value)));
       if (callback != null)
         callback(false, true);
+      return;
     }
     catch (e) {
       _log.error("Error when loading data from storage: ${e.toString()}");
       if (callback != null)
         callback(true, false, exc: e.toString());
+      return;
     }
   }
 
@@ -959,7 +1084,7 @@ class StorageData {
 }
 
 StepDataListfromJson(Map<String, dynamic> list) {
-  List<StepData> output = new List();
+  List<StepData> output = new List.empty(growable: true);
   output.add(StepDataEnterAccount.fromJson(list['StepDataEnterAccount']));
   output.add(StepDataScan.fromJson(list['StepDataScan']));
   output.add(StepDataAttestation.fromJson(list['StepDataAttestation']));
@@ -993,14 +1118,31 @@ Map<String, dynamic> _$StorageDataToJson(StorageData instance) =>
       'cloudSet' : instance._cloudSet.toJson(),
     };
 
-//singelton class
+//singleton class
 class Storage extends StorageData {
-  static Storage _singleton = new Storage._internal();
+  static Storage _singleton = Storage._internal();
 
   factory Storage(){
     StorageData();
     return _singleton;
   }
 
-  Storage._internal(){}
+  Storage._internal();
+}
+
+class Storage1 {
+  // make this nullable by adding '?'
+  static Storage1? _instance;
+
+  Storage1._() {
+    // initialization and stuff
+  }
+
+  factory Storage1() {
+    if (_instance == null) {
+      _instance = new Storage1._();
+    }
+    // since you are sure you will return non-null value, add '!' operator
+    return _instance!;
+  }
 }

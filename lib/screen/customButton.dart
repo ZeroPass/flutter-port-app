@@ -5,20 +5,19 @@ import "dart:io" show Platform;
 
 
 class CustomButton extends StatefulWidget {
-  String title;
-  double minWidth;
-  Color fontColor;
-  Color backgroundColor;
-  double fontSize;
-  Function callbackOnPressed;
+  late String title;
+  late double minWidth;
+  late Color fontColor;
+  late Color backgroundColor;
+  late double fontSize;
+  late Function callbackOnPressed;
+  late bool disabled;
 
-  CustomButton({@required this.title, @required this.callbackOnPressed, this.fontColor, this.backgroundColor = Colors.white, this.fontSize, this.minWidth = 44.0})
+  CustomButton({required this.title, required this.callbackOnPressed, Color? fontColor,
+    this.backgroundColor = Colors.white, double? fontSize, this.minWidth = 44.0, this.disabled = false})
   {
-    if (this.fontColor == null)
-      this.fontSize =  AndroidThemeST().getValues().themeValues["BUTTON"]["SIZE_TEXT"];
-
-    if (this.fontSize == null)
-      this.fontSize =  AndroidThemeST().getValues().themeValues["BUTTON"]["SIZE_TEXT"];
+      this.fontColor = fontColor ?? AndroidThemeST().getValues().themeValues["BUTTON"]["COLOR"];
+      this.fontSize =  fontSize ?? AndroidThemeST().getValues().themeValues["BUTTON"]["SIZE_TEXT"];
   }
 
   @override
@@ -35,7 +34,8 @@ class _CustomButton extends State<CustomButton> {
             color: widget.backgroundColor,
             textColor:widget.fontColor,
             onPressed: () {
-              widget.callbackOnPressed();
+              if (widget.disabled == false)
+                widget.callbackOnPressed();
             },
             child: Text(
               widget.title,
@@ -75,6 +75,6 @@ class _CustomButton extends State<CustomButton> {
       return this.showIosButton(context);
     }
     else
-      return null;
+      throw Exception("CustomButton.build: unknown platform.");
   }
 }

@@ -20,26 +20,26 @@ final _defaultActions = (BuildContext ctx) => [
 ///
 /// The [closeOnBackPressed] parameter if set to true will
 /// close the alert dialog when user presses back button on android device.
-Future<T> showAlert<T>(
-    {@required BuildContext context,
-    @required Widget title,
-    Widget content,
-    List<PlatformDialogAction> actions,
-    GlobalKey key,
+Future<T?> showAlert<T>(
+    {required BuildContext context,
+    required Widget title,
+      Widget? content,
+      List<PlatformDialogAction>? actions,
+      //required GlobalKey key,
     dismissible = false,
     closeOnBackPressed = false}) async {
-  return showPlatformDialog<T>(
-    context: context,
-    barrierDismissible: dismissible,
-    builder: (BuildContext context) {
-      return WillPopScope(
-          onWillPop: () async =>
-              closeOnBackPressed, // prevent closing on back button pressed
-          child: PlatformAlertDialog(
-              key: key,
-              title: title,
-              content: content,
-              actions: actions ?? _defaultActions(context)));
-    },
+      return showPlatformDialog<T>(
+        context: context,
+        barrierDismissible: dismissible,
+        builder: (BuildContext context) {
+          return WillPopScope(
+              onWillPop: () async =>
+                  closeOnBackPressed, // prevent closing on back button pressed
+              child: PlatformAlertDialog(
+                  //key: key,
+                  title: title,
+                  content: content,
+                  actions: actions ?? _defaultActions(context)));
+        },
   );
 }

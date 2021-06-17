@@ -12,7 +12,7 @@ class AttestationHeaderWithDataState extends StepAttestationHeaderState {
   //show request type
   RequestType requestType;
 
-  AttestationHeaderWithDataState({@required this.requestType});
+  AttestationHeaderWithDataState({required this.requestType});
 
   @override
   List<Object> get props => [requestType];
@@ -25,7 +25,7 @@ class AttestationHeaderWithDataOutsideCallState extends StepAttestationHeaderSta
   //show request type
   RequestType requestType;
 
-  AttestationHeaderWithDataOutsideCallState({@required this.requestType});
+  AttestationHeaderWithDataOutsideCallState({required this.requestType});
 
   @override
   List<Object> get props => [requestType];

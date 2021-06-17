@@ -15,9 +15,9 @@ class NoEfDG1Dialog extends StatefulWidget {
   final List<Widget> actions;
 
   NoEfDG1Dialog(
-      {@required this.requestType,
-        @required this.rawData,
-        @required this.actions});
+      {required this.requestType,
+        required this.rawData,
+        required this.actions});
 
   @override
   _NoEfDG1Dialog createState() => _NoEfDG1Dialog();

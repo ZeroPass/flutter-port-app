@@ -22,7 +22,7 @@ class AttestationWithDataEvent extends StepAttestationEvent{
   //NFCDeviceData deviceData;
   RequestType requestType;
 
-  AttestationWithDataEvent({@required this.requestType});
+  AttestationWithDataEvent({required this.requestType});
 
   @override
   List<Object> get props => [requestType];
@@ -35,7 +35,7 @@ class AttestationWithDataOutsideCallEvent extends StepAttestationEvent{
   //NFCDeviceData deviceData;
   RequestType requestType;
 
-  AttestationWithDataOutsideCallEvent({@required this.requestType});
+  AttestationWithDataOutsideCallEvent({required this.requestType});
 
   @override
   List<Object> get props => [requestType];

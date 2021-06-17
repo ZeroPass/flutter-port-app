@@ -19,8 +19,8 @@ class StepEnterAccountForm extends StatefulWidget {
 }
 
 class _StepEnterAccountFormState extends State<StepEnterAccountForm> {
-  TextEditingController _accountTextController;
-  Storage _storage;
+  late TextEditingController _accountTextController;
+  late Storage _storage;
 
   _StepEnterAccountFormState() {
     this._accountTextController = TextEditingController();
@@ -32,9 +32,9 @@ class _StepEnterAccountFormState extends State<StepEnterAccountForm> {
     var storage = Storage();
 
     if (storage.outsideCall.isOutsideCall)
-      _accountTextController.text = storage.outsideCall.structV1.accountID;
+      _accountTextController.text = storage.outsideCall.getStructV1()!.accountID;
     else {
-      StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
+      StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0) as StepDataEnterAccount;
       _accountTextController.text =
       storageStepEnterAccount.accountID != null ? storageStepEnterAccount
           .accountID : "";
@@ -48,16 +48,16 @@ class _StepEnterAccountFormState extends State<StepEnterAccountForm> {
 
   void selectNetwork(var context, StepEnterAccountState state, var stepEnterAccountBloc) {
     var storage = Storage();
-    StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
+    StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0) as StepDataEnterAccount;
     BottomPickerStructure bps = BottomPickerStructure();
     bps.importNetworkList(storage.nodeSet, storageStepEnterAccount.networkType,
-        "Select node", "Please select the node");
+        title: "Select node", message: "Please select the node");
     CustomBottomPickerState cbps = CustomBottomPickerState(structure: bps);
     cbps.showPicker(context,
         //callback function to manage user click action on selection
         (BottomPickerElement returnedStorageNode) {
       //find the node with the same name as returned name
-          storage.nodeSet.nodes.forEach((key, value) {
+          storage.nodeSet.networks.forEach((key, value) {
             if (key == EnumUtil.fromStringEnum(NetworkType.values, returnedStorageNode.key)) {
               storageStepEnterAccount.networkType =
                   EnumUtil.fromStringEnum(NetworkType.values, returnedStorageNode.key);
@@ -80,8 +80,12 @@ class _StepEnterAccountFormState extends State<StepEnterAccountForm> {
 
   //different text when state is in outside call
   String selectNetworkText(StepEnterAccountState state){
-    if (state is FullStateOutsideCall)
-      return NETWORK_CHAINS[NetworkType.CUSTOM][NETWORK_CHAIN_NAME];
+    if (state is FullStateOutsideCall) {
+      if (NETWORK_CHAINS[NetworkType.CUSTOM] != null && NETWORK_CHAINS[NetworkType.CUSTOM]![NETWORK_CHAIN_NAME] != null)
+        return NETWORK_CHAINS[NetworkType.CUSTOM]![NETWORK_CHAIN_NAME] as String;
+      else
+        throw Exception("StepEnterAccountForm.selectNetworkText; no chain name when state is 'FullStateOutsideCall'");
+    }
     else
       return truncateNetwork(Storage().nodeSet.networkTypeToString(state.networkType), 15);
   }
@@ -147,8 +151,8 @@ class _StepEnterAccountFormState extends State<StepEnterAccountForm> {
                       : null,
               onChanged: (value) async {
                 //save to storage
-                StepDataEnterAccount storageStepEnterAccount = _storage.getStorageData(0);
-                storageStepEnterAccount.accountID = _accountTextController.text.length !=0 ? _accountTextController.text : null;
+                StepDataEnterAccount storageStepEnterAccount = _storage.getStorageData(0) as StepDataEnterAccount;
+                storageStepEnterAccount.accountID = _accountTextController.text.length !=0 ? _accountTextController.text : '';
                 //save storage
                 _storage.save();
 

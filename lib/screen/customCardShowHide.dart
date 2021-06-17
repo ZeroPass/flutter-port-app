@@ -4,19 +4,19 @@ import 'package:flutter/material.dart';
 import 'package:eosio_passid_mobile_app/screen/theme.dart';
 
 class CustomCardShowHide extends StatefulWidget {
-  String title;
-  String item;
-  final List<Widget> actions;
+  late String title;
+  late String item;
+  late final List<Widget> actions;
 
-  CustomCardShowHide(@required this.title, @required this.item,
-      {this.actions = null});
+  CustomCardShowHide(this.title, this.item,
+      {required this.actions});
 
   @override
   _CustomCardShowHideState createState() => _CustomCardShowHideState();
 }
 
 class _CustomCardShowHideState extends State<CustomCardShowHide> {
-  bool _visability;
+  late bool _visability;
 
   _CustomCardShowHideState() {
     _visability = false;

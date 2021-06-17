@@ -39,9 +39,9 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "io.zeropass.passid"
+        applicationId "io.zeropass.port"
         // applicationId "zeropass.eosio_passid_mobile_app.host"
-        minSdkVersion 19
+        minSdkVersion 20
         targetSdkVersion 29
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName

@@ -17,13 +17,13 @@ var APP_NAME_QR_STRUCTURE = "Port.link";
 class QRstructure{
   final _log = Logger("QRstrucutre");
 
-  String appName;
-  double version;
-  String accountID;
-  RequestType requestType;
-  Server host;
+  late String appName;
+  late double version;
+  late String accountID;
+  late RequestType requestType;
+  late Server host;
 
-  QRstructure({@required double version, @required String accountID, @required RequestType requestType, @required Server host})
+  QRstructure({required double version, required String accountID, required RequestType requestType, required Server host})
   {
     this.appName = APP_NAME_QR_STRUCTURE;
     this.version  = version;
@@ -40,13 +40,14 @@ class QRstructure{
   }
 
   factory QRstructure.fromJson(Map<String, dynamic> json) => _$QRstrucutreFromJson(json);
+
   Map<String, dynamic> toJson(){
     try {
-      _$QRstrucutreToJson(this);
+      return _$QRstrucutreToJson(this);
     }
     catch(e){
-      print("Error occurred while parsing data from QR code: $e");
       _log.debug("Error occurred while parsing data from QR code: $e");
+      throw Exception("Error occurred while parsing data from QR code: $e");
     }
   }
 }
@@ -73,7 +74,7 @@ var VERSION_QR_SERVER_STRUCTURE = 0.1;
 final _log = Logger("QRserverStructure");
 class QRserverStructure extends QRstructure {
   QRserverStructure(
-      {@required String accountID, @required RequestType requestType, @required Server host})
+      {required String accountID, required RequestType requestType, required Server host})
       :
         super(version: VERSION_QR_SERVER_STRUCTURE,
           accountID: accountID,
@@ -89,10 +90,8 @@ class QRserverStructure extends QRstructure {
       return _$QRserverStrucutreToJson(this);
     }
     catch (e) {
-      print(
-          "QRserverStrucutreToJson; Error occurred while parsing data from QR code: $e");
-      _log.debug(
-          "QRserverStrucutreToJson; Error occurred while parsing data from QR code: $e");
+      _log.debug("QRserverStrucutreToJson; Error occurred while parsing data from QR code: $e");
+      throw ("QRserverStrucutreToJson; Error occurred while parsing data from QR code: $e");
     }
   }
 }

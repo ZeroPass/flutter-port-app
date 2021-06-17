@@ -4,20 +4,23 @@ import 'package:bloc/bloc.dart';
 
 
 class CustomTag extends StatefulWidget {
-  Key key;
-  List items;
-  CustomTag({@required this.key, @required this.items});
+  late Key key;
+  late List items;
+  CustomTag({required this.key, required this.items});
 
   @override
-  _CustomTagState createState() => _CustomTagState(this.key, this.items);
+  _CustomTagState createState() => _CustomTagState(key: this.key, items:this.items);
 }
 
 class _CustomTagState extends State<CustomTag> {
-  Key _key;
-  List _items;
-  double _fontSize = 14;
+  late Key _key;
+  late List _items;
+  late double _fontSize = 14;
 
-  _CustomTagState([@required this._key, @required this._items]);
+  _CustomTagState({required Key key, required List items}){
+    this._key = key;
+    this._items = items;
+}
 
   @override
   Widget build(BuildContext context) {
@@ -50,15 +53,6 @@ class _CustomTagState extends State<CustomTag> {
           customData: "som", //item.customData,
           textStyle: TextStyle(fontSize: _fontSize,),
           combine: ItemTagsCombine.withTextBefore,
-          /*image: ItemTagsImage(
-              image: AssetImage(
-                  "img.jpg") // OR NetworkImage("https://...image.png")
-          ),*/
-          // OR null,
-          /*icon: ItemTagsIcon(
-            icon: Icons.add,
-          ),*/
-          // OR null,
           removeButton: ItemTagsRemoveButton(
             onRemoved: () {
               // Remove the item from the data source.

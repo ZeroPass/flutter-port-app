@@ -4,10 +4,10 @@ import 'package:flutter/foundation.dart';
 
 
 class CustomCardSettingsButtonDelete extends StatefulWidget{
-  Function onPressed;
+  late Function() onPressed;
 
   CustomCardSettingsButtonDelete({
-    @required this.onPressed
+    required this.onPressed
     });
 
   @override

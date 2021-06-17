@@ -13,22 +13,42 @@ class StateScan extends StepScanState {
 
 class FullState extends StepScanState {
   //show documentID on header
-  String documentID;
+  String? documentID;
   //show birth on header
-  DateTime birth;
+  DateTime? birth;
   //show valid until on header
-  DateTime validUntil;
+  DateTime? validUntil;
 
-  FullState({String this.documentID = null, DateTime this.birth = null, DateTime this.validUntil = null});
+  FullState({String? this.documentID, DateTime? this.birth, DateTime? this.validUntil});
 
-  String getDocumentID(){return this.documentID;}
+  bool isValidDocumentID() => documentID == null? false: true;
 
-  DateTime getBirth(){return this.birth;}
+  String getDocumentID(){
+    if (this.documentID != null)
+      return this.documentID!;
+    else
+      throw Exception("StepScanState:documentID is null");
+  }
 
-  DateTime getValidUntil(){return this.validUntil;}
 
-  @override
-  List<Object> get props => [documentID, birth, validUntil];
+  bool isValidBirth() => birth == null? false: true;
+
+  DateTime getBirth(){
+    if (this.birth != null)
+      return this.birth!;
+    else
+      throw Exception("StepScanState:birth is null");
+  }
+
+
+  bool isValidValidUntil() => validUntil == null? false: true;
+
+  DateTime getValidUntil(){
+    if (this.validUntil != null)
+      return this.validUntil!;
+    else
+      throw Exception("StepScanState:validUntil is null");
+  }
 
   @override
   String toString() => 'FullState:StepScanState { documentID: $documentID, birth: $birth, validUntil: $validUntil }';

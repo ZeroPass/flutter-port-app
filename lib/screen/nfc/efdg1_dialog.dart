@@ -30,17 +30,18 @@ class EfDG1Dialog extends StatefulWidget {
   final String message;
   final List<Widget> actions;
   final _countryProvider = CountryProvider();
-  var _issuingCountry;
-  var _nationality;
-  StateSetter _sheetSetter;
+  var issuingCountry;
+  var nationality;
+  late StateSetter? sheetSetter;
   final String rawData;
 
   EfDG1Dialog(
-      {@required this.context,
-      @required this.dg1,
-      @required this.message,
-      @required this.actions,
-      @required this.rawData
+      {required this.context,
+      required this.dg1,
+        this.message = '',
+      required this.actions,
+      required this.rawData,
+      this.sheetSetter
       });
 
   @override
@@ -52,19 +53,17 @@ class _EfDG1Dialog extends State<EfDG1Dialog> {
   void initState() {
     super.initState();
     _formatCountryCode(widget.dg1.mrz.country).then((c) {
-      if (widget._sheetSetter != null) {
-        widget._sheetSetter(() => widget._issuingCountry = c);
-      } else {
-        widget._issuingCountry = c;
-      }
+      if (widget.sheetSetter != null)
+        widget.sheetSetter!(() => widget.issuingCountry = c);
+      else
+        widget.issuingCountry = c;
     });
 
     _formatCountryCode(widget.dg1.mrz.nationality).then((c) {
-      if (widget._sheetSetter != null) {
-        widget._sheetSetter(() => widget._nationality = c);
-      } else {
-        widget._nationality = c;
-      }
+      if (widget.sheetSetter != null)
+        widget.sheetSetter!(() => widget.nationality = c);
+      else
+        widget.nationality = c;
     });
   }
 
@@ -81,13 +80,13 @@ class _EfDG1Dialog extends State<EfDG1Dialog> {
     try {
       Country c;
       if (code.length == 2) {
-        c = await widget._countryProvider
-            .getCountryByCode2(code2: Alpha2Code.valueOf(code));
+        c = (await widget._countryProvider
+            .getCountryByCode2(code2: Alpha2Code.valueOf(code)))!;
       } else {
-        c = await widget._countryProvider
-            .getCountryByCode3(code3: Alpha3Code.valueOf(code));
+        c = (await widget._countryProvider
+            .getCountryByCode3(code3: Alpha3Code.valueOf(code)))!;
       }
-      return c.name;
+      return c.name ?? code;
     } catch (_) {
       return code;
     }
@@ -96,7 +95,7 @@ class _EfDG1Dialog extends State<EfDG1Dialog> {
   @override
   Widget build(BuildContext context) {
     Storage storage = Storage();
-    StepDataAttestation stepDataAttestation = storage.getStorageData(2);
+    StepDataAttestation stepDataAttestation = storage.getStorageData(2) as StepDataAttestation;
     return Container(
         height: MediaQuery.of(context).size.height * 1.3,
         child: Padding(
@@ -117,9 +116,9 @@ class _EfDG1Dialog extends State<EfDG1Dialog> {
                         _formatDate(widget.dg1.mrz.dateOfBirth, context)),
                     CardItem(
                         "Sex",
-                        widget.dg1.mrz.sex.isEmpty
+                        widget.dg1.mrz.gender.isEmpty
                             ? '/'
-                            : widget.dg1.mrz.sex == 'M' ? 'Male' : 'Female'),
+                            : widget.dg1.mrz.gender == 'M' ? 'Male' : 'Female'),
                     CardItem("Nationality:", widget.dg1.mrz.nationality),
                     CardItem("Additional Data:", widget.dg1.mrz.optionalData)
                   ]),

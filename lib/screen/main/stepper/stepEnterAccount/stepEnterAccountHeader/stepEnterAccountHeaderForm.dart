@@ -1,5 +1,4 @@
 import 'package:eosio_passid_mobile_app/constants/constants.dart';
-import 'package:eosio_passid_mobile_app/utils/structure.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccountHeader/stepEnterAccountHeader.dart';
@@ -27,7 +26,7 @@ String truncateNetwork(String networkName, int length)
 }
 
 class StepEnterAccountHeaderForm extends StatefulWidget {
-  StepEnterAccountHeaderForm({Key key}) : super(key: key);
+  StepEnterAccountHeaderForm() : super();
 
   @override
   _StepEnterAccountHeaderFormState createState() => _StepEnterAccountHeaderFormState();
@@ -36,13 +35,13 @@ class StepEnterAccountHeaderForm extends StatefulWidget {
 class _StepEnterAccountHeaderFormState extends State<StepEnterAccountHeaderForm> {
   //Stepper steps
 
-  _StepEnterAccountHeaderFormState({Key key});
+  _StepEnterAccountHeaderFormState();
 
   Widget deleteButton(BuildContext context) {
     final stepEnterAccountHeaderBloc = BlocProvider.of<StepEnterAccountHeaderBloc>(context);
     final stepEnterAccountBloc = BlocProvider.of<StepEnterAccountBloc>(context);
     var storage = Storage();
-    StepDataEnterAccount stepDataEnterAccount = storage.getStorageData(0);
+    StepDataEnterAccount stepDataEnterAccount = storage.getStorageData(0) as StepDataEnterAccount;
     return ClipOval(
       child: Material(
         //color: Colors.white, // button color
@@ -62,8 +61,8 @@ class _StepEnterAccountHeaderFormState extends State<StepEnterAccountHeaderForm>
             //update selected node in storage
             //storage.selectedNode = storage.getDefaultNode();
 
-            StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
-            storageStepEnterAccount.accountID = null;
+            StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0) as StepDataEnterAccount;
+            storageStepEnterAccount.accountID = '';
 
             //save
             storage.save();
@@ -97,7 +96,9 @@ class _StepEnterAccountHeaderFormState extends State<StepEnterAccountHeaderForm>
   //different text when state is in outside call
   String selectNetworkText(StepEnterAccountHeaderState state){
     if (state is WithAccountIDOutsideCallState) {
-      String url = NETWORK_CHAINS[NetworkType.CUSTOM][NETWORK_CHAIN_NAME];
+      String url = (NETWORK_CHAINS[NetworkType.CUSTOM] != null && NETWORK_CHAINS[NetworkType.CUSTOM]![NETWORK_CHAIN_NAME] != null) ?
+                    NETWORK_CHAINS[NetworkType.CUSTOM]![NETWORK_CHAIN_NAME] as String
+                    : '';
       String withoutHTTP = url
                           .replaceAll("https://", "")
                           .replaceAll("http://", "");
@@ -124,17 +125,17 @@ class _StepEnterAccountHeaderFormState extends State<StepEnterAccountHeaderForm>
                 children: <Widget>[
                   Row(children: <Widget>[
                     Text("Account"),
-                    Container(child: CustomChip([selectNetworkText(state)]), margin: EdgeInsets.only(left: 3.0))
+                    Container(child: CustomChip(titles: [selectNetworkText(state)]), margin: EdgeInsets.only(left: 3.0))
                   ]),
                   Row(children: <Widget>[
                     Row(mainAxisAlignment:MainAxisAlignment.spaceBetween,
                             children: <Widget>[
                                 if (state is WithAccountIDState)
-                                  if(state.accountID != null)
-                                    Container(child: CustomChip([truncateAccountName(state.accountID, 20)]), margin: EdgeInsets.only(left: 3.0)),
+                                  if(state.accountID != '')
+                                    Container(child: CustomChip(titles: [truncateAccountName(state.accountID, 20)]), margin: EdgeInsets.only(left: 3.0)),
                                 if (state is WithAccountIDOutsideCallState)
-                                  if(state.accountID != null)
-                                    Container(child: CustomChip([truncateAccountName(state.accountID, 20)]), margin: EdgeInsets.only(left: 3.0)),
+                                  if(state.accountID != '')
+                                    Container(child: CustomChip(titles: [truncateAccountName(state.accountID, 20)]), margin: EdgeInsets.only(left: 3.0)),
                             ]),
                     if (state is WithAccountIDState)
                       deleteButton(context)

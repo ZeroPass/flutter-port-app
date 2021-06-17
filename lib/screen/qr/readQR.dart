@@ -22,9 +22,9 @@ class ReadQR extends StatefulWidget {
 
 class _ReadQRState extends State<ReadQR> {
   final _log = Logger("QRstrucutre");
-  Barcode  result = null;
-  QRViewController controller = null;
-  bool isCaptured = null; //qr is detected, reading in progress
+  Barcode? result;
+  QRViewController? controller;
+  late bool isCaptured; //qr is detected, reading in progress
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
 
   // In order to get hot reload to work we need to pause the camera if the platform
@@ -33,9 +33,9 @@ class _ReadQRState extends State<ReadQR> {
   void reassemble() {
     super.reassemble();
     if (Platform.isAndroid) {
-      controller.pauseCamera();
+      controller!.pauseCamera();
     }
-    controller.resumeCamera();
+    controller!.resumeCamera();
   }
 
   @override
@@ -68,7 +68,7 @@ class _ReadQRState extends State<ReadQR> {
                                   FutureBuilder(
                                     future: controller?.getFlashStatus(),
                                     builder: (context, snapshot) {
-                                      return Text('Flashlight: ${snapshot.data !=null && snapshot.data ? 'off':'on'}');
+                                      return Text('Flashlight: ${snapshot.data !=null && (snapshot).data == true ? 'off':'on'}');
                                   },
                                   ),
                             onPressed: () async {
@@ -132,13 +132,13 @@ class _ReadQRState extends State<ReadQR> {
     //stepDataEnterAccount.accountID = data.accountID;
 
     //set request type
-    StepDataAttestation stepDataAttestation = storage.getStorageData(2);
+    StepDataAttestation stepDataAttestation = storage.getStorageData(2) as StepDataAttestation;
     stepDataAttestation.requestType = data.requestType;
 
     //set request as outside call
     storage.outsideCall = OutsideCallV0dot1();
     //reqeustedBy: Server(host: data.host)
-    storage.outsideCall.set(qRserverStructure:
+    storage.outsideCall.setV0dot1(qRserverStructure:
     QRserverStructure(accountID: data.accountID, requestType: data.requestType, host: data.host));
   }
   
@@ -147,7 +147,7 @@ class _ReadQRState extends State<ReadQR> {
       var qr = QRserverStructure.fromJson(jsonDecode(scanData.code));
       _log.debug("Data from QR successfully read / parsed: ${qr}");
 
-      bool answer =  await showAlert<bool>(
+      bool? answer =  await showAlert<bool>(
           context: context,
           title: Text("The data have been accurred successfully. Do you want to fill data automatically."),
           closeOnBackPressed: true,
@@ -158,7 +158,7 @@ class _ReadQRState extends State<ReadQR> {
                 onPressed: () {
                   Navigator.pop(context, false);
                   _log.debug("User canceled the process.");
-                  return false;
+                  //return false;
                 }),
             PlatformDialogAction(
                 child: PlatformText('Yes',
@@ -168,7 +168,7 @@ class _ReadQRState extends State<ReadQR> {
                   _log.debug("User approved the process.");
                   //add data to the database
                   saveToDatabase(qr);
-                  return true;
+                  //return true;
                 })
             ]);
       return Future.value(answer);

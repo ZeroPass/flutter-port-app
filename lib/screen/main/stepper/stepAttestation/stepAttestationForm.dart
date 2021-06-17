@@ -11,7 +11,7 @@ import 'package:eosio_passid_mobile_app/utils/size.dart';
 import 'package:eosio_passid_mobile_app/screen/theme.dart';
 
 class StepAttestationForm extends StatefulWidget {
-  StepAttestationForm({Key key}) : super(key: key);
+  StepAttestationForm() : super();
 
   @override
   _StepAttestationFormState createState() => _StepAttestationFormState();
@@ -21,7 +21,7 @@ void selectRequestType(var context,
                         StepAttestationState state,
                         var stepAttestationBloc) {
   var storage = Storage();
-  StepDataAttestation storageAttestation = storage.getStorageData(2);
+  StepDataAttestation storageAttestation = storage.getStorageData(2) as StepDataAttestation;
   BottomPickerStructure bps = BottomPickerStructure();
   bps.importStorageRequestList(AuthenticatorActions, storageAttestation.requestType,
       "Select request type",
@@ -98,7 +98,7 @@ Widget selectRequestTypeWithTile(var context,
 
 Widget dataDescription(var context) {
   Storage storage = Storage();
-  StepDataAttestation stepDataAttestation = storage.getStorageData(2);
+  StepDataAttestation stepDataAttestation = storage.getStorageData(2) as StepDataAttestation;
 
   return Container(
       alignment: Alignment.centerLeft,
@@ -130,7 +130,7 @@ Widget dataDescription(var context) {
 
 class _StepAttestationFormState extends State<StepAttestationForm> {
 
-  _StepAttestationFormState({Key key}){}
+  _StepAttestationFormState(){}
 
   @override
   Widget build(BuildContext context) {

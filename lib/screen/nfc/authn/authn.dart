@@ -4,13 +4,12 @@ import 'dart:io';
 import 'package:dmrtd/dmrtd.dart';
 import 'package:dmrtd/extensions.dart';
 import 'package:eosio_passid_mobile_app/constants/constants.dart';
-import 'package:eosio_passid_mobile_app/screen/main/stepper/customStepper.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-
 import 'package:eosio_passid_mobile_app/screen/alert.dart';
+
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
 import 'package:eosio_passid_mobile_app/screen/main/stepper/stepScan/stepScan.dart';
 
@@ -18,27 +17,27 @@ import 'package:eosio_passid_mobile_app/utils/storage.dart';
 import 'package:eosio_passid_mobile_app/utils/structure.dart';
 import 'package:eosio_passid_mobile_app/screen/theme.dart';
 import 'package:eosio_passid_mobile_app/screen/requestType.dart';
+import 'package:eosio_passid_mobile_app/screen/main/stepper/customStepper.dart';
 
 import 'package:logging/logging.dart';
-import 'package:passid/passid.dart';
+import 'package:port/port.dart';
 
 import '../efdg1_dialog.dart';
 import '../passport_scanner.dart';
 import '../uie/uiutils.dart';
 
 class ServerSecurityContext {
-  static SecurityContext _ctx;
+  static SecurityContext _ctx = SecurityContext();
 
   /// 'Globally' init ctx using server certificate (.cer) bytes.
   /// [servCertBytes] should be single certificate because sha1
   /// is calculated over these bytes and checked against sha1 of
   /// certificate in _certificateCheck.
   static init(List<int> servCertBytes) {
-    _ctx = SecurityContext();
     _ctx.setTrustedCertificatesBytes(servCertBytes);
   }
 
-  static HttpClient getHttpClient({Duration timeout}) {
+  static HttpClient getHttpClient({Duration? timeout}) {
     final c = HttpClient(context: _ctx);
     if (timeout != null) {
       c.connectionTimeout = timeout;
@@ -50,16 +49,16 @@ class ServerSecurityContext {
 enum AuthnAction { register, login }
 
 class Authn /*extends State<Authn>*/ {
-  PassIdClient _client;
-  Future<bool> Function(SocketException e) onConnectionError;
-  Future<bool> Function() showDataToBeSent;
-  Future<bool> Function() showBufferScreen;
-  Future<bool> Function(EfDG1 dg1) onDG1FileRequested;
+  late PortClient _client;
+  late Future<bool> Function(SocketException e) onConnectionError;
+  late Future<bool?> Function() showDataToBeSent;
+  late Future<bool?> Function() showBufferScreen;
+  late Future<bool> Function(EfDG1 dg1) onDG1FileRequested;
 
   final _log = Logger('authn.screen');
   final String _fakeName = "Trump Melania";
 
-  Authn({@required this.onDG1FileRequested, @required this.showDataToBeSent, @required this.showBufferScreen, @required this.onConnectionError});
+  Authn({required this.onDG1FileRequested, required this.showDataToBeSent, required this.showBufferScreen, required this.onConnectionError});
 
   Future<AuthnData> _getAuthnData(
       BuildContext context,
@@ -93,33 +92,33 @@ class Authn /*extends State<Authn>*/ {
   String checkValuesInStorage() {
     String missingValuesText = '';
     Storage storage = Storage();
-    StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0);
+    StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0) as StepDataEnterAccount;
     if (storageStepEnterAccount.isUnlocked == false
         /*&& storage.selectedNode.name != "ZeroPass Server"*/)
       missingValuesText +=
           "- Account name is not valid.\n (Step 'Account')\n\n";
 
-    StepDataScan storageStepScan = storage.getStorageData(1);
-    if (storageStepScan.documentID == null)
+    StepDataScan storageStepScan = storage.getStorageData(1) as StepDataScan;
+    if (storageStepScan.isValidDocumentID() == false)
       missingValuesText +=
           "- Passport Number is not valid.\n (Step 'Passport Info')\n\n";
-    if (storageStepScan.birth == null)
+    if (storageStepScan.isValidBirth() == false)
       missingValuesText +=
           "- Date of Birth is not valid.\n (Step 'Passport Info')\n\n";
-    if (storageStepScan.validUntil == null)
+    if (storageStepScan.isValidValidUntil() == false)
       missingValuesText +=
           "- Date of Expiry is not valid.\n (Step 'Passport Info')";
     return missingValuesText;
   }
 
-  Future<bool> startAction(BuildContext context, AuthnAction action,
+  Future<bool?> startAction(BuildContext context, AuthnAction action,
       String accountName, NetworkType networkType,
-      {bool fakeAuthnData = false, bool sendDG1 = false, ScrollController scrollController, int maxSteps}) async {
+      {bool fakeAuthnData = false, bool sendDG1 = false, required ScrollController scrollController, required int maxSteps}) async {
     //TODO: accountName is not implemented
     Storage storage = Storage();
     String checkedValues = checkValuesInStorage();
     if (checkedValues.isNotEmpty) {
-      return showAlert(
+      return showAlert<bool?>(
           context: context,
           title: Text('Error'),
           content: Text("Invalid or missing data!\n\n" + checkedValues),
@@ -134,44 +133,50 @@ class Authn /*extends State<Authn>*/ {
     }
     //outside call verifications
     if (storage.outsideCall.isOutsideCall){
-      //TODO: check if there is any
+      //TODO: check if there is any anomalies
 
 
     }
 
     try {
       _showBusyIndicator(context);
-      ServerCloud serverCloud = storage.getServerCloudSelected(networkTypeServer: NetworkTypeServer.MAIN_SERVER);
+      ServerCloud? serverCloud = storage.getServerCloudSelected(networkTypeServer: NetworkTypeServer.MAIN_SERVER);
       if (serverCloud == null)
-        throw Exception("ServerCloud (main server) is empty. Without server you cannot cehck passport trust chain.");
+        throw Exception("ServerCloud (main server) is empty. Without server you cannot check passport trust chain.");
+
+      StepDataScan storageStepScan = storage.getStorageData(1) as StepDataScan;
+      if (storageStepScan.isValidDocumentID() == false ||
+          storageStepScan.isValidBirth() == false ||
+          storageStepScan.isValidValidUntil() == false)
+        throw Exception("authn.startAction: DocumentID, Birth or ValidUntil variable is null.");
+
 
       final httpClient = ServerSecurityContext.getHttpClient(
           timeout: Duration(seconds: serverCloud.timeoutInSeconds))
         ..badCertificateCallback = badCertificateHostCheck;
 
-      _client = PassIdClient(Uri.parse(serverCloud.toString()),
-          httpClient: httpClient);
+      _client =  PortClient(Uri.parse(serverCloud.toString()), httpClient: httpClient);
       _client.onConnectionError = this.onConnectionError;
       _client.onDG1FileRequested = this.onDG1FileRequested;
 
       if (action == AuthnAction.register) {
-        //var e =
         await _client.register((challenge) async {
-          StepDataScan storageStepScan = storage.getStorageData(1);
+
           await _hideBusyIndicator();
           return _getAuthnData(
               context,
               challenge,
               AuthnAction.register,
-              storageStepScan.documentID,
-              storageStepScan.birth,
-              storageStepScan.validUntil)
+              storageStepScan.getDocumentID(),
+              storageStepScan.getBirth(),
+              storageStepScan.getValidUntil())
               .then((data) async {
             var e =  showDataToBeSent();
             Future.delayed(const Duration(milliseconds: 999), (){
               scrollController.animateTo(headersHeightTillStep(maxSteps - 1), duration: Duration(milliseconds: 1000), curve: Curves.ease);
             });
-            if (!await e) {
+            bool? response = await e;
+            if (response == null || !response) {
               // User said no.
               throw PassportScannerError('Get me out');
             }
@@ -183,38 +188,47 @@ class Authn /*extends State<Authn>*/ {
       }
       else
         await _client.login((challenge) async {
-          StepDataScan storageStepScan = storage.getStorageData(1);
+          StepDataScan storageStepScan = storage.getStorageData(1) as StepDataScan;
           await _hideBusyIndicator();
           return _getAuthnData(
                   context,
                   challenge,
                   AuthnAction.login,
-                  storageStepScan.documentID,
-                  storageStepScan.birth,
-                  storageStepScan.validUntil)
-              .then((data) async {
+                  storageStepScan.getDocumentID(),
+                  storageStepScan.getBirth(),
+                  storageStepScan.getValidUntil())
+                  .then((data) async {
             if (fakeAuthnData) {
               data = _fakeData(data);
             }
             if (sendDG1) {
-              var e = this.onDG1FileRequested(data.dg1);
-              Future.delayed(const Duration(milliseconds: 999), (){
-                scrollController.animateTo(headersHeightTillStep(maxSteps - 1), duration: Duration(milliseconds: 1000), curve: Curves.ease);
-              });
+              if (data != null && data.dg1 != null ) {
+                var responseDG1 = await this.onDG1FileRequested(data.dg1!);
+                Future.delayed(const Duration(milliseconds: 999), () {
+                  scrollController.animateTo(
+                      headersHeightTillStep(maxSteps - 1),
+                      duration: Duration(milliseconds: 1000),
+                      curve: Curves.ease);
+                });
 
-              if (!await e) {
-                // User said no.
-                // Throw an exception just to get us out of this scope.
-                // An exception should not show any error dialog to user.
-                throw PassportScannerError('Get me out');
+                bool? response = responseDG1;
+                if (response == null || !response) {
+                  // User said no.
+                  // Throw an exception just to get us out of this scope.
+                  // An exception should not show any error dialog to user.
+                  throw PassportScannerError('Get me out');
+                }
               }
+              else
+                throw Exception("No data or data.dg1.");
             }
             else {
               var e =  showDataToBeSent();
               Future.delayed(const Duration(milliseconds: 999), (){
                 scrollController.animateTo(headersHeightTillStep(maxSteps - 1), duration: Duration(milliseconds: 1000), curve: Curves.ease);
               });
-              if (!await e) {
+              bool? response = await e;
+              if (response == null || !response) {
                 // User said no.
                 throw PassportScannerError('Get me out');
               }
@@ -228,13 +242,13 @@ class Authn /*extends State<Authn>*/ {
       return true;
 
     } catch (e) {
-      String alertTitle;
-      String alertMsg;
+      String? alertTitle;
+      String? alertMsg;
       if (e is PassportScannerError) {
       } // should be already handled in PassportScanner
       else if (e is SocketException) {
       } // should be already handled through _handleConnectionError callback
-      else if (e is PassIdError) {
+      else if (e is PortError) {
         if (!e.isDG1Required()) {
           // DG1 required error should be handled through _handleDG1Request callback
           _log.error(
@@ -315,7 +329,9 @@ class Authn /*extends State<Authn>*/ {
 
   AuthnData _fakeData(AuthnData data) {
     // Fake the name of passport owner
-    final rawDG1 = data.dg1.toBytes();
+    if (data.dg1 == null)
+      throw Exception("Function _fakeData; no dg1");
+    final rawDG1 = data.dg1!.toBytes();
     final name = _fakeName.replaceAll(' ', '<<');
     // Works for TD3 (passport MRZ) only.
     // On other formats (TD1, TD2) will write to the wrong location.
@@ -336,7 +352,7 @@ class Authn /*extends State<Authn>*/ {
     return "You're attested as $names";
   }
 
-  Future<bool> startNFCAction(BuildContext context, RequestType requestType, String accountName, NetworkType networkType,  ScrollController scrollController, int maxSteps) {
+  Future<bool?> startNFCAction(BuildContext context, RequestType requestType, String accountName, NetworkType networkType,  ScrollController scrollController, int maxSteps) {
     switch (requestType) {
       case RequestType.ATTESTATION_REQUEST:
         return startAction(context, AuthnAction.register, accountName, networkType, scrollController: scrollController, maxSteps: maxSteps);
@@ -386,7 +402,10 @@ class Authn /*extends State<Authn>*/ {
     return Container(
         child: Column(
       children: <Widget>[
-        EfDG1Dialog(),
+        /*EfDG1Dialog(
+          context: context,
+        )*/
+        Text("Unimplemented")
       ],
     ));
   }

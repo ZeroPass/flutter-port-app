@@ -25,7 +25,7 @@ class Request {
 class HTTPrequest {
   String url;
 
-  HTTPrequest({@required this.url});
+  HTTPrequest({required this.url});
 
   Future<Request> getJsonRequest() async {
     Response response =

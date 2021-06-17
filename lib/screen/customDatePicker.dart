@@ -11,22 +11,31 @@ import 'nfc/uie/uiutils.dart';
 
 
 class CustomDatePicker extends StatefulWidget {
-  String text;
-  DateTime firstDate;
-  DateTime lastDate;
-  DateTime initialDate;
-  DateTime onShowValue;
-  TextEditingController textEditingController ;
-  Function callbackOnDatePicked;
-  Function callbackOnUpdate;
+  late String text;
+  late DateTime firstDate;
+  late DateTime lastDate;
+  late DateTime initialDate;
+  late DateTime onShowValue;
+  late TextEditingController textEditingController ;
+  late Function? callbackOnDatePicked;
+  late Function? callbackOnUpdate;
 
 
-  CustomDatePicker([@required this.text, @required this.firstDate, @required this.lastDate, this.callbackOnDatePicked, this.callbackOnUpdate, this.textEditingController, this.initialDate, this.onShowValue = null])
+  CustomDatePicker({required this.text, required this.firstDate, required this.lastDate,
+    this.callbackOnDatePicked, this.callbackOnUpdate, TextEditingController? textEditingController, DateTime? initialDate,
+    DateTime? onShowValue})
   {
+    this.textEditingController = textEditingController ??  TextEditingController();
+    this.initialDate = initialDate ?? DateTime.now();
+    this.onShowValue = onShowValue ?? DateTime.now();
   }
 
   @override
   _CustomDatePicker createState() => _CustomDatePicker();
+
+  void changeText(String text){
+    this.textEditingController.text = text;
+  }
 
   static String formatDate(DateTime dt)
   {
@@ -69,6 +78,8 @@ class CustomDatePicker extends StatefulWidget {
 class _CustomDatePicker extends State<CustomDatePicker> {
   _CustomDatePicker();
 
+
+  //not in use anymore
   Widget showAndroidDatePicker(BuildContext context){
     if (widget.onShowValue != null)
       widget.textEditingController.text = CustomDatePicker.formatDate(widget.onShowValue);
@@ -78,9 +89,8 @@ class _CustomDatePicker extends State<CustomDatePicker> {
       controller: widget.textEditingController,
       decoration: InputDecoration(labelText: widget.text),
       onChanged: (String value) {
-        if(widget.callbackOnUpdate != null){
-          widget.callbackOnUpdate(value);
-        }
+        if(widget.callbackOnUpdate != null)
+          widget.callbackOnUpdate!(value);
       },
       onTap: () async {
         FocusScope.of(context).requestFocus(new FocusNode());
@@ -96,7 +106,7 @@ class _CustomDatePicker extends State<CustomDatePicker> {
           widget.initialDate = widget.lastDate;
         }
 
-        DateTime pickedDate = await pickDate(
+        DateTime? pickedDate = await pickDate(
             context,
             widget.firstDate,
             widget.initialDate ,
@@ -108,12 +118,12 @@ class _CustomDatePicker extends State<CustomDatePicker> {
 
         //return to function on call
         if (widget.callbackOnDatePicked != null && pickedDate != null) {
-          widget.callbackOnDatePicked(pickedDate);
+          widget.callbackOnDatePicked!(pickedDate);
         }
     });
   }
 
-  Future<DateTime> _pickDate(BuildContext context, {@required DateTime initDate, @required DateTime firstDate, @required DateTime lastDate}) async {
+  Future<dynamic> _pickDate(BuildContext context, {required DateTime initDate, required DateTime firstDate, required DateTime lastDate}) async {
     // iOS style date picker
     DateTime date = initDate;
     return showCupertinoModalPopup(
@@ -160,8 +170,15 @@ class _CustomDatePicker extends State<CustomDatePicker> {
   }
 
   Widget showAndroidDatePickerHoloTheme(BuildContext context){
-    if (widget.onShowValue != null)
-      widget.textEditingController.text = CustomDatePicker.formatDate(widget.onShowValue);
+    if (widget.onShowValue != null) {
+      var t = CustomDatePicker.formatDate(widget.onShowValue);
+      print(t);
+      //widget.textEditingController.text = CustomDatePicker.formatDate(widget.onShowValue);
+      widget.textEditingController.addListener(() {
+        if (widget.text == '')
+        widget.textEditingController.text = CustomDatePicker.formatDate(widget.onShowValue);
+      });
+    }
 
     return TextFormField(
         showCursor: false,
@@ -170,9 +187,9 @@ class _CustomDatePicker extends State<CustomDatePicker> {
         controller: widget.textEditingController,
         decoration: InputDecoration(labelText: widget.text),
         onChanged: (String value) {
-          if(widget.callbackOnUpdate != null){
-            widget.callbackOnUpdate(value);
-          }
+          if(widget.callbackOnUpdate != null)
+            widget.callbackOnUpdate!(value);
+
         },
         onTap: () async {
           //FocusScope.of(context).requestFocus(new FocusNode());
@@ -193,9 +210,8 @@ class _CustomDatePicker extends State<CustomDatePicker> {
           }
 
           //return to function on call
-          if (widget.callbackOnDatePicked != null && pickedDate != null) {
-            widget.callbackOnDatePicked(pickedDate);
-          }
+          if (widget.callbackOnDatePicked != null && pickedDate != null)
+            widget.callbackOnDatePicked!(pickedDate);
         });
   }
 
@@ -213,9 +229,9 @@ class _CustomDatePicker extends State<CustomDatePicker> {
         }
 
         //return to function on call
-        if (widget.callbackOnDatePicked != null && pickedDate != null) {
-          widget.callbackOnDatePicked(pickedDate);
-        }
+        if (widget.callbackOnDatePicked != null && pickedDate != null)
+          widget.callbackOnDatePicked!(pickedDate);
+
     });
   }
 
@@ -231,6 +247,6 @@ class _CustomDatePicker extends State<CustomDatePicker> {
       return this.showIosDatePicker(context);
     }
     else
-      return null;
+      throw Exception("CustomDatePicker.build unknown platform detected.");
   }
 }

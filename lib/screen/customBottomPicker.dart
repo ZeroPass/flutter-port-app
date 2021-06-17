@@ -9,43 +9,42 @@ import 'package:flutter/foundation.dart';
 import "dart:io" show Platform;
 
 class BottomPickerElement{
-  String key;
-  String name;
-  bool isSelected;
+  late String key;
+  late String name;
+  late bool isSelected;
 
-  BottomPickerElement({@required this.name, @required this.isSelected, this.key  = null})
+  BottomPickerElement({required this.name, required this.isSelected, String? key})
   {
-    if(this.key == null)
-      this.key = this.name;
+      this.key = key ?? this.name;
   }
 }
 
-
 class BottomPickerStructure{
   bool isValid = false;
-  String title;
-  String message;
-  List<BottomPickerElement> elements = List();
+  late String title;
+  late String message;
+  late List<BottomPickerElement> elements;
 
 
-  void importNetworkList(NetworkNodeSet networkNodeSet, NetworkType selectedNetwork, [String title = null, String message = null]){
+  void importNetworkList(NetworkNodeSet networkNodeSet, NetworkType selectedNetwork,
+  {String? title = "", String? message = ""}){
     this.isValid = true;
-    this.title = (title == null ? "" : title);
-    this.message = (message == null ? "" : message);
 
-    if (networkNodeSet.nodes == null || networkNodeSet.nodes.isEmpty)
+    if (networkNodeSet.networks.isEmpty)
       throw Exception("No networks in database");
 
-    networkNodeSet.nodes.forEach((key, value) =>
+    this.elements = List.empty(growable: true);
+    networkNodeSet.networks.forEach((key, value) =>
       this.elements.add(BottomPickerElement(name: Storage().nodeSet.networkTypeIsPredefined(key) ?  Storage().nodeSet.networkTypeToString(key) :  StringUtil.getWithoutTypeName(key),
           key: StringUtil.getWithoutTypeName(key),
           isSelected: key == selectedNetwork)));
   }
 
-  void importStorageRequestList(Map<RequestType, dynamic> authenticatorActions, [RequestType selectedRequest = null, String title = null, String message = null]){
+  void importStorageRequestList(Map<RequestType, dynamic> authenticatorActions,
+      [RequestType? selectedRequest, String? title, String? message]){
     this.isValid = true;
-    this.title = (title == null ? "" : title);
-    this.message = (message == null ? "" : message);
+    this.title = title ?? "";
+    this.message = message ?? "";
 
     authenticatorActions.forEach((key, value) { 
       this.elements.add(BottomPickerElement(name: value["NAME"],
@@ -55,10 +54,10 @@ class BottomPickerStructure{
     });
   }
 
-  void importstorageServerList(List<ServerCloud> nodes, [ServerCloud selectedServer = null]){
+  void importstorageServerList(List<ServerCloud> nodes, {ServerCloud? selectedServer, String? title, String? message}){
     this.isValid = true;
-    this.title = (title == null ? "" : title);
-    this.message = (message == null ? "" : message);
+    this.title = title ?? "";
+    this.message = message ?? "";
 
     for(var item in nodes)
       this.elements.add(BottomPickerElement(name: item.name,
@@ -67,16 +66,15 @@ class BottomPickerStructure{
 
 
 
-  void importActionTypesList(Map actions, [String selectedAction = null, String title = null, String message = null]){
+  void importActionTypesList(Map actions, {String? selectedAction, String? title, String? message}){
     this.isValid = true;
-    this.title = (title == null ? "" : title);
-    this.message = (message == null ? "" : message);
+    this.title = title ?? "";
+    this.message = message ?? "";
 
     for (var item in actions.keys) {
           this.elements.add(BottomPickerElement(name: actions[item]["NAME"],
               isSelected: (selectedAction != null && item == selectedAction?true:false),
           key: StringUtil.getWithoutTypeName(item)));
-      //print("Key : $k, value : ${numMap[k]}");
     }
   }
 }
@@ -84,10 +82,10 @@ class BottomPickerStructure{
 class CustomBottomPickerState{ //extends State<CustomBottomPicker> {
   BottomPickerStructure structure;
 
-  CustomBottomPickerState({@required this.structure});
+  CustomBottomPickerState({required this.structure});
 
 
-  BottomPickerElement showIosBottomPicker(BuildContext context, Function function)
+  void showIosBottomPicker(BuildContext context, Function function)
   {
     final items = <Widget>[
       for (var item in this.structure.elements)
@@ -121,7 +119,7 @@ class CustomBottomPickerState{ //extends State<CustomBottomPicker> {
     });
   }
 
-  BottomPickerElement showAndroidBottomPicker(BuildContext context, Function function)
+  void showAndroidBottomPicker(BuildContext context, Function function)
   {
     final items = <Widget>[
       for (var item in this.structure.elements)
@@ -150,16 +148,10 @@ class CustomBottomPickerState{ //extends State<CustomBottomPicker> {
 
 
   //@override
-   BottomPickerElement showPicker(BuildContext context, Function function) {
+   void showPicker(BuildContext context, Function function) {
     if (Platform.isAndroid)
-      {
         this.showAndroidBottomPicker(context, function);
-      }
     else if (Platform.isIOS)
-      {
-        return this.showIosBottomPicker(context, function);
-      }
-    else
-      return null;
+        this.showIosBottomPicker(context, function);
   }
 }

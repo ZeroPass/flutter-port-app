@@ -12,7 +12,7 @@ class CustomCardSettings extends StatefulWidget implements IMinimumFieldSettings
   final List<CardSettingsSection> children;
 
   CustomCardSettings({
-    @required this.children,
+    required this.children,
     this.visible = true,
     this.showMaterialonIOS = true //not yet in use
   });

@@ -1,8 +1,6 @@
 import 'package:eosio_passid_mobile_app/constants/constants.dart';
-import 'package:flushbar/flushbar_route.dart';
 import 'package:flutter/material.dart';
 import 'package:eosio_passid_mobile_app/screen/theme.dart';
-import 'package:eosio_passid_mobile_app/screen/settings/network/network.dart';
 import 'package:eosio_passid_mobile_app/screen/settings/network/networkList.dart';
 import 'package:eosio_passid_mobile_app/screen/settings/logging/logging.dart';
 import 'package:card_settings/card_settings.dart';
@@ -32,7 +30,7 @@ class Settings extends StatelessWidget {
 }
 
 class SettingsScreen extends StatefulWidget {
-  bool enableLogging;
+  bool enableLogging = true;
   bool switch_valid = true;
   @override
   _SettingsScreenState createState() => _SettingsScreenState();
@@ -51,8 +49,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
         key: _formKey,
         child: CustomCardSettings(
           children: <CardSettingsSection>[
-            CustomCardSettingsSection(
-              header: "Connections",
+            CardSettingsSection(
+              divider: Divider(indent: 30, endIndent: 30),
+              header: CardSettingsHeader(label: "Connections"),
                 children: <CardSettingsWidget>[
                   CustomCardSettingsButton  (
                     label: "Blockchain networks",
@@ -68,8 +67,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     },),
                 ]
             ),
-            CustomCardSettingsSection(
-                header: 'General',
+            CardSettingsSection(
+                header: CardSettingsHeader(label: 'General'),
+                divider: Divider(indent: 30, endIndent: 30),
                 children: <CardSettingsWidget>[
                   CustomCardSettingsButton (
                       bottomSpacing: 5,

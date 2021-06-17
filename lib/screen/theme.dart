@@ -104,7 +104,7 @@ ThemeValues LIGHT_VALUES = ThemeValues(themeValues: light);
 
 
 class ThemeValues{
-  ThemeValues({@required Map themeValues})
+  ThemeValues({required Map themeValues})
   {
     this._themeValues = themeValues;
   }
@@ -213,8 +213,8 @@ class ThemeValues{
 void changeNavigationBarColor() async {
   try {
     SystemChrome.setEnabledSystemUIOverlays (SystemUiOverlay.values);
-    FlutterStatusbarcolor.setStatusBarColor(Color(0xFF4f5f96));
-    await FlutterStatusbarcolor.setNavigationBarColor(Color(0xFFF0F0F0));
+    //FlutterStatusbarcolor.setStatusBarColor(Color(0xFF4f5f96));
+    //await FlutterStatusbarcolor.setNavigationBarColor(Color(0xFFF0F0F0));
     FlutterStatusbarcolor.setNavigationBarWhiteForeground(false);
   } on PlatformException catch (e) {
     debugPrint(e.toString());
