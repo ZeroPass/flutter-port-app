@@ -46,12 +46,12 @@ class BottomPickerStructure{
     this.title = title ?? "";
     this.message = message ?? "";
 
-    authenticatorActions.forEach((key, value) { 
-      this.elements.add(BottomPickerElement(name: value["NAME"],
-          isSelected: selectedRequest == key? true : false,
-          key: StringUtil.getWithoutTypeName(key) )
-      );
-    });
+    this.elements = List.empty(growable: true);
+    for (var item in authenticatorActions.keys){
+      this.elements.add(BottomPickerElement(name: authenticatorActions[item]["NAME"],
+          isSelected: selectedRequest == item? true : false,
+          key: StringUtil.getWithoutTypeName(item)));
+    }
   }
 
   void importstorageServerList(List<ServerCloud> nodes, {ServerCloud? selectedServer, String? title, String? message}){

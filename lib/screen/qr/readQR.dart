@@ -25,7 +25,7 @@ class _ReadQRState extends State<ReadQR> {
   Barcode? result;
   QRViewController? controller;
   late bool isCaptured; //qr is detected, reading in progress
-  final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
+  GlobalKey qrKey = GlobalKey<FormState>(debugLabel: 'QR');
 
   // In order to get hot reload to work we need to pause the camera if the platform
   // is android, or resume the camera if the platform is iOS.
@@ -144,7 +144,7 @@ class _ReadQRState extends State<ReadQR> {
   
   Future<bool> readQR(Barcode scanData) async{
     try{
-      var qr = QRserverStructure.fromJson(jsonDecode(scanData.code));
+      var qr = QRserverStructure.fromJson(jsonDecode(scanData.code.replaceAll('\n', "").replaceAll(' ', '')));
       _log.debug("Data from QR successfully read / parsed: ${qr}");
 
       bool? answer =  await showAlert<bool>(
@@ -180,10 +180,10 @@ class _ReadQRState extends State<ReadQR> {
       return Future.value(false);
     }
   }
-
   void redirect(){
     _log.debug("Redirecting to new screen. Also clearing stack of screens.");
     Navigator.of(context).pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
+    //Navigator.popAndPushNamed(context, '/home');
   }
 
 
@@ -192,9 +192,9 @@ class _ReadQRState extends State<ReadQR> {
       this.controller = controller;
     });
 
-    controller.scannedDataStream.listen((scanData) {
+    controller.scannedDataStream.listen((scanData) async {
       controller.stopCamera();
-      setState(() async {
+      //setState(() {
         try {
 
           this.isCaptured = true;
@@ -209,7 +209,7 @@ class _ReadQRState extends State<ReadQR> {
           _log.debug("Error occurred when parsing QR data: $e");
           controller.resumeCamera();
         }
-      });
+      //});
     });
   }
 

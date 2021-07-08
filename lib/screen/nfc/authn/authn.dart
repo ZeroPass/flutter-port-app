@@ -155,7 +155,7 @@ class Authn /*extends State<Authn>*/ {
           timeout: Duration(seconds: serverCloud.timeoutInSeconds))
         ..badCertificateCallback = badCertificateHostCheck;
 
-      _client =  PortClient(Uri.parse(serverCloud.toString()), httpClient: httpClient);
+      _client =  PortClient(serverCloud.host, httpClient: httpClient);
       _client.onConnectionError = this.onConnectionError;
       _client.onDG1FileRequested = this.onDG1FileRequested;
 
@@ -248,6 +248,10 @@ class Authn /*extends State<Authn>*/ {
       } // should be already handled in PassportScanner
       else if (e is SocketException) {
       } // should be already handled through _handleConnectionError callback
+      else if (e is HandshakeException){
+        alertTitle = "Authentication error";
+        alertMsg = e.message;
+      }
       else if (e is PortError) {
         if (!e.isDG1Required()) {
           // DG1 required error should be handled through _handleDG1Request callback
@@ -375,7 +379,7 @@ class Authn /*extends State<Authn>*/ {
   }
 
   bool _isBusyIndicatorVisible = false;
-  final GlobalKey<State> _keyBusyIndicator =
+  GlobalKey<State> _keyBusyIndicator =
       GlobalKey<State>(debugLabel: 'key_authn_busy_indicator');
 
   Future<void> _showBusyIndicator(BuildContext context,

@@ -53,7 +53,7 @@ class _StepScanFormState extends State<StepScanForm> {
   @override
   Widget build(BuildContext context) {
     Storage storage = Storage();
-    final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+    GlobalKey<FormState> _formKey = GlobalKey<FormState>();
     final stepScanBloc = BlocProvider.of<StepScanBloc>(context);
     final stepperBloc = BlocProvider.of<StepperBloc>(context);
 

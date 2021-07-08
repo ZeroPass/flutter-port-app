@@ -29,12 +29,13 @@ class _WarningBarState extends State<WarningBar> {
 
   static void deleteOutsideCallState(BuildContext context){
     final stepperBloc = BlocProvider.of<StepperBloc>(context);
-    final stepScanHeaderBloc = BlocProvider.of<StepScanHeaderBloc>(context);
     final stepEnterAccountBloc = BlocProvider.of<StepEnterAccountBloc>(context);
     final stepEnterAccountHeaderBloc = BlocProvider.of<StepEnterAccountHeaderBloc>(context);
     final stepAttestationBloc = BlocProvider.of<StepAttestationBloc>(context);
     final stepAttestationHeaderBloc = BlocProvider.of<StepAttestationHeaderBloc>(context);
     final stepScanBloc = BlocProvider.of<StepScanBloc>(context);
+    final stepScanHeaderBloc = BlocProvider.of<StepScanHeaderBloc>(context);
+
 
     Storage storage = Storage();
 
@@ -52,11 +53,17 @@ class _WarningBarState extends State<WarningBar> {
     //save storage
     storage.save();
 
+    stepEnterAccountBloc.add(AccountDelete(networkType: NetworkType.MAINNET));
+    stepEnterAccountHeaderBloc.add(WithoutAccountIDEvent(networkType: NetworkType.MAINNET));
+
+    stepAttestationBloc.add(AttestationWithDataEvent(requestType: RequestType.ATTESTATION_REQUEST));
+    stepAttestationHeaderBloc.add(AttestationHeaderWithDataEvent(requestType: RequestType.ATTESTATION_REQUEST));
+
     //change state on step main window
-    stepScanBloc.add(NoDataScan());
+    //stepScanBloc.add(NoDataScan());
 
     //change state on step header
-    stepScanHeaderBloc.add(NoDataEvent());
+    //stepScanHeaderBloc.add(NoDataEvent());
   }
 
   Widget deleteButton(BuildContext context) {

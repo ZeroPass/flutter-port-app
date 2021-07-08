@@ -139,7 +139,7 @@ class SettingsUpdateNetwork extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+    GlobalKey<FormState> _formKey = GlobalKey<FormState>();
     Storage storage = Storage();
     returnList();
     return PlatformScaffold(

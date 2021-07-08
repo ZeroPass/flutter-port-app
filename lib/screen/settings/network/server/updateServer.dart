@@ -173,7 +173,7 @@ class SettingsUpdateServer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+    GlobalKey<FormState> _formKey = GlobalKey<FormState>();
     return PlatformScaffold(
         material: (_,__) => MaterialScaffoldData(resizeToAvoidBottomInset: false),
         cupertino: (_,__) => CupertinoPageScaffoldData(resizeToAvoidBottomInset: false),

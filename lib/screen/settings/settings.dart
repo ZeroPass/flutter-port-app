@@ -37,7 +37,7 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -91,7 +91,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 header: CardSettingsHeader(label: 'About'),
                 children: <CardSettingsWidget>[
                   CardSettingsInstructions(
-                    text: "PassID" +
+                    text: "Port" +
                         AndroidThemeST().getValues().themeValues["APP_DATA"]["COMPANY_NAME"] +
                         ' ('+ AndroidThemeST().getValues().themeValues["APP_DATA"]["YEAR_LAST_UPDATE"].toString() +  '), version:' +
                         AndroidThemeST().getValues().themeValues["APP_DATA"]["VERSION"],

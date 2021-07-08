@@ -39,7 +39,7 @@ import 'package:eosio_passid_mobile_app/screen/qr/structure.dart';
 var RUN_IN_DEVICE_PREVIEW_MODE = false;
 final _logStorage = Logger('Storage initialization');
 
-final GlobalKey<ScaffoldState> _SCAFFOLD_KEY = GlobalKey<ScaffoldState>();
+GlobalKey<ScaffoldState> _SCAFFOLD_KEY = GlobalKey<ScaffoldState>();
 
 void main() {
   runApp(
@@ -57,7 +57,7 @@ Map<NetworkType, Network> fillNetworkTypes(Map<NetworkType, Network> networks){
   _logStorage.fine("Fill network type if it's empty.");
   if (networks != null && networks.isNotEmpty) {
     _logStorage.fine("Main.fillNetworkTypes;Netowrk types is already written in database.");
-    throw Exception("Main.fillNetworkTypes;Netowrk types is already written in database.");
+    //throw Exception("Main.fillNetworkTypes;Netowrk types is already written in database.");
   }
 
   NetworkType.values.forEach((element) {
@@ -137,14 +137,13 @@ Future<void> fillDatabase() async
 
 
   });
-  
+
+
   Keys keys= Keys();
   keys.add(PrivateKey(TEST_PRIVATE_KEY));
-  ServerCloud? serverCloud = storage.getServerCloudSelected(networkTypeServer: NetworkTypeServer.MAIN_SERVER);
   storage.save();
 
-  Storage storage1 = Storage();
-  var r = 9;
+  storage.load();
 }
 
 /*
@@ -270,7 +269,7 @@ class _PassIdWidgetState extends State<PassIdWidget> with TickerProviderStateMix
 
 @override
   Widget build(BuildContext context) {
-
+  _SCAFFOLD_KEY = GlobalKey<ScaffoldState>();
     changeNavigationBarColor();
 
     Storage storage = Storage();
@@ -288,7 +287,7 @@ class _PassIdWidgetState extends State<PassIdWidget> with TickerProviderStateMix
                   width: 35,
                   height: 35,
                   child: Image(image: AssetImage('assets/images/passid.png'))),
-              Text("     Pass",
+              Text("     Port",
                 style: TextStyle(color: Colors.white)), 
               Text("ID", 
                 style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold))

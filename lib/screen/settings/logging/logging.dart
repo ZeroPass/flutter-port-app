@@ -23,7 +23,7 @@ class LoggingScreen extends StatefulWidget {
 }
 
 class _LoggingScreen extends State<LoggingScreen> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   _LoggingScreen();
 

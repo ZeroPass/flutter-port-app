@@ -64,7 +64,7 @@ class SettingsUpdateNode extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+    GlobalKey<FormState> _formKey = GlobalKey<FormState>();
     Storage storage = Storage();
 
     List<String> chainsKeys = [];

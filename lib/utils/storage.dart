@@ -45,7 +45,7 @@ class Server {
   }
 
   Server.deserialization(Map<String, dynamic> json){
-    this.host = json['host'] as Uri;
+    this.host = Uri.parse(json['host']);
     this.timeoutInSeconds = json['timeoutInSeconds'] as int;
     this.validation = Map<String, Map<String, dynamic>>();
   }
@@ -107,7 +107,7 @@ class Server {
 
 Server _$ServerFromJson(Map<String, dynamic> json) {
   return Server(
-      host: Uri.encodeFull(json['host']) as Uri,
+      host: Uri.parse(json['host']),
       timeoutInSeconds: json['timeoutInSeconds'] as int
   );
 }
@@ -242,7 +242,7 @@ class SelectedServer<T>{
   }
 
   SelectedServer.load({required bool isSelected, required T? server}){
-    _log.debug("Load selected server; is selected: $_isSelected, server: $server");
+    _log.debug("Load selected server; is selected: $isSelected, server: $server");
     _isSelected =  isSelected;
     _selected = server;
   }
@@ -294,9 +294,9 @@ class SelectedServer<T>{
   }*/
 
   Map<String, dynamic> toJson() {
-      if (_selected is NodeServer)
+      if (this is SelectedServerNodeServer)
         return _$SelectedServerToJson<NodeServer>(this);
-      else if (_isSelected is ServerCloud)
+      else if (this is SelectedServerServerCloud)
         return _$SelectedServerToJson<ServerCloud>(this);
       else
         throw Exception ("SelectedServer.toJson; unknown generic format");
@@ -308,12 +308,13 @@ class SelectedServerNodeServer extends SelectedServer<NodeServer>{
   SelectedServerNodeServer() : super();
 
   SelectedServerNodeServer.load ({required bool isSelected, required NodeServer? server}){
-    SelectedServer.load(isSelected: isSelected, server: server) as SelectedServerNodeServer;
+    SelectedServer<NodeServer>.load(isSelected: isSelected, server: server);
+
   }
 
   factory SelectedServerNodeServer.fromJson(Map<String, dynamic> json){
     return SelectedServerNodeServer.load(isSelected: json['isSelected'] as bool,
-                        server: json['selected'] as NodeServer);
+                        server: json['selected'] != null ? NodeServer.fromJson(json['selected']) as NodeServer : null);
   }
 
 }
@@ -323,12 +324,12 @@ class SelectedServerServerCloud extends SelectedServer<ServerCloud>{
   SelectedServerServerCloud() : super();
 
   SelectedServerServerCloud.load ({required bool isSelected, required ServerCloud? server}){
-    SelectedServer.load(isSelected: isSelected, server: server) as SelectedServerServerCloud;
+    SelectedServer<ServerCloud>.load(isSelected: isSelected, server: server);
   }
 
   factory SelectedServerServerCloud.fromJson(Map<String, dynamic> json){
     return SelectedServerServerCloud.load(isSelected: json['isSelected'] as bool,
-        server: json['selected'] as ServerCloud);
+        server: json['selected'] != null ? ServerCloud.fromJson(json['selected']) as ServerCloud : null);
   }
 
 }
@@ -338,12 +339,12 @@ class SelectedServerNetwork extends SelectedServer<Network>{
   SelectedServerNetwork() : super();
 
   SelectedServerNetwork.load ({required bool isSelected, required Network? server}){
-    SelectedServer.load(isSelected: isSelected, server: server) as SelectedServerServerCloud;
+    SelectedServer<Network>.load(isSelected: isSelected, server: server);
   }
 
   factory SelectedServerNetwork.fromJson(Map<String, dynamic> json){
     return SelectedServerNetwork.load(isSelected: json['isSelected'] as bool,
-        server: json['selected'] as Network);
+        server: json['selected'] != null ? Network.fromJson(json['selected']) as Network : null);
   }
 
 }
@@ -354,9 +355,10 @@ class SelectedServerNetwork extends SelectedServer<Network>{
           server: json['selected'] as T);*/
 
 Map<String, dynamic> _$SelectedServerToJson<T>(SelectedServer instance) => <String, dynamic>{
-  'isSelected': instance._isSelected,
-  'selected': instance._selected,
-};
+    'isSelected': instance._isSelected,
+    'selected': instance._selected
+  };
+
 
 
 @JsonSerializable()
@@ -1123,11 +1125,13 @@ class Storage extends StorageData {
   static Storage _singleton = Storage._internal();
 
   factory Storage(){
-    StorageData();
+    //StorageData();
     return _singleton;
   }
 
-  Storage._internal();
+  Storage._internal(){
+    StorageData();
+  }
 }
 
 class Storage1 {

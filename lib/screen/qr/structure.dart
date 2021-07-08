@@ -99,7 +99,7 @@ class QRserverStructure extends QRstructure {
 QRserverStructure _$QRserverStrucutreFromJson(Map<String, dynamic> json) {
   return QRserverStructure(
     accountID: json['accountID'] as String,
-    requestType: EnumUtil.fromStringEnum(RequestType.values, json['requestType']),
+    requestType: EnumUtil.fromStringEnum(RequestType.values, json['requestType'].toUpperCase()),
     host: Server(host: Uri.parse(json['url'])),
   );
 }

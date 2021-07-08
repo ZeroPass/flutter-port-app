@@ -134,7 +134,7 @@ class _StepAttestationFormState extends State<StepAttestationForm> {
 
   @override
   Widget build(BuildContext context) {
-    final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+    GlobalKey<FormState> _formKey = GlobalKey<FormState>();
     final stepAttestiationBloc = BlocProvider.of<StepAttestationBloc>(context);
 
     return BlocBuilder(

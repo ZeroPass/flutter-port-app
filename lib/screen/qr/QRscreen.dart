@@ -25,7 +25,7 @@ class QRscreenBody extends StatefulWidget {
 }
 
 class _QRscreenBodyState extends State<QRscreenBody> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
