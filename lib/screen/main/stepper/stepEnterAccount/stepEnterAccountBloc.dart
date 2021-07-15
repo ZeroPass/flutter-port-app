@@ -1,12 +1,12 @@
-import 'package:eosio_passid_mobile_app/constants/constants.dart';
-import 'package:eosio_passid_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
-import 'package:eosio_passid_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
+import 'package:eosio_port_mobile_app/constants/constants.dart';
+import 'package:eosio_port_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
+import 'package:eosio_port_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
 import 'package:bloc/bloc.dart';
-import 'package:eosio_passid_mobile_app/screen/main/stepper/stepper.dart';
+import 'package:eosio_port_mobile_app/screen/main/stepper/stepper.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:async';
-import 'package:eosio_passid_mobile_app/utils/storage.dart';
-import 'package:eosio_passid_mobile_app/utils/structure.dart';
+import 'package:eosio_port_mobile_app/utils/storage.dart';
+import 'package:eosio_port_mobile_app/utils/structure.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:meta/meta.dart';
 

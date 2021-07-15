@@ -1,5 +1,4 @@
-//  Created by smlu on 21/01/2020.
-//  Copyright © 2020 ZeroPass. All rights reserved.
+//  Created by Crt Vavros, copyright © 2021 ZeroPass. All rights reserved.
 import 'package:test/test.dart';
 import 'dart:typed_data';
 
@@ -89,8 +88,8 @@ void main() {
       expect( tenFromNow.formatYYMMDD().parseDateYYMMDD(), tenFromNow );
 
       // 10 years and 6 months from now should wind date back for a century.
-      final tenAnd6MonthsFromNow  = DateTime(now.year + 10, now.month + 6, now.day);
-      final ninetyYearsAgo         = DateTime(now.year - 90, now.month + 6, now.day);
+      final tenAnd6MonthsFromNow = DateTime(now.year + 10, now.month + 6, now.day);
+      final ninetyYearsAgo       = DateTime(now.year - 90, now.month + 6, now.day);
       expect( tenAnd6MonthsFromNow.formatYYMMDD().parseDateYYMMDD(), ninetyYearsAgo );
     });
   });

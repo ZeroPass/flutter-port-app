@@ -1,9 +1,9 @@
-import 'package:eosio_passid_mobile_app/screen/main/stepper/stepScan/stepScanHeader/stepScanHeader.dart';
-import 'package:eosio_passid_mobile_app/screen/main/stepper/stepScan/stepScan.dart';
+import 'package:eosio_port_mobile_app/screen/main/stepper/stepScan/stepScanHeader/stepScanHeader.dart';
+import 'package:eosio_port_mobile_app/screen/main/stepper/stepScan/stepScan.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:async';
-import 'package:eosio_passid_mobile_app/utils/storage.dart';
+import 'package:eosio_port_mobile_app/utils/storage.dart';
 
 
 class StepScanHeaderBloc extends Bloc<StepScanHeaderEvent, StepScanHeaderState> {

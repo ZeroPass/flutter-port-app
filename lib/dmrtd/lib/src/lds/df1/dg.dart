@@ -1,4 +1,4 @@
-//  Created by smlu, copyright © 2020 ZeroPass. All rights reserved.
+// Created by Crt Vavros, copyright © 2021 ZeroPass. All rights reserved.
 import 'dart:typed_data';
 import 'package:meta/meta.dart';
 import 'package:dmrtd/extensions.dart';
@@ -11,7 +11,7 @@ class DgTag {
   const DgTag(this.value);
 
   @override
-  bool operator == (rhs) {
+  bool operator == (covariant DgTag rhs) {
     return value == rhs.value;
   }
 

@@ -1,4 +1,4 @@
-//  Created by smlu, copyright © 2020 ZeroPass. All rights reserved.
+// Created by Crt Vavros, copyright © 2021 ZeroPass. All rights reserved.
 import 'dart:typed_data';
 import 'package:dmrtd/extensions.dart';
 import 'dg.dart';
@@ -11,7 +11,7 @@ class EfDG1 extends DataGroup {
   static const SFI = 0x01;
   static const TAG = DgTag(0x61);
 
-  MRZ _mrz;
+  late final MRZ _mrz;
   MRZ get mrz => _mrz;
 
   EfDG1.fromBytes(Uint8List data) : super.fromBytes(data);

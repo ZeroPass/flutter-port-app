@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:eosio_passid_mobile_app/screen/theme.dart';
+import 'package:eosio_port_mobile_app/screen/theme.dart';
 import 'package:flutter/services.dart';
-import 'package:eosio_passid_mobile_app/screen/flushbar.dart';
+import 'package:eosio_port_mobile_app/screen/flushbar.dart';
 import 'package:bloc/bloc.dart';
 
 class CardItem {

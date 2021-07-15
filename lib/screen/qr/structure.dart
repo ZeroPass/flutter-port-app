@@ -1,8 +1,8 @@
-import 'package:eosio_passid_mobile_app/screen/requestType.dart';
+import 'package:eosio_port_mobile_app/screen/requestType.dart';
 import 'package:logging/logging.dart';
 import 'package:dmrtd/src/extension/logging_apis.dart';
-import 'package:eosio_passid_mobile_app/utils/structure.dart';
-import 'package:eosio_passid_mobile_app/utils/storage.dart';
+import 'package:eosio_port_mobile_app/utils/structure.dart';
+import 'package:eosio_port_mobile_app/utils/storage.dart';
 import 'package:meta/meta.dart';
 
 var APP_NAME_QR_STRUCTURE = "Port.link";
@@ -34,7 +34,7 @@ class QRstructure{
 
   void QRstrucutreFromJson(Map<String, dynamic> json) {
       this.version = json["version"] as double;
-      this.accountID = json['accountID'] as String;
+      this.accountID = json['userID'] as String;
       this.requestType = EnumUtil.fromStringEnum(RequestType.values, json['requestType']);
       this.host = Server(host: Uri.parse(json['url']));
   }
@@ -55,7 +55,7 @@ class QRstructure{
 QRstructure _$QRstrucutreFromJson(Map<String, dynamic> json) {
   return QRstructure(
     version: json["version"] as double,
-    accountID: json['accountID'] as String,
+    accountID: json['userID'] as String,
     requestType: EnumUtil.fromStringEnum(RequestType.values, json['requestType'].toUpperCase()),
     host: Server(host: Uri.parse(json['url'])),
   );
@@ -64,7 +64,7 @@ QRstructure _$QRstrucutreFromJson(Map<String, dynamic> json) {
 Map<String, dynamic> _$QRstrucutreToJson(QRstructure instance) => <String, dynamic>{
   'appName' : instance.appName,
   'version' : instance.version,
-  'accountID': instance.accountID,
+  'userID': instance.accountID,
   'requestType': StringUtil.getWithoutTypeName(instance.requestType),
   'url': instance.host.host.toString(),
 };
@@ -98,7 +98,7 @@ class QRserverStructure extends QRstructure {
 
 QRserverStructure _$QRserverStrucutreFromJson(Map<String, dynamic> json) {
   return QRserverStructure(
-    accountID: json['accountID'] as String,
+    accountID: json['userID'] as String,
     requestType: EnumUtil.fromStringEnum(RequestType.values, json['requestType'].toUpperCase()),
     host: Server(host: Uri.parse(json['url'])),
   );
@@ -107,7 +107,7 @@ QRserverStructure _$QRserverStrucutreFromJson(Map<String, dynamic> json) {
 Map<String, dynamic> _$QRserverStrucutreToJson(QRserverStructure instance) => <String, dynamic>{
   'appName' : instance.appName,
   'version' : instance.version,
-  'accountID': instance.accountID,
+  'userID': instance.accountID,
   'requestType': StringUtil.getWithoutTypeName(instance.requestType),
   'url': instance.host.host.toString(),
 };

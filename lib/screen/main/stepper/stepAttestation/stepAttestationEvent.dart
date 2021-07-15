@@ -1,5 +1,5 @@
-import 'package:eosio_passid_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
-import 'package:eosio_passid_mobile_app/screen/requestType.dart';
+import 'package:eosio_port_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
+import 'package:eosio_port_mobile_app/screen/requestType.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 

@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:eosio_passid_mobile_app/utils/storage.dart';
-import 'package:eosio_passid_mobile_app/constants/constants.dart';
-import 'package:eosio_passid_mobile_app/screen/settings/custom/CustomCardSettingsButton.dart';
-import 'package:eosio_passid_mobile_app/screen/settings/network/server/updateServer.dart';
-import 'package:eosio_passid_mobile_app/screen/slideToSideRoute.dart';
+import 'package:eosio_port_mobile_app/utils/storage.dart';
+import 'package:eosio_port_mobile_app/constants/constants.dart';
+import 'package:eosio_port_mobile_app/screen/settings/custom/CustomCardSettingsButton.dart';
+import 'package:eosio_port_mobile_app/screen/settings/network/server/updateServer.dart';
+import 'package:eosio_port_mobile_app/screen/slideToSideRoute.dart';
 import "dart:io" show Platform;
 
 class ServerList extends StatefulWidget {

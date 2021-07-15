@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'package:dmrtd/dmrtd.dart';
-import 'package:eosio_passid_mobile_app/constants/constants.dart';
+import 'package:eosio_port_mobile_app/constants/constants.dart';
 import 'package:intl/intl.dart';
-import 'package:eosio_passid_mobile_app/utils/storage.dart';
+import 'package:eosio_port_mobile_app/utils/storage.dart';
 
 class StringUtil {
   static String getWithoutTypeName<T>(T value){

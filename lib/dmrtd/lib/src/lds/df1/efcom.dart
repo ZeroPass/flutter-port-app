@@ -1,4 +1,4 @@
-//  Created by smlu, copyright © 2020 ZeroPass. All rights reserved.
+// Created by Crt Vavros, copyright © 2021 ZeroPass. All rights reserved.
 import 'dart:core';
 import 'dart:typed_data';
 import 'package:dmrtd/extensions.dart';
@@ -12,9 +12,9 @@ class EfCOM extends ElementaryFile {
   static const SFI = 0x1E;
   static const TAG = 0x60;
 
-  String _ver;
-  String _uver;
-  final  _tags = Set<DgTag>();
+  late final String _ver;
+  late final String _uver;
+  final _tags = Set<DgTag>();
 
   get version => _ver;
   get uincodeVersion => _uver;

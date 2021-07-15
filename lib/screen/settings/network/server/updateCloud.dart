@@ -1,11 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:eosio_passid_mobile_app/utils/storage.dart';
-import 'package:eosio_passid_mobile_app/constants/constants.dart';
+import 'package:eosio_port_mobile_app/utils/storage.dart';
+import 'package:eosio_port_mobile_app/constants/constants.dart';
 import 'package:card_settings/card_settings.dart';
-import 'package:eosio_passid_mobile_app/screen/alert.dart';
-import 'package:eosio_passid_mobile_app/screen/settings/custom/CustomCardSettingsButtonDelete.dart';
+import 'package:eosio_port_mobile_app/screen/alert.dart';
+import 'package:eosio_port_mobile_app/screen/settings/custom/CustomCardSettingsButtonDelete.dart';
 import 'package:logging/logging.dart';
 
 class SettingsUpdateCloud extends StatelessWidget {

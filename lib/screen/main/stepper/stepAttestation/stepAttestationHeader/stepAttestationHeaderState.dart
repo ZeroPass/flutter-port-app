@@ -1,6 +1,6 @@
-import 'package:eosio_passid_mobile_app/screen/requestType.dart';
+import 'package:eosio_port_mobile_app/screen/requestType.dart';
 import 'package:meta/meta.dart';
-import 'package:eosio_passid_mobile_app/utils/storage.dart';
+import 'package:eosio_port_mobile_app/utils/storage.dart';
 
 
 abstract class StepAttestationHeaderState /*extends Equatable*/ {

@@ -1,6 +1,4 @@
-//  Created by smlu on 17/01/2020.
-//  Copyright © 2020 ZeroPass. All rights reserved.
-
+// Created by Crt Vavros, copyright © 2021 ZeroPass. All rights reserved.
 import 'dart:convert';
 import 'dart:core';
 import 'dart:typed_data';
@@ -12,14 +10,14 @@ extension StringDecodeApis on String {
   }
 
   Uint8List parseHex() {
-    return hex.decoder.convert(this);
+    return hex.decoder.convert(this) as Uint8List;
   }
 }
 
 extension StringYYMMDDateApi on String {
   DateTime parseDateYYMMDD() {
     if(length < 6) {
-      throw FormatException("invalid string length");
+      throw FormatException("invalid length of compact date string");
     }
 
     int y = int.parse(substring(0, 2)) + 2000;

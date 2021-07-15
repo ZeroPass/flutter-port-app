@@ -6,12 +6,12 @@ import 'dart:typed_data';
 import 'package:async/async.dart';
 import 'package:dmrtd/dmrtd.dart';
 import 'package:dmrtd/extensions.dart';
-import 'package:eosio_passid_mobile_app/utils/structure.dart';
+import 'package:eosio_port_mobile_app/utils/structure.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:logging/logging.dart';
-import 'package:eosio_passid_mobile_app/screen/alert.dart';
+import 'package:eosio_port_mobile_app/screen/alert.dart';
 import 'package:port/port.dart';
 
 

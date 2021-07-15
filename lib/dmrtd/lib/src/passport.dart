@@ -1,4 +1,4 @@
-//  Created by smlu, copyright © 2020 ZeroPass. All rights reserved.
+// Created by Crt Vavros, copyright © 2021 ZeroPass. All rights reserved.
 import 'dart:typed_data';
 import 'package:dmrtd/dmrtd.dart';
 import 'package:dmrtd/extensions.dart';
@@ -11,7 +11,7 @@ import 'proto/mrtd_api.dart';
 
 class PassportError implements Exception {
   final String message;
-  final StatusWord code;
+  final StatusWord? code;
   PassportError(this.message, {this.code});
   String toString() => message;
 }

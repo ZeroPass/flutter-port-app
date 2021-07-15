@@ -1,10 +1,9 @@
-//  Created by smlu, copyright © 2020 ZeroPass. All rights reserved.
+//  Created by Crt Vavros, copyright © 2021 ZeroPass. All rights reserved.
 import 'dart:typed_data';
 import 'package:meta/meta.dart';
-import 'tlv.dart';
 
 class EfParseError implements Exception {
-  String message;
+  final String message;
   EfParseError(this.message);
   String toString() => message;
 }
@@ -24,5 +23,5 @@ abstract class ElementaryFile{
   }
 
   @protected
-  void parse(final Uint8List content) {}
+  void parse(final Uint8List content);
 }

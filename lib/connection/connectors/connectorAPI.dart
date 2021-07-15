@@ -12,7 +12,7 @@ import 'dart:async';
 
 import 'package:port/port.dart';
 import 'package:port/internal.dart';
-import 'package:eosio_passid_mobile_app/connection/connection.dart';
+import 'package:eosio_port_mobile_app/connection/connection.dart';
 
 class ConnectorAPI extends ConnectionAdapterMaintenance with ConnectionAdapterAPI{
   late PortApi portApi;

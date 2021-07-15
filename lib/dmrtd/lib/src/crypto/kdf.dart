@@ -1,4 +1,4 @@
-//  Created by smlu, copyright © 2020 ZeroPass. All rights reserved.
+// Created by Crt Vavros, copyright © 2021 ZeroPass. All rights reserved.
 import 'package:crypto/crypto.dart';
 import 'package:fixnum/fixnum.dart';
 import 'dart:typed_data';
@@ -12,7 +12,7 @@ Uint8List KDF(final Hash hash, final Uint8List keySeed, final Int32 counter) {
 
   ByteData  piview = ByteData.view(preimage.buffer);
   piview.setInt32(keySeed.length, counter.toInt(), Endian.big);
-  return hash.convert(preimage).bytes;
+  return hash.convert(preimage).bytes as Uint8List;
 }
 
 

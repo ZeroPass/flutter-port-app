@@ -7,7 +7,7 @@
 import 'package:flutter/widgets.dart';
 import "package:flutter/material.dart";
 
-import 'package:eosio_passid_mobile_app/screen/theme.dart';
+import 'package:eosio_port_mobile_app/screen/theme.dart';
 
 
 // TODO(dragostis): Missing functionality:

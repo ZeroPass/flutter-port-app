@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:eosio_passid_mobile_app/screen/theme.dart';
-import 'package:eosio_passid_mobile_app/utils/logging/loggerHandler.dart';
+import 'package:eosio_port_mobile_app/screen/theme.dart';
+import 'package:eosio_port_mobile_app/utils/logging/loggerHandler.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:eosio_passid_mobile_app/screen/flushbar.dart' as CustomFlushbar;
+import 'package:eosio_port_mobile_app/screen/flushbar.dart' as CustomFlushbar;
 import 'package:card_settings/card_settings.dart';
-import 'package:eosio_passid_mobile_app/utils/storage.dart';
-import 'package:eosio_passid_mobile_app/screen/settings/custom/customCardSettingsButton.dart';
+import 'package:eosio_port_mobile_app/utils/storage.dart';
+import 'package:eosio_port_mobile_app/screen/settings/custom/customCardSettingsButton.dart';
 import "dart:io" show Platform;
 
 class LoggingScreen extends StatefulWidget {

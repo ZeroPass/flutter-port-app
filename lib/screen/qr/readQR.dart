@@ -1,19 +1,19 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:eosio_passid_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
-import 'package:eosio_passid_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
+import 'package:eosio_port_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
+import 'package:eosio_port_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:logging/logging.dart';
 import 'package:dmrtd/src/extension/logging_apis.dart';
-import 'package:eosio_passid_mobile_app/screen/customButton.dart';
-import 'package:eosio_passid_mobile_app/screen/theme.dart';
+import 'package:eosio_port_mobile_app/screen/customButton.dart';
+import 'package:eosio_port_mobile_app/screen/theme.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:eosio_passid_mobile_app/screen/qr/structure.dart';
-import 'package:eosio_passid_mobile_app/screen/alert.dart';
-import 'package:eosio_passid_mobile_app/utils/storage.dart';
+import 'package:eosio_port_mobile_app/screen/qr/structure.dart';
+import 'package:eosio_port_mobile_app/screen/alert.dart';
+import 'package:eosio_port_mobile_app/utils/storage.dart';
 
 class ReadQR extends StatefulWidget {
   @override
@@ -147,7 +147,10 @@ class _ReadQRState extends State<ReadQR> {
       var qr = QRserverStructure.fromJson(jsonDecode(scanData.code.replaceAll('\n', "").replaceAll(' ', '')));
       _log.debug("Data from QR successfully read / parsed: ${qr}");
 
-      bool? answer =  await showAlert<bool>(
+      saveToDatabase(qr);
+      return Future.value(true);
+
+      /*bool? answer =  await showAlert<bool>(
           context: context,
           title: Text("The data have been accurred successfully. Do you want to fill data automatically."),
           closeOnBackPressed: true,
@@ -171,7 +174,7 @@ class _ReadQRState extends State<ReadQR> {
                   //return true;
                 })
             ]);
-      return Future.value(answer);
+      return Future.value(answer);*/
 
     }
     catch(e){

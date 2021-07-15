@@ -1,10 +1,10 @@
  import 'package:cupertino_list_tile/cupertino_list_tile.dart';
-import 'package:eosio_passid_mobile_app/constants/constants.dart';
-import 'package:eosio_passid_mobile_app/screen/settings/network/updateNetwork.dart';
+import 'package:eosio_port_mobile_app/constants/constants.dart';
+import 'package:eosio_port_mobile_app/screen/settings/network/updateNetwork.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:eosio_passid_mobile_app/utils/storage.dart';
-import 'package:eosio_passid_mobile_app/screen/slideToSideRoute.dart';
+import 'package:eosio_port_mobile_app/utils/storage.dart';
+import 'package:eosio_port_mobile_app/screen/slideToSideRoute.dart';
 
 class SettingsNetwork extends StatelessWidget {
   @override

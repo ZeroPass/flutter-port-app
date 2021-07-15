@@ -1,7 +1,7 @@
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:eosio_passid_mobile_app/screen/theme.dart';
+import 'package:eosio_port_mobile_app/screen/theme.dart';
 
 void showFlushbar(BuildContext context, String title, String message, IconData icon, {int duration = 5})
 {

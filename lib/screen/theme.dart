@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:eosio_passid_mobile_app/utils/color.dart';
+import 'package:eosio_port_mobile_app/utils/color.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:flutter/services.dart';
 
@@ -28,7 +28,7 @@ Map light = {
     {
       "SIZE_TEXT":14.0,
       "COLOR_TEXT":Color(0xFFa55900),
-      "COLOR_BACKGROUND":Color(0xFFfce4c7)
+      "COLOR_BACKGROUND":Color(0xFFEEEEEE)
     },
     "STEPPER_MANIPULATOR":
     {

@@ -1,4 +1,4 @@
-//  Created by smlu, copyright © 2020 ZeroPass. All rights reserved.
+// Created by Crt Vavros, copyright © 2021 ZeroPass. All rights reserved.
 import 'dart:typed_data';
 import 'package:collection/collection.dart';
 import 'package:dmrtd/dmrtd.dart';
@@ -16,7 +16,7 @@ class AAPublicKey {
 
   final Uint8List _encPubKey;
   AAPublicKeyType _type = AAPublicKeyType.EC;
-  Uint8List _subPubKeyBytes;
+  late Uint8List _subPubKeyBytes;
 
   Uint8List rawSubjectPublicKey() {
     return _subPubKeyBytes;

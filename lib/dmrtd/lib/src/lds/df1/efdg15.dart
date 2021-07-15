@@ -1,4 +1,4 @@
-//  Created by smlu, copyright © 2020 ZeroPass. All rights reserved.
+// Created by Crt Vavros, copyright © 2021 ZeroPass. All rights reserved.
 import 'dart:typed_data';
 import 'dg.dart';
 import '../../crypto/aa_pubkey.dart';
@@ -8,7 +8,7 @@ class EfDG15 extends DataGroup {
   static const SFI = 0x0F;
   static const TAG = DgTag(0x6F);
 
-  AAPublicKey _pubkey;
+  late final AAPublicKey _pubkey;
   AAPublicKey get aaPublicKey => _pubkey;
 
   EfDG15.fromBytes(Uint8List data) : super.fromBytes(data);

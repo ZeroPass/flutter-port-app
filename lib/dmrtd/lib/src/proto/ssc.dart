@@ -1,4 +1,4 @@
-//  Created by smlu, copyright © 2020 ZeroPass. All rights reserved.
+// Created by Crt Vavros, copyright © 2021 ZeroPass. All rights reserved.
 import 'dart:typed_data';
 
 import 'package:dmrtd/extensions.dart';
@@ -12,7 +12,7 @@ import 'package:dmrtd/src/crypto/des.dart';
 /// is equal to the block size of block cipher.
 class SSC {
   final bitSize;
-  BigInt _ssc;
+  late BigInt _ssc;
 
   /// Constructs new [SSC] with [ssc] bytes.
   /// [bitSize] should be equal to the block size of block cipher.

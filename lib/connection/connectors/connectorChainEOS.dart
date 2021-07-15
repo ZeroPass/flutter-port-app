@@ -5,7 +5,7 @@
 *
 */
 import 'package:dmrtd/src/extension/logging_apis.dart';
-import 'package:eosio_passid_mobile_app/utils/storage.dart';
+import 'package:eosio_port_mobile_app/utils/storage.dart';
 import 'package:logging/logging.dart';
 import 'package:dmrtd/dmrtd.dart';
 import 'package:port/src/proto/session.dart';
@@ -13,8 +13,8 @@ import 'dart:async';
 
 import 'package:port/port.dart';
 import 'package:port/internal.dart';
-import 'package:eosio_passid_mobile_app/connection/connection.dart';
-import 'package:eosio_passid_mobile_app/connection/tools/eosio/eosio.dart';
+import 'package:eosio_port_mobile_app/connection/connection.dart';
+import 'package:eosio_port_mobile_app/connection/tools/eosio/eosio.dart';
 
 class ConnectorChainEOS extends ConnectionAdapterMaintenance with ConnectionAdapterAPI{
   late Eosio _eosio;

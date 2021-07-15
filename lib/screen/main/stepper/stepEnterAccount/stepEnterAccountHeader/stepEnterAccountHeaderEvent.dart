@@ -1,5 +1,5 @@
-import 'package:eosio_passid_mobile_app/utils/storage.dart';
-import 'package:eosio_passid_mobile_app/constants/constants.dart';
+import 'package:eosio_port_mobile_app/utils/storage.dart';
+import 'package:eosio_port_mobile_app/constants/constants.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 

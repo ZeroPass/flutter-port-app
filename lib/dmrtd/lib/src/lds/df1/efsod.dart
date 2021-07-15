@@ -1,10 +1,8 @@
-//  Created by smlu, copyright © 2020 ZeroPass. All rights reserved.
+//  Created by Crt Vavros, copyright © 2021 ZeroPass. All rights reserved.
 import 'dart:core';
 import 'dart:typed_data';
 
-import 'dg.dart';
 import '../ef.dart';
-import '../tlv.dart';
 
 class EfSOD extends ElementaryFile {
   static const FID = 0x011D;
@@ -18,4 +16,7 @@ class EfSOD extends ElementaryFile {
 
   @override
   int get sfi => SFI;
+
+  @override
+  void parse(Uint8List content) {}
 }

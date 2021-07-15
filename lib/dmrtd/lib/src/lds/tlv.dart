@@ -1,4 +1,4 @@
-//  Created by smlu, copyright © 2020 ZeroPass. All rights reserved.
+// Created by Crt Vavros, copyright © 2021 ZeroPass. All rights reserved.
 import 'dart:typed_data';
 import '../utils.dart';
 
@@ -46,8 +46,7 @@ class TLV {
   Uint8List value;
 
   TLV(this.tag, this.value) {
-    // TODO: check that tag and value can be encoded and
-    //       if not, throw
+    // TODO: check that tag and value can be encoded, and throw if not
   }
 
   /// Returns decoded [TLV] from [encodedTLV] bytes.

@@ -1,14 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:eosio_passid_mobile_app/utils/storage.dart';
-import 'package:eosio_passid_mobile_app/constants/constants.dart';
-import 'package:eosio_passid_mobile_app/utils/structure.dart';
+import 'package:eosio_port_mobile_app/utils/storage.dart';
+import 'package:eosio_port_mobile_app/constants/constants.dart';
+import 'package:eosio_port_mobile_app/utils/structure.dart';
 import 'package:card_settings/card_settings.dart';
-import 'package:eosio_passid_mobile_app/screen/alert.dart';
-import 'package:eosio_passid_mobile_app/screen/settings/custom/CustomCardSettingsButtonDelete.dart';
+import 'package:eosio_port_mobile_app/screen/alert.dart';
+import 'package:eosio_port_mobile_app/screen/settings/custom/CustomCardSettingsButtonDelete.dart';
 import 'package:logging/logging.dart';
-import 'package:eosio_passid_mobile_app/screen/flushbar.dart';
+import 'package:eosio_port_mobile_app/screen/flushbar.dart';
 
 class SettingsUpdateServer extends StatelessWidget {
   final _log = Logger('Settings.SettingsUpdateServer');

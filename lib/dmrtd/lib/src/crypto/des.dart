@@ -1,7 +1,5 @@
-//  Created by smlu on 17/02/2020.
-//  Copyright © 2020 ZeroPass. All rights reserved.
+//  Created by Crt Vavros, copyright © 2021 ZeroPass. All rights reserved.
 import 'dart:typed_data';
-import 'package:meta/meta.dart';
 import 'package:tripledes/tripledes.dart';
 import 'iso9797.dart';
 
@@ -9,22 +7,22 @@ import 'iso9797.dart';
 class DESCipher {
   static const blockSize = 8;
 
-  List<int> _iv;
-  List<int> _key;
+  late List<int> _iv;
+  late List<int> _key;
   final BaseEngine _bc = DESEngine();
 
   /// Creates a [DESCipher] with [key] and initial vector [iv].
   ///
   /// [key] length must be 8 bytes.
   /// [iv] length must be 8 bytes.
-  DESCipher({ @required final Uint8List key, @required final Uint8List iv }) {
+  DESCipher({ required final Uint8List key, required final Uint8List iv }) {
     this.key = key;
     this.iv  = iv;
   }
 
   /// Returns current key
-  get key {
-    return _DWordListToBytes(_key);
+  Uint8List get key {
+    return _dwordListToBytes(_key);
   }
 
   /// Sets new key. The [key] length must be 8 bytes.
@@ -36,8 +34,8 @@ class DESCipher {
   }
 
   /// Returns current iv.
-  get iv {
-    return _DWordListToBytes(_iv);
+  Uint8List get iv {
+    return _dwordListToBytes(_iv);
   }
 
   /// Sets new iv. The [iv] length must be 8 bytes.
@@ -74,7 +72,7 @@ class DESCipher {
     _bc.init(true, _key);
     final wblock = _bytesToDWordList(block);
     _processBlock(wblock);
-    return _DWordListToBytes(wblock);
+    return _dwordListToBytes(wblock);
   }
 
   // Returns decrypted [eblock].
@@ -85,7 +83,7 @@ class DESCipher {
     _bc.init(false, _key);
     final wblock = _bytesToDWordList(eblock);
     _processBlock(wblock);
-    return _DWordListToBytes(wblock);
+    return _dwordListToBytes(wblock);
   }
 
   /// block should be list of 2 ints
@@ -101,7 +99,7 @@ class DESCipher {
       throw ArgumentError.value(data, "data size should be multiple of $blockSize bytes");
     }
 
-    List<int> pdata = List<int>(0);
+    List<int> pdata = List<int>.empty(growable: true);
     List<int> xord = _iv;
     final size = data.length / blockSize;
     for( int i = 0; i < size; i++) {
@@ -131,7 +129,7 @@ class DESCipher {
       pdata += block;
     }
 
-    return _DWordListToBytes(pdata);
+    return _dwordListToBytes(pdata);
   }
 
   Uint8List _padOrRef(final Uint8List data, final bool padData) {
@@ -158,7 +156,7 @@ class DESCipher {
   }
 
   static List<int> _bytesToDWordList(final Uint8List bytes) {
-    final dwords = List<int>((bytes.length / 4).round());
+    final dwords = List<int>.filled((bytes.length / 4).round(), 0);
     final view = ByteData.view(bytes.buffer);
     for (int i = 0; i < dwords.length; i++) {
       dwords[i] = view.getInt32(i * 4);
@@ -166,7 +164,7 @@ class DESCipher {
     return dwords;
   }
 
-  static Uint8List _DWordListToBytes(final List<int> dwords) {
+  static Uint8List _dwordListToBytes(final List<int> dwords) {
     final bytes = Uint8List(dwords.length * 4);
     final view = ByteData.view(bytes.buffer);
     for (int i = 0; i < dwords.length;  i++) {
@@ -187,7 +185,7 @@ class DESedeCipher extends DESCipher {
   ///
   /// [key] length must be 8, 16 or 24 bytes.
   /// [iv] length must be 8 bytes.
-  DESedeCipher({ @required final Uint8List key, @required final Uint8List iv }) :
+  DESedeCipher({ required final Uint8List key, required final Uint8List iv }) :
     super(key: key, iv: iv);
 
   /// Sets new key. [key] length must be 8, 16 or 24 bytes.
@@ -234,7 +232,7 @@ class DESedeCipher extends DESCipher {
 ///
 /// The [data] if [padData] is set to false should be padded to the nearest multiple of 8.
 /// When [padData] is true, the [data] is padded according to the ISO/IEC 9797-1, padding method 2.
-Uint8List DESedeEncrypt({ @required final Uint8List key, @required final Uint8List iv, @required final Uint8List data, bool padData = true}) {
+Uint8List DESedeEncrypt({ required final Uint8List key, required final Uint8List iv, required final Uint8List data, bool padData = true}) {
   return DESedeCipher(key: key, iv: iv).encrypt(data, padData: padData);
 }
 
@@ -243,6 +241,6 @@ Uint8List DESedeEncrypt({ @required final Uint8List key, @required final Uint8Li
 ///
 /// The [data] if [padData] is set to false should be padded to the nearest multiple of 8.
 /// When [padData] is true, the [data] is padded according to the ISO/IEC 9797-1, padding method 2.
-Uint8List DESedeDecrypt({ @required final Uint8List key, @required final Uint8List iv, @required final Uint8List edata, bool paddedData = true}) {
+Uint8List DESedeDecrypt({ required final Uint8List key, required final Uint8List iv, required final Uint8List edata, bool paddedData = true}) {
   return DESedeCipher(key: key, iv: iv).decrypt(edata, paddedData: paddedData);
 }
