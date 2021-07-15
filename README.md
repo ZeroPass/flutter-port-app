@@ -40,6 +40,4 @@ flutter build ios
 This repository hosts also 2 libraries:
 * [dmrtd](lib/dmrtd) - dart implementation of ICAO 9303 MRTD standard
 * [passid](lib/passid) - dart implementation of client PassID PoC protocol
-## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
