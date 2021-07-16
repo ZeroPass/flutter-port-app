@@ -24,7 +24,11 @@ flutter run --release
 ```
 # Android
 flutter build apk
-flutter build apk --release --no-shrink
+flutter build apk --release --no-shrink --no-sound-null-safetyv
+
+*temporary only debug build is available
+flutter build apk --debug --no-shrink --no-sound-null-safetyv
+
 
 #iOS (on macOS host)
 flutter build ios
