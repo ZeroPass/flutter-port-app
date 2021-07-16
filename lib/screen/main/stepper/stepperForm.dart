@@ -5,6 +5,7 @@ import 'package:eosio_port_mobile_app/screen/main/stepper/stepAttestation/stepAt
 import 'package:eosio_port_mobile_app/screen/nfc/authn/authn.dart';
 import 'package:eosio_port_mobile_app/screen/requestType.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import "package:eosio_port_mobile_app/screen/main/stepper/stepper.dart";
 import 'package:eosio_port_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
@@ -48,7 +49,7 @@ class StepperForm extends StatefulWidget {
 }
 
 class _StepperFormState extends State<StepperForm> {
-  late ScrollController _scrollController;
+  late ScrollController _scrollController = ScrollController();
 
   List<StepState> listState = [
     StepState.indexed,
@@ -116,8 +117,23 @@ class _StepperFormState extends State<StepperForm> {
     ];
   }
 
+  _scrollListener() {
+    if (this._scrollController.offset >= this._scrollController.position.maxScrollExtent &&
+        !this._scrollController.position.outOfRange) {
+      setState(() {
+        //message = "reach the bottom";
+      });
+    }
+    if (this._scrollController.offset <= this._scrollController.position.minScrollExtent &&
+        !this._scrollController.position.outOfRange) {
+      setState(() {
+        //message = "reach the top";
+      });
+    }
+  }
+
   _StepperFormState(){
-    this._scrollController =  new ScrollController();
+    this._scrollController = new ScrollController();
   }
 
   String onButtonNextPressed(int currentStep) {
@@ -419,6 +435,12 @@ class _StepperFormState extends State<StepperForm> {
       }
       //review header; cleaning process
       stepperBloc.liveModifyHeader(3, context, dataInStep: false);
+
+      //
+      if (storage.outsideCall.isOutsideCall){
+        final stepperBloc = BlocProvider.of<StepperBloc>(context);
+        stepperBloc.add(StepAfterQR(previousStep: 0));
+      }
     });
     return Future.value(true);
   }
@@ -431,7 +453,7 @@ class _StepperFormState extends State<StepperForm> {
       builder: (BuildContext context, StepperState state) {
         return CustomStepper(
           physics: ClampingScrollPhysics(),
-            currentStep: state.step,
+            currentStep:state.step, //state.step,
             scrollController: _scrollController,
             steps: widget.isMagnetLink == true
                 ? getStepsMagnetLink(context, state.step)
@@ -455,7 +477,7 @@ class _StepperFormState extends State<StepperForm> {
                   storage.getStorageData(2) as StepDataAttestation;
 
               int stepJumps = storage.outsideCall.isOutsideCall &&
-                      state.step == 1
+                  state.step == 1
                   ? 2
                   : 1;
               if (this.isStepNFC(stepperBloc, stepJumps))

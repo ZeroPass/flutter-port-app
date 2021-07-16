@@ -29,6 +29,15 @@ class StepRunByFlow extends StepperEvent {
   String toString() => 'StepRunByFlow { step: $step, previous step:$previousStep }';
 }
 
+class StepAfterQR extends StepperEvent {
+  final int previousStep;
+
+  StepAfterQR({required this.previousStep});
+
+  @override
+  String toString() => 'StepRunByFlow { previous step:$previousStep }';
+}
+
 class StepCancelled extends StepperEvent {
 
   @override

@@ -46,12 +46,16 @@ class StepperBloc extends Bloc<StepperEvent, StepperState> {
 
   //StepperBloc():super();
 
-  StepperBloc({required this.maxSteps}):super(StepperState(step: 0, previousStep: 0, maxSteps: maxSteps)){
+  StepperBloc({required this.maxSteps}) :
+        super( Storage().outsideCall.isOutsideCall ?
+              StepperState(step: 1, previousStep: 0, maxSteps: maxSteps) :
+              StepperState(step: 0, previousStep: 0, maxSteps: maxSteps)){
     this.isReviewLocked = true;
   }
 
   //@override
   //StepperState get initialState => StepperState(step: 0, maxSteps: maxSteps);
+
 
 
   bool liveModifyHeader (int step, var context, {bool dataInStep = false}) {
@@ -128,6 +132,9 @@ class StepperBloc extends Bloc<StepperEvent, StepperState> {
     }
     else if (event is StepRunByFlow) {
         yield state.copyWith(step: event.step, previousStep: state.step, maxSteps: state.maxSteps);
+    }
+    else if (event is StepAfterQR){
+      yield state.copyWith(step: 1, previousStep: state.step, maxSteps: state.maxSteps);
     }
     else if (event is StepCancelled) {
       yield state.copyWith(

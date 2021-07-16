@@ -20,6 +20,7 @@ import 'package:eosio_port_mobile_app/screen/requestType.dart';
 import 'package:eosio_port_mobile_app/screen/main/stepper/customStepper.dart';
 
 import 'package:logging/logging.dart';
+import 'package:port/internal.dart';
 import 'package:port/port.dart';
 
 import '../efdg1_dialog.dart';
@@ -140,7 +141,12 @@ class Authn /*extends State<Authn>*/ {
 
     try {
       _showBusyIndicator(context);
-      ServerCloud? serverCloud = storage.getServerCloudSelected(networkTypeServer: NetworkTypeServer.MAIN_SERVER);
+      ServerCloud? serverCloud = storage.outsideCall.isOutsideCall?
+        ServerCloud(name: "TemporaryServer", host: storage.outsideCall.getStructV1()!.host.host):
+        storage.getServerCloudSelected(networkTypeServer: NetworkTypeServer.MAIN_SERVER);
+
+      ServerCloud? serverCloud1 = storage.getServerCloudSelected(networkTypeServer: NetworkTypeServer.MAIN_SERVER);
+
       if (serverCloud == null)
         throw Exception("ServerCloud (main server) is empty. Without server you cannot check passport trust chain.");
 
@@ -246,6 +252,14 @@ class Authn /*extends State<Authn>*/ {
       String? alertMsg;
       if (e is PassportScannerError) {
       } // should be already handled in PassportScanner
+      else if (e is ArgumentError) {
+        alertTitle = "Connection error";
+        alertMsg = e.message;
+      }
+      else if (e is JRPClientError) {
+        alertTitle = "Connection error";
+        alertMsg = "Server not responding. Check your URL address.";
+      }
       else if (e is SocketException) {
       } // should be already handled through _handleConnectionError callback
       else if (e is HandshakeException){
@@ -325,6 +339,7 @@ class Authn /*extends State<Authn>*/ {
                           fontWeight: FontWeight.bold)),
                   onPressed: () => Navigator.pop(context))
             ]);
+        await _hideBusyIndicator();
         return false;
       }
       return false;

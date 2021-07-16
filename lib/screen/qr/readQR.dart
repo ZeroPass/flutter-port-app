@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:eosio_port_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
 import 'package:eosio_port_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
+import 'package:eosio_port_mobile_app/screen/main/stepper/stepperBloc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
@@ -145,6 +146,9 @@ class _ReadQRState extends State<ReadQR> {
   Future<bool> readQR(Barcode scanData) async{
     try{
       var qr = QRserverStructure.fromJson(jsonDecode(scanData.code.replaceAll('\n', "").replaceAll(' ', '')));
+      if (qr.accountID == null || qr.accountID == '')
+        throw Exception("Not valid accountID in QR code");
+
       _log.debug("Data from QR successfully read / parsed: ${qr}");
 
       saveToDatabase(qr);
@@ -186,7 +190,6 @@ class _ReadQRState extends State<ReadQR> {
   void redirect(){
     _log.debug("Redirecting to new screen. Also clearing stack of screens.");
     Navigator.of(context).pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
-    //Navigator.popAndPushNamed(context, '/home');
   }
 
 

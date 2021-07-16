@@ -66,7 +66,7 @@ class CustomStepper extends StatefulWidget {
         assert(currentStep != null),
         assert(0 <= currentStep && currentStep < steps.length),
         super(key: key){
-    this.scrollController = ScrollController();
+    //this.scrollController = ScrollController();
   }
 
   ///Scroll controller - we need it to handle position on the last step
