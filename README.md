@@ -15,23 +15,34 @@ flutter packages get
 ```
 * To run:
 ```
-flutter run
+flutter run --no-sound-null-safety
+
+On iOS, If you encounter error: "Codepoint 62495 not found in font, aborting.", 
+add '--no-tree-shake-icons' flag to the above command.
 
 # Release version
-flutter run --release
+flutter run --release --no-sound-null-safety
+
+On iOS, If you encounter error: "Codepoint 62495 not found in font, aborting.", 
+add '--no-tree-shake-icons' flag to the above command.
+
 ```
 * To build app bundle:
 ```
 # Android
 flutter build apk
-flutter build apk --release --no-shrink --no-sound-null-safetyv
+flutter build apk --release --no-shrink --no-sound-null-safety
 
 *temporary only debug build is available
-flutter build apk --debug --no-shrink --no-sound-null-safetyv
+flutter build apk --debug --no-shrink --no-sound-null-safety
 
 
 #iOS (on macOS host)
-flutter build ios
+flutter build ios --release --no-sound-null-safety
+
+If you encounter error: "Codepoint 62495 not found in font, aborting.", 
+add '--no-tree-shake-icons' flag to the above command.
+
 ```
 
 ## Usage
