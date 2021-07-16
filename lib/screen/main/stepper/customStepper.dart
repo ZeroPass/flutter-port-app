@@ -598,6 +598,7 @@ class _CustomStepperState extends State<CustomStepper> with TickerProviderStateM
                 curve: Curves.fastOutSlowIn,
                 duration: kThemeAnimationDuration,
                 child: widget.steps[widget.currentStep].content,
+                vsync: this,
               ),
               _buildVerticalControls(),
             ],
