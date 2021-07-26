@@ -390,7 +390,6 @@ class Authn /*extends State<Authn>*/ {
       default:
         throw new Exception("Request type is not known.");
     }
-    changeNavigationBarColor();
   }
 
   bool _isBusyIndicatorVisible = false;

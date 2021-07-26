@@ -171,8 +171,6 @@ class _CustomDatePicker extends State<CustomDatePicker> {
 
   Widget showAndroidDatePickerHoloTheme(BuildContext context){
     if (widget.onShowValue != null) {
-      var t = CustomDatePicker.formatDate(widget.onShowValue);
-      print(t);
       //widget.textEditingController.text = CustomDatePicker.formatDate(widget.onShowValue);
       widget.textEditingController.addListener(() {
         if (widget.text == '')

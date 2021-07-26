@@ -125,6 +125,7 @@ class StepperBloc extends Bloc<StepperEvent, StepperState> {
   @override
   Stream<StepperState> mapEventToState(StepperEvent event) async* {
     _log.log(Level.INFO, "Changing the state of stepper {${event.toString()}");
+    print("Stepper bloc mapEventToState");
     if (event is StepTapped) {
 
       if (event.step < state.maxSteps-1) // do not allow access to last step

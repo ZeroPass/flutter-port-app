@@ -36,7 +36,7 @@ class HTTPrequest {
       return Request(false, "HTTP status code error: $statusCode");
 
     Map<String, String> headers = response.headers;
-    String contentType = headers['content-type'];
+    String contentType = headers!['content-type'];
     if (contentType != "application/json")
       return Request(false,
           "Header content type is not correct (application/json) It is: $contentType");

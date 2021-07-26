@@ -32,9 +32,9 @@ class _DotsState extends State<Dots> {
   }
 
   void update() {
-    setState(() {
+    //setState(() {
       activeDot = (activeDot + 1) % this.widget.numberOfDots;
-    });
+    //});
   }
 
   @override

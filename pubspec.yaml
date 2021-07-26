@@ -69,6 +69,7 @@ dependencies:
   permission_handler: ^6.1.3
   qr_code_scanner: ^0.5.1
   eosdart_ecc: ^0.4.3
+  firebase_dynamic_links: ^2.0.7
 
 dependency_overrides:
   convert: ^2.0.1
@@ -137,10 +138,10 @@ flutter:
     - assets/anim/success_check.flr
     - assets/anim/nfc.flr
     - assets/certs/passid_srv.cer
-    - assets/images/passid.png
-    - assets/images/passid_icon.png
-    - assets/images/passid_icon_background.png
-    - assets/images/passid_icon_foreground.png
+    - assets/images/port.png
+    - assets/images/port_icon.png
+    - assets/images/port_icon_background.png
+    - assets/images/port_icon_foreground.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

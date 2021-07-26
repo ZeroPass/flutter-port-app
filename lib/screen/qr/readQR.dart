@@ -42,8 +42,7 @@ class _ReadQRState extends State<ReadQR> {
   @override
   Widget build(BuildContext context) {
     this.isCaptured = false;
-    return Scaffold(
-      body: Column(
+    return Column(
         children: <Widget>[
           Expanded(flex: 4, child: _buildQrView(context)),
           FittedBox(
@@ -99,7 +98,6 @@ class _ReadQRState extends State<ReadQR> {
               ),
             )
         ],
-      ),
     );
   }
 
@@ -112,7 +110,7 @@ class _ReadQRState extends State<ReadQR> {
     // To ensure the Scanner view is properly sizes after rotation
     // we need to listen for Flutter SizeChanged notification and update controller
     return QRView(
-      overlayMargin: EdgeInsets.fromLTRB(90, 70, 50, 30),
+      //overlayMargin: EdgeInsets.fromLTRB(90, 70, 50, 30),
       key: qrKey,
       onQRViewCreated: _onQRViewCreated,
       overlay: QrScannerOverlayShape(
@@ -128,17 +126,12 @@ class _ReadQRState extends State<ReadQR> {
     _log.debug("Saving data to database : ${data.toString()}");
     Storage storage = Storage();
 
-    //set accountID
-    //StepDataEnterAccount stepDataEnterAccount = storage.getStorageData(0);
-    //stepDataEnterAccount.accountID = data.accountID;
-
     //set request type
     StepDataAttestation stepDataAttestation = storage.getStorageData(2) as StepDataAttestation;
     stepDataAttestation.requestType = data.requestType;
 
     //set request as outside call
     storage.outsideCall = OutsideCallV0dot1();
-    //reqeustedBy: Server(host: data.host)
     storage.outsideCall.setV0dot1(qRserverStructure:
     QRserverStructure(accountID: data.accountID, requestType: data.requestType, host: data.host));
   }
@@ -153,33 +146,6 @@ class _ReadQRState extends State<ReadQR> {
 
       saveToDatabase(qr);
       return Future.value(true);
-
-      /*bool? answer =  await showAlert<bool>(
-          context: context,
-          title: Text("The data have been accurred successfully. Do you want to fill data automatically."),
-          closeOnBackPressed: true,
-          actions: [
-            PlatformDialogAction(
-                child: PlatformText('No',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
-                onPressed: () {
-                  Navigator.pop(context, false);
-                  _log.debug("User canceled the process.");
-                  //return false;
-                }),
-            PlatformDialogAction(
-                child: PlatformText('Yes',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
-                onPressed: () {
-                  Navigator.pop(context, true);
-                  _log.debug("User approved the process.");
-                  //add data to the database
-                  saveToDatabase(qr);
-                  //return true;
-                })
-            ]);
-      return Future.value(answer);*/
-
     }
     catch(e){
       print ("Error occurred when parsing QR data: $e");
@@ -189,7 +155,8 @@ class _ReadQRState extends State<ReadQR> {
   }
   void redirect(){
     _log.debug("Redirecting to new screen. Also clearing stack of screens.");
-    Navigator.of(context).pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
+    //Navigator.of(context).pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
+    Navigator.pushNamed(context, '/home');
   }
 
 
@@ -202,7 +169,6 @@ class _ReadQRState extends State<ReadQR> {
       controller.stopCamera();
       //setState(() {
         try {
-
           this.isCaptured = true;
           bool continueProcess = await this.readQR(scanData);
 

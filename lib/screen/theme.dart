@@ -212,7 +212,7 @@ class ThemeValues{
 //change the color of navigation color
 void changeNavigationBarColor() async {
   try {
-    SystemChrome.setEnabledSystemUIOverlays (SystemUiOverlay.values);
+    SystemChrome.setEnabledSystemUIMode (SystemUiMode.manual, overlays: SystemUiOverlay.values);
     //FlutterStatusbarcolor.setStatusBarColor(Color(0xFF4f5f96));
     //await FlutterStatusbarcolor.setNavigationBarColor(Color(0xFFF0F0F0));
     FlutterStatusbarcolor.setNavigationBarWhiteForeground(false);
@@ -224,7 +224,15 @@ void changeNavigationBarColor() async {
 void removeNavigationBar() async {
   try {
     //SystemChrome.setEnabledSystemUIOverlays ([SystemUiOverlay.top]);
-    SystemChrome.setEnabledSystemUIOverlays ([]);
+    SystemChrome.setEnabledSystemUIMode (SystemUiMode.manual, overlays: []);
+  } on PlatformException catch (e) {
+    debugPrint(e.toString());
+  }
+}
+
+void showNavigationBar() async {
+  try {
+    //SystemChrome.setEnabledSystemUIMode (SystemUiOverlay.values);
   } on PlatformException catch (e) {
     debugPrint(e.toString());
   }
@@ -262,7 +270,6 @@ class AndroidTheme extends CustomTheme{
           buttonColor: Color(0xFFa58157),
           textTheme: ButtonTextTheme.primary,
         ),
-      buttonColor: Color(0xFFa58157),
     );
   }
 

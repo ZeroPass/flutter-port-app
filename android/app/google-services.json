@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "318372668562",
+    "project_id": "port-c1043",
+    "storage_bucket": "port-c1043.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:318372668562:android:09c82d93b523178bf0324b",
+        "android_client_info": {
+          "package_name": "io.zeropass.port"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "318372668562-kv5evo677sm2ogemcag0g2tjnguv46m5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDH5_iZMJLkDzPHkKAaVcwW1ryms8KG5t4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "318372668562-kv5evo677sm2ogemcag0g2tjnguv46m5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

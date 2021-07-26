@@ -1,21 +1,13 @@
+import 'package:eosio_port_mobile_app/screen/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:eosio_port_mobile_app/screen/qr/readQR.dart';
 
-
 class QRscreen extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
-    return PlatformScaffold(
-        material: (_,__) => MaterialScaffoldData(resizeToAvoidBottomInset: false),
-        cupertino: (_,__) => CupertinoPageScaffoldData(resizeToAvoidBottomInset: false),
-        appBar: PlatformAppBar(
-          title: Text("Scanning QR code"),
-        ),
-        body:QRscreenBody()
-    );
+    return QRscreenBody();
   }
 }
 
@@ -29,11 +21,11 @@ class _QRscreenBodyState extends State<QRscreenBody> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        child: Form(
-            key: _formKey,
-            child: ReadQR()
-        )
-    );
+    showNavigationBar();
+    return PlatformScaffold(
+        appBar: PlatformAppBar(
+          title: Text("Scanning QR code"),
+        ),
+        body: Container(child: Form(key: _formKey, child: ReadQR())));
   }
 }
