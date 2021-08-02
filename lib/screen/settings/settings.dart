@@ -80,10 +80,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   }),
                   CustomCardSettingsButton (
                       bottomSpacing: 5,
-                      label: "Scanning QR",
+                      label: "Demo mode",
                       onPressed: (){
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) => QRscreen()));
+                        Navigator.pushNamed(context, '/home');
                       })
               ]
             ),

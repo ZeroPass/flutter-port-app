@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:eosio_port_mobile_app/screen/index/index.dart';
 import 'package:eosio_port_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
 import 'package:eosio_port_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
 import 'package:eosio_port_mobile_app/screen/main/stepper/stepperBloc.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
@@ -19,6 +21,20 @@ import 'package:eosio_port_mobile_app/utils/storage.dart';
 class ReadQR extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _ReadQRState();
+
+  static void saveToDatabase(QRserverStructure data){
+    Logger("QRstrucutre.saveToDatabase").debug("Saving data to database : ${data.toString()}");
+    Storage storage = Storage();
+
+    //set request type
+    StepDataAttestation stepDataAttestation = storage.getStorageData(2) as StepDataAttestation;
+    stepDataAttestation.requestType = data.requestType;
+
+    //set request as outside call
+    storage.outsideCall = OutsideCallV0dot1();
+    storage.outsideCall.setV0dot1(qRserverStructure:
+    QRserverStructure(accountID: data.accountID, requestType: data.requestType, host: data.host));
+  }
 }
 
 class _ReadQRState extends State<ReadQR> {
@@ -122,29 +138,13 @@ class _ReadQRState extends State<ReadQR> {
     );
   }
   
-  void saveToDatabase(QRserverStructure data){
-    _log.debug("Saving data to database : ${data.toString()}");
-    Storage storage = Storage();
-
-    //set request type
-    StepDataAttestation stepDataAttestation = storage.getStorageData(2) as StepDataAttestation;
-    stepDataAttestation.requestType = data.requestType;
-
-    //set request as outside call
-    storage.outsideCall = OutsideCallV0dot1();
-    storage.outsideCall.setV0dot1(qRserverStructure:
-    QRserverStructure(accountID: data.accountID, requestType: data.requestType, host: data.host));
-  }
-  
   Future<bool> readQR(Barcode scanData) async{
     try{
-      var qr = QRserverStructure.fromJson(jsonDecode(scanData.code.replaceAll('\n', "").replaceAll(' ', '')));
-      if (qr.accountID == null || qr.accountID == '')
-        throw Exception("Not valid accountID in QR code");
+      QRserverStructure? qr = QRserverStructure.parseDynamicLink(scanData.code.replaceAll('\n', "").replaceAll(' ', ''));
+      if (qr == null)
+        throw Exception("Error when parsing dynamic link");
 
-      _log.debug("Data from QR successfully read / parsed: ${qr}");
-
-      saveToDatabase(qr);
+      ReadQR.saveToDatabase(qr);
       return Future.value(true);
     }
     catch(e){

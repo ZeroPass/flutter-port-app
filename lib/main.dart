@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:eosio_port_mobile_app/screen/qr/QRscreen.dart';
+import 'package:eosio_port_mobile_app/screen/qr/structure.dart';
 import 'package:eosio_port_mobile_app/screen/requestType.dart';
 import 'package:eosio_port_mobile_app/constants/constants.dart';
 import 'package:eosio_port_mobile_app/utils/storage.dart';
@@ -127,7 +128,7 @@ void loadDatabase({required Future<void> Function(Storage, bool, bool, {String? 
 class Port extends StatelessWidget {
 
   dynamic routes = {
-    '/index' : (context) => Index(),
+    '/index' : (context) => IndexScreen(),
     '/home' : (context) => PortStepperScreen(), //looking for dynamic links
     '/homeMagnetLink' : (context) => PortStepperWidget(), //dynamic link skipped
     '/QR' : (context) => QRscreen()
@@ -135,8 +136,7 @@ class Port extends StatelessWidget {
 
 
 
-  void initialActions(){
-
+  void initialActions() async{
     //clean old logger handler
     Logger.root.level = Level.ALL;
     LH.LoggerHandler loggerHandler = LH.LoggerHandler();
@@ -156,9 +156,9 @@ class Port extends StatelessWidget {
     fillDatabase().then((value) {});
   }
 
+
   @override
   Widget build(BuildContext context) {
-
     this.initialActions();
 
     return PlatformProvider(

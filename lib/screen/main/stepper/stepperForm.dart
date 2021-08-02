@@ -437,10 +437,10 @@ class _StepperFormState extends State<StepperForm> {
       stepperBloc.liveModifyHeader(3, context, dataInStep: false);
 
       //
-      if (storage.outsideCall.isOutsideCall){
+      /*if (storage.outsideCall.isOutsideCall){
         final stepperBloc = BlocProvider.of<StepperBloc>(context);
         stepperBloc.add(StepAfterQR(previousStep: 0));
-      }
+      }*/
     });
     return Future.value(true);
   }

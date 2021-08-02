@@ -145,8 +145,6 @@ class Authn /*extends State<Authn>*/ {
         ServerCloud(name: "TemporaryServer", host: storage.outsideCall.getStructV1()!.host.host):
         storage.getServerCloudSelected(networkTypeServer: NetworkTypeServer.MAIN_SERVER);
 
-      ServerCloud? serverCloud1 = storage.getServerCloudSelected(networkTypeServer: NetworkTypeServer.MAIN_SERVER);
-
       if (serverCloud == null)
         throw Exception("ServerCloud (main server) is empty. Without server you cannot check passport trust chain.");
 

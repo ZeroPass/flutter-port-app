@@ -81,6 +81,29 @@ class QRserverStructure extends QRstructure {
           requestType: requestType,
           host: host);
 
+  static QRserverStructure? parseDynamicLink(String data){
+    try{
+        Uri uri = Uri.parse(data);
+        if (!uri.hasQuery)
+          throw ('No query in dynamic link url.');
+
+        var queryParameters = uri.queryParameters;
+
+        if (!queryParameters.containsKey('link'))
+          throw ('No "link" parameter in query');
+
+        var link = queryParameters['link'];
+
+        var deepLinkURL = Uri.parse(link!);
+
+        return QRserverStructure.fromJson(deepLinkURL.queryParameters);
+    }
+    catch(e){
+      _log.debug("Error while parsing dynamic link: " + e.toString());
+    }
+
+  }
+
   factory QRserverStructure.fromJson(Map<String, dynamic> json) =>
       _$QRserverStrucutreFromJson(json);
 

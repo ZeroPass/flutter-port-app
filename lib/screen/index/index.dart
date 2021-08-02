@@ -1,4 +1,7 @@
 import 'package:eosio_port_mobile_app/constants/constants.dart';
+import 'package:eosio_port_mobile_app/screen/nfc/uie/uiutils.dart';
+import 'package:eosio_port_mobile_app/screen/qr/readQR.dart';
+import 'package:eosio_port_mobile_app/screen/qr/structure.dart';
 import 'package:eosio_port_mobile_app/screen/settings/settings.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
@@ -10,30 +13,24 @@ import 'package:card_settings/card_settings.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../slideToSideRoute.dart';
 
 
 class Index extends StatelessWidget {
 
-  @override
-  Widget build(BuildContext context) {
-    return IndexScreen();
-  }
-}
 
-class IndexScreen extends StatefulWidget {
-  @override
-  _IndexScreenState createState() => _IndexScreenState();
-}
-
-
-class _IndexScreenState extends State<IndexScreen> {
-
-  @override
-  void initState() {
-
-    super.initState();
+  bool handleAndSaveData(Map<String, dynamic> data){
+    try{
+      var qr = QRserverStructure.fromJson(data);
+      ReadQR.saveToDatabase(qr);
+      return true;
+    }
+    catch(e) {
+      print("Dynamic link.handleAndSaveData: Exception: " + e.toString());
+      return false;
+    }
   }
 
   Future<void> initDynamicLinks(BuildContext context) async {
@@ -55,15 +52,34 @@ class _IndexScreenState extends State<IndexScreen> {
     final Uri? deepLink = data?.link;
 
     if (deepLink != null) {
-      // ignore: unawaited_futures
-      //Navigator.of(context).pushNamedAndRemoveUntil(deepLink.path, (Route<dynamic> route) => false);
-      Navigator.pushNamed(context, deepLink.path);
+      if (handleAndSaveData(deepLink.queryParameters))
+        Navigator.pushNamed(context, deepLink.path);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     this.initDynamicLinks(context);
+    return IndexScreen();
+  }
+}
+
+class IndexScreen extends StatefulWidget {
+  @override
+  _IndexScreenState createState() => _IndexScreenState();
+}
+
+
+class _IndexScreenState extends State<IndexScreen> {
+
+  @override
+  void initState() {
+
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     showNavigationBar();
     var _SCAFFOLD_KEY = GlobalKey<ScaffoldState>();
 
@@ -113,46 +129,57 @@ class _IndexScreenState extends State<IndexScreen> {
                 ),
               ),
               Expanded(
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Image.asset('assets/images/port_icon.png',
-                      width: MediaQuery.of(context).size.width * 0.7,
-                      fit: BoxFit.fitHeight,
-                    )
-                  ],
-                ),
-              ),
-              Expanded(
-                child:Container(
-                    child: Align(
+                child: Container(
+                        //color: Colors.green,
                         alignment: Alignment.bottomCenter,
+                        padding: EdgeInsets.only(top: 25),
+                        //margin: EdgeInsets.only(top:25),
+                        width: MediaQuery.of(context).size.width/3,
+                        height: MediaQuery.of(context).size.height/2,
+                        child: SvgPicture.asset(
+                          'assets/images/port.link.logo.text.svg',
+                          semanticsLabel: 'Logo'
+                    )
+                ),
+
+              ),
+          Flexible(
+            child:Container(
+                  height: MediaQuery.of(context).size.height/6,
+                  //color: Colors.amber,
+                  alignment: Alignment.center,
+                  child: SelectableText(
+                  'Welcome to the Port app!\n' +
+                  'Locate the Port QR code and scan it.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize: 18,
+
+                    color: AndroidThemeST().getValues().themeValues["STEPPER"]
+                    ["STEP_SCAN"]["COLOR_TEXT"]),
+              ))),
+              Container(
+                    child: Align(
+                        alignment: Alignment.topCenter,
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.start,
                           mainAxisSize: MainAxisSize.max,
 
                           children: [
-                            Padding(
-                              padding: EdgeInsets.only(bottom: 25),
-                              child: CustomButton(
-                                callbackOnPressed: () async {
+                            makeButton(
+                                context: context,
+                                margin: EdgeInsets.only(left: 30.0, right: 30.0, bottom: 25),
+                                text: 'Scan QR code',
+                                onPressed: () async {
                                   Navigator.of(context).pushNamed('/QR');
-                                  //SystemChrome.setEnabledSystemUIMode(
-                                  //    SystemUiMode.edgeToEdge, overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom]);
-                                },
-                                title: 'Scan QR code',
-                                backgroundColor: Color(0xFFA58157),
-                              ),
+                                }
                             )
 
                   ],
                 )
                 )
                 ),
-              )
+
             ],
           ),
         ),

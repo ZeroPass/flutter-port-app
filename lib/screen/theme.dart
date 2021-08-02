@@ -170,7 +170,7 @@ class ThemeValues{
     "APP_DATA":
     {
       "VERSION": "0.0.1",
-      "YEAR_LAST_UPDATE": 2020,
+      "YEAR_LAST_UPDATE": 2021,
       "COMPANY_NAME": "ZeroPass"
     },
     "FLUSHBAR":
