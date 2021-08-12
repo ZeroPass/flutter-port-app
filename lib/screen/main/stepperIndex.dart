@@ -1,13 +1,10 @@
 import 'dart:io';
-
-import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:eosio_port_mobile_app/screen/main/stepper/stepper.dart';
 import 'package:eosio_port_mobile_app/utils/storage.dart';
-import 'package:eosio_port_mobile_app/screen/main/stepper/customStepper.dart';
 import 'package:eosio_port_mobile_app/utils/logging/loggerHandler.dart' as LH;
 
 import 'package:eosio_port_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
@@ -18,10 +15,10 @@ import 'package:eosio_port_mobile_app/screen/main/stepper/stepAttestation/stepAt
 import 'package:eosio_port_mobile_app/screen/main/stepper/stepAttestation/stepAttestationHeader/stepAttestationHeader.dart';
 import 'package:eosio_port_mobile_app/screen/main/stepper/stepReview/stepReview.dart';
 import 'package:eosio_port_mobile_app/screen/main/stepper/stepReview/stepReviewHeader/stepReviewHeader.dart';
+import 'package:flutter_svg/svg.dart';
 
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 import 'package:logging/logging.dart';
-import 'package:eosio_port_mobile_app/screen/theme.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 GlobalKey<ScaffoldState> _SCAFFOLD_KEY = GlobalKey<ScaffoldState>();
@@ -76,13 +73,6 @@ class _PortStepperWidgetState extends State<PortStepperWidget> with TickerProvid
     ]);
   }
 
-  @override
-  void dispose() {
-    //SystemChrome.setEnabledSystemUIMode(
-    //    SystemUiMode.manual, overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom]);
-    super.dispose();
-  }
-
   bool _moveToIndexScreen(BuildContext context){
     Navigator.of(context).pushNamedAndRemoveUntil("/index", (Route<dynamic> route) => false);
     return true;
@@ -100,17 +90,31 @@ class _PortStepperWidgetState extends State<PortStepperWidget> with TickerProvid
         key: _SCAFFOLD_KEY,
         appBar: PlatformAppBar(
           automaticallyImplyLeading: true,
-          title: Row(
+          leading: ,
+          title:
+          Container(
+            //color: Colors.green,
+            child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-              Container(
+              /*Container(
+                  //color: Colors.cyan,
                   width: 35,
                   height: 35,
-                  child: Image(image: AssetImage('assets/images/port.png'))),
-              Text("     Port",
-                  style: TextStyle(color: Colors.white)),
+                  child: Image(image: AssetImage('assets/images/port.png'))),*/
+              Container(
+                  margin: EdgeInsets.only(left: 0),
+                  width: 50,
+                  height: 35,
+                  child: SvgPicture.asset(
+                      'assets/images/port_text_white.svg',
+                      semanticsLabel: 'Port text'),
+                      ),
+              //Text("     Port",
+              //    style: TextStyle(color: Colors.white)),
             ],
           ),
+          )
         ),
         body: WillPopScope (
     onWillPop: () async {

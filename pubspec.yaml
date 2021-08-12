@@ -139,6 +139,8 @@ flutter:
     - assets/anim/nfc.flr
     - assets/certs/passid_srv.cer
     - assets/images/port.png
+    - assets/images/port_text.svg
+    - assets/images/port_text_white.svg
     - assets/images/port_icon.png
     - assets/images/port_icon_background.png
     - assets/images/port_icon_foreground.png

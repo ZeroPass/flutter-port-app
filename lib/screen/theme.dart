@@ -91,6 +91,10 @@ Map light = {
   {
     "COLOR_FOCUS_BORDER": Color(0xFFa58157)
   },
+  "INDEX_SCREEN":
+  {
+    "COLOR_BACKGROUND": Color(0xFFa58157)
+  },
   "OUTSIDE_CALL":
   {
     "BAR_BACKGROUND_COLOR": Color(0xFFa58157),
@@ -193,6 +197,10 @@ class ThemeValues{
     "QR_SCREEN":
     {
       "COLOR_FOCUS_BORDER": null
+    },
+    "INDEX_SCREEN":
+    {
+      "COLOR_BACKGROUND": null
     },
     "OUTSIDE_CALL":
     {
