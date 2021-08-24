@@ -3,11 +3,16 @@ import 'package:eosio_port_mobile_app/screen/qr/readQR.dart';
 import 'package:eosio_port_mobile_app/screen/qr/structure.dart';
 import 'package:eosio_port_mobile_app/screen/settings/settings.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
+import 'package:flare_flutter/flare_actor.dart';
+import 'package:flare_flutter/flare_cache_builder.dart';
+import 'package:flare_flutter/provider/asset_flare.dart';
 import 'package:flutter/material.dart';
 import 'package:eosio_port_mobile_app/screen/theme.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:rive/rive.dart';
 
 import '../slideToSideRoute.dart';
 
@@ -63,11 +68,6 @@ class IndexScreen extends StatefulWidget {
 
 class _IndexScreenState extends State<IndexScreen> {
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     showNavigationBar();
     var _SCAFFOLD_KEY = GlobalKey<ScaffoldState>();
@@ -112,7 +112,7 @@ class _IndexScreenState extends State<IndexScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                  height: MediaQuery.of(context).size.width / 3,
+                  height: MediaQuery.of(context).size.width /3,
                   child: SvgPicture.asset(
                       'assets/images/port.link.logo.text.svg',
                       semanticsLabel: 'Logo')),

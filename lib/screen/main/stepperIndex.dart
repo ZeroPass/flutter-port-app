@@ -90,7 +90,6 @@ class _PortStepperWidgetState extends State<PortStepperWidget> with TickerProvid
         key: _SCAFFOLD_KEY,
         appBar: PlatformAppBar(
           automaticallyImplyLeading: true,
-          leading: ,
           title:
           Container(
             //color: Colors.green,

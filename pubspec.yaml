@@ -40,7 +40,7 @@ dependencies:
     git:
       url: https://github.com/ZeroPass/dmrtd.git
   equatable: ^2.0.0
-  flare_flutter: ^3.0.0
+  flare_flutter: ^3.0.2
   http: ^0.13.0
   flutter:
     sdk: flutter
@@ -70,6 +70,7 @@ dependencies:
   qr_code_scanner: ^0.5.1
   eosdart_ecc: ^0.4.3
   firebase_dynamic_links: ^2.0.7
+  rive: ^0.7.22
 
 dependency_overrides:
   convert: ^2.0.1
@@ -135,8 +136,10 @@ flutter:
   # see https://flutter.dev/custom-fonts/#from-packages
 
   assets:
+    - assets/anim/checkmarks.riv
     - assets/anim/success_check.flr
     - assets/anim/nfc.flr
+    - assets/anim/nfc.riv
     - assets/certs/passid_srv.cer
     - assets/images/port.png
     - assets/images/port_text.svg

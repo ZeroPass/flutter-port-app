@@ -5,12 +5,15 @@ import 'package:flare_flutter/provider/asset_flare.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:rive/rive.dart';
 import 'uiutils.dart';
 
 /// Class displays BottomSheet dialog which
 /// shows to the user NFC scanning state via [message].
 class NfcScanDialog {
   final BuildContext context;
+  Artboard? _riveArtboard;
+  late RiveAnimationController _animationController;
 
   // Get or set currently displayed message
   String get message => _msg;
@@ -20,11 +23,32 @@ class NfcScanDialog {
   /// [onCancel] callback which is called when user presses cancel button.
   /// If callback [onCancel] is not provided or null the cancel button will be hidden.
   NfcScanDialog(this.context, {Function()? onCancel}) : _onCancelCB = onCancel {
+
     _showCancelButton = _onCancelCB != null;
+
+    rootBundle.load(_IconAnimations.animationName).then(
+          (data) async {
+        try {
+          // Load the RiveFile from the binary data.
+          final file = RiveFile.import(data);
+          _riveArtboard = file.mainArtboard;
+            _riveArtboard!.addController(
+                _animationController = SimpleAnimation('nfc'));
+        }
+        catch(exception){
+          print("Problem occured when loading rive file: " + exception.toString());
+        }
+      },
+    );
   }
 
   /// Shows bottom dialog with optionally [message] string.
   Future<T?> show<T>({String? message}) {
+    if (_sheetSetter != null)
+      _sheetSetter!((){
+        //refresh the state(re-render) of bottom sheet
+      });
+
     return _showBottomSheet<T>(message)!.then((value) async {
       if (_closingOperation != null) {
         await _closingOperation!.cancel();
@@ -63,7 +87,7 @@ class NfcScanDialog {
   void _setMessage(final String msg) {
     if (_sheetSetter != null) {
       _sheetSetter!(() {
-        _iconAnimation = _IconAnimations.animScanning;
+        _riveArtboard!.addController(_animationController = SimpleAnimation(_IconAnimations.animScanning));
         _msg = msg;
       });
     } else {
@@ -77,7 +101,7 @@ class NfcScanDialog {
     }
 
     _showCancelButton = _onCancelCB != null;
-    _iconAnimation = _IconAnimations.animWaiting;
+        _animationController = SimpleAnimation(_IconAnimations.animWaiting);
     _msg = msg ?? '';
     return showModalBottomSheet(
         context: context,
@@ -108,12 +132,10 @@ class NfcScanDialog {
                                   Container(
                                       width: 100,
                                       height: 100,
-                                      child: FlareActor.asset(
-                                        _IconAnimations.file,
-                                        alignment: Alignment.center,
-                                        fit: BoxFit.cover,
-                                        animation: _iconAnimation,
-                                      )),
+                                      child: _riveArtboard == null?
+                                        Text('loading'):
+                                        Rive(artboard: _riveArtboard!, alignment: Alignment.centerLeft),
+                                  ),
                                   const SizedBox(height: 15),
                                   ConstrainedBox(
                                       constraints: BoxConstraints(minHeight: 60),
@@ -151,10 +173,12 @@ class NfcScanDialog {
           _showCancelButton = false;
           if (errorMessage != null) {
             _msg = errorMessage;
-            _iconAnimation = _IconAnimations.animError;
+            //_iconAnimation = _IconAnimations.animError;
+            _riveArtboard!.addController(_animationController = SimpleAnimation(_IconAnimations.animError));
           } else if (message != null) {
             _msg = message;
-            _iconAnimation = _IconAnimations.animSuccess;
+            //_iconAnimation = _IconAnimations.animSuccess;
+            _riveArtboard!.addController(_animationController = SimpleAnimation(_IconAnimations.animSuccess));
           }
         });
 
@@ -186,8 +210,7 @@ class NfcScanDialog {
 }
 
 class _IconAnimations {
-  static final file =
-  AssetFlare(bundle: rootBundle, name: 'assets/anim/nfc.flr');
+  static const animationName = 'assets/anim/nfc.riv';
   static const animWaiting  = 'nfc';
   static const animScanning = 'nfc';
   static const animSuccess  = 'checkmark';
