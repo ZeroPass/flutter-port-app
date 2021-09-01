@@ -5,9 +5,6 @@ import 'package:eosio_port_mobile_app/screen/theme.dart';
 
 void showFlushbar(BuildContext context, String title, String message, IconData icon, {int duration = 5})
 {
-  if (icon == null)
-    icon = Icons.warning;
-
   Flushbar(
       icon: Icon(
         icon,

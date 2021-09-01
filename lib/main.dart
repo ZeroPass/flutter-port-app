@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:eosio_port_mobile_app/screen/nfc/authn/authn.dart';
 import 'package:eosio_port_mobile_app/screen/qr/QRscreen.dart';
 import 'package:eosio_port_mobile_app/screen/qr/structure.dart';
 import 'package:eosio_port_mobile_app/screen/requestType.dart';
@@ -12,6 +13,7 @@ import 'package:eosio_port_mobile_app/screen/main/stepper/stepEnterAccount/stepE
 
 import 'package:eosio_port_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
 import 'package:eosio_port_mobile_app/screen/main/stepperIndex.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:eosio_port_mobile_app/screen/theme.dart';
 import 'package:eosio_port_mobile_app/screen/settings/settings.dart';
@@ -26,7 +28,11 @@ import 'package:eosio_port_mobile_app/screen/index/index.dart';
 var RUN_IN_DEVICE_PREVIEW_MODE = false;
 final _logStorage = Logger('Storage initialization');
 
-void main() {
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  final rawSrvCrt = await rootBundle.load('assets/certs/port_server.cer');
+  ServerSecurityContext.init(rawSrvCrt.buffer.asUint8List());
+
   runApp(Port());
 }
 

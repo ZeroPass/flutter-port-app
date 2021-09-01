@@ -1,7 +1,5 @@
 import 'dart:async';
-import 'package:port/internal.dart';
 import 'package:port/port.dart';
-import 'package:port/src/proto/session.dart';
 import 'package:dmrtd/dmrtd.dart';
 
 class Connection{
@@ -57,10 +55,10 @@ abstract class ConnectionAdapterAPI{
   void _connect(Uri url, int timeout/*in milliseconds*/);
 
   Future<int> ping(int ping);
-  Future<ProtoChallenge> getChallenge();
+  //Future<ProtoChallenge> getChallenge();
   Future<void> cancelChallenge(ProtoChallenge protoChallenge);
-  Future<Session> register(final EfSOD sod, final EfDG15 dg15, final CID cid, final ChallengeSignature csig, {EfDG14 dg14});
-  Future<Session> login(UserId uid, CID cid, ChallengeSignature csig, { EfDG1 dg1 });
-  Future<String> sayHello(Session session);
+  Future<Map<String, dynamic>> register(final UserId userId, final EfSOD sod, final EfDG15 dg15, final CID cid, final ChallengeSignature csig, {EfDG14 dg14});
+  Future<Map<String, dynamic>> getAssertion(UserId uid, CID cid, ChallengeSignature csig);
+  Future<int> sayHello(int number);
 
 }

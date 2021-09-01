@@ -22,6 +22,7 @@ import 'package:eosio_port_mobile_app/screen/main/stepper/customStepper.dart';
 import 'package:logging/logging.dart';
 import 'package:port/internal.dart';
 import 'package:port/port.dart';
+import 'dart:math';
 
 import '../efdg1_dialog.dart';
 import '../passport_scanner.dart';
@@ -47,7 +48,7 @@ class ServerSecurityContext {
   }
 }
 
-enum AuthnAction { register, login }
+enum PortAction { register, login }
 
 class Authn /*extends State<Authn>*/ {
   late PortClient _client;
@@ -61,10 +62,10 @@ class Authn /*extends State<Authn>*/ {
 
   Authn({required this.onDG1FileRequested, required this.showDataToBeSent, required this.showBufferScreen, required this.onConnectionError});
 
-  Future<AuthnData> _getAuthnData(
+  Future<PassportData> _getAuthnData(
       BuildContext context,
       final ProtoChallenge challenge,
-      AuthnAction action,
+      PortAction action,
       String passportID,
       DateTime birthDate,
       DateTime validUntil) async {
@@ -72,10 +73,10 @@ class Authn /*extends State<Authn>*/ {
         context, challenge, action, passportID, birthDate, validUntil);
   }
 
-  Future<AuthnData> _scanPassport(
+  Future<PassportData> _scanPassport(
       BuildContext context,
       ProtoChallenge challenge,
-      AuthnAction action,
+      PortAction action,
       String passportID,
       DateTime birthDate,
       DateTime validUntilDate) async {
@@ -112,7 +113,7 @@ class Authn /*extends State<Authn>*/ {
     return missingValuesText;
   }
 
-  Future<bool?> startAction(BuildContext context, AuthnAction action,
+  Future<bool?> startAction(BuildContext context, PortAction action,
       String accountName, NetworkType networkType,
       {bool fakeAuthnData = false, bool sendDG1 = false, required ScrollController scrollController, required int maxSteps}) async {
     //TODO: accountName is not implemented
@@ -161,10 +162,41 @@ class Authn /*extends State<Authn>*/ {
 
       _client =  PortClient(serverCloud.host, httpClient: httpClient);
       _client.onConnectionError = this.onConnectionError;
-      _client.onDG1FileRequested = this.onDG1FileRequested;
 
-      if (action == AuthnAction.register) {
-        await _client.register((challenge) async {
+      try {
+        await _client.ping(Random().nextInt(0xffffffff));
+      } catch (e) {
+        _log.error(e);
+        throw JRPClientError("Cannot connect to server.");
+      }
+
+      Map<String, dynamic> srvResult;
+
+      if (action == PortAction.register) {
+        srvResult = await _client.register(UserId.fromString('test'), (challenge) async {
+          //unawaited(_hideBusyIndicator());
+          await _hideBusyIndicator();
+          return _scanPassport(context,
+              challenge,
+              PortAction.register,
+              storageStepScan.getDocumentID(),
+              storageStepScan.getBirth(),
+              storageStepScan.getValidUntil()).then((PassportData data) async {
+            var e =  showDataToBeSent();
+            Future.delayed(const Duration(milliseconds: 999), (){
+              scrollController.animateTo(headersHeightTillStep(maxSteps - 1), duration: Duration(milliseconds: 1000), curve: Curves.ease);
+            });
+            bool? response = await e;
+            if (response == null || !response) {
+              // User said no.
+              throw PassportScannerError('Get me out');
+            }
+            await this.showBufferScreen();
+            return RegistrationAuthnData(sod: data.sod!, dg15: data.dg15!, dg14: data.dg14, csig: data.csig!);
+            });
+        });
+
+        /*await _client.register((challenge) async {
 
           await _hideBusyIndicator();
           return _getAuthnData(
@@ -187,24 +219,37 @@ class Authn /*extends State<Authn>*/ {
             await this.showBufferScreen();
             return data;
           });
-        });
+        });*/
         //await e;
       }
+      else if (action == PortAction.login)
+        srvResult = await _client.getAssertion(UserId.fromString('test'), (challenge) async {
+          unawaited(_hideBusyIndicator());
+          return _scanPassport(
+              context,
+              challenge,
+              PortAction.login,
+              storageStepScan.getDocumentID(),
+              storageStepScan.getBirth(),
+              storageStepScan.getValidUntil()).then((data) {
+            _showBusyIndicator(context, msg: 'Logging in ...');
+            return data.csig!;
+          });
+        });
+
       else
-        await _client.login((challenge) async {
+        throw Exception("Not known action type");
+        /*await _client.login((challenge) async {
           StepDataScan storageStepScan = storage.getStorageData(1) as StepDataScan;
           await _hideBusyIndicator();
           return _getAuthnData(
                   context,
                   challenge,
-                  AuthnAction.login,
+                  PortAction.login,
                   storageStepScan.getDocumentID(),
                   storageStepScan.getBirth(),
                   storageStepScan.getValidUntil())
                   .then((data) async {
-            if (fakeAuthnData) {
-              data = _fakeData(data);
-            }
             if (sendDG1) {
               if (data != null && data.dg1 != null ) {
                 var responseDG1 = await this.onDG1FileRequested(data.dg1!);
@@ -240,7 +285,7 @@ class Authn /*extends State<Authn>*/ {
             await this.showBufferScreen();
             return data;
           });
-        }, sendEfDG1: sendDG1);
+        }, sendEfDG1: sendDG1);*/
 
       await _hideBusyIndicator();
       return true;
@@ -262,55 +307,41 @@ class Authn /*extends State<Authn>*/ {
       } // should be already handled through _handleConnectionError callback
       else if (e is HandshakeException){
         alertTitle = "Authentication error";
-        alertMsg = e.message;
+        alertMsg = e.toString();
       }
       else if (e is PortError) {
-        if (!e.isDG1Required()) {
-          // DG1 required error should be handled through _handleDG1Request callback
-          _log.error(
-              'An unhandled passId exception, closing this screen.\n error=$e');
-          alertTitle = 'PassID Error';
-          final msg = e.message.toLowerCase();
-          switch (e.code) {
-            case 401:
-              alertMsg = 'Attestation failed!';
+        _log.error('An unhandled Port exception, closing this screen.\n error=$e');
+        alertTitle = 'Port Error';
+        switch(e.code){
+          case 401: alertMsg = 'Authorization failed!'; break;
+          case 404: {
+            alertMsg = e.message;
+            if (alertMsg == 'Account not found') {
+              alertMsg = 'Account not registered!';
+            }
+          } break;
+          case 406: {
+            alertMsg = 'Passport verification failed!';
+            final msg = e.message.toLowerCase();
+            if(msg.contains('invalid dg1 file')) {
+              alertMsg = 'Server refused to accept sent personal data!';
+            }
+            else if(msg.contains('invalid dg15 file')) {
+              alertMsg = "Server refused to accept passport's public key!";
+            }
+          } break;
+          case 409: alertMsg = 'Account already exists!'; break;
+          case 412: alertMsg = 'Passport trust chain verification failed!'; break;
+          case 498: {
+            final msg = e.message.toLowerCase();
+            if(msg.contains('account has expired')) {
+              alertMsg = 'Account has expired, please register again!';
               break;
-            //case 404: // TODO: parse message and translate it to system language
-            case 406:
-              {
-                alertMsg = 'Passport verification failed!';
-                if (msg.contains('invalid dg1 file')) {
-                  alertMsg = 'Server refused to accept sent personal data!';
-                } else if (msg.contains('invalid dg15 file')) {
-                  alertMsg = "Server refused to accept passport's public key!";
-                }
-              }
-              break;
-            case 409:
-              alertMsg = 'Account already exists!';
-              break;
-            case 412:
-              alertTitle = 'Attestation failed';
-              alertMsg = 'Passport trust chain verification failed!';
-              if (msg.contains('invalid')) {
-                alertMsg = 'Invalid passport data';
-                if (fakeAuthnData) {
-                  alertMsg = "Could not attest you as $_fakeName";
-                }
-              }
-              break;
-            case 498:
-              {
-                if (msg.contains('account has expired')) {
-                  alertMsg = 'Account has expired, please register again!';
-                  break;
-                }
-              }
-              continue dflt;
-            dflt:
-            default:
-              alertMsg = 'Server returned error:\n\n${e.message}';
-          }
+            }
+          } continue dflt;
+          dflt:
+          default:
+            alertMsg = 'Server returned error:\n\n${e.message}';
         }
       } else {
         _log.error(
@@ -344,25 +375,6 @@ class Authn /*extends State<Authn>*/ {
     }
   }
 
-  AuthnData _fakeData(AuthnData data) {
-    // Fake the name of passport owner
-    if (data.dg1 == null)
-      throw Exception("Function _fakeData; no dg1");
-    final rawDG1 = data.dg1!.toBytes();
-    final name = _fakeName.replaceAll(' ', '<<');
-    // Works for TD3 (passport MRZ) only.
-    // On other formats (TD1, TD2) will write to the wrong location.
-    for (int i = 0; i < 39; i++) {
-      int b = '<'.codeUnitAt(0);
-      if (i < name.length) {
-        b = name[i].codeUnitAt(0);
-      }
-      rawDG1[i + 10] = b; // The name field starts at position 10 on TD3
-    }
-    final dg1 = EfDG1.fromBytes(rawDG1);
-    return AuthnData(dg15: data.dg15, csig: data.csig, dg1: dg1);
-  }
-
   String _formatAttestationSuccess(String greeting) {
     var names = greeting.replaceAll('Hi, ', '');
     names = names.replaceAll('!', '');
@@ -372,17 +384,17 @@ class Authn /*extends State<Authn>*/ {
   Future<bool?> startNFCAction(BuildContext context, RequestType requestType, String accountName, NetworkType networkType,  ScrollController scrollController, int maxSteps) {
     switch (requestType) {
       case RequestType.ATTESTATION_REQUEST:
-        return startAction(context, AuthnAction.register, accountName, networkType, scrollController: scrollController, maxSteps: maxSteps);
+        return startAction(context, PortAction.register, accountName, networkType, scrollController: scrollController, maxSteps: maxSteps);
         break;
       case RequestType.PERSONAL_INFORMATION_REQUEST:
-        return startAction(context, AuthnAction.login, accountName, networkType, sendDG1: true, scrollController: scrollController, maxSteps: maxSteps);
+        return startAction(context, PortAction.login, accountName, networkType, sendDG1: true, scrollController: scrollController, maxSteps: maxSteps);
         break;
       case RequestType.FAKE_PERSONAL_INFORMATION_REQUEST:
-        return startAction(context, AuthnAction.login, accountName, networkType,
+        return startAction(context, PortAction.login, accountName, networkType,
             fakeAuthnData: true, sendDG1: true, scrollController: scrollController, maxSteps: maxSteps);
         break;
       case RequestType.LOGIN:
-        return startAction(context, AuthnAction.login, accountName, networkType, scrollController: scrollController, maxSteps: maxSteps);
+        return startAction(context, PortAction.login, accountName, networkType, scrollController: scrollController, maxSteps: maxSteps);
         break;
 
       default:

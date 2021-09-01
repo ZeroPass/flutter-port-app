@@ -20,13 +20,13 @@ class _StepScanFormState extends State<StepScanForm> {
   late TextEditingController _passportIdTextController;
   late TextEditingController _birthTextController;
   late TextEditingController _validUntilTextController;
-  late bool _allowExpiredPassport;
+  //late bool _allowExpiredPassport;
 
   _StepScanFormState() {
     _passportIdTextController = TextEditingController();
     _birthTextController = TextEditingController();
     _validUntilTextController = TextEditingController();
-    _allowExpiredPassport = false;
+    //_allowExpiredPassport = false;
   }
 
   //update fields in account form
@@ -144,9 +144,9 @@ class _StepScanFormState extends State<StepScanForm> {
               SizedBox(height: 17),//temp raised from 17
               CustomDatePicker(
                     text:"Date of Expiry",
-                    firstDate:  (this._allowExpiredPassport)
-                    ? DateTime(DateTime.now().year - 90)
-                    : DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day + 1),
+                    firstDate:  /*(this._allowExpiredPassport)
+                    ? DateTime(DateTime.now().year - 90) :*/
+                    DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day + 1),
                   lastDate: DateTime(DateTime.now().year + 10),
                   callbackOnDatePicked: /*callback*/ (selectedDate) {
                   //save to storage
@@ -179,7 +179,7 @@ class _StepScanFormState extends State<StepScanForm> {
                   textEditingController: _validUntilTextController
                   ),
 
-              Row( mainAxisAlignment: MainAxisAlignment.end, children:[
+              /*Row( mainAxisAlignment: MainAxisAlignment.end, children:[
                 SelectableText(
                     'Allow expired passports',
                     style: TextStyle(
@@ -191,7 +191,7 @@ class _StepScanFormState extends State<StepScanForm> {
                     value: this._allowExpiredPassport,
                     onChanged: (bool value) => setState(() => this._allowExpiredPassport = value),
                 )
-              ])
+              ])*/
             ]));
       },
     );

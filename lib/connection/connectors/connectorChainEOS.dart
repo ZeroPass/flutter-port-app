@@ -8,11 +8,9 @@ import 'package:dmrtd/src/extension/logging_apis.dart';
 import 'package:eosio_port_mobile_app/utils/storage.dart';
 import 'package:logging/logging.dart';
 import 'package:dmrtd/dmrtd.dart';
-import 'package:port/src/proto/session.dart';
 import 'dart:async';
 
 import 'package:port/port.dart';
-import 'package:port/internal.dart';
 import 'package:eosio_port_mobile_app/connection/connection.dart';
 import 'package:eosio_port_mobile_app/connection/tools/eosio/eosio.dart';
 
@@ -81,11 +79,11 @@ class ConnectorChainEOS extends ConnectionAdapterMaintenance with ConnectionAdap
     return send.future;
   }
 
-  @override
+  /*@override
   Future<ProtoChallenge> getChallenge() async {
     _log.debug("ConnectionAPI.getChallenge");
     throw Exception("ConnectionAPI.getChallenge;  not implemented");
-  }
+  }*/
 
   @override
   Future<void> cancelChallenge(ProtoChallenge protoChallenge) async {
@@ -94,19 +92,19 @@ class ConnectorChainEOS extends ConnectionAdapterMaintenance with ConnectionAdap
   }
 
   @override
-  Future<Session> register(final EfSOD sod, final EfDG15 dg15, final CID cid, final ChallengeSignature csig, {EfDG14? dg14}) async {
+  Future<Map<String, dynamic>> register(final UserId userId, final EfSOD sod, final EfDG15 dg15, final CID cid, final ChallengeSignature csig, {EfDG14? dg14}) async {
     _log.debug("ConnectionAPI.register");
     throw Exception("ConnectionAPI.register;  not implemented");
   }
 
   @override
-  Future<Session> login(UserId uid, CID cid, ChallengeSignature csig, { EfDG1? dg1 }) async {
+  Future<Map<String, dynamic>> getAssertion(UserId uid, CID cid, ChallengeSignature csig) async {
     _log.debug("ConnectionAPI.login");
     throw Exception("ConnectionAPI.login;  not implemented");
   }
 
   @override
-  Future<String> sayHello(Session session) async {
+  Future<int> sayHello(int number) async {
     _log.debug("ConnectionAPI.sayHello");
     throw Exception("ConnectionAPI.sayHello;  not implemented");
   }

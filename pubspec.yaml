@@ -140,7 +140,7 @@ flutter:
     - assets/anim/success_check.flr
     - assets/anim/nfc.flr
     - assets/anim/nfc.riv
-    - assets/certs/passid_srv.cer
+    - assets/certs/port_server.cer
     - assets/images/port.png
     - assets/images/port_text.svg
     - assets/images/port_text_white.svg

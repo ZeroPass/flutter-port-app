@@ -7,14 +7,14 @@ import "dart:convert";
  */
 class Request {
   bool _isValid;
-  String _error;
+  String? _error;
   dynamic _json;
 
-  Request(this._isValid, [this._error = null, this._json = null]);
+  Request(this._isValid, [this._error, this._json]);
 
   bool get isValid => _isValid;
 
-  String get error => _error;
+  String? get error => _error;
 
   dynamic get json => _json;
 }
@@ -36,7 +36,7 @@ class HTTPrequest {
       return Request(false, "HTTP status code error: $statusCode");
 
     Map<String, String> headers = response.headers;
-    String contentType = headers!['content-type'];
+    String contentType = headers!['content-type']!;
     if (contentType != "application/json")
       return Request(false,
           "Header content type is not correct (application/json) It is: $contentType");

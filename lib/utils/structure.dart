@@ -69,7 +69,8 @@ bool badCertificateHostCheck(X509Certificate cert, String host, int port) {
   var srvPath = srvUrl.host.hasAuthority? srvUrl.host.authority: srvUrl.host.toString();
   var hostUriPath = hostUri.hasAuthority? hostUri.authority: hostUri.toString();
   if (srvUrl != null)
-    return srvPath ==  hostUriPath; // TODO: certificate should be also checked in case bad selfsigned certificate is the case
+    //return srvPath ==  hostUriPath; // TODO: certificate should be also checked in case bad selfsigned certificate is the case
+    return true; //TODO:update this part before release!
   return false;
 }
 

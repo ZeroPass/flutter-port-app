@@ -7,7 +7,6 @@
 import 'package:dmrtd/src/extension/logging_apis.dart';
 import 'package:logging/logging.dart';
 import 'package:dmrtd/dmrtd.dart';
-import 'package:port/src/proto/session.dart';
 import 'dart:async';
 
 import 'package:port/port.dart';
@@ -69,7 +68,7 @@ class ConnectorAPI extends ConnectionAdapterMaintenance with ConnectionAdapterAP
     return send.future;
   }
 
-  @override
+  /*@override
   Future<ProtoChallenge> getChallenge() async {
     _log.debug("ConnectionAPI.getChallenge");
     Completer<ProtoChallenge> send = new Completer<ProtoChallenge>();
@@ -77,7 +76,7 @@ class ConnectorAPI extends ConnectionAdapterMaintenance with ConnectionAdapterAP
       send.complete(challenge);
     });
     return send.future;
-  }
+  }*/
 
   @override
   Future<void> cancelChallenge(ProtoChallenge protoChallenge) async {
@@ -90,30 +89,30 @@ class ConnectorAPI extends ConnectionAdapterMaintenance with ConnectionAdapterAP
   }
 
   @override
-  Future<Session> register(final EfSOD sod, final EfDG15 dg15, final CID cid, final ChallengeSignature csig, {EfDG14? dg14}) async {
+  Future<Map<String, dynamic>> register(final UserId userId, final EfSOD sod, final EfDG15 dg15, final CID cid, final ChallengeSignature csig, {EfDG14? dg14}) async {
     _log.debug("ConnectionAPI.register");
-    Completer<Session> send = new Completer<Session>();
-    portApi.register(sod, dg15, cid, csig, dg14: dg14).then((session) {
+    Completer<Map<String, dynamic>> send = new Completer<Map<String, dynamic>>();
+    portApi.register(userId, sod, dg15, cid, csig, dg14: dg14).then((session) {
       send.complete(session);
     });
     return send.future;
   }
 
   @override
-  Future<Session> login(UserId uid, CID cid, ChallengeSignature csig, { EfDG1? dg1 }) async {
+  Future<Map<String, dynamic>> getAssertion(UserId uid, CID cid, ChallengeSignature csig) async {
     _log.debug("ConnectionAPI.login");
-    Completer<Session> send = new Completer<Session>();
-    portApi.login(uid, cid, csig, dg1: dg1).then((session) {
+    Completer<Map<String, dynamic>> send = new Completer<Map<String, dynamic>>();
+    portApi.getAssertion(uid, cid, csig).then((session) {
       send.complete(session);
     });
     return send.future;
   }
 
   @override
-  Future<String> sayHello(Session session) async {
+  Future<int> sayHello(int number) async {
     _log.debug("ConnectionAPI.sayHello");
-    Completer<String> send = new Completer<String>();
-    portApi.sayHello(session).then((session) {
+    Completer<int> send = new Completer<int>();
+    portApi.ping(number).then((session) {
       send.complete(session);
     });
     return send.future;
