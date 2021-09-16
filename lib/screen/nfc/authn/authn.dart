@@ -303,6 +303,10 @@ class Authn /*extends State<Authn>*/ {
         alertTitle = "Connection error";
         alertMsg = "Server not responding. Check your URL address.";
       }
+      else if (e is HttpException) {
+        alertTitle = "Connection error";
+        alertMsg = e.message;
+      }
       else if (e is SocketException) {
       } // should be already handled through _handleConnectionError callback
       else if (e is HandshakeException){
