@@ -93,7 +93,7 @@ class _CustomDatePicker extends State<CustomDatePicker> {
           widget.callbackOnUpdate!(value);
       },
       onTap: () async {
-        FocusScope.of(context).requestFocus(new FocusNode());
+        FocusScope.of(context).unfocus();
         if(widget.textEditingController.text.isNotEmpty && CustomDatePicker.isDateStringFormatedValid(widget.textEditingController.text))
           widget.initialDate =  CustomDatePicker.parseDate(widget.textEditingController.text); // Set init date to previously selected date
         else
@@ -179,6 +179,7 @@ class _CustomDatePicker extends State<CustomDatePicker> {
     }
 
     return TextFormField(
+        readOnly: true,
         showCursor: false,
         //autofocus: true,
         textInputAction: TextInputAction.none,
@@ -191,6 +192,7 @@ class _CustomDatePicker extends State<CustomDatePicker> {
         },
         onTap: () async {
           //FocusScope.of(context).requestFocus(new FocusNode());
+          FocusScope.of(context).unfocus();
           _updateInitDateTime();
           var pickedDate = await DatePicker.showSimpleDatePicker(
             context,
