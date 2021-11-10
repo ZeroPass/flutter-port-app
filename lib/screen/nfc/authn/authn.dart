@@ -173,7 +173,7 @@ class Authn /*extends State<Authn>*/ {
       Map<String, dynamic> srvResult;
 
       if (action == PortAction.register) {
-        srvResult = await _client.register(UserId.fromString('test'), (challenge) async {
+        srvResult = await _client.register(UserId.fromString(accountName), (challenge) async {
           //unawaited(_hideBusyIndicator());
           await _hideBusyIndicator();
           return _scanPassport(context,
@@ -223,7 +223,7 @@ class Authn /*extends State<Authn>*/ {
         //await e;
       }
       else if (action == PortAction.login)
-        srvResult = await _client.getAssertion(UserId.fromString('test'), (challenge) async {
+        srvResult = await _client.getAssertion(UserId.fromString(accountName), (challenge) async {
           unawaited(_hideBusyIndicator());
           return _scanPassport(
               context,
