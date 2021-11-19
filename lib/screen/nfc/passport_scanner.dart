@@ -216,7 +216,7 @@ class PassportScanner {
     if (!Platform.isIOS) { // on iOS it's NFC framework handles displaying a NFC scan dialog
       _scanDialog.show(message: alertMessage);
     }
-    return _call(() =>_nfc.connect(iosAlertMessage: alertMessage));
+    return _call(() =>_nfc.connect(iosAlertMessage: alertMessage ?? "Hold your iPhone near the biometric Passport"));
   }
 
   Future<void> _disconnect({String? alertMessage, String? errorMessage}) {

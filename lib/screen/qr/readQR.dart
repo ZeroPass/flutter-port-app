@@ -137,10 +137,10 @@ class _ReadQRState extends State<ReadQR> {
           cutOutSize: scanArea),
     );
   }
-  
+
   Future<bool> readQR(Barcode scanData) async{
     try{
-      QRserverStructure? qr = QRserverStructure.parseDynamicLink(scanData.code.replaceAll('\n', "").replaceAll(' ', ''));
+      QRserverStructure? qr = QRserverStructure.parseDynamicLink(scanData.code?.replaceAll('\n', "").replaceAll(' ', '') ?? '');
       if (qr == null)
         throw Exception("Error when parsing dynamic link");
 
