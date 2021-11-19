@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:eosio_port_mobile_app/utils/color.dart';
-import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
+//import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart'; //temptemp
 import 'package:flutter/services.dart';
 
 /*
@@ -223,7 +223,7 @@ void changeNavigationBarColor() async {
     SystemChrome.setEnabledSystemUIMode (SystemUiMode.manual, overlays: SystemUiOverlay.values);
     //FlutterStatusbarcolor.setStatusBarColor(Color(0xFF4f5f96));
     //await FlutterStatusbarcolor.setNavigationBarColor(Color(0xFFF0F0F0));
-    FlutterStatusbarcolor.setNavigationBarWhiteForeground(false);
+    //FlutterStatusbarcolor.setNavigationBarWhiteForeground(false);temptemp
   } on PlatformException catch (e) {
     debugPrint(e.toString());
   }
