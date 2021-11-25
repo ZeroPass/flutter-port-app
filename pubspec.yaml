@@ -84,7 +84,7 @@ dependency_overrides:
 flutter_icons:
   ios: true
   android: true
-  image_path_ios: "assets/images/port_icon.png"
+  image_path_ios: "assets/images/port-app-Icon-ios.png"
   image_path_android: "assets/images/port_icon.png"
   adaptive_icon_background: "assets/images/port_icon_background.png"
   adaptive_icon_foreground: "assets/images/port_icon_foreground.png"
