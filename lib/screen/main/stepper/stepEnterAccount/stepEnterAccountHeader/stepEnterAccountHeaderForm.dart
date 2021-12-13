@@ -103,7 +103,7 @@ class _StepEnterAccountHeaderFormState extends State<StepEnterAccountHeaderForm>
                           .replaceAll("https://", "")
                           .replaceAll("http://", "");
       return truncateNetwork(
-          withoutHTTP, 18);
+          withoutHTTP, 12);
     }
     else
       return truncateNetwork(state.networkType != null? Storage().nodeSet.networkTypeToString(state.networkType): "", 5);
