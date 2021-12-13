@@ -27,15 +27,11 @@ On iOS, If you encounter error: "Codepoint 62495 not found in font, aborting.",
 add '--no-tree-shake-icons' flag to the above command.
 
 ```
-* To build app bundle:
+* To build app:
 ```
 # Android
 flutter build apk
 flutter build apk --release --no-shrink --no-sound-null-safety
-
-*temporary only debug build is available
-flutter build apk --debug --no-shrink --no-sound-null-safety
-
 
 #iOS (on macOS host)
 flutter build ios --release --no-sound-null-safety
@@ -45,6 +41,11 @@ add '--no-tree-shake-icons' flag to the above command.
 
 ```
 
+* To build app bundle:
+```
+flutter build appbundle --no-sound-null-safety --no-tree-shake-icons
+
+```
 ## Usage
 
 * Fill the data in this [function](/lib/main.dart#L31)
