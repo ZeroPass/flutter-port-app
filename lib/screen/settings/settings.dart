@@ -12,7 +12,9 @@ import 'package:eosio_port_mobile_app/screen/settings/custom/customCardSettings.
 import 'package:eosio_port_mobile_app/screen/settings/custom/CustomCardSettingsSection.dart';
 import 'package:eosio_port_mobile_app/screen/settings/network/server/updateCloud.dart';
 import 'package:eosio_port_mobile_app/screen/qr/QRscreen.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:share/share.dart';
+
 
 class Settings extends StatelessWidget {
 
@@ -38,6 +40,25 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  String _aboutText = "";
+
+  Future<String> _genAboutText() async {
+    var packageInfo = await PackageInfo.fromPlatform();
+    var company = AndroidThemeST().getValues().themeValues["APP_DATA"]["COMPANY_NAME"];
+    var year = AndroidThemeST().getValues().themeValues["APP_DATA"]["YEAR_LAST_UPDATE"].toString();
+    return '${packageInfo.appName} v${packageInfo.version}\nCopyright © $company $year';
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    _genAboutText().then((value) {
+      setState(() {
+        _aboutText = value.toString();
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -90,10 +111,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 header: CardSettingsHeader(label: 'About'),
                 children: <CardSettingsWidget>[
                   CardSettingsInstructions(
-                    text: "Port" +
-                        AndroidThemeST().getValues().themeValues["APP_DATA"]["COMPANY_NAME"] +
-                        ' ('+ AndroidThemeST().getValues().themeValues["APP_DATA"]["YEAR_LAST_UPDATE"].toString() +  '), version:' +
-                        AndroidThemeST().getValues().themeValues["APP_DATA"]["VERSION"],
+                    text: _aboutText
+                    //  "Port " +
+                    //     AndroidThemeST().getValues().themeValues["APP_DATA"]["COMPANY_NAME"] +
+                    //     ' ('+ AndroidThemeST().getValues().themeValues["APP_DATA"]["YEAR_LAST_UPDATE"].toString() +  '), version:' +
+                    //     AndroidThemeST().getValues().themeValues["APP_DATA"]["VERSION"],
                   ),
                 ]
             ),
