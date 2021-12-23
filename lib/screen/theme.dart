@@ -67,7 +67,7 @@ Map light = {
   "APP_DATA":
   {
     "VERSION": "0.0.1",
-    "YEAR_LAST_UPDATE": 2020,
+    "YEAR_LAST_UPDATE": 2021,
     "COMPANY_NAME": "ZeroPass"
   },
   "FLUSHBAR":
@@ -310,7 +310,7 @@ class AndroidThemeST extends AndroidTheme {
 
 CupertinoThemeData iosThemeData() {
   return CupertinoThemeData(
-    brightness: Brightness.light, // force light theme as way around for buggy dark theme. 
+    brightness: Brightness.light, // force light theme as way around for buggy dark theme.
     barBackgroundColor: Color.fromARGB(255, 87, 104, 165),
     textTheme: CupertinoTextThemeData(
       primaryColor: CupertinoColors.white,
