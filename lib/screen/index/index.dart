@@ -17,7 +17,14 @@ import 'package:rive/rive.dart';
 import '../slideToSideRoute.dart';
 
 class Index extends StatelessWidget {
-  bool handleAndSaveData(Map<String, dynamic> data) {
+  void _handleDynamicLink(BuildContext context, Uri? link) {
+    if (link != null) {
+      if (_handleAndSaveData(link.queryParameters))
+        Navigator.pushNamed(context, link.path);
+    }
+  }
+
+  bool _handleAndSaveData(Map<String, dynamic> data) {
     try {
       var qr = QRserverStructure.fromJson(data);
       ReadQR.saveToDatabase(qr);
@@ -28,35 +35,25 @@ class Index extends StatelessWidget {
     }
   }
 
-  Future<void> initDynamicLinks(BuildContext context) async {
+  Future<void> _initDynamicLinks(BuildContext context) async {
     FirebaseDynamicLinks.instance.onLink(
-        onSuccess: (PendingDynamicLinkData? dynamicLink) async {
-      final Uri? deepLink = dynamicLink?.link;
-
-      if (deepLink != null) {
-        Navigator.of(context).pushNamedAndRemoveUntil(
-            deepLink.path, (Route<dynamic> route) => false);
-        //Navigator.pushNamed(context, deepLink.path);
-      }
-    }, onError: (OnLinkErrorException e) async {
-      print('onLinkError');
-      print(e.message);
+      onSuccess: (PendingDynamicLinkData? dynamicLink) async {
+        final Uri? deepLink = dynamicLink?.link;
+        _handleDynamicLink(context, deepLink);
+      },
+      onError: (OnLinkErrorException e) async {
+        print('onLinkError');
+        print(e.message);
     });
 
     final PendingDynamicLinkData? data =
-        await FirebaseDynamicLinks.instance.getInitialLink();
-
-    final Uri? deepLink = data?.link;
-
-    if (deepLink != null) {
-      if (handleAndSaveData(deepLink.queryParameters))
-        Navigator.pushNamed(context, deepLink.path);
-    }
+      await FirebaseDynamicLinks.instance.getInitialLink();
+    _handleDynamicLink(context, data?.link);
   }
 
   @override
   Widget build(BuildContext context) {
-    this.initDynamicLinks(context);
+    this._initDynamicLinks(context);
     return IndexScreen();
   }
 }

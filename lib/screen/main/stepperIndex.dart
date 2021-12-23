@@ -109,7 +109,7 @@ class _PortStepperWidgetState extends State<PortStepperWidget> with TickerProvid
   }
 
   bool _moveToIndexScreen(BuildContext context){
-    Navigator.of(context).pushNamedAndRemoveUntil("/index", (Route<dynamic> route) => false);
+    Navigator.popUntil(context, ModalRoute.withName("/"));
     return true;
   }
 
