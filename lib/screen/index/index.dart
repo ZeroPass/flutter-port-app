@@ -73,8 +73,22 @@ class _IndexScreenState extends State<IndexScreen> {
       appBar: PlatformAppBar(
         material: (_, __) => MaterialAppBarData(toolbarHeight: 0),
         cupertino: (_, __) => CupertinoNavigationBarData(
-            backgroundColor: Colors.transparent,
-            border: Border() /*all borders removed*/),
+            border: Border(),
+            backgroundColor: Colors.white,
+            trailing: PlatformIconButton(
+              cupertino: (_, __) => CupertinoIconButtonData(
+                    icon: Icon(Icons.settings_rounded,
+                        color: Colors.grey, size: 30),
+                    padding: EdgeInsets.all(0),
+                  ),
+              materialIcon: Icon(Icons.settings_rounded,
+                  size: 30.0, color: Colors.grey),
+              material: (_, __) =>
+                  MaterialIconButtonData(tooltip: 'Settings'),
+              onPressed: () {
+                final page = Settings();
+                Navigator.of(context).push(SlideToSideRoute(page));
+              }))
       ),
       body:
           Column(
@@ -84,27 +98,27 @@ class _IndexScreenState extends State<IndexScreen> {
         children: [
           Align(
             alignment: Alignment.topRight,
-            child: Container(
-                width: 45,
-                height: 45,
-                decoration: BoxDecoration(
-                  color: Color(0x00EEEEEE),
-                ),
-                child: PlatformIconButton(
-                    cupertino: (_, __) => CupertinoIconButtonData(
-                          icon: Icon(Icons.settings_rounded,
-                              color: Colors.grey, size: 30),
-                          padding: EdgeInsets.all(0),
-
-                        ),
-                    materialIcon: Icon(Icons.settings_rounded,
-                        size: 30.0, color: Colors.grey),
-                    material: (_, __) =>
-                        MaterialIconButtonData(tooltip: 'Settings'),
-                    onPressed: () {
-                      final page = Settings();
-                      Navigator.of(context).push(SlideToSideRoute(page));
-                    })),
+            // child: Container(
+            //     width: 45,
+            //     height: 45,
+            //     color: Colors.green,
+            //     // decoration: BoxDecoration(
+            //     //   color: Color(0x00EEEEEE),
+            //     // ),
+            //     child: PlatformIconButton(
+            //         // cupertino: (_, __) => CupertinoIconButtonData(
+            //         //       icon: Icon(Icons.settings_rounded,
+            //         //           color: Colors.grey, size: 30),
+            //         //       padding: EdgeInsets.all(0),
+            //         //     ),
+            //         materialIcon: Icon(Icons.settings_rounded,
+            //             size: 30.0, color: Colors.grey),
+            //         material: (_, __) =>
+            //             MaterialIconButtonData(tooltip: 'Settings'),
+            //         onPressed: () {
+            //           final page = Settings();
+            //           Navigator.of(context).push(SlideToSideRoute(page));
+            //         })),
           ),
           Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
