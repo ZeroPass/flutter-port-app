@@ -47,7 +47,7 @@ android {
             storeFile file('C:\\Data\\Credentials\\googleKeyStore\\portKey.jks')
         }
     }
-    compileSdkVersion 30
+    compileSdkVersion 31
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
@@ -62,7 +62,7 @@ android {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "io.zeropass.port"
         minSdkVersion 20
-        targetSdkVersion 30
+        targetSdkVersion 31
         versionCode flutterVersionCode.toInteger()
 
         // Enabling multidex support.

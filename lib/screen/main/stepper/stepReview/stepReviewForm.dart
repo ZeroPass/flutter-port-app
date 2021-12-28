@@ -179,7 +179,7 @@ class _StepReviewFormState extends State<StepReviewForm> {
           return Container(
               width: CustomSize.getMaxWidth(context, STEPPER_ICON_PADDING),
               child: Form(
-                  autovalidate: true,
+                  autovalidateMode: AutovalidateMode.always,
                   child: Column(
                     children: <Widget>[
                       if (state is StepReviewWithoutDataState)

@@ -7,10 +7,29 @@ import "package:flutter/material.dart";
 
 import 'package:eosio_port_mobile_app/screen/theme.dart';
 
-// TODO(dragostis): Missing functionality:
-//   * mobile horizontal mode with adding/removing steps
-//   * alternative labeling
-//   * stepper feedback in the case of high-latency interactions
+//import 'button_style.dart';
+//import 'color_scheme.dart';
+//import 'colors.dart';
+//import 'debug.dart';
+//import 'icons.dart';
+//import 'ink_well.dart';
+//import 'material.dart';
+//import 'material_localizations.dart';
+//import 'material_state.dart';
+//import 'text_button.dart';
+//import 'text_theme.dart';
+//import 'theme.dart';
+
+
+/// A builder that creates a widget given the two callbacks `onStepContinue` and
+/// `onStepCancel`.
+///
+/// Used by [Stepper.controlsBuilder].
+///
+/// See also:
+///
+///  * [WidgetBuilder], which is similar but only takes a [BuildContext].
+typedef ControlsWidgetBuilder = Widget Function(BuildContext context, ControlsDetails details);
 
 const TextStyle _kStepStyle = TextStyle(
   fontSize: 12.0,
@@ -20,19 +39,11 @@ const Color _kErrorLight = Colors.red;
 final Color _kErrorDark = Colors.red.shade400;
 const Color _kCircleActiveLight = Colors.white;
 const Color _kCircleActiveDark = Colors.black87;
-const Color _kDisabledLight = Colors.black12;
+const Color _kDisabledLight = Colors.black12;  //changed by ZeroPass team (Nejc)
 const Color _kDisabledDark = Colors.white38;
 const double _kStepSize = 24.0;
 const double _kTriangleHeight = _kStepSize * 0.866025; // Triangle height. sqrt(3.0) / 2.0
 
-/// A material step used in [Stepper]. The step can have a title and subtitle,
-/// an icon within its circle, some content and a state that governs its
-/// styling.
-///
-/// See also:
-///
-///  * [Stepper]
-///  * <https://material.io/archive/guidelines/components/steppers.html>
 
 double headersHeightTillStep(int step){
   var linesHeight = 16 * 2; //line above and beneath the circle/triangle
@@ -42,6 +53,26 @@ double headersHeightTillStep(int step){
   return total + .0;
 }
 
+/// A material stepper widget that displays progress through a sequence of
+/// steps. Steppers are particularly useful in the case of forms where one step
+/// requires the completion of another one, or where multiple steps need to be
+/// completed in order to submit the whole form.
+///
+/// The widget is a flexible wrapper. A parent class should pass [currentStep]
+/// to this widget based on some logic triggered by the three callbacks that it
+/// provides.
+///
+/// {@tool dartpad}
+/// An example the shows how to use the [Stepper], and the [Stepper] UI
+/// appearance.
+///
+/// ** See code in examples/api/lib/material/stepper/stepper.0.dart **
+/// {@end-tool}
+///
+/// See also:
+///
+///  * [Step]
+///  * <https://material.io/archive/guidelines/components/steppers.html>
 class CustomStepper extends StatefulWidget {
   /// Creates a stepper from a list of steps.
   ///
@@ -50,7 +81,7 @@ class CustomStepper extends StatefulWidget {
   /// new one.
   ///
   /// The [steps], [type], and [currentStep] arguments must not be null.
-  CustomStepper({
+  const CustomStepper({
     Key? key,
     required this.steps,
     required this.scrollController,
@@ -61,17 +92,17 @@ class CustomStepper extends StatefulWidget {
     this.onStepContinue,
     this.onStepCancel,
     this.controlsBuilder,
+    this.elevation,
+    this.margin,
   }) : assert(steps != null),
         assert(type != null),
         assert(currentStep != null),
         assert(0 <= currentStep && currentStep < steps.length),
-        super(key: key){
-    //this.scrollController = ScrollController();
-  }
+        super(key: key);
 
   ///Scroll controller - we need it to handle position on the last step
   ///added by ZeroPass team (Nejc)
-  ScrollController scrollController;// = ScrollController();
+  final ScrollController scrollController;
 
   /// The steps of the stepper whose titles, subtitles, icons always get shown.
   ///
@@ -114,28 +145,29 @@ class CustomStepper extends StatefulWidget {
   ///
   /// If null, the default controls from the current theme will be used.
   ///
-  /// This callback which takes in a context and two functions: [onStepContinue]
-  /// and [onStepCancel]. These can be used to control the stepper.
-  /// For example, keeping track of the [currentStep] within the callback can
-  /// change the text of the continue or cancel button depending on which step users are at.
+  /// This callback which takes in a context and a [ControlsDetails] object, which
+  /// contains step information and two functions: [onStepContinue] and [onStepCancel].
+  /// These can be used to control the stepper. For example, reading the
+  /// [ControlsDetails.currentStep] value within the callback can change the text
+  /// of the continue or cancel button depending on which step users are at.
   ///
-  /// {@tool dartpad --template=stateless_widget_scaffold}
+  /// {@tool dartpad}
   /// Creates a stepper control with custom buttons.
   ///
   /// ```dart
   /// Widget build(BuildContext context) {
   ///   return Stepper(
   ///     controlsBuilder:
-  ///       (BuildContext context, { VoidCallback? onStepContinue, VoidCallback? onStepCancel }) {
+  ///       (BuildContext context, ControlsDetails details) {
   ///          return Row(
   ///            children: <Widget>[
   ///              TextButton(
-  ///                onPressed: onStepContinue,
-  ///                child: const Text('NEXT'),
+  ///                onPressed: details.onStepContinue,
+  ///                child: Text('Continue to Step ${details.stepIndex + 1}'),
   ///              ),
   ///              TextButton(
-  ///                onPressed: onStepCancel,
-  ///                child: const Text('CANCEL'),
+  ///                onPressed: details.onStepCancel,
+  ///                child: Text('Back to Step ${details.stepIndex - 1}'),
   ///              ),
   ///            ],
   ///          );
@@ -159,8 +191,15 @@ class CustomStepper extends StatefulWidget {
   ///   );
   /// }
   /// ```
+  /// ** See code in examples/api/lib/material/stepper/stepper.controls_builder.0.dart **
   /// {@end-tool}
   final ControlsWidgetBuilder? controlsBuilder;
+
+  /// The elevation of this stepper's [Material] when [type] is [StepperType.horizontal].
+  final double? elevation;
+
+  /// custom margin on vertical stepper.
+  final EdgeInsetsGeometry? margin;
 
   @override
   State<CustomStepper> createState() => _CustomStepperState();
@@ -247,7 +286,7 @@ class _CustomStepperState extends State<CustomStepper> with TickerProviderStateM
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
     if (!_isDark()) {
       return widget.steps[index].isActive ? AndroidThemeST().getValues().themeValues["STEPPER"]["STEP_HEADER"]["COLOR_CIRCLE"] :
-      AndroidThemeST().getValues().themeValues["STEPPER"]["STEP_HEADER"]["COLOR_CIRCLE_DISABLED"];
+      AndroidThemeST().getValues().themeValues["STEPPER"]["STEP_HEADER"]["COLOR_CIRCLE_DISABLED"]; //changed by ZeroPass team (Nejc)
     } else {
       return widget.steps[index].isActive ? colorScheme.secondary : colorScheme.background;
     }
@@ -314,9 +353,17 @@ class _CustomStepperState extends State<CustomStepper> with TickerProviderStateM
     }
   }
 
-  Widget _buildVerticalControls() {
+  Widget _buildVerticalControls(int stepIndex) {
     if (widget.controlsBuilder != null)
-      return widget.controlsBuilder!(context, onStepContinue: widget.onStepContinue, onStepCancel: widget.onStepCancel);
+      return widget.controlsBuilder!(
+        context,
+        ControlsDetails(
+          currentStep: widget.currentStep,
+          onStepContinue: widget.onStepContinue,
+          onStepCancel: widget.onStepCancel,
+          stepIndex: stepIndex,
+        ),
+      ); //commented by ZeroPass team (Nejc)
 
     final Color cancelColor;
     switch (Theme.of(context).brightness) {
@@ -490,7 +537,7 @@ class _CustomStepperState extends State<CustomStepper> with TickerProviderStateM
         AnimatedCrossFade(
           firstChild: Container(height: 0.0),
           secondChild: Container(
-            margin: const EdgeInsetsDirectional.only(
+            margin: widget.margin ?? const EdgeInsetsDirectional.only(
               start: 60.0,
               end: 24.0,
               bottom: 24.0,
@@ -498,7 +545,7 @@ class _CustomStepperState extends State<CustomStepper> with TickerProviderStateM
             child: Column(
               children: <Widget>[
                 widget.steps[index].content,
-                _buildVerticalControls(),
+                _buildVerticalControls(index),
               ],
             ),
           ),
@@ -514,8 +561,8 @@ class _CustomStepperState extends State<CustomStepper> with TickerProviderStateM
 
   Widget _buildVertical() {
     return ListView(
-      //shrinkWrap: true,
-      controller: widget.scrollController,
+      //shrinkWrap: true, //commented by ZeroPass team (Nejc)
+      controller: widget.scrollController, //added by ZeroPass team (Nejc)
       physics: widget.physics,
       children: <Widget>[
         for (int i = 0; i < widget.steps.length; i += 1)
@@ -578,10 +625,21 @@ class _CustomStepperState extends State<CustomStepper> with TickerProviderStateM
       ],
     ];
 
+    final List<Widget> stepPanels = <Widget>[];
+    for (int i = 0; i < widget.steps.length; i += 1) {
+      stepPanels.add(
+        Visibility(
+          maintainState: true,
+          visible: i == widget.currentStep,
+          child: widget.steps[i].content,
+        ),
+      );
+    }
+
     return Column(
       children: <Widget>[
         Material(
-          elevation: 2.0,
+          elevation: /*widget.elevation ??*/ 2, //commented by ZeroPass team (Nejc)
           child: Container(
             margin: const EdgeInsets.symmetric(horizontal: 24.0),
             child: Row(
@@ -597,10 +655,10 @@ class _CustomStepperState extends State<CustomStepper> with TickerProviderStateM
               AnimatedSize(
                 curve: Curves.fastOutSlowIn,
                 duration: kThemeAnimationDuration,
-                child: widget.steps[widget.currentStep].content,
-                vsync: this,
+                child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: stepPanels),
+                //vsync: this, //added and then commented by ZeroPass team (Nejc)
               ),
-              _buildVerticalControls(),
+              _buildVerticalControls(widget.currentStep),
             ],
           ),
         ),

@@ -18,13 +18,14 @@ import 'package:eosio_port_mobile_app/screen/main/stepper/stepAttestation/stepAt
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:eosio_port_mobile_app/utils/storage.dart';
 import 'package:eosio_port_mobile_app/utils/structure.dart';
-import "package:eosio_port_mobile_app/screen/main/stepper/customStepper1.dart";
+import "package:eosio_port_mobile_app/screen/main/stepper/customStepper.dart";
 import 'package:connectivity/connectivity.dart';
 import 'package:dmrtd/dmrtd.dart';
 import 'package:eosio_port_mobile_app/screen/theme.dart';
 
 import '../../alert.dart';
 import 'customStepper.dart';
+import 'customStepper2.dart';
 
 List<String> BUTTON_NEXT_TITLE = [
   "Continue",
@@ -174,7 +175,7 @@ class _StepperFormState extends State<StepperForm> {
   }
 
   Widget showButtonNext(
-      BuildContext context, int currentStep, Function functionOnStepContinue) {
+      BuildContext context, int currentStep, Function? functionOnStepContinue) {
     return Row(
       //mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.start,
@@ -188,7 +189,7 @@ class _StepperFormState extends State<StepperForm> {
               onPressed: () {
                 String errors = onButtonNextPressed(currentStep);
                 //is button 'next' unlocked
-                if (errors.isEmpty) {
+                if (errors.isEmpty && functionOnStepContinue != null) {
                   functionOnStepContinue();
                 } else {
                   showAlert(
@@ -485,8 +486,8 @@ class _StepperFormState extends State<StepperForm> {
               else
                 stepperBloc.add(StepContinue(stepsJump: stepJumps, previousStep: state.previousStep));
             },
-            controlsBuilder: (BuildContext context,
-                {VoidCallback? onStepContinue, VoidCallback? onStepCancel}) {
+            controlsBuilder: (BuildContext context, ControlsDetails controls) {
+                //(BuildContext context, {VoidCallback? onStepContinue, VoidCallback? onStepCancel}) {
               return Visibility(
                   visible: state.step != state.maxSteps,
                   child: Column(
@@ -494,11 +495,13 @@ class _StepperFormState extends State<StepperForm> {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: <Widget>[
                       if (state.step < stepperBloc.maxSteps - 1 &&
-                          onStepContinue != null) //do not show on last step
-                        showButtonNext(context, state.step, onStepContinue)
+                          controls.onStepContinue != null) //do not show on last step
+                        showButtonNext(context, state.step, controls.onStepContinue)
                     ],
                   ));
-            });
+            }
+
+            );
       },
     );
   }

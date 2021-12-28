@@ -66,7 +66,7 @@ class _StepScanFormState extends State<StepScanForm> {
 
         return Form(
             key: _formKey,
-            autovalidate: true,
+            autovalidateMode: AutovalidateMode.always,
             child: Column(children: <Widget>[
               SelectableText(
                 'This data is only used to establish secure communication between your device and passport.',
@@ -82,7 +82,7 @@ class _StepScanFormState extends State<StepScanForm> {
                 ),
                 //autofocus: true,
                 inputFormatters: <TextInputFormatter>[
-                  WhitelistingTextInputFormatter(RegExp(r'[A-Z0-9]+')),
+                  FilteringTextInputFormatter.allow(RegExp(r'[A-Z0-9]+')),
                   LengthLimitingTextInputFormatter(14)
                 ],
                 textInputAction: TextInputAction.done,

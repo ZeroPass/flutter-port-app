@@ -142,7 +142,7 @@ class _StepEnterAccountFormState extends State<StepEnterAccountForm> {
                 labelText: 'Account name',
               ),
               inputFormatters: <TextInputFormatter>[
-                WhitelistingTextInputFormatter(RegExp(r'\b[a-z1-5.]+')),
+                FilteringTextInputFormatter.allow(RegExp(r'\b[a-z1-5.]+')),
                 LengthLimitingTextInputFormatter(13)
               ],
               validator: (value) =>

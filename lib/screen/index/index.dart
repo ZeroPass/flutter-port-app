@@ -95,6 +95,7 @@ class _IndexScreenState extends State<IndexScreen> {
                           icon: Icon(Icons.settings_rounded,
                               color: Colors.grey, size: 30),
                           padding: EdgeInsets.all(0),
+
                         ),
                     materialIcon: Icon(Icons.settings_rounded,
                         size: 30.0, color: Colors.grey),
