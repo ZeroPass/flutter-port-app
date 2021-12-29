@@ -17,7 +17,7 @@ import 'package:eosio_port_mobile_app/utils/storage.dart';
 import 'package:eosio_port_mobile_app/utils/structure.dart';
 import 'package:eosio_port_mobile_app/screen/theme.dart';
 import 'package:eosio_port_mobile_app/screen/requestType.dart';
-import 'package:eosio_port_mobile_app/screen/main/stepper/customStepper2.dart';
+import 'package:eosio_port_mobile_app/screen/main/stepper/customStepper.dart';
 
 import 'package:logging/logging.dart';
 import 'package:port/internal.dart';

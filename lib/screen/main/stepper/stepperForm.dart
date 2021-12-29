@@ -25,7 +25,6 @@ import 'package:eosio_port_mobile_app/screen/theme.dart';
 
 import '../../alert.dart';
 import 'customStepper.dart';
-import 'customStepper2.dart';
 
 List<String> BUTTON_NEXT_TITLE = [
   "Continue",

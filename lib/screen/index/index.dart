@@ -71,7 +71,23 @@ class _IndexScreenState extends State<IndexScreen> {
 
     return PlatformScaffold(
       appBar: PlatformAppBar(
-        material: (_, __) => MaterialAppBarData(toolbarHeight: 0),
+        material: (_, __) => MaterialAppBarData(
+            backgroundColor: Colors.transparent,
+            shadowColor: Colors.transparent,
+            toolbarHeight: 30,
+            actions: [
+              PlatformIconButton(
+                  padding: EdgeInsets.all(0),
+                  materialIcon: Icon(Icons.settings_rounded,
+                      size: 30.0, color: Colors.grey),
+                  material: (_, __) =>
+                      MaterialIconButtonData(color: Colors.green,tooltip: 'Settings'),
+                  onPressed: () {
+                    final page = Settings();
+                    Navigator.of(context).push(SlideToSideRoute(page));
+                  })
+            ]
+            ),
         cupertino: (_, __) => CupertinoNavigationBarData(
             border: Border(),
             backgroundColor: Colors.white,
@@ -81,10 +97,10 @@ class _IndexScreenState extends State<IndexScreen> {
                         color: Colors.grey, size: 30),
                     padding: EdgeInsets.all(0),
                   ),
-              materialIcon: Icon(Icons.settings_rounded,
-                  size: 30.0, color: Colors.grey),
+              //materialIcon: Icon(Icons.settings_rounded,
+              //    size: 30.0, color: Colors.white),
               material: (_, __) =>
-                  MaterialIconButtonData(tooltip: 'Settings'),
+                  MaterialIconButtonData(color: Colors.green,tooltip: 'Settings'),
               onPressed: () {
                 final page = Settings();
                 Navigator.of(context).push(SlideToSideRoute(page));
