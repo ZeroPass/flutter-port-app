@@ -25,9 +25,9 @@
 	<key>NFCReaderUsageDescription</key>
 	<string>App uses NFC to scan biometric passport</string>
 	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>You shouldn't see this because app doesn't use bluetooth.</string>
+	<string>You shouldn&apos;t see this because app doesn&apos;t use bluetooth.</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>You shouldn't see this because app doesn't use bluetooth.</string>
+	<string>You shouldn&apos;t see this because app doesn&apos;t use bluetooth.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>App uses camera to scan QR code.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
