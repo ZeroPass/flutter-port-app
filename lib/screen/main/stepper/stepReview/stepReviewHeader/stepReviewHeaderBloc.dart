@@ -5,7 +5,10 @@ import 'dart:async';
 
 class StepReviewHeaderBloc extends Bloc<StepReviewHeaderEvent, StepReviewHeaderState> {
 
-  StepReviewHeaderBloc() : super(StepReviewHeaderWithoutDataState()){}
+  StepReviewHeaderBloc() : super(StepReviewHeaderWithoutDataState()){
+    on<StepReviewHeaderWithoutDataEvent>((event, emit) => emit (StepReviewHeaderWithoutDataState()));
+    on<StepReviewHeaderWithDataEvent>((event, emit) => emit (StepReviewHeaderWithDataState()));
+  }
 
     //@override
     //StepReviewHeaderState get initialState => StepReviewHeaderWithoutDataState();
@@ -21,11 +24,11 @@ class StepReviewHeaderBloc extends Bloc<StepReviewHeaderEvent, StepReviewHeaderS
       super.onTransition(transition);
     }
 
-    @override
+    /*@override
     Stream<StepReviewHeaderState> mapEventToState( StepReviewHeaderEvent event) async* {
       if (event is StepReviewHeaderWithoutDataEvent)
         yield StepReviewHeaderWithoutDataState();
       else if (event is StepReviewHeaderWithDataEvent)
         yield StepReviewHeaderWithDataState();
-    }
+    }*/
   }

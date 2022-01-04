@@ -95,6 +95,9 @@ Map<String, dynamic> _$StepDataScanToJson(StepDataScan instance) => <String, dyn
 class StepScanBloc extends Bloc<StepScanEvent, StepScanState> {
 
   StepScanBloc(): super(StateScan()) {
+    on<WithDataScan>((event, emit) => emit (FullState(documentID: event.documentID, birth: event.birth, validUntil: event.validUntil)));
+    on<NoDataScan>((event, emit) => emit (StateScan()));
+
     this.updateDataOnUI();
   }
 
@@ -135,6 +138,7 @@ class StepScanBloc extends Bloc<StepScanEvent, StepScanState> {
     return true;
   }
 
+  /*
   @override
   Stream<StepScanState> mapEventToState( StepScanEvent event) async* {
     print("Step Scan bloc mapEventToState");
@@ -146,5 +150,5 @@ class StepScanBloc extends Bloc<StepScanEvent, StepScanState> {
     else {
       yield StateScan();
     }
-  }
+  }*/
 }

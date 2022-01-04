@@ -73,6 +73,23 @@ Map<String, dynamic> _$StepDataEnterAccountToJson(StepDataEnterAccount instance)
 class StepEnterAccountBloc extends Bloc<StepEnterAccountEvent, StepEnterAccountState> {
 
   StepEnterAccountBloc({required NetworkType networkType}): super(FullState(networkType: networkType)){
+    on<AccountConfirmation>((event, emit) {
+      Storage storage = Storage();
+      StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0) as StepDataEnterAccount;
+      storageStepEnterAccount.accountID = event.accountID;
+      emit (FullState(accountID: event.accountID, networkType: event.networkType));
+    });
+    on<AccountConfirmationOutsideCall>((event, emit) => emit (FullStateOutsideCall(accountID: event.accountID, networkType: event.networkType)));
+    on<AccountDelete>((event, emit){
+      Storage storage = Storage();
+      StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0) as StepDataEnterAccount;
+      //clear data in storage
+      storageStepEnterAccount.accountID = "";
+      storageStepEnterAccount.hasData = false;
+      storageStepEnterAccount.isUnlocked = false;
+      emit (FullState(accountID: storageStepEnterAccount.accountID, networkType: event.networkType));
+    });
+
     this.updateDataOnUI();
   }
 
@@ -171,7 +188,7 @@ class StepEnterAccountBloc extends Bloc<StepEnterAccountEvent, StepEnterAccountS
       return true;
     }
 
-    @override
+    /*@override
     Stream<StepEnterAccountState> mapEventToState( StepEnterAccountEvent event) async* {
       Storage storage = Storage();
       StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0) as StepDataEnterAccount;
@@ -196,5 +213,5 @@ class StepEnterAccountBloc extends Bloc<StepEnterAccountEvent, StepEnterAccountS
         yield FullState(accountID: storageStepEnterAccount.accountID, networkType:event.networkType);
       }
       else yield DeletedState(storageStepEnterAccount.networkType);
-    }
+    }*/
   }

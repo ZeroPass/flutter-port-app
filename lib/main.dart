@@ -16,6 +16,8 @@ import 'package:eosio_port_mobile_app/screen/main/stepperIndex.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:eosio_port_mobile_app/screen/theme.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:eosio_port_mobile_app/screen/settings/settings.dart';
 
 import 'package:logging/logging.dart';
@@ -32,6 +34,8 @@ void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   final rawSrvCrt = await rootBundle.load('assets/certs/port_server.cer');
   ServerSecurityContext.init(rawSrvCrt.buffer.asUint8List());
+
+  await Firebase.initializeApp();
 
   runApp(Port());
 }

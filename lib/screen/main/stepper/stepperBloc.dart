@@ -50,6 +50,34 @@ class StepperBloc extends Bloc<StepperEvent, StepperState> {
         super( Storage().outsideCall.isOutsideCall ?
               StepperState(step: 1, previousStep: 0, maxSteps: maxSteps) :
               StepperState(step: 0, previousStep: 0, maxSteps: maxSteps)){
+
+    on<StepTapped>((event, emit) {
+        if (event.step < state.maxSteps-1) // do not allow access to last step
+          emit (StepperState(step: event.step, previousStep: state.step, maxSteps: state.maxSteps));
+      }
+    );
+
+    on<StepRunByFlow>((event, emit) => emit(StepperState(step: event.step, previousStep: state.step, maxSteps: state.maxSteps)));
+    on<StepAfterQR>((event, emit) => emit(StepperState(step: 1, previousStep: state.step, maxSteps: state.maxSteps)));
+    on<StepCancelled>((event, emit) => emit(StepperState(step: state.step - 1 >= 0 ? state.step - 1 : 0, previousStep: state.step, maxSteps: state.maxSteps)));
+    on<StepContinue>((event, emit) {
+      if (state.step + event.stepsJump < this.maxSteps) // do not allow access to last step
+        emit(StepperState(
+          step: state.step + event.stepsJump < this.maxSteps ? state.step + event.stepsJump : 0,
+          previousStep: state.step,
+          maxSteps: state.maxSteps
+        ));
+    });
+    on<StepBackToPrevious>((event, emit) {// do not allow access to last step
+        if (state.step == state.maxSteps -1) //jump only when you are on last step
+          emit(StepperState(
+          step: state.previousStep,
+          previousStep: state.previousStep,
+          maxSteps: state.maxSteps
+      ));
+    });
+
+
     this.isReviewLocked = true;
   }
 
@@ -122,12 +150,12 @@ class StepperBloc extends Bloc<StepperEvent, StepperState> {
     return true;
   }
 
-  @override
+
+  /*@override
   Stream<StepperState> mapEventToState(StepperEvent event) async* {
     _log.log(Level.INFO, "Changing the state of stepper {${event.toString()}");
     print("Stepper bloc mapEventToState");
     if (event is StepTapped) {
-
       if (event.step < state.maxSteps-1) // do not allow access to last step
         yield state.copyWith(step: event.step, previousStep: state.step, maxSteps: state.maxSteps);
     }
@@ -161,5 +189,5 @@ class StepperBloc extends Bloc<StepperEvent, StepperState> {
             maxSteps: state.maxSteps
       );
     }
-  }
+  }*/
 }

@@ -17,6 +17,8 @@ import 'package:rive/rive.dart';
 import '../slideToSideRoute.dart';
 
 class Index extends StatelessWidget {
+  FirebaseDynamicLinks dynamicLinks = FirebaseDynamicLinks.instance;
+
   void _handleDynamicLink(BuildContext context, Uri? link) {
     if (link != null) {
       if (_handleAndSaveData(link.queryParameters))
@@ -36,14 +38,12 @@ class Index extends StatelessWidget {
   }
 
   Future<void> _initDynamicLinks(BuildContext context) async {
-    FirebaseDynamicLinks.instance.onLink(
-      onSuccess: (PendingDynamicLinkData? dynamicLink) async {
-        final Uri? deepLink = dynamicLink?.link;
-        _handleDynamicLink(context, deepLink);
-      },
-      onError: (OnLinkErrorException e) async {
-        print('onLinkError');
-        print(e.message);
+    dynamicLinks.onLink.listen((PendingDynamicLinkData dynamicLink){
+          final Uri deepLink = dynamicLink.link;
+          _handleDynamicLink(context, deepLink);
+    }).onError((error){
+      print('onLink error');
+      print(error.message);
     });
 
     final PendingDynamicLinkData? data =

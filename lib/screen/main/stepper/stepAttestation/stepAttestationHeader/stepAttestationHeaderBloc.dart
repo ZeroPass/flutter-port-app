@@ -10,6 +10,9 @@ import 'package:eosio_port_mobile_app/utils/storage.dart';
 class StepAttestationHeaderBloc extends Bloc<StepAttestationHeaderEvent, StepAttestationHeaderState> {
 
   StepAttestationHeaderBloc({required RequestType requestType}): super(AttestationHeaderWithDataState(requestType: requestType)){
+    on<AttestationHeaderWithDataEvent>((event, emit) => emit (AttestationHeaderWithDataState(requestType: event.requestType)));
+    on<AttestationHeaderWithDataOutsideCallEvent>((event, emit) => emit (AttestationHeaderWithDataOutsideCallState(requestType: event.requestType)));
+
     updateDataOnUI();
   }
 
@@ -28,7 +31,8 @@ class StepAttestationHeaderBloc extends Bloc<StepAttestationHeaderEvent, StepAtt
       }
     });
   }
-  @override
+
+  /*@override
   Stream<StepAttestationHeaderState> mapEventToState(
       StepAttestationHeaderEvent event) async* {
     if (event is AttestationHeaderWithDataEvent) {
@@ -37,5 +41,5 @@ class StepAttestationHeaderBloc extends Bloc<StepAttestationHeaderEvent, StepAtt
     else if (event is AttestationHeaderWithDataOutsideCallEvent) {
       yield AttestationHeaderWithDataOutsideCallState(requestType: event.requestType);
     }
-  }
+  }*/
 }

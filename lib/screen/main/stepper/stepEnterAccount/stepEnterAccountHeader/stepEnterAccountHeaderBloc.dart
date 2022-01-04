@@ -10,7 +10,14 @@ import 'package:eosio_port_mobile_app/utils/storage.dart';
 
 class StepEnterAccountHeaderBloc extends Bloc<StepEnterAccountHeaderEvent, StepEnterAccountHeaderState> {
 
-  StepEnterAccountHeaderBloc({required NetworkType networkType}): super(WithoutAccountIDState(networkType: networkType)){
+
+
+  StepEnterAccountHeaderBloc({required NetworkType networkType}) :
+        super(WithoutAccountIDState(networkType: networkType)){
+    on<WithAccountIDEvent>((event, emit) => emit (WithAccountIDState(networkType: event.networkType, accountID: event.accountID)));
+    on<WithAccountIDOutsideCallEvent>((event, emit) => emit (WithAccountIDOutsideCallState(networkType: event.networkType, accountID: event.accountID)));
+    on<WithoutAccountIDEvent>((event, emit) => emit (WithoutAccountIDState(networkType: event.networkType)));
+
     updateDataOnUI();
   }
 
@@ -49,6 +56,7 @@ class StepEnterAccountHeaderBloc extends Bloc<StepEnterAccountHeaderEvent, StepE
     );
     }
 
+    /*
     @override
     Stream<StepEnterAccountHeaderState> mapEventToState( StepEnterAccountHeaderEvent event) async* {
 
@@ -64,6 +72,6 @@ class StepEnterAccountHeaderBloc extends Bloc<StepEnterAccountHeaderEvent, StepE
       else {
         yield WithoutAccountIDState(networkType: event.networkType );
       }
-    }
+    }*/
   }
 

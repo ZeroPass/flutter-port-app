@@ -132,10 +132,13 @@ Map<String, dynamic> _$StepDataAttestationToJson(StepDataAttestation instance) =
 
 
 class StepAttestationBloc extends Bloc<StepAttestationEvent, StepAttestationState> {
-  StepAttestationBloc({required RequestType requestType}): super(AttestationWithDataState(requestType: requestType)) {
-    this.updateDataOnUI();
-    //on<AttestationEvent>(_onEvent);
+  StepAttestationBloc({required RequestType requestType}):
+        super(AttestationWithDataState(requestType: requestType)) {
+    on<AttestationEvent>((event, emit) => emit (AttestationState()));
+    on<AttestationWithDataEvent>((event, emit) => emit (AttestationWithDataState(requestType: event.requestType)));
+    on<AttestationWithDataOutsideCallEvent>((event, emit) => emit (AttestationWithDataOutsideCallState(requestType: event.requestType)));
 
+    this.updateDataOnUI();
   }
     //check if there is any data stored
     void updateDataOnUI(){
@@ -159,7 +162,7 @@ class StepAttestationBloc extends Bloc<StepAttestationEvent, StepAttestationStat
 
     //on<AttestationEvent>((event, emit) => emit AttestationState);
 
-    @override
+    /*@override
     Stream<StepAttestationState> mapEventToState( StepAttestationEvent event) async* {
       if (event is AttestationEvent) {
         yield AttestationState();
@@ -169,7 +172,7 @@ class StepAttestationBloc extends Bloc<StepAttestationEvent, StepAttestationStat
       else if (event is AttestationWithDataOutsideCallEvent) {
         yield AttestationWithDataOutsideCallState(requestType: event.requestType);
       }
-    }
+    }*/
 
   /*_onEvent(event, emit){
     event.map(
