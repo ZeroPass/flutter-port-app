@@ -7,7 +7,7 @@ description: Port Mobile App
 # Both the version and the builder number may be overridden in flutter
 # build by specifying --build-name and --build-number, respectively.
 # In Android, build-name is used as versionName while build-number used as versionCode.
-# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
+# Read more about Android versioning at https://developer.android.com/studio/publish/versioningodpre
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
@@ -34,11 +34,13 @@ dependencies:
   cupertino_icons: ^1.0.2
   dart_countries_states: ^0.1.1
   date_format: ^2.0.2
+
   port:
     path: lib/port
   dmrtd:
     git:
       url: https://github.com/ZeroPass/dmrtd.git
+      ref: v1.2.2.TMP
   equatable: ^2.0.0
   flare_flutter: ^3.0.2
   http: ^0.13.4
@@ -81,6 +83,9 @@ dependency_overrides:
   json_annotation: ^4.0.0-nullsafety.0
   freezed_annotation: 0.13.0-nullsafety.0
   pointycastle: ^3.1.1
+  flutter_nfc_kit:
+    git:
+      url: https://github.com/ZeroPass/flutter_nfc_kit.git
 
 flutter_icons:
   ios: true

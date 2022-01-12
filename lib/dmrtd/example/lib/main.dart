@@ -33,7 +33,7 @@ String formatMRZ(final MRZ mrz) {
          "  nationality: ${mrz.nationality}\n" +
          "  name: ${mrz.firstName}\n"          +
          "  surname: ${mrz.lastName}\n"        +
-         "  sex: ${mrz.sex}\n"                 +
+         "  gender: ${mrz.gender}\n"           +
          "  date of birth: ${DateFormat.yMd().format(mrz.dateOfBirth) }\n"   +
          "  date of expiry: ${DateFormat.yMd().format(mrz.dateOfExpiry) }\n" +
          "  add. data: ${mrz.optionalData}\n"  +
@@ -109,7 +109,7 @@ class _MrtdHomePageState extends State<MrtdHomePage> {
   final _log            = Logger("mrtdeg.app");
   var   _isNfcAvailable = false;
   var   _isReading      = false;
-  GlobalKey _mrzData   = GlobalKey<FormState>();
+  final _mrzData   = GlobalKey<FormState>();
 
   // mrz data
   final _docNumber = TextEditingController();

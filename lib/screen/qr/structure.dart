@@ -130,7 +130,7 @@ QRserverStructure _$QRserverStrucutreFromJson(Map<String, dynamic> json) {
 Map<String, dynamic> _$QRserverStrucutreToJson(QRserverStructure instance) => <String, dynamic>{
   'appName' : instance.appName,
   'version' : instance.version,
-  'userID': instance.accountID,
+  'userID': instance.accountID.toLowerCase(),
   'requestType': StringUtil.getWithoutTypeName(instance.requestType),
   'url': instance.host.host.toString(),
 };

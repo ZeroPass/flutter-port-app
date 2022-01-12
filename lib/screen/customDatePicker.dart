@@ -39,17 +39,19 @@ class CustomDatePicker extends StatefulWidget {
 
   static String formatDate(DateTime dt)
   {
-    return DateFormat.yMMMd().format(dt);
+    return DateFormat('dd MMMM yyyy', 'en_US').format(dt);
+    //return DateFormat.yMMMd().format(dt);
   }
 
-  static DateTime parseDate(String strDate)
-  {
-    return DateFormat.yMMMd().parse(strDate);
-  }
+  //static DateTime parseDate(String strDate)
+  //{
+  //  return DateFormat.yMMMd().parse(strDate);
+  //}
 
   static DateTime parseDateFormated(String strDate)
   {
-    return DateFormat('MMM d, yyyy', 'en_US').parse(strDate);
+    return DateFormat('dd MMMM yyyy', 'en_US').parse(strDate);
+    //return DateFormat('MMM d, yyyy', 'en_US').parse();
   }
 
   static bool isDateStringFormatedValid(String strDate)
@@ -95,7 +97,7 @@ class _CustomDatePicker extends State<CustomDatePicker> {
       onTap: () async {
         FocusScope.of(context).unfocus();
         if(widget.textEditingController.text.isNotEmpty && CustomDatePicker.isDateStringFormatedValid(widget.textEditingController.text))
-          widget.initialDate =  CustomDatePicker.parseDate(widget.textEditingController.text); // Set init date to previously selected date
+          widget.initialDate =  CustomDatePicker.parseDateFormated(widget.textEditingController.text); // Set init date to previously selected date
         else
           widget.initialDate = new DateTime(DateTime.now().year, 1, 1);//January 1st, current year
 
@@ -155,9 +157,7 @@ class _CustomDatePicker extends State<CustomDatePicker> {
 
   void _updateInitDateTime() {
     if(widget.textEditingController.text.isNotEmpty && CustomDatePicker.isDateStringFormatedValid(widget.textEditingController.text)) {
-      widget.initialDate = CustomDatePicker.parseDate(widget.textEditingController.text); // Set init date to previously selected date
-    } else {
-      widget.initialDate = DateTime(DateTime.now().year, 1, 1);//January 1st, current year
+      widget.initialDate = CustomDatePicker.parseDateFormated(widget.textEditingController.text); // Set init date to previously selected date
     }
 
     // Clamp init date to first/last date
@@ -179,9 +179,10 @@ class _CustomDatePicker extends State<CustomDatePicker> {
     }
 
     return TextFormField(
-        readOnly: true,
+        //readOnly: true,
         showCursor: false,
         //autofocus: true,
+        toolbarOptions: ToolbarOptions(copy: true, paste: true, cut: true, selectAll: true),
         textInputAction: TextInputAction.none,
         controller: widget.textEditingController,
         decoration: InputDecoration(labelText: widget.text),

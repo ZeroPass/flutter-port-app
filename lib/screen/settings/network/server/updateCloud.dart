@@ -201,7 +201,7 @@ class SettingsUpdateCloud extends StatelessWidget {
                         children: <CardSettingsWidget>[
                           new CardSettingsText(
                             label: 'URL',
-                            maxLength: 50,
+                            maxLength: 100,
                             contentAlign: TextAlign.right,
                             initialValue: initialValue(),
                             //autovalidate: true,

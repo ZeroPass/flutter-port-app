@@ -44,7 +44,6 @@ Map<NetworkType, Network> fillNetworkTypes(Map<NetworkType, Network> networks){
   _logStorage.fine("Fill network type if it's empty.");
   if (networks != null && networks.isNotEmpty) {
     _logStorage.fine("Main.fillNetworkTypes;Netowrk types is already written in database.");
-    //throw Exception("Main.fillNetworkTypes;Netowrk types is already written in database.");
   }
 
   NetworkType.values.forEach((element) {
@@ -100,10 +99,10 @@ Future<void> fillDatabase() async
     if (storage.cloudSet.servers.isEmpty){
       storage.cloudSet.add(networkTypeServer: NetworkTypeServer.MAIN_SERVER,
           isSelected: true,
-          server: ServerCloud(name: "ZeroPass server", host: Uri.parse("https://163.172.144.187")));
+          server: ServerCloud(name: "ZeroPass server", host: Uri.parse("https://portdevq8mjmnrw-portdev1.functions.fnc.fr-par.scw.cloud")));
 
       storage.cloudSet.servers[NetworkTypeServer.MAIN_SERVER]!.selected.set(server:
-      ServerCloud(name: "ZeroPass server", host: Uri.parse("https://163.172.144.187")));
+      ServerCloud(name: "ZeroPass server", host: Uri.parse("https://portdevq8mjmnrw-portdev1.functions.fnc.fr-par.scw.cloud")));
 
       ServerCloud? serverCloud = storage.getServerCloudSelected(networkTypeServer: NetworkTypeServer.MAIN_SERVER);
     }
