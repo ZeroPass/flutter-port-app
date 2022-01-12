@@ -137,7 +137,7 @@ class _EfDG1Dialog extends State<EfDG1Dialog> {
                             ["DATA_IN_REVIEW"])
                       CardItem('• ' + item, null),
                   ]),
-                  const SizedBox(height: 18),
+                  /*const SizedBox(height: 18),
                   CustomCardShowHide("Raw Data", this.widget.rawData,
                       actions: [
                         PlatformDialogAction(
@@ -147,7 +147,7 @@ class _EfDG1Dialog extends State<EfDG1Dialog> {
                             Clipboard.setData(ClipboardData(text: this.widget.rawData));
                           },
                         )
-                      ]),
+                      ]),*/
                   const SizedBox(height: 30),
                   Wrap(
                       alignment: WrapAlignment.spaceAround,

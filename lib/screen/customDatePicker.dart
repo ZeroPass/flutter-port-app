@@ -39,7 +39,7 @@ class CustomDatePicker extends StatefulWidget {
 
   static String formatDate(DateTime dt)
   {
-    return DateFormat('dd MMMM yyyy', 'en_US').format(dt);
+    return DateFormat('dd MMM yyyy', 'en_US').format(dt);
     //return DateFormat.yMMMd().format(dt);
   }
 
@@ -50,7 +50,7 @@ class CustomDatePicker extends StatefulWidget {
 
   static DateTime parseDateFormated(String strDate)
   {
-    return DateFormat('dd MMMM yyyy', 'en_US').parse(strDate);
+    return DateFormat('dd MMM yyyy', 'en_US').parse(strDate);
     //return DateFormat('MMM d, yyyy', 'en_US').parse();
   }
 
@@ -201,7 +201,7 @@ class _CustomDatePicker extends State<CustomDatePicker> {
             initialDate: widget.initialDate,
             firstDate: widget.firstDate,
             lastDate: widget.lastDate,
-            dateFormat: "dd-MMMM-yyyy",
+            dateFormat: "dd-MMM-yyyy",
             locale: DateTimePickerLocale.en_us,
             looping: true,
           );

@@ -43,7 +43,7 @@ class _NoEfDG1Dialog extends State<NoEfDG1Dialog> {
                     for (var item in AuthenticatorActions[widget.requestType]["DATA_IN_REVIEW"])
                       CardItem('• ' + item, null),
                   ]),
-                  const SizedBox(height: 18),
+                  /*const SizedBox(height: 18),
                   CustomCardShowHide("Raw Data",
                       this.widget.rawData,
                   actions: [
@@ -54,7 +54,7 @@ class _NoEfDG1Dialog extends State<NoEfDG1Dialog> {
                         Clipboard.setData(ClipboardData(text: this.widget.rawData));
                       },
                     )
-                  ],),
+                  ],),*/
                   const SizedBox(height: 30),
                   Wrap(
                       alignment: WrapAlignment.spaceAround,
