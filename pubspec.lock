@@ -232,13 +232,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.2.1"
-  data_connection_checker:
+  data_connection_checker_tv:
     dependency: "direct main"
     description:
-      name: data_connection_checker
+      name: data_connection_checker_tv
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.4"
+    version: "0.3.5-nullsafety"
   date_format:
     dependency: "direct main"
     description:
@@ -400,13 +400,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.6.1"
-  flutter_cupertino_date_picker:
-    dependency: "direct main"
-    description:
-      name: flutter_cupertino_date_picker
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.26+2"
   flutter_cupertino_settings:
     dependency: transitive
     description:
@@ -528,13 +521,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.1"
-  flutter_tags:
-    dependency: "direct main"
-    description:
-      name: flutter_tags
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.4.9+1"
   flutter_test:
     dependency: "direct dev"
     description: flutter

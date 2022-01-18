@@ -2,11 +2,9 @@ import 'dart:async';
 
 import 'package:eosio_port_mobile_app/screen/nfc/authn/authn.dart';
 import 'package:eosio_port_mobile_app/screen/qr/QRscreen.dart';
-import 'package:eosio_port_mobile_app/screen/qr/structure.dart';
 import 'package:eosio_port_mobile_app/screen/requestType.dart';
 import 'package:eosio_port_mobile_app/constants/constants.dart';
 import 'package:eosio_port_mobile_app/utils/storage.dart';
-import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:eosio_port_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
@@ -17,8 +15,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:eosio_port_mobile_app/screen/theme.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
-import 'package:eosio_port_mobile_app/screen/settings/settings.dart';
 
 import 'package:logging/logging.dart';
 //import 'package:device_preview/device_preview.dart' as DevPreview;
