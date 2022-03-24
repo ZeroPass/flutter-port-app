@@ -225,7 +225,8 @@ class PassportScanner {
       final se = e.toString().toLowerCase();
       errorMsg = 'An error has occurred while scanning Passport!';
       if (e is PassportError) {
-        if (se.contains('security status not satisfied')) {
+        if (se.contains('security status not satisfied') ||
+           e.code?.sw1 == 0x63) { // TODO: 0x63 is standard code for warning, make sure the BAC session has failed when this case is true
           errorMsg =
           'Failed to initiate session with passport.\nPlease, check input data!';
         }
