@@ -19,6 +19,8 @@ import 'authn/authn.dart';
 import 'uie/nfc_scan_dialog.dart';
 import 'uie/uiutils.dart';
 
+
+
 class PassportData  {
   EfSOD? sod;
   EfDG1? dg1;
@@ -29,6 +31,7 @@ class PassportData  {
   PassportData({this.sod, this.dg1, this.dg2, this.dg14, this.dg15, this.csig});
 }
 
+//class Register
 
 class PassportScannerError implements Exception {
   final String message;
@@ -37,22 +40,228 @@ class PassportScannerError implements Exception {
   String toString() => message;
 }
 
+
 class PassportScanner {
   final _log = Logger('passport.scanner');
   final _nfc = NfcProvider();
   late NfcScanDialog _scanDialog;
+  final PortClient client;
 
-  PortAction action;
+  //final PortAction action;
+  //final AuthenticationType? authenticationType;
   final BuildContext context;
-  ProtoChallenge? challenge;
+  //ProtoChallenge? challenge;
 
-  PassportScanner(
-      {required this.context, this.challenge, required this.action}) {
-    _scanDialog = NfcScanDialog(context, onCancel: () async {
-      _log.info('Scanning canceled by user');
-      await _cancel();
+  PassportScanner({required this.context,
+                   required this.client
+    }) {
+        _scanDialog = NfcScanDialog(context, onCancel: () async {
+          _log.info('Scanning canceled by user');
+          await _cancel();
     });
+        //if (this.action == PortAction.assertion && this.authenticationType == null)
+        //  throw PassportScannerError('Authentication type is not selected');
   }
+
+  ///From [EfCOM] detect DG files from card
+  ///and return what authentication
+  ///is going to be executed.
+  ///Function creates order of different types
+  ///of authentication.
+  AuthenticationType getAuthType(EfCOM efCOM){
+    final logS = Logger('passport.scanner.selectAuthenticationType');
+    AuthenticationType auth = AuthenticationType.None;
+    //return auth;
+    //most valuable authentication
+    if (efCOM.dgTags.contains(EfDG15.TAG)) {
+      logS.info("EfDG15 found. Execute 'PortAuthenticationType.ActiveAuthentication'.");
+      auth = AuthenticationType.ActiveAuthentication;
+    }
+    //less valuable authentication
+    else if (efCOM.dgTags.contains(EfDG14.TAG)) {
+      logS.info("EfDG14 found. Execute 'PortAuthenticationType.ChipAuthentication'.");
+      auth = AuthenticationType.ChipAuthentication;
+    }
+
+    //otherwise do not do any authentication!
+    logS.info('Selected authentication: $auth');
+    return auth;
+  }
+
+  /// Do active authenticator if there is
+  /// Ef.DG15 file. CA should be implemented
+  /// in other function.
+  Future<PassportData> authenticateAA({required Passport passport, required ProtoChallenge challenge}) async{
+    _log.info("Starting active authentication process");
+
+    //this part is needed because of previous step - reading SOD
+    _setAlertMessage(formatProgressMsg('Scanning passport completed', 100));
+
+    final pdata = PassportData();
+    _log.debug('Signing challenge ...');
+
+    int progress = 1;
+    pdata.csig = ChallengeSignature();
+    //do only active authentication, chip authentication will be done in
+    //the future; do nothing when there is no authentication
+      for (final c in challenge.getChunks(Passport.aaChallengeLen)) {
+        _setAlertMessage(formatProgressMsg('Signing challenge ...', progress++ * 20));
+        _log.verbose('Signing challenge chunk: ${c.hex()}');
+        final sig = await _call(() => passport.activeAuthenticate(c));
+        _log.verbose("  Chunk's signature: ${sig!.hex()}");
+        pdata.csig!.addSignature(sig);
+      }
+    _log.debug('Scanning passport completed');
+    return pdata;
+  }
+
+
+  /// Get SOD from passport [passport]
+  ///
+  /// Function returns [PassportData] with SOD
+  /// data in structure.
+  Future<PassportData> getSOD({required Passport passport, required EfCOM efcom}) async{
+    _log.info("Get SOD from passport");
+    final pdata = PassportData();
+    _setAlertMessage(formatProgressMsg('Reading data ...', 20));
+    pdata.dg15 = await _call(() => passport.readEfDG15());
+    _setAlertMessage(formatProgressMsg('Reading data ...', 40));
+    _log.debug('Passport AA public key type: ${pdata.dg15!.aaPublicKey.type}');
+    if (pdata.dg15!.aaPublicKey.type == AAPublicKeyType.EC) {
+      if (!efcom.dgTags.contains(EfDG14.TAG)) {
+        //errorMsg = 'Unsupported passport'; //TODO: implement this, check if catch works well
+        _log.warning('Strange ... passport should contain file EF.DG14 but is somehow missing?!');
+        await _showUnsupportedMrtdAlert(); // TODO: show more descriptive alert dialog
+        throw PassportScannerError('Unsupported passport');
+      }
+      pdata.dg14 = await _call(() => passport.readEfDG14());
+    }
+
+    _setAlertMessage(formatProgressMsg('Reading data ...', 60));
+    pdata.sod = await _call(() => passport.readEfSOD());
+    _setAlertMessage(formatProgressMsg('Scanning passport completed', 79));
+    _log.debug('SOD: Scanning passport completed');
+    return pdata;
+  }
+
+
+  Future<EfCOM> readStructure({required Passport passport, required DBAKeys dbaKeys}) async {
+    _log.debug('Initializing session with passport ...');
+    _setAlertMessage('Initiating session ...');
+    await _call(() => passport.startSession(dbaKeys));
+
+    _setAlertMessage(formatProgressMsg('Reading data ...', 0));
+    final efcom = await _call<EfCOM>(() => passport.readEfCOM());
+    _log.debug('EF.COM version: ${efcom!.version}');
+
+    _log.debug('Available data groups: ${formatDgTagSet(efcom.dgTags)}');
+    return efcom;
+  }
+
+  Future<Map<String, dynamic>> register({required DBAKeys dbaKeys,
+                  required UserId uid,
+                  required Future<bool> Function(AuthenticationType) waitingOnConfirmation}) async {
+    String? errorMsg;
+    try {
+      _log.debug('Waiting for passport ...');
+      await _connect(alertMessage: 'Hold your device near Biometric Passport');
+      final passport = Passport(_nfc);
+
+      final efcom = await readStructure(passport: passport, dbaKeys: dbaKeys);
+
+      PassportData passdata = await getSOD(passport: passport, efcom: efcom);
+
+      Map<String, dynamic> srvResult;
+
+      //execute Active Authentication if possible, otherwise just get SOD
+      //disclaimer: Chip authentication is not supported yet!
+      if (this.getAuthType(efcom) != AuthenticationType.ActiveAuthentication) {
+        await _disconnect(alertMessage: formatProgressMsg('Finished', 100));
+        if (await waitingOnConfirmation(this.getAuthType(efcom))) {
+          srvResult = await this.client.register(uid,
+              passdata.sod!,
+              dg15: passdata.dg15,
+              dg14: passdata.dg14);
+        }
+        else
+          throw PassportScannerError('Canceled by user');
+      }
+      else {
+         srvResult = await this.client.getAssertion(
+            uid, (challenge) async {
+
+              return await authenticateAA(
+                  passport: passport,
+                  challenge: challenge).then((PassportData data) async {
+                      ChallengeSignature cs = data.csig!;
+                    //no error/exception when passport was scaned
+                    await _disconnect(alertMessage: formatProgressMsg('Finished', 100));
+                    if (await waitingOnConfirmation(this.getAuthType(efcom))) {
+
+                      try {
+                        srvResult = await this.client.register(uid,
+                            passdata.sod!,
+                            dg15: passdata.dg15,
+                            dg14: passdata.dg14);
+                      }
+                      catch(e){
+                        if (e == PortError.accountAlreadyRegistered) {
+                          // account is passive attested,
+                          // do nothing, just continue the process
+                        }
+                        else rethrow;
+                      }
+                      return data.csig!;
+                    }
+                    else
+                      throw PassportScannerError('Canceled by user');
+                });
+        });
+      }
+      return srvResult;
+    } on PassportScannerError{
+      rethrow;
+    } catch (e) {
+      final se = e.toString().toLowerCase();
+      errorMsg = 'An error has occurred while scanning Passport!';
+      if (e is PassportError) {
+        if (se.contains('security status not satisfied')) {
+          errorMsg =
+          'Failed to initiate session with passport.\nPlease, check input data!';
+        }
+        if (e.code != null) {
+          errorMsg += '\n(error code: ${e.code})';
+        }
+        _log.error('Failed to scan passport: ${e.message}');
+      }
+      else if (e is PortError){
+        rethrow;
+      }
+      else {
+        errorMsg = 'An unknown error has occurred while scanning Passport!';
+        _log.error(
+            'An exception was encountered while trying to scan Passport: $e');
+      }
+
+      if (se.contains('timeout')) {
+        errorMsg = 'Timeout while waiting for Passport tag!';
+      } else if (se.contains('tag was lost') ||
+          se.contains('tag connection lost')) {
+        errorMsg = 'Tag was lost. Please try again!';
+      } else if (se.contains('invalidated by user')) {
+        errorMsg = '';
+        throw PassportScannerError('Canceled by user');
+      }
+      throw PassportScannerError(errorMsg);
+    } finally {
+      if (errorMsg != null) {
+        await _disconnect(errorMessage: errorMsg);
+      } else {
+        //handled in try block
+      }
+    }
+  }
+
 
   /// Reads data from passport and signs Port proto [challenge]
   /// with passport's AA private key. Call to this function
@@ -67,11 +276,7 @@ class PassportScanner {
   /// On error [PassportScannerError] is thrown.
   /// Note: That any error, except for the user cancellation error is
   ///       displayed to the user via sheet dialog.
-  Future<PassportData> scan(final DBAKeys dbaKeys) async {
-    if (challenge == null) {
-      throw PassportScannerError('challenge is null');
-    }
-
+  /*Future<PassportData> scan(final DBAKeys dbaKeys) async {
     String? errorMsg;
     try {
       _log.debug('Waiting for passport ...');
@@ -83,56 +288,27 @@ class PassportScanner {
       await _call(() => passport.startSession(dbaKeys));
 
       _setAlertMessage(formatProgressMsg('Reading data ...', 0));
-      final efcom = await _call<EfCOM>(() => passport.readEfCOM());
+      final efcom = await readStructure(passport: passport, dbaKeys: dbaKeys);
       _log.debug('EF.COM version: ${efcom!.version}');
 
       _log.debug('Available data groups: ${formatDgTagSet(efcom.dgTags)}');
-      if ((action == PortAction.register || action == PortAction.login)
-          && !efcom.dgTags.containsAll([EfDG1.TAG, EfDG15.TAG])) {
-        _log.info('Unsupported passport - '
-            "missing file ${efcom.dgTags.contains(EfDG1.TAG) ? "Ef.DG15" : "EF.DG1"}");
-        errorMsg = 'Unsupported passport';
-        await _showUnsupportedMrtdAlert();
-        throw PassportScannerError('Unsupported passport');
+
+      //execute Active Authentication if possible, otherwise just get SOD
+      //disclaimer: Chip authentication is not supported yet!
+      PassportData pData;
+
+      switch(this.action){
+          case PortAction.register:
+            pData = await getSOD(passport: passport, efcom: efcom);
+            break;
+          case PortAction.assertion:
+            pData = await authenticate(passport: passport, efcom: efcom);
+            break;
+        default:
+          throw PassportScannerError('Unknown action');
       }
-
-      final pdata = PassportData();
-      if (action == PortAction.register) {
-        // _setAlertMessage(formatProgressMsg('Reading data ...', 20));
-        // if (action == PortAction.login) {
-        //   pdata.dg1 = await _call(() => passport.readEfDG1());
-        // }
-        _setAlertMessage(formatProgressMsg('Reading data ...', 20));
-        pdata.dg15 = await _call(() => passport.readEfDG15());
-        _log.debug('Passport AA public key type: ${pdata.dg15!.aaPublicKey.type}');
-        if (pdata.dg15!.aaPublicKey.type == AAPublicKeyType.EC) {
-          if (!efcom.dgTags.contains(EfDG14.TAG)) {
-            errorMsg = 'Unsupported passport';
-            _log.warning(
-                'Strange ... passport should contain file EF.DG14 but is somehow missing?!');
-            await _showUnsupportedMrtdAlert(); // TODO: show more descriptive alert dialog
-            throw PassportScannerError('Unsupported passport');
-          }
-          pdata.dg14 = await _call(() => passport.readEfDG14());
-        }
-
-        _setAlertMessage(formatProgressMsg('Reading data ...', 60));
-        pdata.sod = await _call(() => passport.readEfSOD());
-      }
-
-      _log.debug('Signing challenge ...');
-      _setAlertMessage(formatProgressMsg('Signing challenge ...', 80));
-      pdata.csig = ChallengeSignature();
-      for (final c in challenge!.getChunks(Passport.aaChallengeLen)) {
-        _log.verbose('Signing challenge chunk: ${c.hex()}');
-        final sig = await _call(() => passport.activeAuthenticate(c));
-        _log.verbose("  Chunk's signature: ${sig!.hex()}");
-        pdata.csig!.addSignature(sig);
-      }
-
-      _log.debug('Scanning passport completed');
-      return pdata;
-    } on PassportScannerError {
+      return pData;
+    } on PassportScannerError{
       rethrow;
     } catch (e) {
       final se = e.toString().toLowerCase();
@@ -169,7 +345,7 @@ class PassportScanner {
         await _disconnect(alertMessage: formatProgressMsg('Finished', 100));
       }
     }
-  }
+  }*/
 
   /// Cancels current scanning operation
   Future<dynamic>? _cancel() {
@@ -225,7 +401,7 @@ class PassportScanner {
           message: alertMessage,
           errorMessage: errorMessage,
           delayClosing:
-          Duration(milliseconds: (errorMessage != null ? 3500 : 2500)));
+          Duration(milliseconds: (errorMessage != null ? 3500 : 0)));
     }
     return _nfc.disconnect(
         iosAlertMessage: alertMessage, iosErrorMessage: errorMessage);

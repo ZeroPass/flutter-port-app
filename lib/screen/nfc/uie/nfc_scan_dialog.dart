@@ -173,11 +173,9 @@ class NfcScanDialog {
           _showCancelButton = false;
           if (errorMessage != null) {
             _msg = errorMessage;
-            //_iconAnimation = _IconAnimations.animError;
             _riveArtboard!.addController(_animationController = SimpleAnimation(_IconAnimations.animError));
           } else if (message != null) {
             _msg = message;
-            //_iconAnimation = _IconAnimations.animSuccess;
             _riveArtboard!.addController(_animationController = SimpleAnimation(_IconAnimations.animSuccess));
           }
         });

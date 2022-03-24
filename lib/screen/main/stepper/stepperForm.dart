@@ -256,7 +256,7 @@ class _StepperFormState extends State<StepperForm> {
     return send.future;
   }
 
-  Future<bool?> _showDataToBeSent(BuildContext context) async {
+  Future<bool?> _showDataToBeSent(BuildContext context, AuthenticationType authType) async {
     Storage storage = new Storage();
     StepDataAttestation stepDataAttestation = storage.getStorageData(2) as StepDataAttestation;
 
@@ -273,6 +273,7 @@ class _StepperFormState extends State<StepperForm> {
     Completer<bool> send = new Completer<bool>();
     stepReviewBloc.add(StepReviewWithoutDataEvent(
         requestType: stepDataAttestation.requestType,
+        authType: authType,
         outsideCall: storage.outsideCall,
         rawData: """trx:
               receipt:
@@ -368,8 +369,8 @@ class _StepperFormState extends State<StepperForm> {
                     });
     },
         /*show last step*/
-        showDataToBeSent: (){
-          return _showDataToBeSent(context);
+        showDataToBeSent: (AuthenticationType authType){
+          return _showDataToBeSent(context, authType);
         },
         /*show bufferScreen*/
         showBufferScreen: (){
@@ -471,10 +472,7 @@ class _StepperFormState extends State<StepperForm> {
               stepperBloc.add(StepCancelled());
             },
             onStepContinue: () {
-              //_scrollController.jumpTo(_scrollController.position.maxScrollExtent);
               Storage storage = Storage();
-              StepDataAttestation stepDataAttestation =
-                  storage.getStorageData(2) as StepDataAttestation;
 
               int stepJumps = storage.outsideCall.isOutsideCall &&
                   state.step == 1

@@ -109,9 +109,8 @@ class _StepScanFormState extends State<StepScanForm> {
               CustomDatePicker(
                 text: "Date of Birth",
                 firstDate: DateTime(DateTime.now().year - 90),
-                lastDate: DateTime(DateTime.now().year - 9, 12,
-                    DateTime.now().day),
-                initialDate: DateTime(DateTime.now().year - 10),
+                lastDate: DateTime.now(),
+                initialDate: DateTime(DateTime.now().year - 13),
                 callbackOnDatePicked: /*callback*/ (selectedDate) {
                   //save to storage
                   StepDataScan storageStepScan = storage.getStorageData(1) as StepDataScan;
@@ -148,7 +147,7 @@ class _StepScanFormState extends State<StepScanForm> {
                     firstDate:  /*(this._allowExpiredPassport)
                     ? DateTime(DateTime.now().year - 90) :*/
                     DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day + 1),
-                  lastDate: DateTime(DateTime.now().year + 15),
+                  lastDate: DateTime(DateTime.now().year + 30),
                   initialDate: DateTime(DateTime.now().year + 1),
                   callbackOnDatePicked: /*callback*/ (selectedDate) {
                   //save to storage

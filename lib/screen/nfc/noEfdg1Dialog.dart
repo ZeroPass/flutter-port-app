@@ -1,21 +1,19 @@
-import 'package:eosio_port_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
-import 'package:eosio_port_mobile_app/utils/storage.dart';
 import 'package:flutter/material.dart';
 import 'package:eosio_port_mobile_app/screen/customCard.dart';
-import 'package:eosio_port_mobile_app/screen/customCardShowHide.dart';
 import 'package:eosio_port_mobile_app/screen/requestType.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:eosio_port_mobile_app/screen/flushbar.dart';
-import 'package:flutter/services.dart';
+
+import 'authn/authn.dart';
 
 
 class NoEfDG1Dialog extends StatefulWidget {
   final RequestType requestType;
+  final AuthenticationType authType;
   final String rawData;
   final List<Widget> actions;
 
   NoEfDG1Dialog(
       {required this.requestType,
+        required this.authType,
         required this.rawData,
         required this.actions});
 
@@ -40,8 +38,9 @@ class _NoEfDG1Dialog extends State<NoEfDG1Dialog> {
                 children: <Widget>[
                   const SizedBox(height: 14),
                   CustomCard("Authn Data", [
-                    for (var item in AuthenticatorActions[widget.requestType]["DATA_IN_REVIEW"])
-                      CardItem('• ' + item, null),
+                    for (String item in AuthenticatorActions[widget.requestType]["DATA_IN_REVIEW"])
+                      if (!(widget.authType == AuthenticationType.None && item.contains("Passport Signature")))
+                        CardItem('• ' + item, null),
                   ]),
                   /*const SizedBox(height: 18),
                   CustomCardShowHide("Raw Data",

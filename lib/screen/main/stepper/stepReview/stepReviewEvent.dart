@@ -2,8 +2,7 @@ import 'package:eosio_port_mobile_app/screen/requestType.dart';
 import 'package:equatable/equatable.dart';
 import 'package:eosio_port_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
 import 'package:dmrtd/dmrtd.dart';
-import 'package:meta/meta.dart';
-import 'package:flutter/material.dart';
+import '../../../nfc/authn/authn.dart';
 
 
 abstract class StepReviewEvent extends Equatable {
@@ -32,14 +31,15 @@ class StepReviewNoConnectionEvent extends StepReviewEvent{
 
 class StepReviewWithoutDataEvent extends StepReviewEvent{
   RequestType requestType;
+  AuthenticationType authType;
   String rawData;
   OutsideCallV0dot1 outsideCall;
   Function(bool) sendData;
 
-  StepReviewWithoutDataEvent({required this.requestType, required this.rawData,  required this.outsideCall, required this.sendData});
+  StepReviewWithoutDataEvent({required this.requestType, required this.authType, required this.rawData,  required this.outsideCall, required this.sendData});
 
   @override
-  String toString() => 'StepReviewEvent:StepReviewWithoutDataEvent {outside call: $outsideCall, raw data, $rawData}}';
+  String toString() => 'StepReviewEvent:StepReviewWithoutDataEvent {outside call: $outsideCall, auth type:$authType, raw data, $rawData}}';
 }
 
 class StepReviewWithDataEvent extends StepReviewEvent{

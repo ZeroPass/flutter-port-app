@@ -2,6 +2,8 @@ import 'package:eosio_port_mobile_app/screen/main/stepper/stepAttestation/stepAt
 import 'package:eosio_port_mobile_app/screen/requestType.dart';
 import 'package:dmrtd/dmrtd.dart';
 
+import '../../../nfc/authn/authn.dart';
+
 abstract class StepReviewState {
   @override
   List<Object> get props => [];
@@ -22,14 +24,15 @@ class StepReviewNoConnectionState extends StepReviewState {
 
 class StepReviewWithoutDataState extends StepReviewState {
   RequestType requestType;
+  AuthenticationType authType;
   OutsideCallV0dot1 outsideCall;
   String rawData;
   Function(bool) sendData;
 
-  StepReviewWithoutDataState({required this.requestType, required this.rawData, required this.outsideCall, required this.sendData});
+  StepReviewWithoutDataState({required this.requestType, required this.authType, required this.rawData, required this.outsideCall, required this.sendData});
 
   @override
-  String toString() => 'StepReviewState:StepReviewWithoutDataState {outside call: $outsideCall, raw data: $rawData,}}';
+  String toString() => 'StepReviewState:StepReviewWithoutDataState {outside call: $outsideCall, auth type: $authType, raw data: $rawData,}}';
 }
 
 class StepReviewWithDataState extends StepReviewState {

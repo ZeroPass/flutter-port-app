@@ -120,7 +120,7 @@ class Eosio{
     catch(e){ return onError("getAccountInfo", e);}
   }
 
-  Future<Map<String, dynamic>> getTableRows(String code, String scope, String table, {
+  Future<Object> getTableRows(String code, String scope, String table, {
     bool json = true,
     String tableKey = '',
     String lower = '',
@@ -140,14 +140,16 @@ class Eosio{
       assert(table != null && table != "");
 
       //https://developers.eos.io/manuals/eos/latest/nodeos/plugins/chain_api_plugin/api-reference/index#operation/get_table_rows
-      return await _eosClient.getTableRow(code, scope, table,
+      return Map<String, dynamic> ();
+
+      /*await _eosClient.getTableRow(code, scope, table,
                                                   json: json,
                                                   tableKey: tableKey,
                                                   lower: lower,
                                                   upper: upper,
                                                   indexPosition: indexPosition,
                                                   keyType: keyType,
-                                                  reverse: reverse);
+                                                  reverse: reverse);*/
     }
     catch(e){
       onError("getTableRows", e);

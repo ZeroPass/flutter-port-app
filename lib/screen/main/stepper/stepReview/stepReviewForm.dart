@@ -187,6 +187,7 @@ class _StepReviewFormState extends State<StepReviewForm> {
                       if (state is StepReviewWithoutDataState)
                         NoEfDG1Dialog(
                           requestType: RequestType.ATTESTATION_REQUEST,
+                          authType: state.authType,
                           rawData: state.rawData,
                           actions: [
                             PlatformButton(

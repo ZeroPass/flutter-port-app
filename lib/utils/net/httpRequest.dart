@@ -23,7 +23,7 @@ class Request {
   Handle connection on server
  */
 class HTTPrequest {
-  String url;
+  Uri url;
 
   HTTPrequest({required this.url});
 

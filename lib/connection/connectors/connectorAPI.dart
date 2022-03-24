@@ -92,9 +92,9 @@ class ConnectorAPI extends ConnectionAdapterMaintenance with ConnectionAdapterAP
   Future<Map<String, dynamic>> register(final UserId userId, final EfSOD sod, final EfDG15 dg15, final CID cid, final ChallengeSignature csig, {EfDG14? dg14}) async {
     _log.debug("ConnectionAPI.register");
     Completer<Map<String, dynamic>> send = new Completer<Map<String, dynamic>>();
-    portApi.register(userId, sod, dg15, cid, csig, dg14: dg14).then((session) {
-      send.complete(session);
-    });
+    //portApi.register(userId, sod, dg15:dg15, cid, csig, dg14: dg14).then((session) {
+    //  send.complete(session);
+    //});
     return send.future;
   }
 
