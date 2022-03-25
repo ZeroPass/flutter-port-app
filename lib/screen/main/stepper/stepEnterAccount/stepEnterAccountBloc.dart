@@ -170,7 +170,7 @@ class StepEnterAccountBloc extends Bloc<StepEnterAccountEvent, StepEnterAccountS
           validatorText = 'There is a problem with connection on chain.';
           return true;
         });
-      };
+      }
 
       validatorText = '';
       // passes all conditions - only length is not checked - lower bound

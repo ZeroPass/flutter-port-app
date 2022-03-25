@@ -86,7 +86,8 @@ class Authn /*extends State<Authn>*/ {
     String missingValuesText = '';
     Storage storage = Storage();
     StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0) as StepDataEnterAccount;
-    if (storageStepEnterAccount.isUnlocked == false
+    if (!storage.outsideCall.isOutsideCall &&
+    storageStepEnterAccount.isUnlocked == false
         /*&& storage.selectedNode.name != "ZeroPass Server"*/)
       missingValuesText +=
           "- Account name is not valid.\n (Step 'Account')\n\n";
