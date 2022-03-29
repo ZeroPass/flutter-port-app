@@ -157,7 +157,7 @@ class _StepReviewFormState extends State<StepReviewForm> {
         alignment: Alignment.centerLeft,
         child:
         Text(
-      'Review what data will be send to ' +
+      'Review what data will be sent to ' +
           (outsideCall.isOutsideCall
               ? outsideCall.getStructV1()!.host.toString()
               : ( isPublishedOnChain?'the blockchain.': 'the server.')),

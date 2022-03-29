@@ -34,7 +34,7 @@ class LoggerHandlerInstance{
       FieldName.TEXT,
     ]
     ..activeLogLevel = LogLevel.ALL;
-    
+
 
     FLog.applyConfigurations(config);
 
@@ -156,7 +156,7 @@ class LoggerHandlerInstance{
         final logs = await FLog.getAllLogs();
         var buffer = StringBuffer();
         logs.forEach((Log log) {
-          buffer.write(Formatter.format(log, config)); // TODO: When log will be send over net make it json format e.g.: log.toMap()
+          buffer.write(Formatter.format(log, config)); // TODO: When log will be sent over net make it json format e.g.: log.toMap()
         });
 
         List<int> list = buffer.toString().codeUnits;
