@@ -5,13 +5,13 @@ Map<RequestType, dynamic> AuthenticatorActions = {
   RequestType.ATTESTATION_REQUEST: {
     "NAME": "Attest",
     "DATA": [
-      "Country (SOD)",
-      "Passport Public Key (DG15)",
+      "Passport authn data & Country (EF.SOD)",
+      "Passport Public Key (EF.DG15)",
       "Passport Signature"
     ],
     "DATA_IN_REVIEW": [
-      "Country (SOD)",
-      "Passport Public Key (DG15)",
+      "Passport authn data & Country (EF.SOD)",
+      "Passport Public Key (EF.DG15)",
       "Passport Signature"
     ],
     "TEXT_ON_SUCCESS": "Well done, you are now anonymously attested!",
@@ -26,7 +26,7 @@ Map<RequestType, dynamic> AuthenticatorActions = {
   },
   RequestType.FAKE_PERSONAL_INFORMATION_REQUEST: {
     "NAME": "Send Fake Personal Info",
-    "DATA": ["Personal Information (DG1)", "Passport Signature)"],
+    "DATA": ["Personal Information (EF.DG1)", "Passport Signature)"],
     "DATA_IN_REVIEW": ["Passport Signature"],
     "TEXT_ON_SUCCESS": "Well done, your personal data  was successfully send!",
     "IS_PUBLISHED_ON_CHAIN": false
