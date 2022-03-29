@@ -39,8 +39,9 @@ class _NoEfDG1Dialog extends State<NoEfDG1Dialog> {
                   const SizedBox(height: 14),
                   CustomCard("Authn Data", [
                     for (String item in AuthenticatorActions[widget.requestType]["DATA_IN_REVIEW"])
-                      if (!(widget.authType == AuthenticationType.None && item.contains("Passport Signature")))
-                        CardItem('• ' + item, null),
+                      if (!(widget.authType != AuthenticationType.ActiveAuthentication && (item.contains("Passport Signature") || item.contains("Passport Public Key (EF.DG15)"))))
+                        CardItem('• ' + item, null)
+                        ,
                   ]),
                   /*const SizedBox(height: 18),
                   CustomCardShowHide("Raw Data",
