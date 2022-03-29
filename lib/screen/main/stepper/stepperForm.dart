@@ -320,8 +320,7 @@ class _StepperFormState extends State<StepperForm> {
     String title;
     String msg;
     final connectivityResult = await Connectivity().checkConnectivity();
-    if (connectivityResult == ConnectivityResult.none ||
-        !await testConnection()) {
+    if (connectivityResult == ConnectivityResult.none || !await testConnection()) {
       title = 'No Internet connection';
       msg = 'An internet connection is required!';
     } else {

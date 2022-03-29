@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:dmrtd/extensions.dart';
 import 'package:eosio_port_mobile_app/screen/nfc/authn/authn.dart';
 import 'package:eosio_port_mobile_app/screen/qr/QRscreen.dart';
 import 'package:eosio_port_mobile_app/screen/requestType.dart';
@@ -22,9 +23,26 @@ import 'package:eosio_port_mobile_app/utils/logging/loggerHandler.dart' as LH;
 import 'package:eosio_port_mobile_app/connection/tools/eosio/eosio.dart';
 import 'package:eosio_port_mobile_app/screen/qr/readQR.dart';
 import 'package:eosio_port_mobile_app/screen/index/index.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 var RUN_IN_DEVICE_PREVIEW_MODE = false;
 final _logStorage = Logger('Storage initialization');
+final _logMain = Logger('Main');
+
+
+void getAppMetadata() async{
+  PackageInfo packageInfo = await PackageInfo.fromPlatform();
+  String appName = packageInfo.appName;
+  String packageName = packageInfo.packageName;
+  String version = packageInfo.version;
+  String buildNumber = packageInfo.buildNumber;
+  String buildSignature = packageInfo.buildSignature;
+  _logMain.debug("App name: $appName, "
+      "package name: $packageName, "
+      "build number: $buildNumber, "
+      "version: $version, "
+      "build signature: $buildSignature");
+}
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -165,6 +183,9 @@ class Port extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     this.initialActions();
+
+    //print metadata
+    getAppMetadata();
 
     return PlatformProvider(
       //initialPlatform: initialPlatform,
