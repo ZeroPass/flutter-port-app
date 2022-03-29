@@ -234,7 +234,7 @@ class _StepperFormState extends State<StepperForm> {
             ref_block_prefix:0
             max_net_usage_words:0
             max_cpu_usage_ms:0
-            delay_sec:0 
+            delay_sec:0
             context_free_actions:
             actions:Array[0] []
             transaction_extensions:
@@ -328,6 +328,7 @@ class _StepperFormState extends State<StepperForm> {
       title = 'Connection error';
       msg = 'Failed to connect to server.\n'
           'Check server connection settings.';
+          return false;
     }
     bool? response = await  showAlert<bool>(
         context: context,
