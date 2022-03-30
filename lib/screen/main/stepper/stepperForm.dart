@@ -314,7 +314,7 @@ class _StepperFormState extends State<StepperForm> {
     return true;
   }
 
-  Future<bool> _showEFDG1(
+  Future<bool> _showConnectionError(
     BuildContext context,
   ) async {
     String title;
@@ -378,7 +378,7 @@ class _StepperFormState extends State<StepperForm> {
         },
         /*show connection error*/
         onConnectionError: (SocketException e) async {
-          return _showEFDG1(context);
+          return _showConnectionError(context);
     });
     Storage storage = Storage();
     StepDataAttestation stepDataAttestation = storage.getStorageData(2) as StepDataAttestation;
