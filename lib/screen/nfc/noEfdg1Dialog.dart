@@ -43,18 +43,6 @@ class _NoEfDG1Dialog extends State<NoEfDG1Dialog> {
                         CardItem('• ' + item, null)
                         ,
                   ]),
-                  /*const SizedBox(height: 18),
-                  CustomCardShowHide("Raw Data",
-                      this.widget.rawData,
-                  actions: [
-                      PlatformDialogAction(
-                      child: Text('Copy'),
-                      onPressed: () {
-                        showFlushbar(context, "Clipboard", "Item was copied to clipboard.", Icons.info);
-                        Clipboard.setData(ClipboardData(text: this.widget.rawData));
-                      },
-                    )
-                  ],),*/
                   const SizedBox(height: 30),
                   Wrap(
                       alignment: WrapAlignment.spaceAround,

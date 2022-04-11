@@ -183,6 +183,7 @@ class Authn /*extends State<Authn>*/ {
                 scrollController.animateTo(headersHeightTillStep(maxSteps - 1), duration: Duration(milliseconds: 1000), curve: Curves.ease);
               });
               bool? response = await e;
+              showBufferScreen();
               return response?? false;
             });
       }
@@ -237,7 +238,7 @@ class Authn /*extends State<Authn>*/ {
               alertMsg = "Server refused to accept passport's public key!";
             }
           } break;
-          case 409: alertMsg = 'Account already exists!'; break;
+          case 409: alertMsg = 'Passport already used on another account!'; break;
           case 412: alertMsg = 'Passport trust chain verification failed!'; break;
           case 498: {
             final msg = e.message.toLowerCase();

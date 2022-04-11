@@ -1,8 +1,11 @@
 import 'dart:io';
 import 'package:dmrtd/dmrtd.dart';
+import 'package:dmrtd/extensions.dart';
 import 'package:eosio_port_mobile_app/constants/constants.dart';
+import 'package:eosio_port_mobile_app/utils/logging/loggerHandler.dart';
 import 'package:intl/intl.dart';
 import 'package:eosio_port_mobile_app/utils/storage.dart';
+import 'package:logging/logging.dart';
 
 class StringUtil {
   static String getWithoutTypeName<T>(T value){
@@ -90,9 +93,16 @@ String formatProgressMsg(String message, int percentProgress) {
 }
 
 String formatDgTagSet(final Set<DgTag> tags) {
+  final _log = Logger('structure.formatDgTagSet');
   var str = '[';
+  tags.add(DgTag(9999));
   for(final t in tags) {
-    str += mapDgTagName[t]! + ', ';
+    try {
+      str += mapDgTagName[t]! + ', ';
+    }
+    catch(e){
+      _log.fine("Unknown dfTag value: ${t.hashCode} (${t.toString()})");
+    }
   }
   return str.substring(0, str.length -2) + ']';
 }

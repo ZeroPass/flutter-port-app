@@ -203,6 +203,7 @@ class _StepReviewFormState extends State<StepReviewForm> {
                             )
                           ],
                         ),
+
                       if (state is StepReviewBufferState)
                         bufferState(context),
                       if(state is StepReviewNoConnectionState)

@@ -187,7 +187,7 @@ class Eosio{
 
     bool isValid = true;
     data.forEach((k, v) {
-      Logger("eosio;checkData").deVerbose("Key: $k; value: $v");
+      Logger("eosio;checkData").verbose("Key: $k; value: $v");
       if (k == null || v == null) isValid = false;
     });
     Logger("eosio;checkData").log(Level.FINER, "{isValid:$isValid}");

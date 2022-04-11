@@ -1,3 +1,4 @@
+import 'package:eosio_port_mobile_app/dmrtd/lib/extensions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:eosio_port_mobile_app/screen/theme.dart';
@@ -8,6 +9,8 @@ import 'package:card_settings/card_settings.dart';
 import 'package:eosio_port_mobile_app/utils/storage.dart';
 import 'package:eosio_port_mobile_app/screen/settings/custom/customCardSettingsButton.dart';
 import "dart:io" show Platform;
+
+import 'package:logging/logging.dart';
 
 class LoggingScreen extends StatefulWidget {
   late bool enableLogging;
@@ -85,6 +88,7 @@ class _LoggingScreen extends State<LoggingScreen> {
                               }
                             } else
                               setState(() {
+                                Logger.root.logSensitiveData = false;
                                 loggerHandler.stopLoggingToAppMemory(
                                     () => CustomFlushbar.showFlushbar(
                                         context,
@@ -99,19 +103,41 @@ class _LoggingScreen extends State<LoggingScreen> {
                               });
                           },
                         ),
-                        CustomCardSettingsButton(
-                          bottomSpacing: 0.0,
-                            label: "Share log",
+                          CardSettingsSwitch(
+                            trueLabel: "",
+                            falseLabel: "",
                             enabled: widget.enableLogging,
                             visible: widget.enableLogging,
-                            //visible: enableLogging != true? false: true,
+                            label: "Deep log", //Logger.root.logSensitiveData = true
+                            initialValue: Logger.root.logSensitiveData,
+                            onChanged: (value) async {
+                              Logger.root.logSensitiveData = value;
+                              if (value) {
+                                setState(() {
+                                  CustomFlushbar.showFlushbar(
+                                      context,
+                                      "Deep log",
+                                      "Storing sensitive data is enabled (after restart it will become disabled).",
+                                      Icons.info);
+                                });
+                              } else
+                                setState(() {
+                                  CustomFlushbar.showFlushbar(
+                                      context,
+                                      "Deep log",
+                                      "Storing sensitive data is disabled.",
+                                      Icons.info);
+                                });
+                            },
+                          ),
+                        CustomCardSettingsButton(
+                            bottomSpacing: 0.0,
+                            label: "Open log",
+                            enabled: widget.enableLogging,
+                            visible: widget.enableLogging,
                             onPressed: () {
                               LoggerHandler loggerHandler = LoggerHandler();
-                              loggerHandler.export(showError: () {
-                                CustomFlushbar.showFlushbar(context, "Logging",
-                                    "Cannot export the log.", Icons.error);
-                              });
-                              //Share.shareFiles(['${directory.path}/image.jpg'], text: 'Great picture');
+                              loggerHandler.export(open: true);
                             }),
                         CustomCardSettingsButton(
                           bottomSpacing: 0.0,

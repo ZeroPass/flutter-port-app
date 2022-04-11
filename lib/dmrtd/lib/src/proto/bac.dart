@@ -46,9 +46,9 @@ class BAC {
     final Kmac = dbaKeys.macKey;
 
     // We don't want to see these data in production logs
-    _log.deVerbose("Key seed=${dbaKeys.keySeed.hex()}");
-    _log.deVerbose("Derived Kenc=${Kenc.hex()}");
-    _log.deVerbose("Derived Kmac=${Kmac.hex()}");
+    _log.sdVerbose("Key seed=${dbaKeys.keySeed.hex()}");
+    _log.sdVerbose("Derived Kenc=${Kenc.hex()}");
+    _log.sdVerbose("Derived Kmac=${Kmac.hex()}");
 
     // Get random nonce from ICC
     _log.debug("Requesting challenge from ICC");
@@ -59,11 +59,11 @@ class BAC {
     final RNDifd = randomBytes(nonceLen);
     final Kifd   = randomBytes(kLen);
     _log.verbose("Generated RND.IFD=${RNDifd.hex()}");
-    _log.verbose("Generated K.IFD=${Kifd.hex()}");
+    _log.sdVerbose("Generated K.IFD=${Kifd.hex()}");
 
     // Generate S
     final S = generateS(RNDicc: RNDicc, RNDifd: RNDifd, Kifd: Kifd);
-    _log.verbose("Generated S=${S.hex()}");
+    _log.sdVerbose("Generated S=${S.hex()}");
 
     // Compute cryptogram Eifd and it's mac Mifd
     final Eifd = E(Kenc: Kenc, S: S);
@@ -74,7 +74,7 @@ class BAC {
     _log.verbose("  Eifd=${Eifd.hex()}");
     _log.verbose("  Mifd=${Mifd.hex()}");
     final ICCea_data = await icc.externalAuthenticate(data: generateEAData(Eifd: Eifd, Mifd: Mifd), ne: eLen + macLen);
-    
+
     final pairEiccMicc = extractEiccAndMicc(ICCea_data: ICCea_data);
     _log.verbose("Received from ICC:");
     _log.verbose("  Eicc=${pairEiccMicc.first.hex()}");
@@ -85,7 +85,7 @@ class BAC {
       _log.error("Verifying mac of Eicc failed");
       throw BACError("Verifying mac of Eicc failed");
     }
-    
+
     // Decrypt R from received Eicc
     _log.debug("Generating session keys KSenc and KSmac");
     final R = D(Kdec: Kenc, Eicc: pairEiccMicc.first);
@@ -93,13 +93,13 @@ class BAC {
 
     // Verify R contains our RND.IFD and extract Kicc from R
     final Kicc = verifyRNDifdAndExtractKicc(RNDifd: RNDifd, R: R);
-    _log.verbose("K.ICC=${Kicc.hex()}");
+    _log.sdVerbose("K.ICC=${Kicc.hex()}");
 
     // Calculate session keys from Kifd and Kicc
     final pairKS = calculateSessionKeys(Kifd: Kifd, Kicc: Kicc);
-    _log.deVerbose("Calculated session keys:");
-    _log.deVerbose("  KSenc=${pairKS.first.hex()}");
-    _log.deVerbose("  KSmac=${pairKS.second.hex()}");
+    _log.sdVerbose("Calculated session keys:");
+    _log.sdVerbose("  KSenc=${pairKS.first.hex()}");
+    _log.sdVerbose("  KSmac=${pairKS.second.hex()}");
 
     // Calculate SCC from RND.IFD and RND.ICC
     final ssc = calculateSCC(RNDifd: RNDifd, RNDicc: RNDicc);

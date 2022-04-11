@@ -18,12 +18,6 @@ import 'package:flutter/services.dart';
 import '../../utils/structure.dart';
 import 'uie/uiutils.dart';
 
-// Dialog displays MRZ data stored in file EF.DG1
-/*Future<T> showEfDG1Dialog<T>(BuildContext context, EfDG1 dg1,
-    {String message, List<Widget> actions}) {
-  return EfDG1Dialog(context, dg1, message: message, actions: actions).show();
-}
-*/
 class EfDG1Dialog extends StatefulWidget {
   final EfDG1 dg1;
   final BuildContext context;
@@ -66,10 +60,6 @@ class _EfDG1Dialog extends State<EfDG1Dialog> {
         widget.nationality = c;
     });
   }
-
-  /*Future<T> show<T>() {
-    return _showBottomSheet();
-  }*/
 
   String _formatDate(DateTime date, BuildContext ctx) {
     final locale = getLocaleOf(ctx);

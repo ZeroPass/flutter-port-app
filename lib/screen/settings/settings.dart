@@ -9,11 +9,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:eosio_port_mobile_app/utils/storage.dart';
 import 'package:eosio_port_mobile_app/screen/settings/custom/customCardSettingsButton.dart';
 import 'package:eosio_port_mobile_app/screen/settings/custom/customCardSettings.dart';
-import 'package:eosio_port_mobile_app/screen/settings/custom/CustomCardSettingsSection.dart';
 import 'package:eosio_port_mobile_app/screen/settings/network/server/updateCloud.dart';
-import 'package:eosio_port_mobile_app/screen/qr/QRscreen.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:share/share.dart';
 
 
 class Settings extends StatelessWidget {
@@ -44,9 +41,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<String> _genAboutText() async {
     var packageInfo = await PackageInfo.fromPlatform();
+    //TODO: there is an error in the library - version is allways empty
+    var version = packageInfo.version != "" ? "v${packageInfo.version}" : "";
     var company = AndroidThemeST().getValues().themeValues["APP_DATA"]["COMPANY_NAME"];
-    var year = AndroidThemeST().getValues().themeValues["APP_DATA"]["YEAR_LAST_UPDATE"].toString();
-    return '${packageInfo.appName} v${packageInfo.version}\nCopyright © $company $year';
+    var year = DateTime.now().year;
+    return '${packageInfo.appName} $version\nCopyright © $company $year';
   }
 
   @override
@@ -112,10 +111,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 children: <CardSettingsWidget>[
                   CardSettingsInstructions(
                     text: _aboutText
-                    //  "Port " +
-                    //     AndroidThemeST().getValues().themeValues["APP_DATA"]["COMPANY_NAME"] +
-                    //     ' ('+ AndroidThemeST().getValues().themeValues["APP_DATA"]["YEAR_LAST_UPDATE"].toString() +  '), version:' +
-                    //     AndroidThemeST().getValues().themeValues["APP_DATA"]["VERSION"],
                   ),
                 ]
             ),
