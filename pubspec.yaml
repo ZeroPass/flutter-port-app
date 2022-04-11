@@ -21,10 +21,6 @@ environment:
   sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
-  #flutter_nfc_reader:
-  #  git:
-  #    url: git://github.com/matteocrippa/flutter-nfc-reader.git
-  #    ref: master
   bloc: ^8.0.2
   card_settings: ^3.0.0
   dots_indicator: ^2.0.0
@@ -39,7 +35,6 @@ dependencies:
   dmrtd:
     git:
       url: https://github.com/ZeroPass/dmrtd.git
-      #ref: v1.2.2.TMP
   equatable: ^2.0.0
   flare_flutter: ^3.0.2
   http: ^0.13.4
@@ -51,19 +46,18 @@ dependencies:
   flutter_platform_widgets: ^1.2.0
   flutter_secure_storage: ^5.0.2
   keyboard_dismisser: ^2.0.0
-  #flutter_statusbarcolor: ^0.2.3
   flutter_svg: ^1.0.1
   json_serializable: ^6.1.4
   cupertino_list_tile: ^0.2.0
   meta: ^1.1.8
-  shared_preferences: ^2.0.4 #  ^0.5.7+1
+  shared_preferences: ^2.0.4
   another_flushbar: ^1.10.28
-  eosdart: ^0.4.8 #temporary commented - old sublibraries
+  eosdart: ^0.4.8
   logging: ^1.0.1
   flutter_logs: ^2.1.5
   f_logs: ^2.0.0-alpha-01
   share: ^2.0.1
-  flutter_cache_manager: ^3.0.2 #^2.0.0
+  flutter_cache_manager: ^3.0.2
   open_file: ^3.0.3
   permission_handler: ^8.3.0
   qr_code_scanner: ^0.6.1
@@ -71,7 +65,6 @@ dependencies:
   firebase_dynamic_links: ^4.0.8
   rive: ^0.8.1
   package_info_plus: ^1.4.1
-  #flutter_nfc_kit: ^3.2.0
 
 dependency_overrides:
   flutter_nfc_kit:
