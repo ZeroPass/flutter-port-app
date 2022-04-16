@@ -24,7 +24,6 @@ import 'package:port/internal.dart';
 import 'package:port/port.dart';
 import 'dart:math';
 
-import '../../../port/example/lib/preferences.dart';
 import '../efdg1_dialog.dart';
 import '../passport_scanner.dart';
 import '../uie/uiutils.dart';
@@ -221,7 +220,15 @@ class Authn /*extends State<Authn>*/ {
         alertTitle = 'Port Error';
         switch(e.code){
           case -32602: alertMsg= e.message.toLowerCase(); break;
-          case 401: alertMsg = 'Authorization failed!'; break;
+          case 401: {
+            alertMsg = e.message;
+            if (e.message == 'Account is not attested') {
+              alertMsg = 'Account is not attested anymore!\nPlease re-register new attestation.';
+            } 
+            if (e.message == 'EF.SOD file not genuine') {
+              alertMsg = 'The passport has been already used for attestation!';
+            }  
+          } break;
           case 404: {
             alertMsg = e.message;
             if (alertMsg == 'Account not found') {
@@ -238,7 +245,18 @@ class Authn /*extends State<Authn>*/ {
               alertMsg = "Server refused to accept passport's public key!";
             }
           } break;
-          case 409: alertMsg = 'Passport already used on another account!'; break;
+          case 409: {
+            alertMsg = e.message;
+            if (alertMsg == 'Account already registered') {
+              alertMsg = 'Account already exists!';
+            }
+            else if (alertMsg == 'Country code mismatch') {
+              alertMsg = 'The country of the passport differs from the previous attestation!';
+            }
+            else if (alertMsg == 'Matching EF.SOD file already registered') {
+              alertMsg = 'The passport has been already used for attestation!';
+            }            
+          } break;
           case 412: alertMsg = 'Passport trust chain verification failed!'; break;
           case 498: {
             final msg = e.message.toLowerCase();
