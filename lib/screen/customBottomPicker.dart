@@ -1,4 +1,3 @@
-import 'package:dmrtd/src/utils.dart';
 import 'package:eosio_port_mobile_app/utils/structure.dart';
 import 'package:eosio_port_mobile_app/constants/constants.dart';
 import 'package:flutter/material.dart';

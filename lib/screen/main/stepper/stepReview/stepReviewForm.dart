@@ -1,4 +1,4 @@
-import 'package:dmrtd/src/extension/logging_apis.dart';
+import 'package:dmrtd/extensions.dart';
 import 'package:eosio_port_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
 import 'package:eosio_port_mobile_app/screen/requestType.dart';
 import 'package:flare_flutter/flare_actor.dart';

@@ -1,21 +1,20 @@
+import 'package:dmrtd/dmrtd.dart';
+import 'package:dmrtd/extensions.dart';
+
 import 'package:eosio_port_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
 import 'package:eosio_port_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
 import 'package:eosio_port_mobile_app/screen/main/stepper/stepScan/stepScan.dart';
 import 'package:eosio_port_mobile_app/screen/main/stepper/stepper.dart';
-import 'package:dmrtd/src/extension/string_apis.dart';
-import 'package:dmrtd/src/extension/datetime_apis.dart';
 import 'package:eosio_port_mobile_app/utils/structure.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:meta/meta.dart';
 import 'package:eosio_port_mobile_app/constants/constants.dart';
-import 'package:dmrtd/src/proto/dba_keys.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:eosio_port_mobile_app/constants/constants.dart';
 import 'package:logging/logging.dart';
-import 'package:dmrtd/src/extension/logging_apis.dart';
 
 /*
  * Server

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:dmrtd/extensions.dart';
 import 'package:eosio_port_mobile_app/screen/index/index.dart';
 import 'package:eosio_port_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
 import 'package:eosio_port_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
@@ -10,7 +11,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:logging/logging.dart';
-import 'package:dmrtd/src/extension/logging_apis.dart';
 import 'package:eosio_port_mobile_app/screen/customButton.dart';
 import 'package:eosio_port_mobile_app/screen/theme.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';

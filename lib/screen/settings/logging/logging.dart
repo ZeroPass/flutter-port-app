@@ -1,4 +1,4 @@
-import 'package:eosio_port_mobile_app/dmrtd/lib/extensions.dart';
+import 'package:dmrtd/extensions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:eosio_port_mobile_app/screen/theme.dart';

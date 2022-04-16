@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'dart:math';
-import 'package:dmrtd/src/extension/logging_apis.dart';
+import 'package:dmrtd/extensions.dart';
 import 'package:eosio_port_mobile_app/constants/constants.dart';
 import 'package:eosio_port_mobile_app/screen/nfc/authn/authn.dart';
 import 'package:eosio_port_mobile_app/utils/structure.dart';

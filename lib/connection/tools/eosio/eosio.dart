@@ -1,12 +1,12 @@
 import 'dart:async';
 
+import 'package:dmrtd/extensions.dart';
 //import 'package:eosdart/eosdart.dart';
 import 'package:eosdart/eosdart.dart';
 import 'package:eosio_port_mobile_app/utils/storage.dart';
 import 'package:eosio_port_mobile_app/utils/structure.dart';
 import 'dart:collection';
 import 'package:logging/logging.dart';
-import 'package:dmrtd/src/extension/logging_apis.dart';
 
 enum EosioVersion { v1, v2 }
 

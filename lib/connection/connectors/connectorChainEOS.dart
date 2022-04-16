@@ -4,10 +4,11 @@
 * Nejc Skerjanc (ZeroPass team)
 *
 */
-import 'package:dmrtd/src/extension/logging_apis.dart';
+import 'package:dmrtd/dmrtd.dart';
+import 'package:dmrtd/extensions.dart';
 import 'package:eosio_port_mobile_app/utils/storage.dart';
 import 'package:logging/logging.dart';
-import 'package:dmrtd/dmrtd.dart';
+
 import 'dart:async';
 
 import 'package:port/port.dart';

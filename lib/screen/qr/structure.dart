@@ -1,6 +1,6 @@
+import 'package:dmrtd/extensions.dart';
 import 'package:eosio_port_mobile_app/screen/requestType.dart';
 import 'package:logging/logging.dart';
-import 'package:dmrtd/src/extension/logging_apis.dart';
 import 'package:eosio_port_mobile_app/utils/structure.dart';
 import 'package:eosio_port_mobile_app/utils/storage.dart';
 import 'package:meta/meta.dart';

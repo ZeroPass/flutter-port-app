@@ -1,6 +1,6 @@
+import 'package:dmrtd/extensions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:logging/logging.dart';
-import 'package:dmrtd/src/extension/logging_apis.dart';
 
 enum NetworkType{ MAINNET, KYLIN, EOSIO_TESTNET, JUNGLE, CUSTOM}
 enum NetworkTypeServer { MAIN_SERVER, TEMPORARY_SERVER }
