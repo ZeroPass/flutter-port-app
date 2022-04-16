@@ -1027,9 +1027,9 @@ class StorageData {
     try {
       _log.info("Save");
       Map<String, dynamic> value = this.toJson();
-      _log.debug("Save; data in map: $value");
+      _log.sdDebug("Save; data in map: $value");
       String forStorage = json.encode(value);
-      _log.debug("Save; data in string: $forStorage");
+      _log.sdDebug("Save; data in string: $forStorage");
       final storage = new FlutterSecureStorage();
       await storage.write(key: "data", value: forStorage);
       if (callback != null)
