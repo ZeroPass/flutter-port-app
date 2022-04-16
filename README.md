@@ -52,8 +52,3 @@ flutter build appbundle --no-sound-null-safety --no-tree-shake-icons
   - configure blockchain nodes like [here](/lib/main.dart#L47-L48) (IP address, port, encryption connection check and network type(chainID))
   - set [StorageServer](/lib/main.dart#L56-L57) (IP address, port and encryption connection check)
 * Run the project from your IDE
-## Libraries
-This repository hosts also 2 libraries:
-* [dmrtd](lib/dmrtd) - dart implementation of ICAO 9303 MRTD standard
-* [passid](lib/passid) - dart implementation of client PassID PoC protocol
-
