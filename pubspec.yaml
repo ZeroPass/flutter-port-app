@@ -20,6 +20,11 @@ version: 1.1.1+10
 environment:
   sdk: ">=2.12.0 <3.0.0"
 
+dependency_overrides: 
+  flutter_nfc_kit:
+    git:
+      url: https://github.com/ZeroPass/flutter_nfc_kit.git
+
 dependencies:
   bloc: ^8.0.2
   card_settings: ^3.0.0
@@ -31,10 +36,9 @@ dependencies:
   dart_countries_states: ^0.1.1
   date_format: ^2.0.2
   port:
-    path: lib/port
-  dmrtd:
     git:
-      url: https://github.com/ZeroPass/dmrtd.git
+      url: https://github.com/ZeroPass/flutter-port-sdk.git
+      ref: v1.3.1 
   equatable: ^2.0.0
   flare_flutter: ^3.0.2
   http: ^0.13.4
@@ -65,11 +69,6 @@ dependencies:
   firebase_dynamic_links: ^4.0.8
   rive: ^0.8.1
   package_info_plus: ^1.4.1
-
-dependency_overrides:
-  flutter_nfc_kit:
-    git:
-      url: https://github.com/ZeroPass/flutter_nfc_kit.git
 
 flutter_icons:
   ios: true

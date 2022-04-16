@@ -240,14 +240,14 @@ packages:
     source: hosted
     version: "2.0.6"
   dmrtd:
-    dependency: "direct main"
+    dependency: transitive
     description:
       path: "."
-      ref: HEAD
-      resolved-ref: f8d0cfe4dfeff00f9133ef40478b64714d53239c
+      ref: "v1.4.0"
+      resolved-ref: "4492279b08a4347f936152649494a09167a9d365"
       url: "https://github.com/ZeroPass/dmrtd.git"
     source: git
-    version: "1.3.0"
+    version: "1.4.0"
   dots_indicator:
     dependency: "direct main"
     description:
@@ -842,10 +842,12 @@ packages:
   port:
     dependency: "direct main"
     description:
-      path: "lib/port"
-      relative: true
-    source: path
-    version: "1.3.0"
+      path: "."
+      ref: "v1.3.1"
+      resolved-ref: "772a25237e4bd8a2adbdf721e6cf9b26dcf9dfec"
+      url: "https://github.com/ZeroPass/flutter-port-sdk.git"
+    source: git
+    version: "1.3.1"
   process:
     dependency: transitive
     description:

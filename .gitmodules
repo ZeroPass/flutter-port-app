@@ -1,4 +1,0 @@
-[submodule "lib/passid"]
-	url = https://github.com/ZeroPass/flutter-port-sdk.git
-[submodule "lib/port"]
-	url = https://github.com/ZeroPass/flutter-port-sdk.git
