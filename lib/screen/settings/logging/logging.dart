@@ -93,12 +93,12 @@ class _LoggingScreen extends State<LoggingScreen> {
                                     () => CustomFlushbar.showFlushbar(
                                         context,
                                         "Log",
-                                        "Logging is stopped. Logs were successfully deleted.",
+                                        "Logging stopped. All logs were successfully deleted.",
                                         Icons.info),
                                     () => CustomFlushbar.showFlushbar(
                                         context,
                                         "Log",
-                                        "Logging is stopped. An error has occurred while deleting log files.",
+                                        "Logging stopped. An error has occurred while deleting log files.",
                                         Icons.error));
                               });
                           },
@@ -117,7 +117,7 @@ class _LoggingScreen extends State<LoggingScreen> {
                                   CustomFlushbar.showFlushbar(
                                       context,
                                       "Deep log",
-                                      "Storing sensitive data is enabled (after restart it will become disabled).",
+                                      "Logging of sensitive data enabled (auto disabled after app restart).",
                                       Icons.info);
                                 });
                               } else
@@ -125,7 +125,7 @@ class _LoggingScreen extends State<LoggingScreen> {
                                   CustomFlushbar.showFlushbar(
                                       context,
                                       "Deep log",
-                                      "Storing sensitive data is disabled.",
+                                      "Logging of sensitive data disabled.",
                                       Icons.info);
                                 });
                             },
@@ -139,15 +139,6 @@ class _LoggingScreen extends State<LoggingScreen> {
                               LoggerHandler loggerHandler = LoggerHandler();
                               loggerHandler.export(open: true);
                             }),
-                        CustomCardSettingsButton(
-                          bottomSpacing: 0.0,
-                            label: "Open log",
-                            enabled: widget.enableLogging,
-                            visible: widget.enableLogging,
-                            onPressed: () {
-                              LoggerHandler loggerHandler = LoggerHandler();
-                              loggerHandler.export(open: true);
-                            })
                       ]),
                 ]))));
   }
