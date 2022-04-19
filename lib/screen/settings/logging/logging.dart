@@ -132,6 +132,20 @@ class _LoggingScreen extends State<LoggingScreen> {
                           ),
                         CustomCardSettingsButton(
                             bottomSpacing: 0.0,
+                            label: "Share log",
+                            enabled: widget.enableLogging,
+                            visible: widget.enableLogging,
+                            //visible: enableLogging != true? false: true,
+                            onPressed: () {
+                              LoggerHandler loggerHandler = LoggerHandler();
+                              loggerHandler.export(showError: () {
+                                CustomFlushbar.showFlushbar(context, "Logging",
+                                    "Cannot export the log.", Icons.error);
+                              });
+                              //Share.shareFiles(['${directory.path}/image.jpg'], text: 'Great picture');
+                            }),
+                        CustomCardSettingsButton(
+                            bottomSpacing: 0.0,
                             label: "Open log",
                             enabled: widget.enableLogging,
                             visible: widget.enableLogging,
