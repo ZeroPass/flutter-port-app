@@ -127,7 +127,7 @@ class Eosio{
     String upper = '',
     int indexPosition = 1,
     String keyType = '',
-    bool reverse = false,
+    bool reverse = false, 
   }) async{
     try
     {

@@ -6,6 +6,7 @@ import 'dart:typed_data';
 import 'package:async/async.dart';
 import 'package:dmrtd/dmrtd.dart';
 import 'package:dmrtd/extensions.dart';
+import 'package:eosio_port_mobile_app/screen/nfc/error/handlePortError.dart';
 import 'package:eosio_port_mobile_app/utils/structure.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -34,8 +35,9 @@ class PassportData  {
 //class Register
 
 class PassportScannerError implements Exception {
+  final int code;
   final String message;
-  PassportScannerError(this.message);
+  PassportScannerError(this.code, this.message);
   @override
   String toString() => message;
 }
@@ -46,6 +48,7 @@ class PassportScanner {
   final _nfc = NfcProvider();
   late NfcScanDialog _scanDialog;
   final PortClient client;
+  late HandlePortError handlePortError;
 
   //final PortAction action;
   //final AuthenticationType? authenticationType;
@@ -53,7 +56,8 @@ class PassportScanner {
   //ProtoChallenge? challenge;
 
   PassportScanner({required this.context,
-                   required this.client
+                   required this.client,
+                   required this.handlePortError
     }) {
         _scanDialog = NfcScanDialog(context, onCancel: () async {
           _log.info('Scanning canceled by user');
@@ -131,13 +135,13 @@ class PassportScanner {
       _setAlertMessage(formatProgressMsg('Reading data ...', 40));
       _log.debug('Passport AA public key type: ${pdata.dg15!.aaPublicKey
           .type}');
+
       if (pdata.dg15!.aaPublicKey.type == AAPublicKeyType.EC) {
         if (!efcom.dgTags.contains(EfDG14.TAG)) {
           //errorMsg = 'Unsupported passport'; //TODO: implement this, check if catch works well
-          _log.warning(
-              'Strange ... passport should contain file EF.DG14 but is somehow missing?!');
-          await _showUnsupportedMrtdAlert(); // TODO: show more descriptive alert dialog
-          throw PassportScannerError('Unsupported passport');
+          _log.warning('Strange ... passport should contain file EF.DG14 but is somehow missing?!');
+          await _disconnect(errorMessage: formatProgressMsg('Unsupported passport', 100));
+          throw PassportScannerError(200, 'Your passport is not supported  yet.');
         }
         pdata.dg14 = await _call(() => passport.readEfDG14());
       }
@@ -198,7 +202,7 @@ class PassportScanner {
         }
         else {
           _log.debug("...user said NO");
-          throw PassportScannerError('Canceled by user');
+          throw PassportScannerError(300,'Canceled by user');
           }
         }
       else {
@@ -210,79 +214,30 @@ class PassportScanner {
                   passportData: passdata,
                   efcom: efcom,
                   challenge: challenge).then((PassportData data) async {
-                      ChallengeSignature cs = data.csig!;
-                      //no error/exception when passport was scaned
+                      //no error/exception when passport was scanned
                       await _disconnect(alertMessage: formatProgressMsg('Finished', 100));
                       _log.debug("Waiting on user confirmation...");
                       if (await waitingOnConfirmation(this.getAuthType(efcom))) {
                         _log.debug("...user said YES");
-                        try {
                           _log.debug("Sending 'register' command to the server...");
                           srvResult = await this.client.register(uid,
                               passdata.sod!,
                               dg15: passdata.dg15,
                               dg14: passdata.dg14);
-                        }
-                        catch(e){
-                          if (e == PortError.accountAlreadyRegistered) {
-                            _log.debug ("Account is already attested");
-                            // account is passive attested,
-                            // do nothing, just continue the process
-                          }
-                          else rethrow;
-                        }
                         _log.debug("Returning signed chunks.");
                         return data.csig!;
                       }
                       else{
                         _log.debug("...user said NO");
-                        throw PassportScannerError('Canceled by user');
+                        throw PassportScannerError(300, 'Canceled by user');
                       }
                 });
         });
       }
       return srvResult;
-    } on PassportScannerError{
-      rethrow;
     } catch (e) {
-      final se = e.toString().toLowerCase();
-      errorMsg = 'An error has occurred while scanning Passport!';
-      if (e is PassportError) {
-        if (se.contains('security status not satisfied') ||
-           e.code?.sw1 == 0x63) { // TODO: 0x63 is standard code for warning, make sure the BAC session has failed when this case is true
-          errorMsg =
-          'Failed to initiate session with passport.\nPlease, check input data!';
-        }
-        if (e.code != null) {
-          errorMsg += '\n(error code: ${e.code})';
-        }
-        _log.error('Failed to scan passport: ${e.message}');
-      }
-      else if (e is PortError){
-        rethrow;
-      }
-      else {
-        errorMsg = 'An unknown error has occurred while scanning Passport!';
-        _log.error(
-            'An exception was encountered while trying to scan Passport: $e');
-      }
-
-      if (se.contains('timeout')) {
-        errorMsg = 'Timeout while waiting for Passport tag!';
-      } else if (se.contains('tag was lost') ||
-          se.contains('tag connection lost')) {
-        errorMsg = 'Tag was lost. Please try again!';
-      } else if (se.contains('invalidated by user')) {
-        errorMsg = '';
-        throw PassportScannerError('Canceled by user');
-      }
-      throw PassportScannerError(errorMsg);
-    } finally {
-      if (errorMsg != null) {
-        await _disconnect(errorMessage: errorMsg);
-      } else {
-        //handled in try block
-      }
+      await _disconnect(errorMessage: "Error occurred");
+      rethrow; //transfer exception handling to handlePortError
     }
   }
 
@@ -324,22 +279,9 @@ class PassportScanner {
       // Note that if current canceled _operation was
       // waiting for NFC job to finish, the NFC job itself was not canceled
       // and it will throw an exception which won't be handled.
-      throw PassportScannerError('Canceled by user');
+      throw PassportScannerError(300, 'Canceled by user');
     }
     return result;
-  }
-
-  Future<void> _showUnsupportedMrtdAlert() async {
-    await showAlert(context: context, title: Text('Unsupported Passport'),
-        content: Text('This passport is not supported!'),
-        actions: [
-          PlatformDialogAction(
-            onPressed: () => Navigator.pop(context),
-            child: const Text(
-            'CLOSE',
-            style: TextStyle(fontWeight: FontWeight.bold),
-            ))
-        ]);
   }
 
   Future<void> _connect({String? alertMessage}) {

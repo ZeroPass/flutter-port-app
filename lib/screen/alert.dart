@@ -25,7 +25,6 @@ Future<T?> showAlert<T>(
     required Widget title,
       Widget? content,
       List<PlatformDialogAction>? actions,
-      //required GlobalKey key,
     dismissible = false,
     closeOnBackPressed = false}) async {
       return showPlatformDialog<T>(

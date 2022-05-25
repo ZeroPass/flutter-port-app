@@ -118,7 +118,6 @@ Future<void> fillDatabase() async
       storage.cloudSet.servers[NetworkTypeServer.MAIN_SERVER]!.selected.set(server:
       ServerCloud(name: "ZeroPass server", host: Uri.parse("https://portdevq8mjmnrw-portdev1.functions.fnc.fr-par.scw.cloud")));
 
-      ServerCloud? serverCloud = storage.getServerCloudSelected(networkTypeServer: NetworkTypeServer.MAIN_SERVER);
     }
 
     ServerCloud? serverCloud = storage.getServerCloudSelected(networkTypeServer: NetworkTypeServer.MAIN_SERVER);

@@ -18,15 +18,16 @@ import 'package:eosio_port_mobile_app/utils/structure.dart';
 import 'package:eosio_port_mobile_app/screen/theme.dart';
 import 'package:eosio_port_mobile_app/screen/requestType.dart';
 import 'package:eosio_port_mobile_app/screen/main/stepper/customStepper.dart';
+import 'package:eosio_port_mobile_app/screen/nfc/error/handlePortError.dart';
 
 import 'package:logging/logging.dart';
 import 'package:port/internal.dart';
 import 'package:port/port.dart';
 import 'dart:math';
 
-import '../efdg1_dialog.dart';
 import '../passport_scanner.dart';
 import '../uie/uiutils.dart';
+
 
 class ServerSecurityContext {
   static SecurityContext _ctx = SecurityContext();
@@ -51,19 +52,45 @@ class ServerSecurityContext {
 enum PortAction { register, assertion }
 enum AuthenticationType { None, ActiveAuthentication, ChipAuthentication }
 
-class Authn /*extends State<Authn>*/ {
+class Authn {
   late PortClient _client;
-  late Future<bool> Function(SocketException e) onConnectionError;
+  //late Future<bool> Function(SocketException e) onConnectionError;
   late Future<bool?> Function(AuthenticationType authType) showDataToBeSent;
   late Future<bool?> Function() showBufferScreen;
   late Future<bool> Function(EfDG1 dg1) onDG1FileRequested;
+  late Future<bool> Function(Exception e, bool returnToPreviousStep) callOnException;
+  late HandlePortError handlePortError;
+
 
   final _log = Logger('authn.screen');
 
-  Authn({required this.onDG1FileRequested, required this.showDataToBeSent, required this.showBufferScreen, required this.onConnectionError});
+  Authn({required this.onDG1FileRequested, required this.showDataToBeSent, required this.showBufferScreen, required Future<bool> Function(SocketException e) onConnectionErrorOld, required BuildContext context}){
+    //initialize error object - one object for all errors
+    this.handlePortError = HandlePortError();
 
+    //get address of the server
+    Storage storage = Storage();
+    ServerCloud? serverCloud = storage.outsideCall.isOutsideCall?
+    ServerCloud(name: "TemporaryServer", host: storage.outsideCall.getStructV1()!.host.host):
+    storage.getServerCloudSelected(networkTypeServer: NetworkTypeServer.MAIN_SERVER);
 
-  Future<Map<String, dynamic>> _scanPassporRegister({
+    if (serverCloud == null)
+      throw Exception("ServerCloud (main server) is empty. Without server you cannot check passport trust chain.");
+
+    _log.debug("Destination server: ${serverCloud.toString()}");
+
+    final httpClient = ServerSecurityContext.getHttpClient(
+        timeout: Duration(seconds: serverCloud.timeoutInSeconds))
+      ..badCertificateCallback = badCertificateHostCheck;
+
+    _client =  PortClient(serverCloud.host, httpClient: httpClient);
+    _client.onConnectionError = (SocketException e) async {
+      throw e;
+    };
+
+  }
+
+  Future<Map<String, dynamic>> _scanPassportRegister({
     required BuildContext context,
     required UserId uid,
     required String passportID,
@@ -71,7 +98,7 @@ class Authn /*extends State<Authn>*/ {
     required DateTime validUntilDate,
     required Future<bool> Function(AuthenticationType) waitingOnConfirmation}) async {
     final dbaKeys = DBAKeys(passportID, birthDate, validUntilDate);
-    final data = await PassportScanner(context: context, client: _client).
+    final data = await PassportScanner(context: context, client: _client, handlePortError: handlePortError).
                     register(dbaKeys: dbaKeys,
                               uid: uid,
                               waitingOnConfirmation: waitingOnConfirmation);
@@ -114,8 +141,6 @@ class Authn /*extends State<Authn>*/ {
                             required int maxSteps}) async {
 
     //TODO: accountName is not implemented
-    Storage storage = Storage();
-
     //check if the data is filled correctly
     String checkedValues = checkValuesInStorage();
     if (checkedValues.isNotEmpty) {
@@ -133,43 +158,22 @@ class Authn /*extends State<Authn>*/ {
           ]);
     }
     //outside call verifications
-    if (storage.outsideCall.isOutsideCall){
+    //if (storage.outsideCall.isOutsideCall){
       //TODO: check if there is any anomalies
-    }
+    //}
 
     try {
       _showBusyIndicator(context);
 
-      //get address of server
-      ServerCloud? serverCloud = storage.outsideCall.isOutsideCall?
-        ServerCloud(name: "TemporaryServer", host: storage.outsideCall.getStructV1()!.host.host):
-        storage.getServerCloudSelected(networkTypeServer: NetworkTypeServer.MAIN_SERVER);
-
-      if (serverCloud == null)
-        throw Exception("ServerCloud (main server) is empty. Without server you cannot check passport trust chain.");
-
-      final httpClient = ServerSecurityContext.getHttpClient(
-          timeout: Duration(seconds: serverCloud.timeoutInSeconds))
-        ..badCertificateCallback = badCertificateHostCheck;
-
-      _client =  PortClient(serverCloud.host, httpClient: httpClient);
-      _client.onConnectionError = this.onConnectionError;
-
-      try {
-        await _client.ping(Random().nextInt(0xffffffff));
-      } catch (e) {
-        _log.error(e);
-        throw JRPClientError("Cannot connect to server.");
-      }
-
-      Map<String, dynamic> srvResult;
+      await _client.ping(Random().nextInt(0xffffffff));
 
       if (action == PortAction.register) {
+        Storage storage = Storage();
         StepDataScan storageStepScan = storage.getStorageData(1) as StepDataScan;
         UserId uid = UserId.fromString(accountName);
         await _hideBusyIndicator();
 
-        await _scanPassporRegister(context: context,
+        await _scanPassportRegister(context: context,
             uid: uid,
             passportID: storageStepScan.getDocumentID(),
             birthDate: storageStepScan.getBirth(),
@@ -191,112 +195,9 @@ class Authn /*extends State<Authn>*/ {
 
       await _hideBusyIndicator();
       return true;
-
     } catch (e) {
-      String? alertTitle;
-      String? alertMsg;
-      if (e is PassportScannerError) {
-      } // should be already handled in PassportScanner
-      else if (e is ArgumentError) {
-        alertTitle = "Connection error";
-        alertMsg = e.message;
-      }
-      else if (e is JRPClientError) {
-        alertTitle = "Connection error";
-        alertMsg = "Server not responding. Check your URL address.";
-      }
-      else if (e is HttpException) {
-        alertTitle = "Connection error";
-        alertMsg = e.message;
-      }
-      else if (e is SocketException) {
-      } // should be already handled through _handleConnectionError callback
-      else if (e is HandshakeException){
-        alertTitle = "Authentication error";
-        alertMsg = e.toString();
-      }
-      else if (e is PortError) {
-        _log.error('An unhandled Port exception, closing this screen.\n error=$e');
-        alertTitle = 'Port Error';
-        switch(e.code){
-          case -32602: alertMsg= e.message.toLowerCase(); break;
-          case 401: {
-            alertMsg = e.message;
-            if (e.message == 'Account is not attested') {
-              alertMsg = 'Account is not attested anymore!\nPlease re-register new attestation.';
-            } 
-            if (e.message == 'EF.SOD file not genuine') {
-              alertMsg = 'The passport has been already used for attestation!';
-            }  
-          } break;
-          case 404: {
-            alertMsg = e.message;
-            if (alertMsg == 'Account not found') {
-              alertMsg = 'Account not registered!';
-            }
-          } break;
-          case 406: {
-            alertMsg = 'Passport verification failed!';
-            final msg = e.message.toLowerCase();
-            if(msg.contains('invalid dg1 file')) {
-              alertMsg = 'Server refused to accept sent personal data!';
-            }
-            else if(msg.contains('invalid dg15 file')) {
-              alertMsg = "Server refused to accept passport's public key!";
-            }
-          } break;
-          case 409: {
-            alertMsg = e.message;
-            if (alertMsg == 'Account already registered') {
-              alertMsg = 'Account already exists!';
-            }
-            else if (alertMsg == 'Country code mismatch') {
-              alertMsg = 'The country of the passport differs from the previous attestation!';
-            }
-            else if (alertMsg == 'Matching EF.SOD file already registered') {
-              alertMsg = 'The passport has been already used for attestation!';
-            }            
-          } break;
-          case 412: alertMsg = 'Passport trust chain verification failed!'; break;
-          case 498: {
-            final msg = e.message.toLowerCase();
-            if(msg.contains('account has expired')) {
-              alertMsg = 'Account has expired, please register again!';
-              break;
-            }
-          } continue dflt;
-          dflt:
-          default:
-            alertMsg = 'Server returned error:\n\n${e.message}';
-        }
-      } else {
-        _log.error(
-            'An unhandled exception was encountered, closing this screen.\n error=$e');
-        alertTitle = 'Error';
-        alertMsg = (e is Exception)
-            ? e.toString().split('Exception: ').first
-            : 'An unknown error has occurred.';
-      }
-
-      // Show alert dialog
       await _hideBusyIndicator();
-      if (alertMsg != null && alertTitle != null) {
-        await showAlert(
-            context: context,
-            title: Text(alertTitle,
-                style: TextStyle(color: Theme.of(context).errorColor)),
-            content: Text(alertMsg),
-            actions: [
-              PlatformDialogAction(
-                  child: PlatformText('Close',
-                      style: TextStyle(
-                          color: Theme.of(context).errorColor,
-                          fontWeight: FontWeight.bold)),
-                  onPressed: () => Navigator.pop(context))
-            ]);
-        await _hideBusyIndicator();
-        return false;
-      }
+      await HandlePortError().handleException(e: e, context: context);
       return false;
     }
   }
@@ -341,6 +242,7 @@ class Authn /*extends State<Authn>*/ {
     } else if (_isBusyIndicatorVisible) {
       await Future.delayed(const Duration(milliseconds: 200), () async {
         await _hideBusyIndicator();
+        _isBusyIndicatorVisible = false;
       });
     }
   }

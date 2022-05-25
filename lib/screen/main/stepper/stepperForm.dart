@@ -314,6 +314,7 @@ class _StepperFormState extends State<StepperForm> {
     return true;
   }
 
+  //handled in handlePortError, check it later if you can delete it here
   Future<bool> _showConnectionError(
     BuildContext context,
   ) async {
@@ -377,9 +378,9 @@ class _StepperFormState extends State<StepperForm> {
           return _showBufferScreen(context);
         },
         /*show connection error*/
-        onConnectionError: (SocketException e) async {
+        onConnectionErrorOld: (SocketException e) async {
           return _showConnectionError(context);
-    });
+    }, context: context);
     Storage storage = Storage();
     StepDataAttestation stepDataAttestation = storage.getStorageData(2) as StepDataAttestation;
     StepDataEnterAccount stepDataEnterAccount = storage.getStorageData(0) as StepDataEnterAccount;
@@ -466,7 +467,6 @@ class _StepperFormState extends State<StepperForm> {
                   !isClickedOnNFC(stepperBloc, step))
                 stepperBloc.liveModifyHeader(3, context, dataInStep: false);
               stepperBloc.add(StepTapped(step: step, previousStep: state.previousStep));
-              //_scrollController.jumpTo(_scrollController.position.maxScrollExtent);
             },
             onStepCancel: () {
               stepperBloc.add(StepCancelled());
