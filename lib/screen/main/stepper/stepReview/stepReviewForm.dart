@@ -1,9 +1,6 @@
 import 'package:dmrtd/extensions.dart';
 import 'package:eosio_port_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
 import 'package:eosio_port_mobile_app/screen/requestType.dart';
-import 'package:flare_flutter/flare_actor.dart';
-import 'package:flare_flutter/flare_cache_builder.dart';
-import 'package:flare_flutter/provider/asset_flare.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';

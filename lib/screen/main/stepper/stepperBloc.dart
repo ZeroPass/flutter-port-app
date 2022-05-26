@@ -8,10 +8,7 @@ import 'package:eosio_port_mobile_app/screen/main/stepper/stepAttestation/stepAt
 import 'package:eosio_port_mobile_app/screen/main/stepper/stepReview/stepReviewHeader/stepReviewHeader.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'dart:async';
-import 'package:flutter/material.dart';
 import 'package:eosio_port_mobile_app/utils/storage.dart';
-import 'package:flutter_logs/flutter_logs.dart';
 import 'package:logging/logging.dart';
 
 
@@ -43,8 +40,6 @@ class StepperBloc extends Bloc<StepperEvent, StepperState> {
   final int maxSteps;
   late bool isReviewLocked;
   final _log = Logger('passid.StepperBloc');
-
-  //StepperBloc():super();
 
   StepperBloc({required this.maxSteps}) :
         super( Storage().outsideCall.isOutsideCall ?
@@ -80,11 +75,6 @@ class StepperBloc extends Bloc<StepperEvent, StepperState> {
 
     this.isReviewLocked = true;
   }
-
-  //@override
-  //StepperState get initialState => StepperState(step: 0, maxSteps: maxSteps);
-
-
 
   bool liveModifyHeader (int step, var context, {bool dataInStep = false}) {
     var storage = Storage();
@@ -149,45 +139,4 @@ class StepperBloc extends Bloc<StepperEvent, StepperState> {
     }
     return true;
   }
-
-
-  /*@override
-  Stream<StepperState> mapEventToState(StepperEvent event) async* {
-    _log.log(Level.INFO, "Changing the state of stepper {${event.toString()}");
-    print("Stepper bloc mapEventToState");
-    if (event is StepTapped) {
-      if (event.step < state.maxSteps-1) // do not allow access to last step
-        yield state.copyWith(step: event.step, previousStep: state.step, maxSteps: state.maxSteps);
-    }
-    else if (event is StepRunByFlow) {
-        yield state.copyWith(step: event.step, previousStep: state.step, maxSteps: state.maxSteps);
-    }
-    else if (event is StepAfterQR){
-      yield state.copyWith(step: 1, previousStep: state.step, maxSteps: state.maxSteps);
-    }
-    else if (event is StepCancelled) {
-      yield state.copyWith(
-          step: state.step - 1 >= 0 ? state.step - 1 : 0,
-          previousStep: state.step,
-          maxSteps: state.maxSteps
-      );
-    }
-    else if (event is StepContinue) {
-      if (state.step + event.stepsJump < this.maxSteps) // do not allow access to last step
-        yield state.copyWith(
-            step: state.step + event.stepsJump < this.maxSteps ? state.step +
-                event.stepsJump : 0,
-            previousStep: state.step,
-            maxSteps: state.maxSteps
-        );
-    }
-    else if (event is StepBackToPrevious) {
-      if (state.step == state.maxSteps -1) //jump only when you are on last step
-        yield state.copyWith(
-            step: state.previousStep,
-            previousStep: state.previousStep,
-            maxSteps: state.maxSteps
-      );
-    }
-  }*/
 }

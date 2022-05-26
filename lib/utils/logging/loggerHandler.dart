@@ -1,6 +1,5 @@
 import 'package:eosio_port_mobile_app/utils/structure.dart';
 import 'package:f_logs/model/flog/log_level.dart';
-//import 'package:flutter_logs/flutter_logs.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:f_logs/f_logs.dart';
 import 'package:logging/logging.dart';
