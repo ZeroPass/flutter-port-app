@@ -51,28 +51,6 @@ Container makeButton(
       ]));
 }
 
-Future<T?> showAlertOld<T>(BuildContext context, Widget title, Widget content,
-    List<FlatButton> actions,
-    {GlobalKey? key, dismissible = false}) async {
-  return showDialog<T>(
-    context: context,
-    barrierDismissible: dismissible,
-    builder: (BuildContext context) {
-      return WillPopScope(
-          onWillPop: () async =>
-          false, // prevent closing on back button pressed
-          child:
-          AlertDialog(key: key, title: title, content: content, actions: [
-            SizedBox(
-                width: MediaQuery.of(context).size.width,
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: actions))
-          ]));
-    },
-  );
-}
-
 Future<void> showBusyDialog(BuildContext context, GlobalKey key,
     {String msg = 'Please Wait ....',
       Duration syncWait = const Duration(milliseconds: 200)}) async {

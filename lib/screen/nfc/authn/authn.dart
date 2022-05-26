@@ -60,6 +60,7 @@ class Authn {
   late Future<bool> Function(EfDG1 dg1) onDG1FileRequested;
   late Future<bool> Function(Exception e, bool returnToPreviousStep) callOnException;
   late HandlePortError handlePortError;
+  int reconnectAttempts = 0;
 
 
   final _log = Logger('authn.screen');
@@ -85,6 +86,11 @@ class Authn {
 
     _client =  PortClient(serverCloud.host, httpClient: httpClient);
     _client.onConnectionError = (SocketException e) async {
+      if (reconnectAttempts < 3){
+        reconnectAttempts++;
+        return true;
+      }
+
       throw e;
     };
 
