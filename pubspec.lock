@@ -258,9 +258,9 @@ packages:
   eosdart:
     dependency: "direct main"
     description:
-      name: eosdart
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "lib/eosdart"
+      relative: true
+    source: path
     version: "0.4.8"
   eosdart_ecc:
     dependency: "direct main"
@@ -400,6 +400,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.5.1"
+  flutter_document_reader_api:
+    dependency: "direct main"
+    description:
+      name: flutter_document_reader_api
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "6.3.1"
   flutter_holo_date_picker:
     dependency: "direct main"
     description:

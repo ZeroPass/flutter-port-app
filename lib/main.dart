@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:dmrtd/extensions.dart';
 import 'package:eosio_port_mobile_app/screen/nfc/authn/authn.dart';
@@ -13,6 +14,7 @@ import 'package:eosio_port_mobile_app/screen/main/stepper/stepEnterAccount/stepE
 import 'package:eosio_port_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
 import 'package:eosio_port_mobile_app/screen/main/stepperIndex.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_document_reader_api/document_reader.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:eosio_port_mobile_app/screen/theme.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -134,6 +136,7 @@ Future<void> fillDatabase() async
   storage.save();
 
   storage.load();
+
 }
 
 /*
@@ -178,10 +181,35 @@ class Port extends StatelessWidget {
     fillDatabase().then((value) {});
   }
 
+  void test(BuildContext context) async{
+    List certificates = [];
+    final manifestJson =  await DefaultAssetBundle.of(context).loadString('AssetManifest.json');
+    final certPaths = json.decode(manifestJson).keys.where((String key) => key.startsWith('assets/certificates'));
+
+    for (var path in certPaths) {
+      var findExt = path.split('.');
+      var pkdResourceType = 0;
+      if (findExt.length > 0)
+        pkdResourceType = PKDResourceType.getType(findExt[findExt.length - 1].toLowerCase());
+      ByteData byteData = await rootBundle.load(path);
+      var certBase64 = base64.encode(byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
+      certificates.add({"binaryData": certBase64, "resourceType": pkdResourceType});
+    }
+
+    DocumentReader.addPKDCertificates(certificates).then((value) => print("certificates added"));
+
+    ////////////////////////////////////temp end
+  }
 
   @override
   Widget build(BuildContext context) {
     this.initialActions();
+
+    this.test(context);
+
+
+
+
 
     //print metadata
     getAppMetadata();

@@ -55,7 +55,6 @@ class Keys extends ListBase<PrivateKey>{
 
   Keys() : _list = new List.empty(growable: true);
 
-
   void set length(int l) {
     this._list.length=l;
   }
@@ -79,11 +78,12 @@ class Keys extends ListBase<PrivateKey>{
 }
 
 class Eosio{
-  final _log = Logger("Eosio");
+  final _log = Logger("connection.Eosio");
 
   late EOSClient _eosClient;
+  late int connectionRetryMax;
 
-  Eosio(NodeServer storageNode, EosioVersion version, Keys privateKeys, {int httpTimeout = 15}) {
+  Eosio({required NodeServer storageNode, required EosioVersion version, required Keys privateKeys, int httpTimeout = 15, this.connectionRetryMax = 3}) {
     assert(storageNode != null);
     assert(privateKeys.length > 0);
 
@@ -92,12 +92,12 @@ class Eosio{
         httpTimeout: httpTimeout);
   }
 
-  Future<dynamic> onError (String functionName,e){
+  Future<dynamic> onError ({required String functionName, required dynamic e}){
     _log.log(Level.FINE, "Error in '$functionName':" + e.toString());
     return Future.value({'isValid': false, 'exp': e.toString()});
   }
 
-  Future<PushTrxResponse> onErrorTrx (String functionName,e){
+  Future<PushTrxResponse> onErrorTrx ({required String functionName, required dynamic e}){
     _log.log(Level.FINE, "Error in '$functionName':" + e.toString());
     return Future.value(PushTrxResponse(false, null, e.toString()));
   }
@@ -108,19 +108,19 @@ class Eosio{
       _log.log(Level.INFO, "Get node info.");
       return await _eosClient.getInfo();
     }
-    catch(e){ return onError("getNodeInfo", e);}
+    catch(e){ return onError(functionName: "getNodeInfo", e: e);}
   }
 
-  Future<dynamic> getAccountInfo(String account) async{
+  Future<dynamic> getAccountInfo({required String account}) async{
     try
     {
       _log.log(Level.INFO, "Get account info: $account");
       return await _eosClient.getAccount(account);
     }
-    catch(e){ return onError("getAccountInfo", e);}
+    catch(e){ return onError(functionName: "getAccountInfo", e: e);}
   }
 
-  Future<Object> getTableRows(String code, String scope, String table, {
+  Future<Object> getTableRows({required String code, required String scope, required String table,
     bool json = true,
     String tableKey = '',
     String lower = '',
@@ -140,24 +140,24 @@ class Eosio{
       assert(table != null && table != "");
 
       //https://developers.eos.io/manuals/eos/latest/nodeos/plugins/chain_api_plugin/api-reference/index#operation/get_table_rows
-      return Map<String, dynamic> ();
+      //return Map<String, dynamic> ();
 
-      /*await _eosClient.getTableRow(code, scope, table,
+      await _eosClient.getTableRow(code, scope, table,
                                                   json: json,
                                                   tableKey: tableKey,
                                                   lower: lower,
                                                   upper: upper,
                                                   indexPosition: indexPosition,
                                                   keyType: keyType,
-                                                  reverse: reverse);*/
+                                                  reverse: reverse);
     }
     catch(e){
-      onError("getTableRows", e);
+      onError(functionName: "getTableRows", e: e);
       return Future.value({'isValid': false, 'exp': e.toString()});
     }
   }
 
-  static Authorization createAuth(String actor, String permission){
+  static Authorization createAuth({required String actor, required String permission}){
     Logger("eosio;Authorization;createAuth").log(Level.FINER, "{actor:$actor, permission:$permission}");
     assert(actor != null && actor != "");
     assert(permission != null && permission != "");
@@ -168,20 +168,20 @@ class Eosio{
     return item;
   }
 
-  static List<Authorization> createAuthList(List<String> actors, List<String> permissions){
+  static List<Authorization> createAuthList({required List<String> actors, required List<String> permissions}){
     assert(actors != null && actors.length > 0);
     assert(permissions != null && permissions.length > 0);
     assert(actors.length == permissions.length);
 
     List<Authorization> auths = new List<Authorization>.empty(growable: true);
     for(var i = 0; i<actors.length; i++){
-      auths.add(createAuth(actors[i], permissions[i]));
+      auths.add(createAuth(actor: actors[i], permission: permissions[i]));
     }
 
     return auths;
   }
 
-  static bool checkData(Map data){
+  static bool checkData({required Map data}){
     Logger("eosio;checkData").log(Level.FINER, "{data:$data}");
     assert (data != null);
 
@@ -194,7 +194,7 @@ class Eosio{
     return isValid;
   }
 
-  Future<PushTrxResponse> pushTransaction(String code, String actionName, List<Authorization> auth, Map data)async {
+  Future<PushTrxResponse> pushTransaction({required String code, required String actionName, required List<Authorization> auth, required Map data})async {
     try {
       _log.log(
           Level.INFO, "Push transaction {code: $code, action name: $actionName,"
@@ -211,6 +211,6 @@ class Eosio{
       var trx = await _eosClient.pushTransaction(transaction, broadcast: true);
       return PushTrxResponse(true, trx);
     }
-    catch(e){ return onErrorTrx("pushTransaction", e);}
+    catch(e){ return onErrorTrx(functionName: "pushTransaction", e: e);}
   }
 }
