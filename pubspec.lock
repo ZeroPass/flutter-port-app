@@ -550,6 +550,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.0.1"
+  idenfy_sdk_flutter:
+    dependency: "direct main"
+    description:
+      name: idenfy_sdk_flutter
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.7"
   image:
     dependency: transitive
     description:

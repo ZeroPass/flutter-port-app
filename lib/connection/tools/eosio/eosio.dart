@@ -3,12 +3,38 @@ import 'dart:async';
 import 'package:dmrtd/extensions.dart';
 //import 'package:eosdart/eosdart.dart';
 import 'package:eosdart/eosdart.dart';
+import 'package:eosio_port_mobile_app/connection/connection.dart';
 import 'package:eosio_port_mobile_app/utils/storage.dart';
 import 'package:eosio_port_mobile_app/utils/structure.dart';
 import 'dart:collection';
 import 'package:logging/logging.dart';
 
 enum EosioVersion { v1, v2 }
+
+class EosioException implements Exception {
+  // Possible Eosio Exception error codes
+  static const int ecGeneralError               = 400;
+
+
+  // Predefined Port errors
+  static const unknownEndpoint         = EosioException.conflict('Cannot reach endpoint');
+
+  final int code;
+  final String message;
+  const EosioException(this.code, this.message);
+
+  const EosioException.conflict(String error) : this(ecGeneralError, error);
+
+  @override
+  bool operator == (covariant EosioException other) {
+    return code == other.code && message == other.message;
+  }
+
+  @override
+  String toString() => 'PortError(code=$code, error=$message)';
+}
+
+
 
 class PushTrxResponse{
   bool _isValid;
@@ -97,18 +123,35 @@ class Eosio{
     return Future.value({'isValid': false, 'exp': e.toString()});
   }
 
+  APIresponse onErrorAttemptsExceeded ({required String functionName, required dynamic e}){
+    _log.log(Level.FINE, "Error in '$functionName'. Exceeded connection attempts. Error:" + e.toString());
+    return APIresponse(false, text:  e.toString());
+  }
+
+  void onErrorRetry ({required String functionName, required retryCounter}){
+    _log.log(Level.FINE, "Error in '$functionName'. Retry conunter: $retryCounter");
+  }
+
   Future<PushTrxResponse> onErrorTrx ({required String functionName, required dynamic e}){
     _log.log(Level.FINE, "Error in '$functionName':" + e.toString());
     return Future.value(PushTrxResponse(false, null, e.toString()));
   }
 
-  Future<dynamic> getNodeInfo() async{
+  Future<APIresponse> getNodeInfo({int connectionRetryCounter = 0}) async{
     try
     {
       _log.log(Level.INFO, "Get node info.");
-      return await _eosClient.getInfo();
+      var response = await _eosClient.getInfo();
+      return APIresponse(true,code: 200, data: response.toString());
     }
-    catch(e){ return onError(functionName: "getNodeInfo", e: e);}
+    catch(e){
+      if (connectionRetryCounter < connectionRetryMax) {
+        connectionRetryCounter ++;
+        onErrorRetry(functionName: "getNodeInfo", retryCounter: connectionRetryCounter);
+        return await getNodeInfo(connectionRetryCounter: connectionRetryCounter);
+      }
+      return onErrorAttemptsExceeded(functionName: "getNodeInfo", e: e);
+    }
   }
 
   Future<dynamic> getAccountInfo({required String account}) async{
@@ -120,14 +163,15 @@ class Eosio{
     catch(e){ return onError(functionName: "getAccountInfo", e: e);}
   }
 
-  Future<Object> getTableRows({required String code, required String scope, required String table,
+  Future<APIresponse> getTableRows({required String code, required String scope, required String table,
     bool json = true,
     String tableKey = '',
     String lower = '',
     String upper = '',
     int indexPosition = 1,
     String keyType = '',
-    bool reverse = false, 
+    bool reverse = false,
+    int connectionRetryCounter = 0
   }) async{
     try
     {
@@ -142,7 +186,7 @@ class Eosio{
       //https://developers.eos.io/manuals/eos/latest/nodeos/plugins/chain_api_plugin/api-reference/index#operation/get_table_rows
       //return Map<String, dynamic> ();
 
-      await _eosClient.getTableRow(code, scope, table,
+      var response = await _eosClient.getTableRow(code, scope, table,
                                                   json: json,
                                                   tableKey: tableKey,
                                                   lower: lower,
@@ -150,12 +194,42 @@ class Eosio{
                                                   indexPosition: indexPosition,
                                                   keyType: keyType,
                                                   reverse: reverse);
+
+      return APIresponse(true,code: 200, data: response);
     }
     catch(e){
-      onError(functionName: "getTableRows", e: e);
-      return Future.value({'isValid': false, 'exp': e.toString()});
+      if (connectionRetryCounter < connectionRetryMax) {
+        connectionRetryCounter ++;
+        onErrorRetry(functionName: "getTableRows", retryCounter: connectionRetryCounter);
+        return await getTableRows(code: code, scope: scope, table: table, connectionRetryCounter: connectionRetryCounter);
+      }
+      return onErrorAttemptsExceeded(functionName: "getTableRows", e: e);
     }
   }
+
+
+  /// Function recursively calls [func] in case of a handled exception until result is returned.
+  /// Unhandled exceptions are passed on.
+  /// For example when there is connection error and callback [_onConnectionError]
+  /// returns true to retry connecting.
+  Future<T> _retriableCallEx<T> (Future<T> Function(EosioException? error) func, {EosioException? error}) async {
+    try{
+      return await func(error);
+    }
+    on EosioException catch(e) {
+      return await _retriableCallEx(func);
+    }
+  }
+
+  Future<T> _retriableCall<T> (Future<T> Function() func) async {
+    return _retriableCallEx((error) {
+      if(error != null) {
+        throw _RethrowPortError(error);
+      }
+      return func();
+    });
+  }
+
 
   static Authorization createAuth({required String actor, required String permission}){
     Logger("eosio;Authorization;createAuth").log(Level.FINER, "{actor:$actor, permission:$permission}");
@@ -212,5 +286,14 @@ class Eosio{
       return PushTrxResponse(true, trx);
     }
     catch(e){ return onErrorTrx(functionName: "pushTransaction", e: e);}
+  }
+}
+/// Wrapper exception for PortError to
+/// rethrow it in _retriableCallEx
+class _RethrowPortError {
+  final EosioException error;
+  _RethrowPortError(this.error);
+  Never unwrapAndThrow() {
+    throw error;
   }
 }

@@ -28,6 +28,14 @@ class APIresponse{
     _successful = value;
   }
 
+  int _statusCode;
+
+  int get statusCode => _statusCode;
+
+  set statusCode(int value) {
+    _statusCode = value;
+  }
+
   String _text;
 
   String get text => _text;
@@ -36,29 +44,43 @@ class APIresponse{
     _text = value;
   }
 
-  APIresponse(this._successful, this._text);
+  dynamic? _data;
+
+  dynamic get data => _data;
+
+  set data(dynamic value) {
+    _data = value;
+  }
+
+
+
+  APIresponse(this._successful, {dynamic data, String text = "", int code = 200}):
+  this._statusCode = code,
+  this._text = text,
+  this._data = data;
+
 }
 
 
 abstract class ConnectionAdapterMaintenance{
-  void _connectMaintenance(Uri url, int timeout/*in milliseconds*/);
+  void _connectMaintenance({required Uri url, int timeout = 15000/*in milliseconds*/});
 
-  Future<APIresponse> uploadCSCA(String cscaBinary);
-  Future<APIresponse> removeCSCA(String cscaBinary);
+  Future<APIresponse> uploadCSCA({required String cscaBinary});
+  Future<APIresponse> removeCSCA({required String cscaBinary});
 
-  Future<APIresponse> uploadDSC(String dscBinary);
-  Future<APIresponse> removeDSC(String dscBinary);
+  Future<APIresponse> uploadDSC({required String dscBinary});
+  Future<APIresponse> removeDSC({required String dscBinary});
 }
 
 
 abstract class ConnectionAdapterAPI{
-  void _connect(Uri url, int timeout/*in milliseconds*/);
+  void _connect({required Uri url, int timeout = 15000/*in milliseconds*/});
 
-  Future<int> ping(int ping);
+  Future<int> ping({required int ping});
   //Future<ProtoChallenge> getChallenge();
-  Future<void> cancelChallenge(ProtoChallenge protoChallenge);
-  Future<Map<String, dynamic>> register(final UserId userId, final EfSOD sod, final EfDG15 dg15, final CID cid, final ChallengeSignature csig, {EfDG14 dg14});
-  Future<Map<String, dynamic>> getAssertion(UserId uid, CID cid, ChallengeSignature csig);
-  Future<int> sayHello(int number);
+  Future<void> cancelChallenge({required ProtoChallenge protoChallenge});
+  Future<Map<String, dynamic>> register({required final UserId userId, required final EfSOD sod, required final EfDG15 dg15, required final CID cid, required final ChallengeSignature csig, EfDG14 dg14});
+  Future<Map<String, dynamic>> getAssertion({required UserId uid, required CID cid, required ChallengeSignature csig});
+  Future<int> sayHello({required int number});
 
 }

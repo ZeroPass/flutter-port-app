@@ -20,63 +20,72 @@ class ConnectorChainEOS extends ConnectionAdapterMaintenance with ConnectionAdap
   late Keys _keys;
   final _log = Logger('ConnectorChainEOS; ConnectionAdapterMaintenance, ConnectionAdapterAPI');
 
-  ConnectorChainEOS(Uri url, int timeout, Keys keys){
+  ConnectorChainEOS({required Uri url, int timeout = 15000, required Keys keys}){
     _log.fine("Connection API; url: $url, timeout: $timeout, keys length: ${keys.length}");
     this._keys = keys;
-    this._connectMaintenance(url, timeout);
-    this._connect(url, timeout);
+    this._connectMaintenance(url: url, timeout: timeout);
+    this._connect(url: url, timeout: timeout);
     this._keys.clear(); //removed data; after we use it in sub-constructor
   }
 
   @override
-  void _connectMaintenance(Uri url, int timeout/*in milliseconds*/){
+  void _connectMaintenance({required Uri url, int timeout = 15000/*in milliseconds*/}){
     _log.debug("ConnectionAPI.connectMaintenance with data: url:$url, timeout:$timeout");
   }
 
   @override
-  void _connect(Uri url, int timeout/*in milliseconds*/){
+  void _connect({required Uri url, int timeout = 15000/*in milliseconds*/}){
     _log.debug("ConnectionAPI.connect with data: url:$url, timeout:$timeout");
 
     if (_keys.isEmpty)
       throw Exception('Private key list is empty.');
 
     _eosio = Eosio(
-        NodeServer(host: url),
-        EosioVersion.v2,
-        _keys);
+        storageNode: NodeServer(host: url),
+        version: EosioVersion.v1,
+        privateKeys: _keys);
+
+    this.ping(ping: 1).then((value){
+      if (value == 1)
+        _log.finest("Successfully connected on server ${url.toString()}");
+      else
+        _log.finest("Connection on server has failed (${url.toString()})");
+    });
   }
 
   @override
-  Future<APIresponse> uploadCSCA(String cscaBinary) async {
+  Future<APIresponse> uploadCSCA({required String cscaBinary}) async {
     _log.debug("ConnectionAPI.uploadCSCA");
     throw Exception("A function ConnectionAPI.uploadCSCA is not implemented yet.");
   }
 
   @override
-  Future<APIresponse> removeCSCA(String cscaBinary) async {
+  Future<APIresponse> removeCSCA({required String cscaBinary}) async {
     _log.debug("ConnectionAPI.uploadCSCA");
     throw Exception("A function ConnectionAPI.removeCSCA is not implemented yet.");
   }
 
   @override
-  Future<APIresponse> uploadDSC(String dscBinary) async {
+  Future<APIresponse> uploadDSC({required String dscBinary}) async {
     _log.debug("ConnectionAPI.uploadCSCA");
     throw Exception("A function ConnectionAPI.uploadDSC is not implemented yet.");
   }
 
   @override
-  Future<APIresponse> removeDSC(String dscBinary) async {
+  Future<APIresponse> removeDSC({required String dscBinary}) async {
     _log.debug("ConnectionAPI.uploadCSCA");
     throw Exception("A function ConnectionAPI.removeDSC is not implemented yet.");
   }
 
-  @override
-  Future<int> ping(int ping) async {
-    Completer<int> send = new Completer<int>();
-    _eosio.getNodeInfo().then((value){
+  Future<APIresponse> getData({required String code, required String scope, required String table}) async {
+    _log.debug("ConnectionAPI.getData");
+    return await _eosio.getTableRows(code: code, scope: scope, table: table);
+  }
 
-      send.complete(value != null? 1 : 0);
-    });
+  @override
+  Future<int> ping({required int ping}) async {
+    Completer<int> send = new Completer<int>();
+    _eosio.getNodeInfo().then((value) => send.complete(value.successful? 1 : 0));
     return send.future;
   }
 
@@ -87,25 +96,25 @@ class ConnectorChainEOS extends ConnectionAdapterMaintenance with ConnectionAdap
   }*/
 
   @override
-  Future<void> cancelChallenge(ProtoChallenge protoChallenge) async {
+  Future<void> cancelChallenge({required ProtoChallenge protoChallenge}) async {
     _log.debug("ConnectionAPI.cancelChallenge");
     throw Exception("ConnectionAPI.cancelChallenge;  not implemented");
   }
 
   @override
-  Future<Map<String, dynamic>> register(final UserId userId, final EfSOD sod, final EfDG15 dg15, final CID cid, final ChallengeSignature csig, {EfDG14? dg14}) async {
+  Future<Map<String, dynamic>> register({required final UserId userId,required final EfSOD sod,required final EfDG15 dg15,required final CID cid,required final ChallengeSignature csig, EfDG14? dg14}) async {
     _log.debug("ConnectionAPI.register");
     throw Exception("ConnectionAPI.register;  not implemented");
   }
 
   @override
-  Future<Map<String, dynamic>> getAssertion(UserId uid, CID cid, ChallengeSignature csig) async {
+  Future<Map<String, dynamic>> getAssertion({required UserId uid, required CID cid, required ChallengeSignature csig}) async {
     _log.debug("ConnectionAPI.login");
     throw Exception("ConnectionAPI.login;  not implemented");
   }
 
   @override
-  Future<int> sayHello(int number) async {
+  Future<int> sayHello({required int number}) async {
     _log.debug("ConnectionAPI.sayHello");
     throw Exception("ConnectionAPI.sayHello;  not implemented");
   }

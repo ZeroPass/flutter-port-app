@@ -18,49 +18,49 @@ class ConnectorAPI extends ConnectionAdapterMaintenance with ConnectionAdapterAP
   late PortApi portApi;
   final _log = Logger('ConnectionAPI; ConnectionAdapterMaintenance, ConnectionAdapterAPI');
 
-  ConnectionAPI(Uri url, int timeout/*in milliseconds*/){
+  ConnectionAPI({required Uri url, int timeout = 15000/*in milliseconds*/}){
     _log.fine("Connection API; url: $url, timeout: $timeout");
-    this._connectMaintenance(url, timeout);
-    this._connect(url, timeout);
+    this._connectMaintenance(url: url, timeout: timeout);
+    this._connect(url: url, timeout: timeout);
   }
 
   @override
-  void _connectMaintenance(Uri url, int timeout/*in milliseconds*/){
+  void _connectMaintenance({required Uri url, int timeout = 15000/*in milliseconds*/}){
     _log.debug("ConnectionAPI.connectMaintenance with data: url:$url, timeout:$timeout");
   }
 
   @override
-  void _connect(Uri url, int timeout/*in milliseconds*/){
+  void _connect({required Uri url, int timeout = 15000/*in milliseconds*/}){
     _log.debug("ConnectionAPI.connect with data: url:$url, timeout:$timeout");
     portApi = PortApi(url);
   }
 
   @override
-  Future<APIresponse> uploadCSCA(String cscaBinary) async {
+  Future<APIresponse> uploadCSCA({required String cscaBinary}) async {
     _log.debug("ConnectionAPI.uploadCSCA");
     throw Exception("A function ConnectionAPI.uploadCSCA is not implemented yet.");
   }
 
   @override
-  Future<APIresponse> removeCSCA(String cscaBinary) async {
+  Future<APIresponse> removeCSCA({required String cscaBinary}) async {
     _log.debug("ConnectionAPI.uploadCSCA");
     throw Exception("A function ConnectionAPI.removeCSCA is not implemented yet.");
   }
 
   @override
-  Future<APIresponse> uploadDSC(String dscBinary) async {
+  Future<APIresponse> uploadDSC({required String dscBinary}) async {
     _log.debug("ConnectionAPI.uploadCSCA");
     throw Exception("A function ConnectionAPI.uploadDSC is not implemented yet.");
   }
 
   @override
-  Future<APIresponse> removeDSC(String dscBinary) async {
+  Future<APIresponse> removeDSC({required String dscBinary}) async {
     _log.debug("ConnectionAPI.uploadCSCA");
     throw Exception("A function ConnectionAPI.removeDSC is not implemented yet.");
   }
 
   @override
-  Future<int> ping(int ping) async {
+  Future<int> ping({required int ping}) async {
     _log.debug("ConnectionAPI.ping");
     Completer<int> send = new Completer<int>();
     portApi.ping(ping).then((pong) {
@@ -80,7 +80,7 @@ class ConnectorAPI extends ConnectionAdapterMaintenance with ConnectionAdapterAP
   }*/
 
   @override
-  Future<void> cancelChallenge(ProtoChallenge protoChallenge) async {
+  Future<void> cancelChallenge({required ProtoChallenge protoChallenge}) async {
     _log.debug("ConnectionAPI.cancelChallenge");
     Completer<void> send = new Completer<void>();
     portApi.cancelChallenge(protoChallenge).then((session) {
@@ -90,7 +90,7 @@ class ConnectorAPI extends ConnectionAdapterMaintenance with ConnectionAdapterAP
   }
 
   @override
-  Future<Map<String, dynamic>> register(final UserId userId, final EfSOD sod, final EfDG15 dg15, final CID cid, final ChallengeSignature csig, {EfDG14? dg14}) async {
+  Future<Map<String, dynamic>> register({required final UserId userId, required final EfSOD sod, required final EfDG15 dg15, required final CID cid, required final ChallengeSignature csig, EfDG14? dg14}) async {
     _log.debug("ConnectionAPI.register");
     Completer<Map<String, dynamic>> send = new Completer<Map<String, dynamic>>();
     //portApi.register(userId, sod, dg15:dg15, cid, csig, dg14: dg14).then((session) {
@@ -100,7 +100,7 @@ class ConnectorAPI extends ConnectionAdapterMaintenance with ConnectionAdapterAP
   }
 
   @override
-  Future<Map<String, dynamic>> getAssertion(UserId uid, CID cid, ChallengeSignature csig) async {
+  Future<Map<String, dynamic>> getAssertion({required UserId uid, required CID cid, required ChallengeSignature csig}) async {
     _log.debug("ConnectionAPI.login");
     Completer<Map<String, dynamic>> send = new Completer<Map<String, dynamic>>();
     portApi.getAssertion(uid, cid, csig).then((session) {
@@ -110,7 +110,7 @@ class ConnectorAPI extends ConnectionAdapterMaintenance with ConnectionAdapterAP
   }
 
   @override
-  Future<int> sayHello(int number) async {
+  Future<int> sayHello({required int number}) async {
     _log.debug("ConnectionAPI.sayHello");
     Completer<int> send = new Completer<int>();
     portApi.ping(number).then((session) {

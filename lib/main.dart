@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:dmrtd/extensions.dart';
+import 'package:eosio_port_mobile_app/connection/connectors/connectorChainEOS.dart';
 import 'package:eosio_port_mobile_app/screen/nfc/authn/authn.dart';
 import 'package:eosio_port_mobile_app/screen/qr/QRscreen.dart';
 import 'package:eosio_port_mobile_app/screen/requestType.dart';
@@ -26,6 +27,10 @@ import 'package:eosio_port_mobile_app/connection/tools/eosio/eosio.dart';
 import 'package:eosio_port_mobile_app/screen/qr/readQR.dart';
 import 'package:eosio_port_mobile_app/screen/index/index.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+
+//only for test
+import 'package:idenfy_sdk_flutter/idenfy_sdk_flutter.dart';
+
 
 var RUN_IN_DEVICE_PREVIEW_MODE = false;
 final _logStorage = Logger('Storage initialization');
@@ -131,8 +136,16 @@ Future<void> fillDatabase() async
     stepDataAttestation.requestType = RequestType.ATTESTATION_REQUEST;
   });
 
+
+  
   Keys keys= Keys();
   keys.add(PrivateKey(TEST_PRIVATE_KEY));
+
+  //Eosio eosio=Eosio(storageNode: NodeServer(host: Uri.parse("https://jungle3.greymass.com")), version: EosioVersion.v2, privateKeys: keys);
+  ConnectorChainEOS connectorChainEOS = ConnectorChainEOS(url: Uri.parse("https://jungle3.greymass.com1"), keys:keys);
+connectorChainEOS.getData(dscBinary: "");
+
+
   storage.save();
 
   storage.load();
