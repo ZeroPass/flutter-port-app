@@ -7,7 +7,7 @@ import 'package:logging/logging.dart';
 import 'package:eosio_port_mobile_app/utils/storage.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:share/share.dart';
-import 'package:open_file/open_file.dart';
+import 'package:open_file_safe_plus/open_file_safe_plus.dart';
 import 'dart:typed_data';
 import 'package:intl/intl.dart';
 import 'package:sembast/sembast.dart';
@@ -168,7 +168,7 @@ class LoggerHandlerInstance{
             maxAge: Duration(days: 1));
 
         if (open)
-          OpenFile.open(file.path, type: "text/plain", uti: "public.plain-text");
+          OpenFilePlus.open(file.path, type: "text/plain", uti: "public.plain-text");
         else
           Share.shareFiles([file.path], text: "PassIdLog (" + DateTimeUtil.current(DateFormat("yyyy-MM-dd HH:mm:ss")) + ")");
       }

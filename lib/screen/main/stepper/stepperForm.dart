@@ -19,7 +19,7 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:eosio_port_mobile_app/utils/storage.dart';
 import 'package:eosio_port_mobile_app/utils/structure.dart';
 import "package:eosio_port_mobile_app/screen/main/stepper/customStepper.dart";
-import 'package:connectivity/connectivity.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dmrtd/dmrtd.dart';
 import 'package:eosio_port_mobile_app/screen/theme.dart';
 
@@ -36,7 +36,7 @@ List<String> BUTTON_NEXT_TITLE = [
 Widget getButtonNextTitle({required int stepIndex}) {
   if (stepIndex > BUTTON_NEXT_TITLE.length - 1)
     throw FormatException("step index is larger than number of all steps");
-  return Text(BUTTON_NEXT_TITLE.elementAt(stepIndex));
+  return Text(BUTTON_NEXT_TITLE.elementAt(stepIndex), style: TextStyle(color: Colors.white));
 }
 
 class StepperForm extends StatefulWidget {
@@ -180,8 +180,10 @@ class _StepperFormState extends State<StepperForm> {
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
         Padding(
-            padding: EdgeInsets.only(top: 40),
-            child: PlatformButton(
+              padding: EdgeInsets.only(top: 40),
+              child: PlatformTextButton(
+              color: AndroidThemeST().getValues().themeValues["BUTTON"]["COLOR_BACKGROUND"],
+
               padding:
                   Platform.isIOS ? EdgeInsets.symmetric(horizontal: 0) : null,
               child: getButtonNextTitle(stepIndex: currentStep),

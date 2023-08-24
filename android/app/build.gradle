@@ -47,7 +47,7 @@ android {
             storeFile file('C:\\Data\\Credentials\\googleKeyStore\\portKey.jks')
         }
     }
-    compileSdkVersion 32
+    compileSdkVersion 33
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
@@ -65,7 +65,7 @@ android {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "io.zeropass.port"
         minSdkVersion 21
-        targetSdkVersion 32
+        targetSdkVersion 33
         versionCode flutterVersionCode.toInteger()
 
         // Enabling multidex support.
@@ -81,9 +81,15 @@ android {
             storePassword keystoreProperties['storePassword']
         }
     }
+
+    ndkVersion "21.3.6528147"
+
     buildTypes {
         release {
             signingConfig signingConfigs.release
+            ndk {
+                debugSymbolLevel 'SYMBOL_TABLE'
+            }
         }
     }
 }

@@ -190,8 +190,8 @@ class _StepReviewFormState extends State<StepReviewForm> {
                           authType: state.authType,
                           rawData: state.rawData,
                           actions: [
-                            PlatformButton(
-                              child: Text('Send'),
+                            PlatformTextButton(
+                              child: Text('Send', style: TextStyle(color: Colors.white)),
                               color: Color(0xFFa58157),
                               //iosFilled: (_) => CupertinoFilledButtonData(),
                               onPressed: () {
@@ -217,7 +217,7 @@ class _StepReviewFormState extends State<StepReviewForm> {
                             message: state.msg,
                             rawData: state.rawData,
                             actions: [
-                              PlatformButton(
+                              PlatformTextButton(
                                 child: Text('Send'),
                                 color: Color(0xFFa58157),
                                 //iosFilled: (_) => CupertinoFilledButtonData(),

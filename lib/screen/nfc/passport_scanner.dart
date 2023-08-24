@@ -131,7 +131,7 @@ class PassportScanner {
       _setAlertMessage(formatProgressMsg('Reading data ...', 40));
       _log.debug('Passport AA public key type: ${pdata.dg15!.aaPublicKey
           .type}');
-      if (pdata.dg15!.aaPublicKey.type == AAPublicKeyType.EC) {
+      if (pdata.dg15!.aaPublicKey.type == AAPublicKeyType.ECC) {
         if (!efcom.dgTags.contains(EfDG14.TAG)) {
           //errorMsg = 'Unsupported passport'; //TODO: implement this, check if catch works well
           _log.warning(

@@ -227,10 +227,10 @@ class SettingsUpdateNetwork extends StatelessWidget {
           ),
         ]
         ),
-        Container(
-          margin: EdgeInsets.only(top: 20),
-            child:Text("Nodes",
-                  style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold))),
+            Container(
+              margin: EdgeInsets.only(top: 20),
+                child:Text("Nodes",
+                      style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold))),
               Container(
                   child: ServerList(servers: storage.nodeSet.nodes[this.networkType]!.servers, networkType: this.networkType)
               ),

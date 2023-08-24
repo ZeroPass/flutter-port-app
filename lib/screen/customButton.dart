@@ -8,14 +8,16 @@ class CustomButton extends StatefulWidget {
   late String title;
   late double minWidth;
   late Color fontColor;
-  late Color backgroundColor;
+  late Color? backgroundColor;
   late double fontSize;
   late Function callbackOnPressed;
   late bool disabled;
 
   CustomButton({required this.title, required this.callbackOnPressed, Color? fontColor,
-    this.backgroundColor = Colors.white, double? fontSize, this.minWidth = 44.0, this.disabled = false})
+    Color? this.backgroundColor, double? fontSize, this.minWidth = 44.0, this.disabled = false})
   {
+      if (this.backgroundColor == null);
+        this.backgroundColor =  AndroidThemeST().getValues().themeValues["BUTTON"]["COLOR_BACKGROUND"];
       this.fontColor = fontColor ?? AndroidThemeST().getValues().themeValues["BUTTON"]["COLOR"];
       this.fontSize =  fontSize ?? AndroidThemeST().getValues().themeValues["BUTTON"]["SIZE_TEXT"];
   }
@@ -30,16 +32,17 @@ class _CustomButton extends State<CustomButton> {
 
   Widget showAndroidButton(BuildContext context){
     return Container(
-          child: FlatButton(
-            color: widget.backgroundColor,
-            textColor:widget.fontColor,
+          child: TextButton(
+            style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all<Color>(widget.backgroundColor!)
+            ),
             onPressed: () {
               if (widget.disabled == false)
                 widget.callbackOnPressed();
             },
             child: Text(
               widget.title,
-              style: TextStyle(fontSize:widget.fontSize),
+              style: TextStyle(fontSize:widget.fontSize, color: widget.fontColor),
             ),
           )
       );

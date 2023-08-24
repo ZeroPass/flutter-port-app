@@ -23,14 +23,14 @@ import 'package:eosio_port_mobile_app/utils/logging/loggerHandler.dart' as LH;
 import 'package:eosio_port_mobile_app/connection/tools/eosio/eosio.dart';
 import 'package:eosio_port_mobile_app/screen/qr/readQR.dart';
 import 'package:eosio_port_mobile_app/screen/index/index.dart';
-import 'package:package_info_plus/package_info_plus.dart';
+//import 'package:package_info_plus/package_info_plus.dart';
 
 var RUN_IN_DEVICE_PREVIEW_MODE = false;
 final _logStorage = Logger('Storage initialization');
 final _logMain = Logger('Main');
 
 
-void getAppMetadata() async{
+/*void getAppMetadata() async{
   PackageInfo packageInfo = await PackageInfo.fromPlatform();
   String appName = packageInfo.appName;
   String packageName = packageInfo.packageName;
@@ -42,7 +42,7 @@ void getAppMetadata() async{
       "build number: $buildNumber, "
       "version: $version, "
       "build signature: $buildSignature");
-}
+}*/
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -130,8 +130,8 @@ Future<void> fillDatabase() async
     stepDataAttestation.requestType = RequestType.ATTESTATION_REQUEST;
   });
 
-  Keys keys= Keys();
-  keys.add(PrivateKey(TEST_PRIVATE_KEY));
+  //Keys keys= Keys();
+  //keys.add(PrivateKey(TEST_PRIVATE_KEY));
   storage.save();
 
   storage.load();
@@ -185,7 +185,7 @@ class Port extends StatelessWidget {
     this.initialActions();
 
     //print metadata
-    getAppMetadata();
+    //getAppMetadata();
 
     return PlatformProvider(
       //initialPlatform: initialPlatform,

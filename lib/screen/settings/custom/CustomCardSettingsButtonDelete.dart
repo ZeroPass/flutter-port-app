@@ -22,10 +22,11 @@ class _CustomCardSettingsButtonDelete extends State<CustomCardSettingsButtonDele
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.only(left: 10, right: 10, top: 20),
-      child: FlatButton(
-          color: Colors.red,
-          textColor: Colors.white,
-          child: const Text('DELETE', style: TextStyle(fontWeight: FontWeight.bold),
+      child: TextButton(
+          style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all<Color>(Colors.red)
+          ),
+          child: const Text('DELETE', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
           ),
           onPressed: widget.onPressed)
     );

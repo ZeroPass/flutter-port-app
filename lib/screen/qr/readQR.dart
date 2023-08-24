@@ -77,9 +77,20 @@ class _ReadQRState extends State<ReadQR> {
                         //flex: 1,
                         margin: EdgeInsets.only(left: 8.0, right: 8.0),
                           //width:  MediaQuery.of(context).size.width / 2,
-                        child: PlatformButton(
-                            materialFlat: (_, __)  => MaterialFlatButtonData(minWidth: MediaQuery.of(context).size.width / 2.1, color: Theme.of(context).buttonColor),
-                            cupertino: (_, __) => CupertinoButtonData(minSize: MediaQuery.of(context).size.width / 2.1),
+                        child: PlatformTextButton(
+                            material: (_, __)  => MaterialTextButtonData(
+                                                    style: ButtonStyle(
+                                                      backgroundColor: MaterialStateProperty.all<Color>(Theme.of(context).highlightColor),
+                                                      minimumSize: MaterialStateProperty.all(Size(MediaQuery.of(context).size.width / 2.1, 1)),
+                                                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                                          RoundedRectangleBorder(
+                                                              borderRadius: BorderRadius.circular(18.0),
+                                                              side: BorderSide(color: Theme.of(context).highlightColor)
+                                                          )
+                                                      )
+                                                    )
+                                  ),
+                            cupertino: (_, __) => CupertinoTextButtonData(minSize: MediaQuery.of(context).size.width / 2.1),
                             child: //Text('Turn on flash'),
                                   FutureBuilder(
                                     future: controller?.getFlashStatus(),
@@ -98,9 +109,14 @@ class _ReadQRState extends State<ReadQR> {
                         //width:  MediaQuery.of(context).size.width / 2,
                         margin: EdgeInsets.only(left: 8.0, right: 8.0),
                         child:
-                            PlatformButton(
-                              materialFlat: (_, __)  => MaterialFlatButtonData(minWidth: MediaQuery.of(context).size.width / 2.1, color: Theme.of(context).buttonColor),
-                              cupertino: (_, __) => CupertinoButtonData(minSize: MediaQuery.of(context).size.width / 2.1),
+                          PlatformTextButton(
+                            material: (_, __)  => MaterialTextButtonData(
+                              style: ButtonStyle(
+                                  backgroundColor: MaterialStateProperty.all<Color>(Theme.of(context).highlightColor),
+                                  minimumSize: MaterialStateProperty.all(Size(MediaQuery.of(context).size.width / 2.1, 1))
+                                    )),
+
+                            cupertino: (_, __) => CupertinoTextButtonData(minSize: MediaQuery.of(context).size.width / 2.1),
                               child: Text("Flip camera"),
                               onPressed: () async {
                                 await controller?.flipCamera();

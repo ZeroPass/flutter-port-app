@@ -2,7 +2,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:pedantic/pedantic.dart';
+import 'dart:async';
 
 import 'load_indicator.dart';
 
@@ -36,23 +36,31 @@ Container makeButton(
       alignment: Alignment.center,
       child: Row(children: <Widget>[
         Expanded(
-            child: FlatButton(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30.0)),
-                color: color ?? Theme.of(context).accentColor,
-                textColor: Theme.of(context).cardColor,
-                disabledTextColor: Theme.of(context).disabledColor,
-                padding: padding,
+            child: TextButton(
+                //ok shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
+                //removed color: color ?? Theme.of(context).accentColor,
+                //OK textColor: Theme.of(context).cardColor,
+                //removed disabledTextColor: Theme.of(context).disabledColor,
+                //OK padding: padding,
+                style: ButtonStyle(
+                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0))),
+                  padding: MaterialStateProperty.all<EdgeInsetsGeometry>(padding),
+                  backgroundColor: MaterialStateProperty.all<Color>(color ?? Theme.of(context).highlightColor),
+                  //backgroundColor: MaterialStateProperty.all<Color>(color ?? Theme.of(context).colo)
+                ),
+
                 child: Text(
                   text,
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).cardColor ),
                 ),
                 onPressed: disabled ? null : onPressed as void Function()?))
       ]));
 }
 
 Future<T?> showAlertOld<T>(BuildContext context, Widget title, Widget content,
-    List<FlatButton> actions,
+    List<TextButton> actions,
     {GlobalKey? key, dismissible = false}) async {
   return showDialog<T>(
     context: context,
