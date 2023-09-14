@@ -46,6 +46,7 @@ class PassportScanner {
   final _nfc = NfcProvider();
   late NfcScanDialog _scanDialog;
   final PortClient client;
+  bool bottomNFCvisible = false;
 
   //final PortAction action;
   //final AuthenticationType? authenticationType;
@@ -171,9 +172,11 @@ class PassportScanner {
                   required UserId uid,
                   required Future<bool> Function(AuthenticationType) waitingOnConfirmation}) async {
     String? errorMsg;
+    //bool bottomNFCvisible = true;
     try {
       _log.debug('Waiting for passport ...');
       await _connect(alertMessage: 'Hold your device near Biometric Passport');
+
       final passport = Passport(_nfc);
 
       final efcom = await readStructure(passport: passport, dbaKeys: dbaKeys);
@@ -188,6 +191,7 @@ class PassportScanner {
       //disclaimer: Chip authentication is not supported yet!
       if (this.getAuthType(efcom) != AuthenticationType.ActiveAuthentication) {
         await _disconnect(alertMessage: formatProgressMsg('Finished', 100));
+        //this.bottomNFCvisible = false;
         _log.debug("Waiting on user confirmation...");
         if (await waitingOnConfirmation(this.getAuthType(efcom))) {
           _log.debug("...user said YES");
@@ -213,6 +217,7 @@ class PassportScanner {
                       ChallengeSignature cs = data.csig!;
                       //no error/exception when passport was scaned
                       await _disconnect(alertMessage: formatProgressMsg('Finished', 100));
+                      //bottomNFCvisible = false;
                       _log.debug("Waiting on user confirmation...");
                       if (await waitingOnConfirmation(this.getAuthType(efcom))) {
                         _log.debug("...user said YES");
@@ -227,7 +232,7 @@ class PassportScanner {
                           if (e == PortError.accountAlreadyRegistered) {
                             _log.debug ("Account is already attested");
                             // account is passive attested,
-                            // do nothing, just continue the process
+                            //rethrow;
                           }
                           else rethrow;
                         }
@@ -274,6 +279,7 @@ class PassportScanner {
         errorMsg = 'Tag was lost. Please try again!';
       } else if (se.contains('invalidated by user')) {
         errorMsg = '';
+        await _disconnect(errorMessage: errorMsg);
         throw PassportScannerError('Canceled by user');
       }
       throw PassportScannerError(errorMsg);
@@ -346,10 +352,16 @@ class PassportScanner {
     if (!Platform.isIOS) { // on iOS it's NFC framework handles displaying a NFC scan dialog
       _scanDialog.show(message: alertMessage);
     }
+    bottomNFCvisible = true;
     return _call(() =>_nfc.connect(iosAlertMessage: alertMessage ?? "Hold your iPhone near the biometric Passport"));
   }
 
   Future<void> _disconnect({String? alertMessage, String? errorMessage}) {
+    if (bottomNFCvisible == false) {
+      // already disconnected
+      return Future.value();
+    }
+    bottomNFCvisible = false;
     if (!Platform.isIOS) {
       return _scanDialog.hide(
           message: alertMessage,

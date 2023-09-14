@@ -69,7 +69,7 @@ class NfcScanDialog {
   Future<void> hide(
       {String? message,
         String? errorMessage,
-        Duration delayClosing = const Duration(milliseconds: 2500)}) {
+        Duration delayClosing = const Duration(seconds: 2)}) {
     return _closeBottomSheet(
         message: message,
         errorMessage: errorMessage,
@@ -182,14 +182,24 @@ class NfcScanDialog {
 
         if (delayClosing != null) {
           // Delay closing dialog to display message
-          _closingOperation = CancelableOperation.fromFuture(
-              Future.delayed(delayClosing)
-          ).then((value) {
+          _closingOperation = CancelableOperation.fromFuture(Future.delayed(delayClosing))
+              .then((value) {
             if (_sheetSetter != null) {
-              _sheetSetter = null;
-              Navigator.pop(context);
+                _sheetSetter = null;
+                Navigator.pop(context);
             }
-          });
+          }, onCancel: () {
+            if (_sheetSetter != null) {
+                _sheetSetter = null;
+                Navigator.pop(context);
+            }
+          },onError: (error, stackTrace) {
+            if (_sheetSetter != null) {
+                _sheetSetter = null;
+                Navigator.pop(context);
+            }
+          },
+          );
           return _closingOperation!.valueOrCancellation();
         }
       }

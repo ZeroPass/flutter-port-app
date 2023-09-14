@@ -82,7 +82,7 @@ class _StepScanFormState extends State<StepScanForm> {
                 ),
                 //autofocus: true,
                 inputFormatters: <TextInputFormatter>[
-                  FilteringTextInputFormatter.allow(RegExp(r'[A-Z0-9]+')),
+                  FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9]+')),
                   LengthLimitingTextInputFormatter(14)
                 ],
                 textInputAction: TextInputAction.done,
@@ -184,7 +184,7 @@ class _StepScanFormState extends State<StepScanForm> {
                 SelectableText(
                     'Allow expired passports',
                     style: TextStyle(
-                        fontSize: AndroidThemeST().getValues().themeValues["STEPPER"]
+                        fontSize: AndroidThemeST().getValues().themeV`alues["STEPPER"]
                         ["STEP_SCAN"]["SIZE_SMALLER_TEXT"],
                         color: AndroidThemeST().getValues().themeValues["STEPPER"]
                         ["STEP_SCAN"]["COLOR_TEXT"])),
