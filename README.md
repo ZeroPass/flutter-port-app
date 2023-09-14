@@ -21,7 +21,7 @@ On iOS, If you encounter error: "Codepoint 62495 not found in font, aborting.",
 add '--no-tree-shake-icons' flag to the above command.
 
 # Release version
-flutter run --release --no-sound-null-safety
+flutter run --release 
 
 On iOS, If you encounter error: "Codepoint 62495 not found in font, aborting.", 
 add '--no-tree-shake-icons' flag to the above command.
@@ -31,10 +31,10 @@ add '--no-tree-shake-icons' flag to the above command.
 ```
 # Android
 flutter build apk
-flutter build apk --release --no-shrink --no-sound-null-safety
+flutter build apk --release --no-shrink 
 
 #iOS (on macOS host)
-flutter build ios --release --no-sound-null-safety
+flutter build ios --release 
 
 If you encounter error: "Codepoint 62495 not found in font, aborting.", 
 add '--no-tree-shake-icons' flag to the above command.
@@ -43,7 +43,7 @@ add '--no-tree-shake-icons' flag to the above command.
 
 * To build app bundle:
 ```
-flutter build appbundle --no-sound-null-safety --no-tree-shake-icons
+flutter build appbundle --no-tree-shake-icons
 
 ```
 ## Usage
