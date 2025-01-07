@@ -1,8 +1,8 @@
-import 'package:eosio_port_mobile_app/screen/theme.dart';
+import 'package:port_mobile_app/screen/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:eosio_port_mobile_app/screen/qr/readQR.dart';
+import 'package:port_mobile_app/screen/qr/readQR.dart';
 
 class QRscreen extends StatelessWidget {
   @override

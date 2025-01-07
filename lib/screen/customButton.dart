@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:eosio_port_mobile_app/screen/theme.dart';
+import 'package:port_mobile_app/screen/theme.dart';
 import "dart:io" show Platform;
 
 

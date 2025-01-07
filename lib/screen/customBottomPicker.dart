@@ -1,9 +1,9 @@
-import 'package:eosio_port_mobile_app/utils/structure.dart';
-import 'package:eosio_port_mobile_app/constants/constants.dart';
+import 'package:port_mobile_app/utils/structure.dart';
+import 'package:port_mobile_app/constants/constants.dart';
 import 'package:flutter/material.dart';
-import 'package:eosio_port_mobile_app/screen/requestType.dart';
+import 'package:port_mobile_app/screen/requestType.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:eosio_port_mobile_app/utils/storage.dart';
+import 'package:port_mobile_app/utils/storage.dart';
 import 'package:flutter/foundation.dart';
 import "dart:io" show Platform;
 

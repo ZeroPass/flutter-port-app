@@ -2,21 +2,21 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dmrtd/extensions.dart';
-import 'package:eosio_port_mobile_app/screen/index/index.dart';
-import 'package:eosio_port_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
-import 'package:eosio_port_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
-import 'package:eosio_port_mobile_app/screen/main/stepper/stepperBloc.dart';
-import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
+import 'package:port_mobile_app/screen/index/index.dart';
+import 'package:port_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
+import 'package:port_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
+import 'package:port_mobile_app/screen/main/stepper/stepperBloc.dart';
+//import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:qr_code_scanner_plus/qr_code_scanner_plus.dart';
 import 'package:logging/logging.dart';
-import 'package:eosio_port_mobile_app/screen/customButton.dart';
-import 'package:eosio_port_mobile_app/screen/theme.dart';
+import 'package:port_mobile_app/screen/customButton.dart';
+import 'package:port_mobile_app/screen/theme.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:eosio_port_mobile_app/screen/qr/structure.dart';
-import 'package:eosio_port_mobile_app/screen/alert.dart';
-import 'package:eosio_port_mobile_app/utils/storage.dart';
+import 'package:port_mobile_app/screen/qr/structure.dart';
+import 'package:port_mobile_app/screen/alert.dart';
+import 'package:port_mobile_app/utils/storage.dart';
 
 class ReadQR extends StatefulWidget {
   @override

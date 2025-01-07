@@ -5,7 +5,7 @@
 import 'package:flutter/widgets.dart';
 import "package:flutter/material.dart";
 
-import 'package:eosio_port_mobile_app/screen/theme.dart';
+import 'package:port_mobile_app/screen/theme.dart';
 
 //import 'button_style.dart';
 //import 'color_scheme.dart';
@@ -410,7 +410,7 @@ class _CustomStepperState extends State<CustomStepper> with TickerProviderStateM
               child: TextButton(
                 onPressed: widget.onStepCancel,
                 style: TextButton.styleFrom(
-                  primary: cancelColor,
+                  backgroundColor: cancelColor,
                   padding: buttonPadding,
                   shape: buttonShape,
                 ),
@@ -432,13 +432,13 @@ class _CustomStepperState extends State<CustomStepper> with TickerProviderStateM
       case StepState.indexed:
       case StepState.editing:
       case StepState.complete:
-        return textTheme.bodyText1!;
+        return textTheme.bodyMedium!;
       case StepState.disabled:
-        return textTheme.bodyText1!.copyWith(
+        return textTheme.bodyMedium!.copyWith(
           color: _isDark() ? _kDisabledDark : _kDisabledLight,
         );
       case StepState.error:
-        return textTheme.bodyText1!.copyWith(
+        return textTheme.bodyMedium!.copyWith(
           color: _isDark() ? _kErrorDark : _kErrorLight,
         );
     }
@@ -453,13 +453,13 @@ class _CustomStepperState extends State<CustomStepper> with TickerProviderStateM
       case StepState.indexed:
       case StepState.editing:
       case StepState.complete:
-        return textTheme.caption!;
+        return textTheme.bodyLarge!;
       case StepState.disabled:
-        return textTheme.caption!.copyWith(
+        return textTheme.bodyLarge!.copyWith(
           color: _isDark() ? _kDisabledDark : _kDisabledLight,
         );
       case StepState.error:
-        return textTheme.caption!.copyWith(
+        return textTheme.bodyLarge!.copyWith(
           color: _isDark() ? _kErrorDark : _kErrorLight,
         );
     }

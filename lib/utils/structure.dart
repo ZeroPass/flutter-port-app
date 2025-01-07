@@ -1,10 +1,9 @@
 import 'dart:io';
 import 'package:dmrtd/dmrtd.dart';
 import 'package:dmrtd/extensions.dart';
-import 'package:eosio_port_mobile_app/constants/constants.dart';
-import 'package:eosio_port_mobile_app/utils/logging/loggerHandler.dart';
+import 'package:port_mobile_app/constants/constants.dart';
 import 'package:intl/intl.dart';
-import 'package:eosio_port_mobile_app/utils/storage.dart';
+import 'package:port_mobile_app/utils/storage.dart';
 import 'package:logging/logging.dart';
 
 class StringUtil {

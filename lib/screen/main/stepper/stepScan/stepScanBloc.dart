@@ -1,10 +1,10 @@
-import 'package:eosio_port_mobile_app/screen/main/stepper/stepScan/stepScan.dart';
+import 'package:port_mobile_app/screen/main/stepper/stepScan/stepScan.dart';
 import 'package:bloc/bloc.dart';
-import 'package:eosio_port_mobile_app/screen/main/stepper/stepper.dart';
+import 'package:port_mobile_app/screen/main/stepper/stepper.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:async';
 
-import 'package:eosio_port_mobile_app/utils/storage.dart';
+import 'package:port_mobile_app/utils/storage.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 @JsonSerializable()

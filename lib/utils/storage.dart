@@ -1,19 +1,19 @@
 import 'package:dmrtd/dmrtd.dart';
 import 'package:dmrtd/extensions.dart';
 
-import 'package:eosio_port_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
-import 'package:eosio_port_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
-import 'package:eosio_port_mobile_app/screen/main/stepper/stepScan/stepScan.dart';
-import 'package:eosio_port_mobile_app/screen/main/stepper/stepper.dart';
-import 'package:eosio_port_mobile_app/utils/structure.dart';
+import 'package:port_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
+import 'package:port_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
+import 'package:port_mobile_app/screen/main/stepper/stepScan/stepScan.dart';
+import 'package:port_mobile_app/screen/main/stepper/stepper.dart';
+import 'package:port_mobile_app/utils/structure.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:meta/meta.dart';
-import 'package:eosio_port_mobile_app/constants/constants.dart';
+import 'package:port_mobile_app/constants/constants.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:eosio_port_mobile_app/constants/constants.dart';
+import 'package:port_mobile_app/constants/constants.dart';
 import 'package:logging/logging.dart';
 
 /*
@@ -818,20 +818,20 @@ class DBAkeyStorage {
     //}
   }
 
-  DBAKeys? getDBAKeys() {
+  DBAKey? getDBAKeys() {
     final data = prefs.getString("dbaKeys");
     if (data == null) {
       return null;
     }
     final jkeys = jsonDecode(data);
-    return DBAKeys(
+    return DBAKey(
         jkeys['mrtd_num'],
         (jkeys['dob'] as String).parseDateYYMMDD(),
         (jkeys['doe'] as String).parseDateYYMMDD()
     );
   }
 
-  Future<bool> setDBAKeys(final DBAKeys keys) {
+  Future<bool> setDBAKeys(final DBAKey keys) {
     final data = jsonEncode({
       'mrtd_num': keys.mrtdNumber,
       'dob': keys.dateOfBirth.formatYYMMDD(),

@@ -3,21 +3,21 @@ import 'dart:io';
 
 import 'package:dmrtd/dmrtd.dart';
 import 'package:dmrtd/extensions.dart';
-import 'package:eosio_port_mobile_app/constants/constants.dart';
+import 'package:port_mobile_app/constants/constants.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:eosio_port_mobile_app/screen/alert.dart';
+import 'package:port_mobile_app/screen/alert.dart';
 
-import 'package:eosio_port_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
-import 'package:eosio_port_mobile_app/screen/main/stepper/stepScan/stepScan.dart';
+import 'package:port_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
+import 'package:port_mobile_app/screen/main/stepper/stepScan/stepScan.dart';
 
-import 'package:eosio_port_mobile_app/utils/storage.dart';
-import 'package:eosio_port_mobile_app/utils/structure.dart';
-import 'package:eosio_port_mobile_app/screen/theme.dart';
-import 'package:eosio_port_mobile_app/screen/requestType.dart';
-import 'package:eosio_port_mobile_app/screen/main/stepper/customStepper.dart';
+import 'package:port_mobile_app/utils/storage.dart';
+import 'package:port_mobile_app/utils/structure.dart';
+import 'package:port_mobile_app/screen/theme.dart';
+import 'package:port_mobile_app/screen/requestType.dart';
+import 'package:port_mobile_app/screen/main/stepper/customStepper.dart';
 
 import 'package:logging/logging.dart';
 import 'package:port/internal.dart';
@@ -70,7 +70,7 @@ class Authn /*extends State<Authn>*/ {
     required DateTime birthDate,
     required DateTime validUntilDate,
     required Future<bool> Function(AuthenticationType) waitingOnConfirmation}) async {
-    final dbaKeys = DBAKeys(passportID, birthDate, validUntilDate);
+    final dbaKeys = DBAKey(passportID, birthDate, validUntilDate);
     final data = await PassportScanner(context: context, client: _client).
                     register(dbaKeys: dbaKeys,
                               uid: uid,
@@ -127,7 +127,7 @@ class Authn /*extends State<Authn>*/ {
             PlatformDialogAction(
                 child: PlatformText('Close',
                     style: TextStyle(
-                        color: Theme.of(context).errorColor,
+                        color: Theme.of(context).colorScheme.error,
                         fontWeight: FontWeight.bold)),
                 onPressed: () => Navigator.pop(context))
           ]);
@@ -284,13 +284,13 @@ class Authn /*extends State<Authn>*/ {
         await showAlert(
             context: context,
             title: Text(alertTitle,
-                style: TextStyle(color: Theme.of(context).errorColor)),
+                style: TextStyle(color: Theme.of(context).colorScheme.error)),
             content: Text(alertMsg),
             actions: [
               PlatformDialogAction(
                   child: PlatformText('Close',
                       style: TextStyle(
-                          color: Theme.of(context).errorColor,
+                          color: Theme.of(context).colorScheme.error,
                           fontWeight: FontWeight.bold)),
                   onPressed: () => Navigator.pop(context))
             ]);

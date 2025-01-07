@@ -1,27 +1,27 @@
 import 'dart:io';
 import 'dart:async';
-import 'package:eosio_port_mobile_app/constants/constants.dart';
-import 'package:eosio_port_mobile_app/screen/main/stepper/stepAttestation/stepAttestationHeader/stepAttestationHeader.dart';
-import 'package:eosio_port_mobile_app/screen/nfc/authn/authn.dart';
-import 'package:eosio_port_mobile_app/screen/requestType.dart';
+import 'package:port_mobile_app/constants/constants.dart';
+import 'package:port_mobile_app/screen/main/stepper/stepAttestation/stepAttestationHeader/stepAttestationHeader.dart';
+import 'package:port_mobile_app/screen/nfc/authn/authn.dart';
+import 'package:port_mobile_app/screen/requestType.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import "package:eosio_port_mobile_app/screen/main/stepper/stepper.dart";
-import 'package:eosio_port_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
-import 'package:eosio_port_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccountHeader/stepEnterAccountHeader.dart';
-import 'package:eosio_port_mobile_app/screen/main/stepper/stepScan/stepScanHeader/stepScanHeader.dart';
-import 'package:eosio_port_mobile_app/screen/main/stepper/stepScan/stepScan.dart';
-import 'package:eosio_port_mobile_app/screen/main/stepper/stepReview/stepReviewHeader/stepReviewHeader.dart';
-import 'package:eosio_port_mobile_app/screen/main/stepper/stepReview/stepReview.dart';
-import 'package:eosio_port_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
+import "package:port_mobile_app/screen/main/stepper/stepper.dart";
+import 'package:port_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
+import 'package:port_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccountHeader/stepEnterAccountHeader.dart';
+import 'package:port_mobile_app/screen/main/stepper/stepScan/stepScanHeader/stepScanHeader.dart';
+import 'package:port_mobile_app/screen/main/stepper/stepScan/stepScan.dart';
+import 'package:port_mobile_app/screen/main/stepper/stepReview/stepReviewHeader/stepReviewHeader.dart';
+import 'package:port_mobile_app/screen/main/stepper/stepReview/stepReview.dart';
+import 'package:port_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:eosio_port_mobile_app/utils/storage.dart';
-import 'package:eosio_port_mobile_app/utils/structure.dart';
-import "package:eosio_port_mobile_app/screen/main/stepper/customStepper.dart";
+import 'package:port_mobile_app/utils/storage.dart';
+import 'package:port_mobile_app/utils/structure.dart';
+import "package:port_mobile_app/screen/main/stepper/customStepper.dart";
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dmrtd/dmrtd.dart';
-import 'package:eosio_port_mobile_app/screen/theme.dart';
+import 'package:port_mobile_app/screen/theme.dart';
 
 import '../../alert.dart';
 import 'customStepper.dart';
@@ -340,7 +340,7 @@ class _StepperFormState extends State<StepperForm> {
           PlatformDialogAction(
               child: PlatformText('Close',
                   style: TextStyle(
-                      color: Theme.of(context).errorColor,
+                      color: Theme.of(context).focusColor,
                       fontWeight: FontWeight.bold)),
               onPressed: () => Navigator.pop(context, false))
         ]);

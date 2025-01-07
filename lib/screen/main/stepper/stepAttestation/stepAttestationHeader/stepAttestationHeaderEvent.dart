@@ -1,7 +1,7 @@
-import 'package:eosio_port_mobile_app/utils/storage.dart';
+import 'package:port_mobile_app/utils/storage.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
-import 'package:eosio_port_mobile_app/screen/requestType.dart';
+import 'package:port_mobile_app/screen/requestType.dart';
 
 abstract class StepAttestationHeaderEvent /*extends Equatable*/{
   @override

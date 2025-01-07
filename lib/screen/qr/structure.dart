@@ -1,8 +1,8 @@
 import 'package:dmrtd/extensions.dart';
-import 'package:eosio_port_mobile_app/screen/requestType.dart';
+import 'package:port_mobile_app/screen/requestType.dart';
 import 'package:logging/logging.dart';
-import 'package:eosio_port_mobile_app/utils/structure.dart';
-import 'package:eosio_port_mobile_app/utils/storage.dart';
+import 'package:port_mobile_app/utils/structure.dart';
+import 'package:port_mobile_app/utils/storage.dart';
 import 'package:meta/meta.dart';
 
 var APP_NAME_QR_STRUCTURE = "Port.link";

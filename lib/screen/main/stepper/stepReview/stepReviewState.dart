@@ -1,5 +1,5 @@
-import 'package:eosio_port_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
-import 'package:eosio_port_mobile_app/screen/requestType.dart';
+import 'package:port_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
+import 'package:port_mobile_app/screen/requestType.dart';
 import 'package:dmrtd/dmrtd.dart';
 
 import '../../../nfc/authn/authn.dart';

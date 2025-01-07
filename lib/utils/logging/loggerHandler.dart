@@ -1,16 +1,16 @@
-import 'package:eosio_port_mobile_app/utils/structure.dart';
-import 'package:f_logs/model/flog/log_level.dart';
-//import 'package:flutter_logs/flutter_logs.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:f_logs/f_logs.dart';
+/*import 'package:port_mobile_app/utils/structure.dart';
+//import 'package:f_logs/model/flog/log_level.dart';
+import 'package:flutter_logs/flutter_logs.dart';
+//import 'package:permission_handler/permission_handler.dart';
+//import 'package:f_logs/f_logs.dart';
 import 'package:logging/logging.dart';
-import 'package:eosio_port_mobile_app/utils/storage.dart';
+import 'package:port_mobile_app/utils/storage.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:share/share.dart';
 import 'package:open_file_safe_plus/open_file_safe_plus.dart';
 import 'dart:typed_data';
 import 'package:intl/intl.dart';
-import 'package:sembast/sembast.dart';
+// import 'package:sembast/sembast.dart';
 
 
 String CACHE_KEY_NAME = "Port";
@@ -23,7 +23,7 @@ class LoggerHandlerInstance{
     storage.loggingEnabled = false;
     logToAppMemory = false;
 
-    LogsConfig config = FLog.getDefaultConfigurations()
+    /*LogsConfig config = FLog.getDefaultConfigurations()
     ..isDevelopmentDebuggingEnabled = false
     ..timestampFormat = TimestampFormat.TIME_FORMAT_FULL_3
     ..formatType = FormatType.FORMAT_CUSTOM
@@ -36,7 +36,22 @@ class LoggerHandlerInstance{
     ..activeLogLevel = LogLevel.ALL;
 
 
-    FLog.applyConfigurations(config);
+    FLog.applyConfigurations(config);*/
+
+    FlutterLogs.initLogs(
+      logLevelsEnabled: [       LogLevel.INFO,
+        LogLevel.WARNING,
+        LogLevel.ERROR,
+        LogLevel.SEVERE],
+      timeStampFormat: TimeStampFormat.TIME_FORMAT_FULL_1,
+      directoryStructure: DirectoryStructure.FOR_DATE,
+      logTypesEnabled: ["device", "network", "errors"],
+      logFileExtension: LogFileExtension.LOG,
+      logsWriteDirectoryName: "PassID",
+      logsExportDirectoryName: "PassID/Exported",
+      debugFileOperations: true,
+      isDebuggable: true,
+    );
 
     Logger.root.onRecord.listen((record) {
       if (this.logToAppMemory)
@@ -45,14 +60,14 @@ class LoggerHandlerInstance{
   }
 
   Future<bool> startLoggingToAppMemory() async {
-    if (await Permission.storage.request().isGranted) {
+    //if (await Permission.storage.request().isGranted) {
       Storage storage = Storage();
       storage.loggingEnabled = true;
       storage.save();
       logToAppMemory = true;
       return true;
-    }
-    return false;
+    //}
+    //return false;
   }
     void stopLoggingToAppMemory(Function notifyOK, Function notifyError) {
       Storage storage = Storage();
@@ -96,58 +111,29 @@ class LoggerHandlerInstance{
       }
     }
 
-    // void initialize() async {
-    //   //logging library
-    //   //Logger.root.level = Level.ALL;
 
-    //   //flutter-logs library
-    //   /*WidgetsFlutterBinding.ensureInitialized();
+    void cleanLegacyLogs() async {
+      int numberOfDays = 15;
+      final currentTime = DateTime.now();
+      final cutoffTime = currentTime.subtract(Duration(days: numberOfDays));
 
-    //   //Initialize Logging
-    //   await FlutterLogs.initLogs(
-    //       logLevelsEnabled: [
-    //         LogLevel.INFO,
-    //         LogLevel.WARNING,
-    //         LogLevel.ERROR,
-    //         LogLevel.SEVERE
-    //       ],
-    //       timeStampFormat: TimeStampFormat.TIME_FORMAT_READABLE,
-    //       directoryStructure: DirectoryStructure.FOR_DATE,
-    //       logTypesEnabled: ["device","network","errors"],
-    //       logFileExtension: LogFileExtension.LOG,
-    //       logsWriteDirectoryName: "PassID",
-    //       logsExportDirectoryName: "PassID/Exported",
-    //       debugFileOperations: true,
-    //       isDebuggable: true);*/
-
-    //   Logger.root.onRecord.listen((record) {
-    //     if (this.logToAppMemory)
-    //       translate(record);
-    //   });
-    // }
-
-    void cleanLogs(Function notifyOK, Function notifyError) async{
       try {
-        //delete log database
-        FLog.clearLogs();
-        //delete log - specific file
-        await DefaultCacheManager().removeFile(CACHE_KEY_NAME);
-        //delete whole log
-        await DefaultCacheManager().emptyCache();
-        notifyOK();
-      }
-      catch(e){
-        notifyError();
+        final logs = await FlutterLogs.getAllLogs();
+        for (var log in logs) {
+          final logTime = DateTime.tryParse(log.split('|').first); // Assumes logs have timestamp at the start
+          if (logTime != null && logTime.isBefore(cutoffTime)) {
+            await FlutterLogs.deleteLogFile(log);
+          }
+        }
+      } catch (e) {
+        print("Error cleaning legacy logs: $e");
       }
     }
 
     void cleanLegacyLogs() async{
       //delete logs older than <numberOfDays> days
       int numberOfDays = 15;
-      FLog.deleteAllLogsByFilter(filters: [
-        Filter.lessThan(DBConstants.FIELD_TIME_IN_MILLIS,
-            DateTime.now().millisecondsSinceEpoch - 1000 * 60/*minute*/ * 60/*hour*/ * 24/*day*/ * numberOfDays/*days*/ )
-      ]);
+      FlutterLogs.deleteAllLogsOlderThan(numberOfDays);
     }
 
     void export({bool open = false, Function? showError}) async{
@@ -191,3 +177,4 @@ class LoggerHandler extends LoggerHandlerInstance {
     LoggerHandlerInstance();
   }
 }
+*/

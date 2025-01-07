@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:eosio_port_mobile_app/utils/color.dart';
+import 'package:port_mobile_app/utils/color.dart';
 //import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart'; //temptemp
 import 'package:flutter/services.dart';
 

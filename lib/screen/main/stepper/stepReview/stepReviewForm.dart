@@ -1,22 +1,19 @@
 import 'package:dmrtd/extensions.dart';
-import 'package:eosio_port_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
-import 'package:eosio_port_mobile_app/screen/requestType.dart';
-import 'package:flare_flutter/flare_actor.dart';
-import 'package:flare_flutter/flare_cache_builder.dart';
-import 'package:flare_flutter/provider/asset_flare.dart';
+import 'package:port_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
+import 'package:port_mobile_app/screen/requestType.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import "package:eosio_port_mobile_app/screen/main/stepper/stepReview/stepReview.dart";
-import "package:eosio_port_mobile_app/screen/main/stepper/stepper.dart";
+import "package:port_mobile_app/screen/main/stepper/stepReview/stepReview.dart";
+import "package:port_mobile_app/screen/main/stepper/stepper.dart";
 import 'package:flutter/cupertino.dart';
-import 'package:eosio_port_mobile_app/utils/size.dart';
-import 'package:eosio_port_mobile_app/screen/nfc/efdg1_dialog.dart';
-import 'package:eosio_port_mobile_app/screen/nfc/noEfdg1Dialog.dart';
-import 'package:eosio_port_mobile_app/screen/theme.dart';
+import 'package:port_mobile_app/utils/size.dart';
+import 'package:port_mobile_app/screen/nfc/efdg1_dialog.dart';
+import 'package:port_mobile_app/screen/nfc/noEfdg1Dialog.dart';
+import 'package:port_mobile_app/screen/theme.dart';
 import 'package:flutter/services.dart';
-import 'package:eosio_port_mobile_app/screen/flushbar.dart';
-import 'package:eosio_port_mobile_app/screen/dots.dart';
+import 'package:port_mobile_app/screen/flushbar.dart';
+import 'package:port_mobile_app/screen/dots.dart';
 import 'package:logging/logging.dart';
 import 'package:rive/rive.dart';
 
@@ -64,11 +61,11 @@ Widget noConnectionState(BuildContext context){
 }
 
 Widget successfullySend(BuildContext context,
-    RequestType requestType,
-    String transactionId,
-    String rawData,
-    Artboard riveArtboard,
-    RiveAnimationController animationController) {
+                        RequestType requestType,
+                        String transactionId,
+                        String rawData,
+                        Artboard riveArtboard,
+                        RiveAnimationController animationController) {
   String successText = AuthenticatorActions[requestType]['TEXT_ON_SUCCESS'];
   bool isPublishedOnChain = AuthenticatorActions[requestType]['IS_PUBLISHED_ON_CHAIN'];
 

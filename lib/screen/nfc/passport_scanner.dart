@@ -6,12 +6,12 @@ import 'dart:typed_data';
 import 'package:async/async.dart';
 import 'package:dmrtd/dmrtd.dart';
 import 'package:dmrtd/extensions.dart';
-import 'package:eosio_port_mobile_app/utils/structure.dart';
+import 'package:port_mobile_app/utils/structure.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:logging/logging.dart';
-import 'package:eosio_port_mobile_app/screen/alert.dart';
+import 'package:port_mobile_app/screen/alert.dart';
 import 'package:port/port.dart';
 
 
@@ -39,7 +39,6 @@ class PassportScannerError implements Exception {
   @override
   String toString() => message;
 }
-
 
 class PassportScanner {
   final _log = Logger('passport.scanner');
@@ -154,7 +153,7 @@ class PassportScanner {
   }
 
 
-  Future<EfCOM> readStructure({required Passport passport, required DBAKeys dbaKeys}) async {
+  Future<EfCOM> readStructure({required Passport passport, required DBAKey dbaKeys}) async {
     _log.info("Read structure");
     _log.debug('Initializing session with passport ...');
     _setAlertMessage('Initiating session ...');
@@ -168,7 +167,7 @@ class PassportScanner {
     return efcom;
   }
 
-  Future<Map<String, dynamic>> register({required DBAKeys dbaKeys,
+  Future<Map<String, dynamic>> register({required DBAKey dbaKeys,
                   required UserId uid,
                   required Future<bool> Function(AuthenticationType) waitingOnConfirmation}) async {
     String? errorMsg;

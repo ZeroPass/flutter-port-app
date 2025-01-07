@@ -1,5 +1,5 @@
 import 'package:dots_indicator/dots_indicator.dart';
-import 'package:eosio_port_mobile_app/screen/theme.dart';
+import 'package:port_mobile_app/screen/theme.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
@@ -14,7 +14,7 @@ class Dots extends StatefulWidget {
 }
 
 class _DotsState extends State<Dots> {
-  late double activeDot;
+  late int activeDot;
   late Timer timer;
 
   @override

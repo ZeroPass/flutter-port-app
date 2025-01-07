@@ -1,10 +1,10 @@
-import 'package:eosio_port_mobile_app/screen/nfc/uie/uiutils.dart';
-import 'package:eosio_port_mobile_app/screen/qr/readQR.dart';
-import 'package:eosio_port_mobile_app/screen/qr/structure.dart';
-import 'package:eosio_port_mobile_app/screen/settings/settings.dart';
-import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
+import 'package:port_mobile_app/screen/nfc/uie/uiutils.dart';
+import 'package:port_mobile_app/screen/qr/readQR.dart';
+import 'package:port_mobile_app/screen/qr/structure.dart';
+import 'package:port_mobile_app/screen/settings/settings.dart';
+//import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
-import 'package:eosio_port_mobile_app/screen/theme.dart';
+import 'package:port_mobile_app/screen/theme.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -13,7 +13,7 @@ import 'package:rive/rive.dart';
 import '../slideToSideRoute.dart';
 
 class Index extends StatelessWidget {
-  FirebaseDynamicLinks dynamicLinks = FirebaseDynamicLinks.instance;
+  //FirebaseDynamicLinks dynamicLinks = FirebaseDynamicLinks.instance;
 
   void _handleDynamicLink(BuildContext context, Uri? link) {
     if (link != null) {
@@ -33,7 +33,7 @@ class Index extends StatelessWidget {
     }
   }
 
-  Future<void> _initDynamicLinks(BuildContext context) async {
+  /*Future<void> _initDynamicLinks(BuildContext context) async {
     dynamicLinks.onLink.listen((PendingDynamicLinkData dynamicLink){
           final Uri deepLink = dynamicLink.link;
           _handleDynamicLink(context, deepLink);
@@ -45,11 +45,11 @@ class Index extends StatelessWidget {
     final PendingDynamicLinkData? data =
       await FirebaseDynamicLinks.instance.getInitialLink();
     _handleDynamicLink(context, data?.link);
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
-    this._initDynamicLinks(context);
+    //this._initDynamicLinks(context);
     return IndexScreen();
   }
 }

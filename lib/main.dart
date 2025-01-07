@@ -1,28 +1,27 @@
 import 'dart:async';
 
 import 'package:dmrtd/extensions.dart';
-import 'package:eosio_port_mobile_app/screen/nfc/authn/authn.dart';
-import 'package:eosio_port_mobile_app/screen/qr/QRscreen.dart';
-import 'package:eosio_port_mobile_app/screen/requestType.dart';
-import 'package:eosio_port_mobile_app/constants/constants.dart';
-import 'package:eosio_port_mobile_app/utils/storage.dart';
+import 'package:port_mobile_app/screen/nfc/authn/authn.dart';
+import 'package:port_mobile_app/screen/qr/QRscreen.dart';
+import 'package:port_mobile_app/screen/requestType.dart';
+import 'package:port_mobile_app/constants/constants.dart';
+import 'package:port_mobile_app/utils/storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:eosio_port_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
+import 'package:port_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
 
-import 'package:eosio_port_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
-import 'package:eosio_port_mobile_app/screen/main/stepperIndex.dart';
+import 'package:port_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
+import 'package:port_mobile_app/screen/main/stepperIndex.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:eosio_port_mobile_app/screen/theme.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:port_mobile_app/screen/theme.dart';
 
 import 'package:logging/logging.dart';
 //import 'package:device_preview/device_preview.dart' as DevPreview;
-import 'package:eosio_port_mobile_app/utils/logging/loggerHandler.dart' as LH;
-import 'package:eosio_port_mobile_app/connection/tools/eosio/eosio.dart';
-import 'package:eosio_port_mobile_app/screen/qr/readQR.dart';
-import 'package:eosio_port_mobile_app/screen/index/index.dart';
+//import 'package:port_mobile_app/utils/logging/loggerHandler.dart' as LH;
+import 'package:port_mobile_app/connection/tools/eosio/eosio.dart';
+import 'package:port_mobile_app/screen/qr/readQR.dart';
+import 'package:port_mobile_app/screen/index/index.dart';
 //import 'package:package_info_plus/package_info_plus.dart';
 
 var RUN_IN_DEVICE_PREVIEW_MODE = false;
@@ -49,7 +48,7 @@ void main() async{
   final rawSrvCrt = await rootBundle.load('assets/certs/port_server.cer');
   ServerSecurityContext.init(rawSrvCrt.buffer.asUint8List());
 
-  await Firebase.initializeApp();
+  //await Firebase.initializeApp(); obsolete
 
   runApp(Port());
 }
@@ -162,17 +161,17 @@ class Port extends StatelessWidget {
   void initialActions() async{
     //clean old logger handler
     Logger.root.level = Level.ALL;
-    LH.LoggerHandler loggerHandler = LH.LoggerHandler();
-    loggerHandler.cleanLegacyLogs();
+    //LH.LoggerHandler loggerHandler = LH.LoggerHandler();
+    //loggerHandler.cleanLegacyLogs();
     //update database
     loadDatabase(callbackStatus: (storage, isAlreadyUpdated, isValid, {String? exc}) async {
       if(isValid) {
         if(storage.loggingEnabled){
-          bool isStarted = await loggerHandler.startLoggingToAppMemory();
-          if(!isStarted) {
-            print("main: couldn't start logging!");
-            loggerHandler.stopLoggingToAppMemory((){}, (){});
-          }
+          //bool isStarted = await loggerHandler.startLoggingToAppMemory();
+          //if(!isStarted) {
+          //  print("main: couldn't start logging!");
+          //  loggerHandler.stopLoggingToAppMemory((){}, (){});
+          //}
         }
       }
     });

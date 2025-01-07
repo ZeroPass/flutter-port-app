@@ -1,9 +1,9 @@
-import 'package:eosio_port_mobile_app/screen/settings/network/updateNetwork.dart';
-import 'package:eosio_port_mobile_app/screen/settings/custom/customCardSettingsButton.dart';
+import 'package:port_mobile_app/screen/settings/network/updateNetwork.dart';
+import 'package:port_mobile_app/screen/settings/custom/customCardSettingsButton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:eosio_port_mobile_app/utils/storage.dart';
-import 'package:eosio_port_mobile_app/screen/slideToSideRoute.dart';
+import 'package:port_mobile_app/utils/storage.dart';
+import 'package:port_mobile_app/screen/slideToSideRoute.dart';
 import 'package:logging/logging.dart';
 
 class SettingsNetworkList extends StatelessWidget {

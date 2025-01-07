@@ -1,13 +1,13 @@
 import 'package:dmrtd/extensions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:eosio_port_mobile_app/screen/theme.dart';
-import 'package:eosio_port_mobile_app/utils/logging/loggerHandler.dart';
+import 'package:port_mobile_app/screen/theme.dart';
+//import 'package:port_mobile_app/utils/logging/loggerHandler.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:eosio_port_mobile_app/screen/flushbar.dart' as CustomFlushbar;
+import 'package:port_mobile_app/screen/flushbar.dart' as CustomFlushbar;
 import 'package:card_settings/card_settings.dart';
-import 'package:eosio_port_mobile_app/utils/storage.dart';
-import 'package:eosio_port_mobile_app/screen/settings/custom/customCardSettingsButton.dart';
+import 'package:port_mobile_app/utils/storage.dart';
+import 'package:port_mobile_app/screen/settings/custom/customCardSettingsButton.dart';
 import "dart:io" show Platform;
 
 import 'package:logging/logging.dart';
@@ -69,27 +69,27 @@ class _LoggingScreen extends State<LoggingScreen> {
                               return "Please uncheck/check!";
                           },
                           onChanged: (value) async {
-                            LoggerHandler loggerHandler = LoggerHandler();
+                            //LoggerHandler loggerHandler = LoggerHandler();
                             if (value) {
-                              bool isAllowed =
-                                  await loggerHandler.startLoggingToAppMemory();
-                              if (isAllowed == false)
+                              //bool isAllowed =
+                              //    await loggerHandler.startLoggingToAppMemory();
+                              //if (isAllowed == false)
                                 setState(() {
                                   widget.switch_valid = false;
                                   widget.enableLogging = false;
                                 });
-                              else {
+                              //else {
                                 setState(() {
                                   storage.loggingEnabled = true;
                                   storage.save();
                                   widget.switch_valid = true;
                                   widget.enableLogging = value;
                                 });
-                              }
+                              //}
                             } else
                               setState(() {
                                 Logger.root.logSensitiveData = false;
-                                loggerHandler.stopLoggingToAppMemory(
+                                /*loggerHandler.stopLoggingToAppMemory(
                                     () => CustomFlushbar.showFlushbar(
                                         context,
                                         "Log",
@@ -99,7 +99,7 @@ class _LoggingScreen extends State<LoggingScreen> {
                                         context,
                                         "Log",
                                         "Logging stopped. An error has occurred while deleting log files.",
-                                        Icons.error));
+                                        Icons.error));*/
                               });
                           },
                         ),
@@ -137,11 +137,11 @@ class _LoggingScreen extends State<LoggingScreen> {
                             visible: widget.enableLogging,
                             //visible: enableLogging != true? false: true,
                             onPressed: () {
-                              LoggerHandler loggerHandler = LoggerHandler();
-                              loggerHandler.export(showError: () {
-                                CustomFlushbar.showFlushbar(context, "Logging",
-                                    "Cannot export the log.", Icons.error);
-                              });
+                              //LoggerHandler loggerHandler = LoggerHandler();
+                              //loggerHandler.export(showError: () {
+                              //  CustomFlushbar.showFlushbar(context, "Logging",
+                              //      "Cannot export the log.", Icons.error);
+                              //}); temp block
                               //Share.shareFiles(['${directory.path}/image.jpg'], text: 'Great picture');
                             }),
                         CustomCardSettingsButton(
@@ -150,8 +150,8 @@ class _LoggingScreen extends State<LoggingScreen> {
                             enabled: widget.enableLogging,
                             visible: widget.enableLogging,
                             onPressed: () {
-                              LoggerHandler loggerHandler = LoggerHandler();
-                              loggerHandler.export(open: true);
+                              //LoggerHandler loggerHandler = LoggerHandler();
+                              //loggerHandler.export(open: true); temp block
                             }),
                       ]),
                 ]))));

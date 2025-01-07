@@ -1,15 +1,15 @@
-import 'package:eosio_port_mobile_app/constants/constants.dart';
+import 'package:port_mobile_app/constants/constants.dart';
 import 'package:flutter/material.dart';
-import 'package:eosio_port_mobile_app/screen/theme.dart';
-import 'package:eosio_port_mobile_app/screen/settings/network/networkList.dart';
-import 'package:eosio_port_mobile_app/screen/settings/logging/logging.dart';
+import 'package:port_mobile_app/screen/theme.dart';
+import 'package:port_mobile_app/screen/settings/network/networkList.dart';
+import 'package:port_mobile_app/screen/settings/logging/logging.dart';
 import 'package:card_settings/card_settings.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:eosio_port_mobile_app/utils/storage.dart';
-import 'package:eosio_port_mobile_app/screen/settings/custom/customCardSettingsButton.dart';
-import 'package:eosio_port_mobile_app/screen/settings/custom/customCardSettings.dart';
-import 'package:eosio_port_mobile_app/screen/settings/network/server/updateCloud.dart';
+import 'package:port_mobile_app/utils/storage.dart';
+import 'package:port_mobile_app/screen/settings/custom/customCardSettingsButton.dart';
+import 'package:port_mobile_app/screen/settings/custom/customCardSettings.dart';
+import 'package:port_mobile_app/screen/settings/network/server/updateCloud.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:eosio_port_mobile_app/screen/theme.dart';
+import 'package:port_mobile_app/screen/theme.dart';
 
 class CustomChip extends StatefulWidget {
   List<String> titles;

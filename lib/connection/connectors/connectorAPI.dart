@@ -4,7 +4,7 @@
 * Nejc Skerjanc (ZeroPass team)
 *
 */
-import 'package:dmrtd/dmrtd.dart';
+/*import 'package:dmrtd/dmrtd.dart';
 import 'package:dmrtd/extensions.dart';
 import 'package:logging/logging.dart';
 
@@ -12,7 +12,7 @@ import 'dart:async';
 
 import 'package:port/port.dart';
 import 'package:port/internal.dart';
-import 'package:eosio_port_mobile_app/connection/connection.dart';
+import 'package:port_mobile_app/connection/connection.dart';
 
 class ConnectorAPI extends ConnectionAdapterMaintenance with ConnectionAdapterAPI{
   late PortApi portApi;
@@ -118,4 +118,4 @@ class ConnectorAPI extends ConnectionAdapterMaintenance with ConnectionAdapterAP
     });
     return send.future;
   }
-}
+}*/

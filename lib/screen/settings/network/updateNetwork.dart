@@ -1,19 +1,19 @@
-import 'package:eosio_port_mobile_app/screen/customButton.dart';
+import 'package:port_mobile_app/screen/customButton.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:eosio_port_mobile_app/utils/storage.dart';
-import 'package:eosio_port_mobile_app/constants/constants.dart';
+import 'package:port_mobile_app/utils/storage.dart';
+import 'package:port_mobile_app/constants/constants.dart';
 import 'package:card_settings/card_settings.dart';
-import 'package:eosio_port_mobile_app/screen/alert.dart';
-import 'package:eosio_port_mobile_app/screen/settings/custom/customCardSettingsButton.dart';
-import 'package:eosio_port_mobile_app/screen/settings/custom/CustomCardSettingsSection.dart';
-import 'package:eosio_port_mobile_app/screen/settings/custom/CustomCardSettingsButtonDelete.dart';
-import 'package:eosio_port_mobile_app/screen/settings/custom/customCardSettings.dart';
-import 'package:eosio_port_mobile_app/screen/settings/custom/serverList.dart';
-import 'package:eosio_port_mobile_app/screen/settings/network/server/updateServer.dart';
+import 'package:port_mobile_app/screen/alert.dart';
+import 'package:port_mobile_app/screen/settings/custom/customCardSettingsButton.dart';
+import 'package:port_mobile_app/screen/settings/custom/CustomCardSettingsSection.dart';
+import 'package:port_mobile_app/screen/settings/custom/CustomCardSettingsButtonDelete.dart';
+import 'package:port_mobile_app/screen/settings/custom/customCardSettings.dart';
+import 'package:port_mobile_app/screen/settings/custom/serverList.dart';
+import 'package:port_mobile_app/screen/settings/network/server/updateServer.dart';
 import 'package:logging/logging.dart';
-import 'package:eosio_port_mobile_app/screen/slideToSideRoute.dart';
+import 'package:port_mobile_app/screen/slideToSideRoute.dart';
 
 class SettingsUpdateNetwork extends StatelessWidget {
   final _log = Logger('Settings.SettingsUpdateNetwork');

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:eosio_port_mobile_app/screen/customCard.dart';
-import 'package:eosio_port_mobile_app/screen/requestType.dart';
+import 'package:port_mobile_app/screen/customCard.dart';
+import 'package:port_mobile_app/screen/requestType.dart';
 
 import 'authn/authn.dart';
 

@@ -1,16 +1,16 @@
-import 'package:eosio_port_mobile_app/screen/main/stepper/stepper.dart';
-import 'package:eosio_port_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccountHeader/stepEnterAccountHeader.dart';
-import 'package:eosio_port_mobile_app/screen/main/stepper/stepScan/stepScan.dart';
-import 'package:eosio_port_mobile_app/screen/main/stepper/stepScan/stepScanHeader/stepScanHeader.dart';
-import 'package:eosio_port_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
-import 'package:eosio_port_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
-import 'package:eosio_port_mobile_app/screen/main/stepper/stepAttestation/stepAttestationHeader/stepAttestationHeader.dart';
-import 'package:eosio_port_mobile_app/screen/main/stepper/stepReview/stepReviewHeader/stepReviewHeader.dart';
+import 'package:port_mobile_app/screen/main/stepper/stepper.dart';
+import 'package:port_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccountHeader/stepEnterAccountHeader.dart';
+import 'package:port_mobile_app/screen/main/stepper/stepScan/stepScan.dart';
+import 'package:port_mobile_app/screen/main/stepper/stepScan/stepScanHeader/stepScanHeader.dart';
+import 'package:port_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
+import 'package:port_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
+import 'package:port_mobile_app/screen/main/stepper/stepAttestation/stepAttestationHeader/stepAttestationHeader.dart';
+import 'package:port_mobile_app/screen/main/stepper/stepReview/stepReviewHeader/stepReviewHeader.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:eosio_port_mobile_app/utils/storage.dart';
+import 'package:port_mobile_app/utils/storage.dart';
 import 'package:flutter_logs/flutter_logs.dart';
 import 'package:logging/logging.dart';
 

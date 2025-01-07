@@ -1,4 +1,4 @@
-import 'package:eosio_port_mobile_app/utils/storage.dart';
+import 'package:port_mobile_app/utils/storage.dart';
 /*
 StorageNode _$StorageNodeFromJson(Map<String, dynamic> json) {
   return StorageNode(

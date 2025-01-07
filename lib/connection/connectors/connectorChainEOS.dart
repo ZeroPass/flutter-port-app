@@ -4,16 +4,16 @@
 * Nejc Skerjanc (ZeroPass team)
 *
 */
-import 'package:dmrtd/dmrtd.dart';
+/*import 'package:dmrtd/dmrtd.dart';
 import 'package:dmrtd/extensions.dart';
-import 'package:eosio_port_mobile_app/utils/storage.dart';
+import 'package:port_mobile_app/utils/storage.dart';
 import 'package:logging/logging.dart';
 
 import 'dart:async';
 
 import 'package:port/port.dart';
-import 'package:eosio_port_mobile_app/connection/connection.dart';
-import 'package:eosio_port_mobile_app/connection/tools/eosio/eosio.dart';
+import 'package:port_mobile_app/connection/connection.dart';
+import 'package:port_mobile_app/connection/tools/eosio/eosio.dart';
 
 class ConnectorChainEOS extends ConnectionAdapterMaintenance with ConnectionAdapterAPI{
   late Eosio _eosio;
@@ -109,4 +109,4 @@ class ConnectorChainEOS extends ConnectionAdapterMaintenance with ConnectionAdap
     _log.debug("ConnectionAPI.sayHello");
     throw Exception("ConnectionAPI.sayHello;  not implemented");
   }
-}
+}*/

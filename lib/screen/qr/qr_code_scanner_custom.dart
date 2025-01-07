@@ -1,4 +1,4 @@
-import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:qr_code_scanner_plus/qr_code_scanner_plus.dart';
 
 
 import 'dart:async';
@@ -7,14 +7,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'package:qr_code_scanner/src/lifecycle_event_handler.dart';
-import 'package:qr_code_scanner/src/qr_scanner_overlay_shape.dart';
-import 'package:qr_code_scanner/src/types/barcode.dart';
-import 'package:qr_code_scanner/src/types/barcode_format.dart';
-import 'package:qr_code_scanner/src/types/camera.dart';
-import 'package:qr_code_scanner/src/types/camera_exception.dart';
-import 'package:qr_code_scanner/src/types/features.dart';
-import 'package:qr_code_scanner/src/web/flutter_qr_stub.dart';
+import 'package:qr_code_scanner_plus/src/lifecycle_event_handler.dart';
+import 'package:qr_code_scanner_plus/src/qr_scanner_overlay_shape.dart';
+import 'package:qr_code_scanner_plus/src/types/barcode.dart';
+import 'package:qr_code_scanner_plus/src/types/barcode_format.dart';
+import 'package:qr_code_scanner_plus/src/types/camera.dart';
+import 'package:qr_code_scanner_plus/src/types/camera_exception.dart';
+import 'package:qr_code_scanner_plus/src/types/features.dart';
+import 'package:qr_code_scanner_plus/src/web/flutter_qr_stub.dart';
 
 typedef QRViewCreatedCallback = void Function(QRViewController);
 typedef PermissionSetCallback = void Function(QRViewController, bool);
