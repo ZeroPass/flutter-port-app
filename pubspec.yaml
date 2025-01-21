@@ -31,12 +31,12 @@ dependency_overrides:
   #    ref: fix-issue-1555
 
 dependencies:
+  rive: ^0.13.20
   bloc: ^8.1.4
   card_settings:
     git:
       url: https://github.com/ZeroPass/card_settings_zp.git
   dots_indicator: ^3.0.0
-  #device_preview: ^0.8.0
   connectivity_plus: ^6.1.1
   data_connection_checker_tv: ^0.3.5-nullsafety
   cupertino_icons: ^1.0.8
@@ -47,7 +47,7 @@ dependencies:
       url: https://github.com/ZeroPass/flutter-port-sdk.git
       #ref: v1.4.0
   equatable: ^2.0.7
-  http: ^0.13.1
+
   flutter:
     sdk: flutter
   flutter_bloc: ^8.1.3
@@ -58,20 +58,16 @@ dependencies:
   keyboard_dismisser: ^3.0.0
   flutter_svg: ^1.1.0
   json_serializable: ^6.5.0
-  #cupertino_list_tile: ^0.2.1+1
   shared_preferences: ^2.2.2
   another_flushbar: ^1.12.30
   logging: ^1.1.0
   flutter_logs: ^2.2.1
-  #f_logs: ^2.0.1
-  #share: ^2.0.4
-  #flutter_cache_manager: ^3.4.1
   open_file_safe_plus: ^0.0.5
   permission_handler: ^11.3.1
   qr_code_scanner_plus: ^2.0.6
-  #firebase_dynamic_links: ^6.0.11
-  rive: ^0.13.2
-  #package_info_plus: ^4.2.0
+  #flutterflow_ui: ^0.3.1
+
+
 
 
 flutter_icons:

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:dmrtd/extensions.dart';
+import 'package:port_mobile_app/screen/flow/flowApp.dart';
 import 'package:port_mobile_app/screen/nfc/authn/authn.dart';
 import 'package:port_mobile_app/screen/qr/QRscreen.dart';
 import 'package:port_mobile_app/screen/requestType.dart';
@@ -153,6 +154,7 @@ class Port extends StatelessWidget {
     '/index' : (context) => IndexScreen(),
     '/home' : (context) => PortStepperScreen(), //looking for dynamic links
     '/homeMagnetLink' : (context) => PortStepperWidget(), //dynamic link skipped
+    '/startFlow' : (context) => FlowApp(), //dynamic link skipped
     '/QR' : (context) => QRscreen()
     };
 

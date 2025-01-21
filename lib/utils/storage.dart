@@ -1,13 +1,12 @@
 import 'package:dmrtd/dmrtd.dart';
 import 'package:dmrtd/extensions.dart';
+import 'package:port_mobile_app/data/data.dart';
 
 import 'package:port_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
 import 'package:port_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
 import 'package:port_mobile_app/screen/main/stepper/stepScan/stepScan.dart';
 import 'package:port_mobile_app/screen/main/stepper/stepper.dart';
 import 'package:port_mobile_app/utils/structure.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:meta/meta.dart';
 import 'package:port_mobile_app/constants/constants.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -853,6 +852,9 @@ class StorageData {
   late NetworkNodeSet _nodeSet;
   late NetworkCloudSet _cloudSet;
 
+  late LegacyData _legacyData;
+  late CanData _canData;
+
   //should not be stored on disc
   late OutsideCallV0dot1 _outsideCall;
   late DBAkeyStorage dbAkeyStorage;
@@ -863,6 +865,9 @@ class StorageData {
     this._loggingEnabled = false;
     this._nodeSet = NetworkNodeSet();
     this._cloudSet = NetworkCloudSet();
+
+    this._legacyData = LegacyData();
+    this._canData = CanData();
 
     this.dbAkeyStorage = DBAkeyStorage();
     this.dbAkeyStorage.init();
@@ -886,6 +891,9 @@ class StorageData {
     this._loggingEnabled = item._loggingEnabled;
     this._nodeSet = item._nodeSet;
     this._cloudSet = item._cloudSet;
+    this._legacyData = item._legacyData;
+    this._canData = item._canData;
+
     this._steps = item._steps;
 
     //updated in current session
@@ -893,16 +901,26 @@ class StorageData {
   }
 
   StorageData StorageDataDB(
-      {required bool loggingEnabled, required List<StepData> steps, required NetworkNodeSet nodeSet, required NetworkCloudSet cloudSet}) {
+      {required bool loggingEnabled,
+        required List<StepData> steps,
+        required NetworkNodeSet nodeSet,
+        required NetworkCloudSet cloudSet,
+        required LegacyData legacyData,
+        required CanData canData}) {
     _log.debug("StorageDataDB:constructor;"
         "loggingEnabled: $loggingEnabled,"
         "steps: $steps,"
         "networkNodeSet: $nodeSet,"
-        "networkCloudSet: $cloudSet");
+        "networkCloudSet: $cloudSet,"
+        "legacyData: $legacyData,"
+        "canData: $canData");
     this._loggingEnabled = loggingEnabled;
     this._steps = steps;
     this._nodeSet = nodeSet;
     this._cloudSet = cloudSet ;
+
+    this._legacyData = legacyData;
+    this._canData = canData;
 
     //updated in current session
     this._isUpdatedInCurrentSession = true;
@@ -1012,6 +1030,19 @@ class StorageData {
       return null;
     }
   }
+
+  LegacyData get legacyData => _legacyData;
+
+  set legacyData(LegacyData value) {
+    _legacyData = value;
+  }
+
+  CanData get canData => _canData;
+
+  set canData(CanData value) {
+    _canData = value;
+  }
+
   DBAkeyStorage getDBAkeyStorage() {
     return this.dbAkeyStorage;
   }
@@ -1107,7 +1138,9 @@ StorageData _$StorageDataFromJson(Map<String, dynamic> json) {
     loggingEnabled: json['loggingEnabled'],
     steps: StepDataListfromJson(json['steps']),
     nodeSet: NetworkNodeSet.fromJson(json['nodeSet']),
-    cloudSet: NetworkCloudSet.fromJson(json['cloudSet'])
+    cloudSet: NetworkCloudSet.fromJson(json['cloudSet']),
+    legacyData: LegacyData.fromJson(json['legacyData']),
+    canData: CanData.fromJson(json['canData'])
   );
 }
 
@@ -1117,6 +1150,8 @@ Map<String, dynamic> _$StorageDataToJson(StorageData instance) =>
       'steps': StepDataListToJson(instance.getStorageDataAll()),
       'nodeSet' : instance._nodeSet.toJson(),
       'cloudSet' : instance._cloudSet.toJson(),
+      'legacyData' : instance.legacyData.toJson(),
+      'canData' : instance.canData.toJson()
     };
 
 //singleton class
