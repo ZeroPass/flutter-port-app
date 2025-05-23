@@ -223,3 +223,5 @@
 - ![South Africa](https://flagcdn.com/24x18/za.png) **South Africa** (ZA)
 - ![Zambia](https://flagcdn.com/24x18/zm.png) **Zambia** (ZM)
 - ![Zimbabwe](https://flagcdn.com/24x18/zw.png) **Zimbabwe** (ZW)
+
+Open the GitHub issue to add your country guide, fix, or expand it.
