@@ -1,4 +1,5 @@
 # Per country CAN number Passport guide
+
 - ![Andorra](https://flagcdn.com/24x18/ad.png) **Andorra** (AD)
 - ![United Arab Emirates](https://flagcdn.com/24x18/ae.png) **United Arab Emirates** (AE)
 - ![Afghanistan](https://flagcdn.com/24x18/af.png) **Afghanistan** (AF)
