@@ -11,7 +11,7 @@
 - ![Antarctica](https://flagcdn.com/24x18/aq.png) **Antarctica** (AQ)
 - ![Argentina](https://flagcdn.com/24x18/ar.png) **Argentina** (AR)
 - ![American Samoa](https://flagcdn.com/24x18/as.png) **American Samoa** (AS)
-- ![Austria](https://flagcdn.com/24x18/at.png) **Austria** (AT)
+- ![Austria](https://flagcdn.com/24x18/at.png) **Austria** (AT) - Last item on the right on passport data page is CAN.
 - ![Australia](https://flagcdn.com/24x18/au.png) **Australia** (AU)
 - ![Aruba](https://flagcdn.com/24x18/aw.png) **Aruba** (AW)
 - ![Åland Islands](https://flagcdn.com/24x18/ax.png) **Åland Islands** (AX)
@@ -166,7 +166,7 @@
 - ![Nigeria](https://flagcdn.com/24x18/ng.png) **Nigeria** (NG)
 - ![Nicaragua](https://flagcdn.com/24x18/ni.png) **Nicaragua** (NI)
 - ![Netherlands](https://flagcdn.com/24x18/nl.png) **Netherlands** (NL)
-- ![Norway](https://flagcdn.com/24x18/no.png) **Norway** (NO)
+- ![Norway](https://flagcdn.com/24x18/no.png) **Norway** (NO) - Last item on the right on passport data page is CAN.
 - ![Nepal](https://flagcdn.com/24x18/np.png) **Nepal** (NP)
 - ![Nauru](https://flagcdn.com/24x18/nr.png) **Nauru** (NR)
 - ![Niue](https://flagcdn.com/24x18/nu.png) **Niue** (NU)
@@ -199,7 +199,7 @@
 - ![Sweden](https://flagcdn.com/24x18/se.png) **Sweden** (SE)
 - ![Singapore](https://flagcdn.com/24x18/sg.png) **Singapore** (SG)
 - ![Saint Helena, Ascension and Tristan da Cunha](https://flagcdn.com/24x18/sh.png) **Saint Helena, Ascension and Tristan da Cunha** (SH)
-- ![Slovenia](https://flagcdn.com/24x18/si.png) **Slovenia** (SI) CAN number is printed sideways along the right data page edge.
+- ![Slovenia](https://flagcdn.com/24x18/si.png) **Slovenia** (SI) - CAN number is printed sideways along the right data page edge.
 - ![Svalbard and Jan Mayen](https://flagcdn.com/24x18/sj.png) **Svalbard and Jan Mayen** (SJ)
 - ![Slovakia](https://flagcdn.com/24x18/sk.png) **Slovakia** (SK)
 - ![Sierra Leone](https://flagcdn.com/24x18/sl.png) **Sierra Leone** (SL)
