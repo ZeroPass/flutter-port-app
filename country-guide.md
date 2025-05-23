@@ -199,7 +199,7 @@
 - ![Sweden](https://flagcdn.com/24x18/se.png) **Sweden** (SE)
 - ![Singapore](https://flagcdn.com/24x18/sg.png) **Singapore** (SG)
 - ![Saint Helena, Ascension and Tristan da Cunha](https://flagcdn.com/24x18/sh.png) **Saint Helena, Ascension and Tristan da Cunha** (SH)
-- ![Slovenia](https://flagcdn.com/24x18/si.png) **Slovenia** (SI)
+- ![Slovenia](https://flagcdn.com/24x18/si.png) **Slovenia** (SI) CAN number is printed sideways along the right data page edge.
 - ![Svalbard and Jan Mayen](https://flagcdn.com/24x18/sj.png) **Svalbard and Jan Mayen** (SJ)
 - ![Slovakia](https://flagcdn.com/24x18/sk.png) **Slovakia** (SK)
 - ![Sierra Leone](https://flagcdn.com/24x18/sl.png) **Sierra Leone** (SL)
