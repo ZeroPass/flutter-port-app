@@ -23,8 +23,10 @@ class WithDataEvent extends StepScanHeaderEvent{
   DateTime? birth;
   //show valid until on header
   DateTime? validUntil;
+  //show CAN code on header
+  String? can;
 
-  WithDataEvent({this.documentID, this.birth, this.validUntil});
+  WithDataEvent({this.documentID, this.birth, this.validUntil, this.can});
 
   bool isValidDocumentID() => documentID == null? false: true;
 
@@ -53,6 +55,15 @@ class WithDataEvent extends StepScanHeaderEvent{
       return this.validUntil!;
     else
       throw Exception("StepScanState:validUntil is null");
+  }
+
+  bool isValidCan() => can == null? false: true;
+
+  String getCan(){
+    if (this.can != null)
+      return this.can!;
+    else
+      throw Exception("StepScanState:can is null");
   }
 
   //@override

@@ -112,13 +112,15 @@ class StepperBloc extends Bloc<StepperEvent, StepperState> {
           //show data on header if there is valid value
           if (storageStepScan.isValidDocumentID() == false &&
               storageStepScan.isValidBirth() == false &&
-              storageStepScan.isValidValidUntil() == false)
+              storageStepScan.isValidValidUntil() == false &&
+              storageStepScan.isValidPaceCode() == false)
             stepScanHeaderBloc.add(NoDataEvent());
           else {
             stepScanHeaderBloc.add(WithDataEvent(
                 documentID: storageStepScan.isValidDocumentID() ? storageStepScan.getDocumentID(): null,
                 birth: storageStepScan.isValidBirth() ? storageStepScan.getBirth(): null,
-                validUntil: storageStepScan.isValidValidUntil() ? storageStepScan.getValidUntil(): null));
+                validUntil: storageStepScan.isValidValidUntil() ? storageStepScan.getValidUntil(): null,
+                can: storageStepScan.isValidPaceCode() ? storageStepScan.getPaceCode(): null));
           }
         }
         break;

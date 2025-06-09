@@ -27,31 +27,37 @@ import 'package:port_mobile_app/screen/index/index.dart';
 
 var RUN_IN_DEVICE_PREVIEW_MODE = false;
 final _logStorage = Logger('Storage initialization');
-final _logMain = Logger('Main');
 
-
-/*void getAppMetadata() async{
-  PackageInfo packageInfo = await PackageInfo.fromPlatform();
-  String appName = packageInfo.appName;
-  String packageName = packageInfo.packageName;
-  String version = packageInfo.version;
-  String buildNumber = packageInfo.buildNumber;
-  String buildSignature = packageInfo.buildSignature;
-  _logMain.debug("App name: $appName, "
-      "package name: $packageName, "
-      "build number: $buildNumber, "
-      "version: $version, "
-      "build signature: $buildSignature");
-}*/
+void configureLogging() {
+  Logger.root.level = Level.ALL; // Set to show all log levels
+  Logger.root.onRecord.listen((record) {
+    debugPrint('${record.level.name}: ${record.time}: ${record.message}');
+    if (record.error != null) {
+      debugPrint('Error: ${record.error}');
+    }
+    if (record.stackTrace != null) {
+      debugPrint('Stack trace:\n${record.stackTrace}');
+    }
+  });
+}
 
 void main() async{
-  WidgetsFlutterBinding.ensureInitialized();
-  final rawSrvCrt = await rootBundle.load('assets/certs/port_server.cer');
-  ServerSecurityContext.init(rawSrvCrt.buffer.asUint8List());
+  try {
+      WidgetsFlutterBinding.ensureInitialized();
+    
+      // Configure logging first
+      configureLogging();
+      
+      final rawSrvCrt = await rootBundle.load('assets/certs/port_server.cer');
+      ServerSecurityContext.init(rawSrvCrt.buffer.asUint8List());
 
-  //await Firebase.initializeApp(); obsolete
+      //await Firebase.initializeApp(); obsolete
 
-  runApp(Port());
+      runApp(Port());
+    } catch (e, stack) {
+    print('Fatal error during initialization: $e\n$stack');
+    rethrow;
+  }
 }
 
 Map<NetworkType, Network> fillNetworkTypes(Map<NetworkType, Network> networks){

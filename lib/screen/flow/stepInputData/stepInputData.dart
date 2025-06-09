@@ -8,6 +8,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 
 import 'package:port/port.dart';
@@ -16,6 +17,9 @@ import 'package:port_mobile_app/screen/alert.dart';
 import 'package:dmrtd/extensions.dart';
 import 'package:logging/logging.dart';
 import 'package:rive/rive.dart';
+import 'package:port_mobile_app/can_code.dart';
+import 'package:port_mobile_app/utils/color.dart';
+
 
 import '../../../utils/storage.dart';
 import '../../customDatePicker.dart';
@@ -40,6 +44,7 @@ class _StepInputData extends State<StepInputData>
   final TextEditingController _passportNumberController = TextEditingController();
   final TextEditingController _birthTextController = TextEditingController();
   final TextEditingController _validUntilTextController = TextEditingController();
+  final TextEditingController _pinController = TextEditingController();
 
 
   @override
@@ -58,6 +63,7 @@ class _StepInputData extends State<StepInputData>
     _validUntilTextController.text =
     storage.legacyData.isValidValidUntil() ? CustomDatePicker.formatDate(storage.legacyData.getValidUntil()) : "";
 
+    _pinController.text = storage.canData.isValidCan() ? storage.canData.getCan() : "";
 
   }
 
@@ -232,10 +238,68 @@ class _StepInputData extends State<StepInputData>
   }
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: true,
-      appBar: AppBar(
-        title: const Text('Enter data'),
+    return 
+    PlatformProvider(
+      //initialPlatform: initialPlatform,
+        builder: (BuildContext context) => PlatformApp(
+            title: 'Port',
+            localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
+              DefaultMaterialLocalizations.delegate,
+              DefaultWidgetsLocalizations.delegate
+            ],
+            material: (_, __) => MaterialAppData(
+                theme: AndroidTheme().getLight().copyWith(
+                  appBarTheme: AppBarTheme(
+                    backgroundColor: CustomColor.createColor(165, 129, 87, 0xFF5768a5),
+                    elevation: 0,
+                  ),
+                ),
+                darkTheme: AndroidTheme().getDark().copyWith(
+                  appBarTheme: AppBarTheme(
+                    //backgroundColor: Colors.blue,
+                    elevation: 0,
+                  ),
+                ),
+                //routes: routes
+                ),
+            cupertino: (_, __) => CupertinoAppData(
+                theme: iosThemeData(),
+                //routes: routes
+                ),
+            home:
+    
+    PlatformScaffold(
+      
+      //resizeToAvoidBottomInset: true,
+      appBar: PlatformAppBar(
+        //backgroundColor: Colors.blue,
+        //shadowColor: Colors.transparent,
+        automaticallyImplyLeading: true,
+        backgroundColor: Color(0xFF5868a4),
+        title: Container(
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Container(
+                  margin: EdgeInsets.only(left: 0),
+                  width: 50,
+                  height: 35,
+                  child: SvgPicture.asset(
+                      'assets/images/port_text_white.svg',
+                      semanticsLabel: 'Port text'),
+                      ),
+              Text(
+                '1/4',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ]
+          )
+        ),
+        
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).pop(),
@@ -311,7 +375,24 @@ class _StepInputData extends State<StepInputData>
                             },
                           ),
                           const SizedBox(height: 20),
-                          confirmationButton(text: "Verify PACE Code",
+                          CanCodeWidget(
+                            controller: _pinController,
+                            onChanged: (value) {
+                              //save to storage
+                              CanData canData = storage.canData;
+                              canData.can = _pinController.text;
+                              storage.save();
+                            },
+                            onVerified: (pin) {
+                              print('CAN completed: $pin');
+                              if (pin == null || pin.isEmpty) {
+                                return 'PACE Code is required';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 20),
+                          confirmationButton(text: "Scan by PACE",
                                              action: this.validateAndProceedCAN),
                         ],
                       )
@@ -440,6 +521,6 @@ class _StepInputData extends State<StepInputData>
           ),
         ),
       ),
-    );
+    )));
   }
 }

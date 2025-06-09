@@ -100,7 +100,7 @@ class _StepEnterAccountFormState extends State<StepEnterAccountForm> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Text(
-              'Network',
+              'Server',
               style: TextStyle(
                   fontSize: AndroidThemeST().getValues().themeValues["TILE_BAR"]
                       ["SIZE_TEXT"]),

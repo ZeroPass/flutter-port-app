@@ -493,8 +493,10 @@ class _StepperFormState extends State<StepperForm> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: <Widget>[
-                      if (state.step < stepperBloc.maxSteps - 1 &&
-                          controls.onStepContinue != null) //do not show on last step
+                      if (state.step < stepperBloc.maxSteps - 1 && //do not show on last step
+                          controls.onStepContinue != null &&
+                          state.step != 1) //do not show on second step
+
                         showButtonNext(context, state.step, controls.onStepContinue)
                     ],
                   ));

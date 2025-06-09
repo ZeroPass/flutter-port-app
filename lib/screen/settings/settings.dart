@@ -102,7 +102,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       bottomSpacing: 5,
                       label: "Demo mode",
                       onPressed: (){
-                        Navigator.pushNamed(context, '/startFlow');
+                        //Navigator.pushNamed(context, '/startFlow'); //for new flow in the future
+                        Navigator.pushNamed(context, '/home');
                       })
               ]
             ),

@@ -25,8 +25,10 @@ class WithDataState extends StepScanHeaderState {
   DateTime? birth;
   //show valid until on header
   DateTime? validUntil;
+  //show CAN code on header
+  String? can;
 
-  WithDataState({this.documentID, this.birth, this.validUntil});
+  WithDataState({this.documentID, this.birth, this.validUntil, this.can});
 
 
   bool isValidDocumentID() => documentID == null? false: true;
@@ -58,9 +60,18 @@ class WithDataState extends StepScanHeaderState {
       throw Exception("StepScanState:validUntil is null");
   }
 
+  bool isValidCan() => can == null? false: true;
+
+  String getCan(){
+    if (this.can != null)
+      return this.can!;
+    else
+      throw Exception("StepScanState:can is null");
+  }
+
   //@override
   //List<Object> get props => [documentID, birth, validUntil];
 
   @override
-  String toString() => 'StepScanHeaderState:WithDataState { documentID: $documentID, birth: $birth, validUntil: $validUntil }';
+  String toString() => 'StepScanHeaderState:WithDataState { documentID: $documentID, birth: $birth, validUntil: $validUntil, can: $can }';
 }

@@ -39,3 +39,11 @@ Map<RequestType, dynamic> AuthenticatorActions = {
     "IS_PUBLISHED_ON_CHAIN": false
   },
 };
+
+Map<int, RequestType> numericToRequestType = {
+  1: RequestType.ATTESTATION_REQUEST,
+  2: RequestType.PERSONAL_INFORMATION_REQUEST,
+  3: RequestType.FAKE_PERSONAL_INFORMATION_REQUEST,
+  4: RequestType.LOGIN,
+};
+

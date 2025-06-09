@@ -89,12 +89,14 @@ class _StepScanHeaderFormState
                         alignment: Alignment.centerRight,
                         transform: new Matrix4.identity()..scale(0.8),
                         child:*/ Row(children: <Widget>[
+                          if (state is WithDataState && state.can != null && state.isValidCan())
+                            Container(child: CustomChip(titles: ['CAN']), margin: EdgeInsets.only(left: 3.0)),
                           if (state is WithDataState && state.documentID != null && state.isValidDocumentID())
                             Container(child: CustomChip(titles: ['No.']), margin: EdgeInsets.only(left: 3.0)),
                           if (state is WithDataState && state.birth != null)
-                            Container(child: CustomChip(titles: ['Birth']), margin: EdgeInsets.only(left: 3.0)),
+                            Container(child: CustomChip(titles: ['Bir.']), margin: EdgeInsets.only(left: 3.0)),
                           if (state is WithDataState && state.validUntil != null)
-                            Container(child: CustomChip(titles: ['Expiry']), margin: EdgeInsets.only(left: 3.0)),
+                            Container(child: CustomChip(titles: ['Exp.']), margin: EdgeInsets.only(left: 3.0)),
 
                     ]),
                     //),

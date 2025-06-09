@@ -12,17 +12,20 @@ class StepDataScan extends StepData{
   late String? _documentID;
   late DateTime? _validUntil;
   late DateTime? _birth;
+  late String? _paceCode;
 
   StepDataScan(){
     _documentID = null;
     _validUntil = null;
     _birth = null;
+    _paceCode = null;
   }
 
-  StepDataScan StepDataScanFromJson({String? documentID, DateTime? birth, DateTime? validUntil, required bool hasData, required bool isUnlocked}){
+  StepDataScan StepDataScanFromJson({String? documentID, DateTime? birth, DateTime? validUntil, String? paceCode, required bool hasData, required bool isUnlocked}){
     this._documentID = documentID;
     this._birth = birth;
     this._validUntil = validUntil;
+    this._paceCode = paceCode;
     this.hasData = hasData;
     this.isUnlocked = isUnlocked;
     return this;
@@ -41,7 +44,6 @@ class StepDataScan extends StepData{
     _documentID = value;
   }
 
-
   bool isValidBirth() => _birth == null? false: true;
 
   DateTime getBirth(){
@@ -54,7 +56,6 @@ class StepDataScan extends StepData{
   set birth(DateTime? value) {
     _birth = value;
   }
-
 
   bool isValidValidUntil() => _validUntil == null? false: true;
 
@@ -69,6 +70,23 @@ class StepDataScan extends StepData{
     _validUntil = value;
   }
 
+  bool isValidPaceCode() => _paceCode == null? false: true;
+
+  String getPaceCode(){
+    if (this._paceCode != null)
+      return this._paceCode!;
+    else
+      throw Exception("StepDataScan:paceCode is null");
+  }
+
+  set paceCode(String? value) {
+    _paceCode = value;
+  }
+
+  void setPaceCode(String value) {
+    _paceCode = value;
+  }
+
   factory StepDataScan.fromJson(Map<String, dynamic> json) => _$StepDataScanFromJson(json);
   Map<String, dynamic> toJson() => _$StepDataScanToJson(this);
 }
@@ -79,6 +97,7 @@ StepDataScan _$StepDataScanFromJson(Map<String, dynamic> json) {
     documentID: json['documentID'] != null ? json['documentID'] as String : null,
     birth: json['birth'] != null ? DateTime.parse(json['birth']) : null,
     validUntil: json['validUntil'] != null ?  DateTime.parse(json['validUntil']) : null,
+    paceCode: json['paceCode'] != null ? json['paceCode'] as String : null,
     hasData: json['hasData'] as bool,
     isUnlocked: json['isUnlocked'] as bool,
   );
@@ -88,6 +107,7 @@ Map<String, dynamic> _$StepDataScanToJson(StepDataScan instance) => <String, dyn
   'documentID': instance.isValidDocumentID() ? instance.getDocumentID(): null,
   'birth': instance.isValidBirth() ? instance.getBirth().toIso8601String() : null,
   'validUntil': instance.isValidValidUntil() ? instance.getValidUntil().toIso8601String() : null,
+  'paceCode': instance.isValidPaceCode() ? instance.getPaceCode(): null,
   'hasData': instance.hasData,
   'isUnlocked': instance.isUnlocked,
 };

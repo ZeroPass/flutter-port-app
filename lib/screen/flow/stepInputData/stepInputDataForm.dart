@@ -137,7 +137,7 @@ class _StepInputDataState extends State<StepInputDataForm>
 
   void validateCAN() {
     if (_paceCodeController.text.isEmpty) {
-      _showError('Please enter PACE code');
+      _showError('Please enter CAN code');
       return;
     }
     // Proceed with NFC scanning or next steps
@@ -155,7 +155,7 @@ class _StepInputDataState extends State<StepInputDataForm>
               child:
               Scaffold(
                 appBar: AppBar(
-                  title: const Text('Enter Passport Data'),
+                  title: const Text('Submit Passport Data'),
                   leading: IconButton(
                     icon: const Icon(Icons.arrow_back),
                     onPressed: () => Navigator.of(context).pop(),

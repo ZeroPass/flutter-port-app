@@ -50,6 +50,76 @@ class QRstructure{
       throw Exception("Error occurred while parsing data from QR code: $e");
     }
   }
+
+  static String? getRequestTypeString(int number) {
+    // Check if the number exists in the map
+    if (!numericToRequestType.containsKey(number)) {
+      return null;
+    }
+    
+    return numericToRequestType[number].toString()
+      .split('.').last
+      .toLowerCase();
+  }
+
+  static Map<String, dynamic> shortToLong(Map<String, dynamic> data) {
+    // Create a new map for the transformed data
+    Map<String, dynamic> transformedData = {};
+    
+    // Transform parameter names and values
+    if (data.containsKey('rt')) {
+      // Convert rt (request type) value to proper format
+      int? rtValue = int.tryParse(data['rt'].toString());
+      if (rtValue != null) {
+        String? requestTypeStr = getRequestTypeString(rtValue);
+        if (requestTypeStr != null) {
+          transformedData['requestType'] = requestTypeStr;
+        } else {
+          throw Exception('Invalid request type value: ${data['rt']}');
+        }
+      } else {
+        throw Exception('Request type value is not a valid number');
+      }
+    }
+
+    // Transform userID
+    if (data.containsKey('uID')) {
+      transformedData['userID'] = data['uID'];
+    }
+
+    // Transform version
+    if (data.containsKey('v')) {
+      transformedData['version'] = data['v'];
+    }
+
+    // Process URL parameter - add https:// and .port.link if needed
+    if (data.containsKey('url')) {
+      String urlValue = data['url'].toString();
+      
+      // Remove any existing http:// or https:// for processing
+      urlValue = urlValue.replaceAll(RegExp(r'^https?://'), '');
+      
+      // Check if domain contains any dots
+      if (!urlValue.contains('.')) {
+        urlValue = urlValue + '.port.link';
+      }
+      
+      // Add https:// prefix
+      urlValue = 'https://' + urlValue;
+      
+      transformedData['url'] = urlValue;
+    }
+
+    // Copy any other parameters as is
+    data.forEach((key, value) {
+      if (!['rt', 'uID', 'v', 'url'].contains(key)) {
+        transformedData[key] = value;
+      }
+    });
+    return transformedData;
+
+  }
+
 }
 
 QRstructure _$QRstrucutreFromJson(Map<String, dynamic> json) {
@@ -83,20 +153,24 @@ class QRserverStructure extends QRstructure {
 
   static QRserverStructure? parseDynamicLink(String data){
     try{
+        _log.info("PARSE DYNAMIC LINK: $data");
         Uri uri = Uri.parse(data);
         if (!uri.hasQuery)
           throw ('No query in dynamic link url.');
 
         var queryParameters = uri.queryParameters;
 
-        if (!queryParameters.containsKey('link'))
-          throw ('No "link" parameter in query');
+        //if (!queryParameters.containsKey('link'))
+        //  throw ('No "link" parameter in query');
 
-        var link = queryParameters['link'];
+        //var link = queryParameters['link'];
 
-        var deepLinkURL = Uri.parse(link!);
+        //var deepLinkURL = Uri.parse(link!);
 
-        return QRserverStructure.fromJson(deepLinkURL.queryParameters);
+        //from shorter to longer format
+        Map<String, dynamic> dataLong = QRstructure.shortToLong(queryParameters);
+
+        return QRserverStructure.fromJson(dataLong);
     }
     catch(e){
       _log.debug("Error while parsing dynamic link: " + e.toString());
@@ -120,11 +194,25 @@ class QRserverStructure extends QRstructure {
 }
 
 QRserverStructure _$QRserverStrucutreFromJson(Map<String, dynamic> json) {
-  return QRserverStructure(
+  _log.info('Type of json: ${json.runtimeType}');
+  _log.info('Keys: ${json.keys.toList()}');
+
+  json.forEach((key, value) {
+    _log.info('Key: "$key", Value: "$value"');
+  });
+
+  _log.info('QRserverStrucutreFromJson: $json');
+  _log.info('QRserverStrucutreFromJson: ${json['userID']}');
+  _log.info('QRserverStrucutreFromJson: ${json['requestType']}');
+  _log.info('QRserverStrucutreFromJson: ${json['url']}');
+  
+  var qr = QRserverStructure(
     accountID: json['userID'] as String,
     requestType: EnumUtil.fromStringEnum(RequestType.values, json['requestType'].toUpperCase()),
     host: Server(host: Uri.parse(json['url'])),
   );
+  _log.info('QRserverStrucutreFromJson: $qr');
+  return qr;
 }
 
 Map<String, dynamic> _$QRserverStrucutreToJson(QRserverStructure instance) => <String, dynamic>{

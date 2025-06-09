@@ -9,7 +9,12 @@ import 'package:port_mobile_app/utils/storage.dart';
 class StepScanHeaderBloc extends Bloc<StepScanHeaderEvent, StepScanHeaderState> {
   //final int maxSteps;
   StepScanHeaderBloc() : super(WithoutDataState()) {
-    on<WithDataEvent>((event, emit) => emit (WithDataState(documentID:  event.documentID, birth: event.birth, validUntil: event.validUntil)));
+    on<WithDataEvent>((event, emit) => emit (WithDataState(
+      documentID: event.documentID, 
+      birth: event.birth, 
+      validUntil: event.validUntil,
+      can: event.can
+    )));
     on<NoDataEvent>((event, emit) => emit (WithoutDataState()));
 
     updateDataOnUI();
@@ -22,10 +27,13 @@ class StepScanHeaderBloc extends Bloc<StepScanHeaderEvent, StepScanHeaderState> 
     storage.load(callback: (isAlreadyUpdated, isValid,  {String? exc}){
       if (isAlreadyUpdated == true || isValid == true){
         StepDataScan storageStepScan = storage.getStorageData(1) as StepDataScan;
-        if (storageStepScan.isValidDocumentID() || storageStepScan.isValidBirth() || storageStepScan.isValidValidUntil())
-        this.add(WithDataEvent(documentID: storageStepScan.isValidDocumentID() ? storageStepScan.getDocumentID() : null,
-            birth: storageStepScan.isValidBirth() ? storageStepScan.getBirth() : null,
-            validUntil: storageStepScan.isValidValidUntil() ? storageStepScan.getValidUntil() : null));
+        if (storageStepScan.isValidDocumentID() || storageStepScan.isValidBirth() || storageStepScan.isValidValidUntil() || storageStepScan.isValidPaceCode())
+        this.add(WithDataEvent(
+          documentID: storageStepScan.isValidDocumentID() ? storageStepScan.getDocumentID() : null,
+          birth: storageStepScan.isValidBirth() ? storageStepScan.getBirth() : null,
+          validUntil: storageStepScan.isValidValidUntil() ? storageStepScan.getValidUntil() : null,
+          can: storageStepScan.isValidPaceCode() ? storageStepScan.getPaceCode() : null
+        ));
       }
     });
   }

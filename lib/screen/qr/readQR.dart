@@ -185,6 +185,7 @@ class _ReadQRState extends State<ReadQR> {
       controller.stopCamera();
       //setState(() {
         try {
+          _log.debug("Scanning QR data: ${scanData.code}");
           this.isCaptured = true;
           bool continueProcess = await this.readQR(scanData);
 

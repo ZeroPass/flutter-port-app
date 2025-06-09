@@ -1,0 +1,2 @@
+C:/Data/Development/port/flutterPortApp/flutter-port-app/android/app/.cxx/Debug/5y5e692v/x86_64/CMakeFiles/edit_cache.dir
+C:/Data/Development/port/flutterPortApp/flutter-port-app/android/app/.cxx/Debug/5y5e692v/x86_64/CMakeFiles/rebuild_cache.dir

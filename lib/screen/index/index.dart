@@ -1,7 +1,12 @@
+import 'dart:async';
+
+import 'package:logging/logging.dart';
 import 'package:port_mobile_app/screen/nfc/uie/uiutils.dart';
 import 'package:port_mobile_app/screen/qr/readQR.dart';
 import 'package:port_mobile_app/screen/qr/structure.dart';
+import 'package:port_mobile_app/screen/requestType.dart';
 import 'package:port_mobile_app/screen/settings/settings.dart';
+import 'package:port_mobile_app/services/deep_link_service.dart';
 //import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:port_mobile_app/screen/theme.dart';
@@ -9,47 +14,62 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:rive/rive.dart';
-
+import 'package:app_links/app_links.dart';
 import '../slideToSideRoute.dart';
 
-class Index extends StatelessWidget {
-  //FirebaseDynamicLinks dynamicLinks = FirebaseDynamicLinks.instance;
+final _log = Logger('DeepLinkService');
+
+class Index extends StatefulWidget {
+  @override
+  _IndexState createState() => _IndexState();
+}
+
+class _IndexState extends State<Index> {
+  StreamSubscription<Uri>? _linkSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    _initDeepLinks(context);
+  }
 
   void _handleDynamicLink(BuildContext context, Uri? link) {
     if (link != null) {
-      if (_handleAndSaveData(link.queryParameters))
-        Navigator.pushNamed(context, link.path);
+      if (_handleAndSaveData(link.queryParameters)){
+        var path = "/homeMagnetLink";
+        _log.info('Going to steppeer on ${path}');
+        Navigator.pushNamed(context, path);
+      }
     }
   }
 
   bool _handleAndSaveData(Map<String, dynamic> data) {
     try {
-      var qr = QRserverStructure.fromJson(data);
+      //translate data from shorter(v2) to longer(v1) format
+      Map<String, dynamic> dataLong = QRstructure.shortToLong(data);
+      var qr = QRserverStructure.fromJson(dataLong);
       ReadQR.saveToDatabase(qr);
       return true;
     } catch (e) {
-      print("Dynamic link.handleAndSaveData: Exception: " + e.toString());
+      _log.info("deep link.handleAndSaveData: Exception: " + e.toString());
       return false;
     }
   }
 
-  /*Future<void> _initDynamicLinks(BuildContext context) async {
-    dynamicLinks.onLink.listen((PendingDynamicLinkData dynamicLink){
-          final Uri deepLink = dynamicLink.link;
-          _handleDynamicLink(context, deepLink);
-    }).onError((error){
-      print('onLink error');
-      print(error.message);
+  Future<void> _initDeepLinks(BuildContext context) async {
+    _linkSubscription = AppLinks().uriLinkStream.listen((uri) {
+      _log.info('onAppLink: $uri');
+      _log.info('queryParameters: ${uri.queryParameters}');
+      _handleDynamicLink(context, uri);
+      //var queryParams = uri.queryParameters;
+      //var qr = QRserverStructure.fromJson(queryParams);
+      //var wer = 9;
     });
-
-    final PendingDynamicLinkData? data =
-      await FirebaseDynamicLinks.instance.getInitialLink();
-    _handleDynamicLink(context, data?.link);
-  }*/
+  }
 
   @override
   Widget build(BuildContext context) {
-    //this._initDynamicLinks(context);
+    //this._initDeepLinks(context);
     return IndexScreen();
   }
 }
