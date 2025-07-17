@@ -131,7 +131,7 @@ class PassportScanner {
       _setAlertMessage(formatProgressMsg('Reading data ...', 40));
       _log.debug('Passport AA public key type: ${pdata.dg15!.aaPublicKey
           .type}');
-      if (pdata.dg15!.aaPublicKey.type == AAPublicKeyType.ECC) {
+      //if (pdata.dg15!.aaPublicKey.type == AAPublicKeyType.ECC) {
         if (!efcom.dgTags.contains(EfDG14.TAG)) {
           //errorMsg = 'Unsupported passport'; //TODO: implement this, check if catch works well
           _log.warning(
@@ -140,7 +140,7 @@ class PassportScanner {
           throw PassportScannerError('Unsupported passport');
         }
         pdata.dg14 = await _call(() => passport.readEfDG14());
-      }
+      //}
     }
     else
       _log.debug("Passport has not DG15 file");
@@ -153,11 +153,27 @@ class PassportScanner {
   }
 
 
-  Future<EfCOM> readStructure({required Passport passport, required DBAKey dbaKeys}) async {
+  Future<EfCOM> readStructure({required Passport passport, 
+                                required AccessKey accessKey, 
+                                required bool isPaceMode}) async {
     _log.info("Read structure");
     _log.debug('Initializing session with passport ...');
+    _log.debug('isPaceMode: $isPaceMode');
     _setAlertMessage('Initiating session ...');
-    await _call(() => passport.startSession(dbaKeys));
+
+    if (isPaceMode) {
+      EfCardAccess cardAccess = await passport.readEfCardAccess();
+      _log.debug('Card access has been read');
+        //0x01: MRZ_information
+        //0x02: CAN
+        bool isDBA = accessKey.PACE_REF_KEY_TAG == 0x01 ? true : false;
+      _log.debug('isDBA: $isDBA');
+      await _call(() => passport.startSessionPACE(accessKey, cardAccess));
+    }
+    else {
+      await _call(() => passport.startSession(accessKey as DBAKey));
+    }
+
 
     _setAlertMessage(formatProgressMsg('Reading data ...', 0));
     final efcom = await _call<EfCOM>(() => passport.readEfCOM());
@@ -167,9 +183,10 @@ class PassportScanner {
     return efcom;
   }
 
-  Future<Map<String, dynamic>> register({required DBAKey dbaKeys,
-                  required UserId uid,
-                  required Future<bool> Function(AuthenticationType) waitingOnConfirmation}) async {
+  Future<Map<String, dynamic>> register({required AccessKey accessKey,
+                                        required UserId uid,
+                                        required Future<bool> Function(AuthenticationType) waitingOnConfirmation,
+                                        required bool isPaceMode}) async {
     String? errorMsg;
     //bool bottomNFCvisible = true;
     try {
@@ -178,7 +195,9 @@ class PassportScanner {
 
       final passport = Passport(_nfc);
 
-      final efcom = await readStructure(passport: passport, dbaKeys: dbaKeys);
+      final efcom = await readStructure(passport: passport, 
+                                        accessKey: accessKey, 
+                                        isPaceMode: isPaceMode);
       _log.debug('Reading efCom completed...');
 
       PassportData passdata = await getSOD(passport: passport, efcom: efcom);

@@ -23,6 +23,9 @@ class _CustomChipState extends State<CustomChip> {
       children: <Widget>[
         for (var item in widget.titles)
           FilterChip(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14.0),
+            ),
             padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
             labelPadding: EdgeInsets.fromLTRB(0, -3, 0, -3),
             backgroundColor: AndroidThemeST().getValues().themeValues["STEPPER"]["CHIP"]["COLOR_BACKGROUND"],

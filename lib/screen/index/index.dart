@@ -183,7 +183,7 @@ class _IndexScreenState extends State<IndexScreen> {
                           makeButton(
                               context: context,
                               margin: EdgeInsets.only(
-                                  left: 30.0, right: 30.0, bottom: 25),
+                                  left: 30.0, right: 30.0, bottom: 65),
                               text: 'Scan QR code',
                               color: AndroidThemeST()
                                       .getValues()

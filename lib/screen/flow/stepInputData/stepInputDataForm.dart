@@ -169,7 +169,7 @@ class _StepInputDataState extends State<StepInputDataForm>
                         TabBar(
                           controller: _tabController,
                           tabs: const [
-                            Tab(text: 'PACE'),
+                            Tab(text: 'CAN'),
                             Tab(text: 'Legacy'),
                           ],
                         ),

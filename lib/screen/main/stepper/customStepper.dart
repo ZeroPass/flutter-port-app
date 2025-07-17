@@ -31,6 +31,33 @@ import 'package:port_mobile_app/screen/theme.dart';
 ///  * [WidgetBuilder], which is similar but only takes a [BuildContext].
 typedef ControlsWidgetBuilder = Widget Function(BuildContext context, ControlsDetails details);
 
+/// A class that contains the details for the stepper controls.
+class ControlsDetails {
+  /// Creates a instance of [ControlsDetails].
+  const ControlsDetails({
+    required this.currentStep,
+    required this.stepIndex,
+    this.onStepContinue,
+    this.onStepCancel,
+    this.onStepContinueWithParams,
+  });
+
+  /// The index that is active for the current step.
+  final int currentStep;
+
+  /// The callback called when the 'continue' button is tapped.
+  final VoidCallback? onStepContinue;
+
+  /// The callback called when the 'cancel' button is tapped.
+  final VoidCallback? onStepCancel;
+
+  /// The callback called when the 'continue' button is tapped with parameters.
+  final void Function(bool isPaceMode, bool isDBA)? onStepContinueWithParams;
+
+  /// The index of the current step.
+  final int stepIndex;
+}
+
 const TextStyle _kStepStyle = TextStyle(
   fontSize: 12.0,
   color: Colors.white,
@@ -90,6 +117,7 @@ class CustomStepper extends StatefulWidget {
     this.currentStep = 0,
     this.onStepTapped,
     this.onStepContinue,
+    this.onStepContinueWithParams,
     this.onStepCancel,
     this.controlsBuilder,
     this.elevation,
@@ -136,6 +164,11 @@ class CustomStepper extends StatefulWidget {
   /// If null, the 'continue' button will be disabled.
   final VoidCallback? onStepContinue;
 
+  /// The callback called when the 'continue' button is tapped with parameters.
+  ///
+  /// If provided, this will be called instead of onStepContinue.
+  final void Function(bool isPaceMode, bool isDBA)? onStepContinueWithParams;
+
   /// The callback called when the 'cancel' button is tapped.
   ///
   /// If null, the 'cancel' button will be disabled.
@@ -146,53 +179,7 @@ class CustomStepper extends StatefulWidget {
   /// If null, the default controls from the current theme will be used.
   ///
   /// This callback which takes in a context and a [ControlsDetails] object, which
-  /// contains step information and two functions: [onStepContinue] and [onStepCancel].
-  /// These can be used to control the stepper. For example, reading the
-  /// [ControlsDetails.currentStep] value within the callback can change the text
-  /// of the continue or cancel button depending on which step users are at.
-  ///
-  /// {@tool dartpad}
-  /// Creates a stepper control with custom buttons.
-  ///
-  /// ```dart
-  /// Widget build(BuildContext context) {
-  ///   return Stepper(
-  ///     controlsBuilder:
-  ///       (BuildContext context, ControlsDetails details) {
-  ///          return Row(
-  ///            children: <Widget>[
-  ///              TextButton(
-  ///                onPressed: details.onStepContinue,
-  ///                child: Text('Continue to Step ${details.stepIndex + 1}'),
-  ///              ),
-  ///              TextButton(
-  ///                onPressed: details.onStepCancel,
-  ///                child: Text('Back to Step ${details.stepIndex - 1}'),
-  ///              ),
-  ///            ],
-  ///          );
-  ///       },
-  ///     steps: const <Step>[
-  ///       Step(
-  ///         title: Text('A'),
-  ///         content: SizedBox(
-  ///           width: 100.0,
-  ///           height: 100.0,
-  ///         ),
-  ///       ),
-  ///       Step(
-  ///         title: Text('B'),
-  ///         content: SizedBox(
-  ///           width: 100.0,
-  ///           height: 100.0,
-  ///         ),
-  ///       ),
-  ///     ],
-  ///   );
-  /// }
-  /// ```
-  /// ** See code in examples/api/lib/material/stepper/stepper.controls_builder.0.dart **
-  /// {@end-tool}
+  /// contains step information and callbacks that can be used to control the stepper.
   final ControlsWidgetBuilder? controlsBuilder;
 
   /// The elevation of this stepper's [Material] when [type] is [StepperType.horizontal].
@@ -361,9 +348,10 @@ class _CustomStepperState extends State<CustomStepper> with TickerProviderStateM
           currentStep: widget.currentStep,
           onStepContinue: widget.onStepContinue,
           onStepCancel: widget.onStepCancel,
+          onStepContinueWithParams: widget.onStepContinueWithParams,
           stepIndex: stepIndex,
         ),
-      ); //commented by ZeroPass team (Nejc)
+      );
 
     final Color cancelColor;
     switch (Theme.of(context).brightness) {
@@ -387,12 +375,11 @@ class _CustomStepperState extends State<CustomStepper> with TickerProviderStateM
       child: ConstrainedBox(
         constraints: const BoxConstraints.tightFor(height: 48.0),
         child: Row(
-          // The Material spec no longer includes a Stepper widget. The continue
-          // and cancel button styles have been configured to match the original
-          // version of this widget.
           children: <Widget>[
             TextButton(
-              onPressed: widget.onStepContinue,
+              onPressed: widget.onStepContinueWithParams != null 
+                ? () => widget.onStepContinueWithParams!(true, true) // Default values, can be changed in the callback
+                : widget.onStepContinue,
               style: ButtonStyle(
                 foregroundColor: MaterialStateProperty.resolveWith<Color?>((Set<MaterialState> states) {
                   return states.contains(MaterialState.disabled) ? null : (_isDark() ? colorScheme.onSurface : colorScheme.onPrimary);

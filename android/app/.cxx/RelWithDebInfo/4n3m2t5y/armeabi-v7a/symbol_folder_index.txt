@@ -1,0 +1,1 @@
+C:\Data\Development\port\flutterPortApp\flutter-port-app\build\app\intermediates\cxx\RelWithDebInfo\4n3m2t5y\obj\armeabi-v7a

@@ -15,7 +15,7 @@ description: Port Mobile App
 # This version is used _only_ for the Runner app, which is used if you just do
 # a `flutter run` or a `flutter make-host-app-editable`. It has no impact
 # on any other native host app that you embed your Flutter project into.
-version: 1.3.1+17
+version: 2.0.1+17
 
 environment:
   sdk: ^3.6.0
@@ -46,9 +46,8 @@ dependencies:
   date_format: ^2.0.9
   pin_code_fields: ^8.0.1
   port:
-    git:
-      url: https://github.com/ZeroPass/flutter-port-sdk.git
-      #ref: v1.4.0
+    path: ../../flutter-port-sdk #temp ref to works on currecnt project and sdk together
+  
   equatable: ^2.0.7
 
   flutter:
@@ -134,7 +133,7 @@ flutter:
     - assets/certs/port_server.cer
     - assets/images/port.png
     - assets/images/port_text.svg
-    - assets/images/port_text_white.svg
+    - assets/images/port_text_brown.svg
     - assets/images/port_icon.png
     - assets/images/port_icon_background.png
     - assets/images/port_icon_foreground.png

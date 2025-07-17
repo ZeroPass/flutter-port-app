@@ -111,7 +111,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 header: CardSettingsHeader(label: 'About'),
                 children: <CardSettingsWidget>[
                   CardSettingsInstructions(
-                    text: _aboutText
+                    text: _aboutText,
+                    backgroundColor: Colors.transparent,
                   ),
                 ]
             ),

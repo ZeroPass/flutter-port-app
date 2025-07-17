@@ -314,20 +314,20 @@ class _StepInputData extends State<StepInputData>
                 indicatorColor: Color(0xFFA58157),
                 labelStyle: TextStyle(
                   fontFamily: 'Outfit',
-                  fontSize: 25,
+                  fontSize: 20,
                   letterSpacing: 0.0,
                 ),
                 unselectedLabelStyle:
                 TextStyle(
                   fontFamily: 'Outfit',
-                  fontSize: 23,
+                  fontSize: 20,
                   letterSpacing: 0.0,
                   fontWeight: FontWeight.normal,
                 ),
                 indicatorWeight: 4,
                 controller: _tabController,
                 tabs: const [
-                  Tab(text: 'PACE'),
+                  Tab(text: 'CAN'),
                   Tab(text: 'Legacy'),
                 ],
               ),

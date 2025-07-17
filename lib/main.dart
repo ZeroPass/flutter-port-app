@@ -18,12 +18,9 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:port_mobile_app/screen/theme.dart';
 
 import 'package:logging/logging.dart';
-//import 'package:device_preview/device_preview.dart' as DevPreview;
-//import 'package:port_mobile_app/utils/logging/loggerHandler.dart' as LH;
 import 'package:port_mobile_app/connection/tools/eosio/eosio.dart';
 import 'package:port_mobile_app/screen/qr/readQR.dart';
 import 'package:port_mobile_app/screen/index/index.dart';
-//import 'package:package_info_plus/package_info_plus.dart';
 
 var RUN_IN_DEVICE_PREVIEW_MODE = false;
 final _logStorage = Logger('Storage initialization');

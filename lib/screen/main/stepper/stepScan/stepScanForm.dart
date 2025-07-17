@@ -13,6 +13,7 @@ import 'package:port_mobile_app/utils/size.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/gestures.dart';
 import 'package:port_mobile_app/can_code.dart';
+import 'dart:math';
 
 
 ///temp
@@ -39,7 +40,8 @@ class DebugTextEditingController extends TextEditingController {
 }
 
 class StepScanForm extends StatefulWidget {
-  StepScanForm() : super();
+  final void Function(bool isPaceMode, bool isDBA)? onStepContinueWithParams;
+  StepScanForm({this.onStepContinueWithParams}) : super();
 
   @override
   _StepScanFormState createState() => _StepScanFormState();
@@ -55,11 +57,21 @@ class _StepScanFormState extends State<StepScanForm> with SingleTickerProviderSt
   final TextEditingController _pinController = TextEditingController();
   final GlobalKey<FormState> _paceFormKey = GlobalKey<FormState>();
   final GlobalKey<FormState> _legacyFormKey = GlobalKey<FormState>();
+  List<double> _tabHeights = [0.0, 0.0];
+  int _currentIndex = 0;
+
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(() {
+      if (_tabController.index.toDouble() == _tabController.animation!.value) {
+        setState(() {
+          _currentIndex = _tabController.index;
+        });
+      }
+    });
     updateFields();
   }
 
@@ -126,7 +138,19 @@ class _StepScanFormState extends State<StepScanForm> with SingleTickerProviderSt
     return response ?? false;
   }
 
-  void validateAndProceedPACE() {
+  void _updateHeight(int index, double height) {
+    if (mounted && height > 0 && _tabHeights[index] != height) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if(mounted) {
+          setState(() {
+            _tabHeights[index] = height;
+          });
+        }
+      });
+    }
+  }
+
+  void validateAndProceedPACE(StepperBloc stepperBloc, {required bool isDBA}) {
     _log.info('Validating PACE input data');
     if (_paceCodeController.text.isEmpty) {
       _log.info('PACE code is required');
@@ -135,10 +159,13 @@ class _StepScanFormState extends State<StepScanForm> with SingleTickerProviderSt
     }
 
     _log.info("PACE data is valid. Going to scan");
-    // TODO: Implement scan logic
+    //this should always be true
+    bool isPaceMode = true;
+    _log.info("isPaceMode: $isPaceMode, isDBA: $isDBA");
+    widget.onStepContinueWithParams?.call(isPaceMode, isDBA);
   }
 
-  void validateAndProceedLegacy() {
+  void validateAndProceedLegacy(StepperBloc stepperBloc, {required bool isDBA}) {
     _log.info('Validating Legacy input data');
     if (_passportIdTextController.text.isEmpty) {
       _log.info('Passport number is required');
@@ -156,8 +183,11 @@ class _StepScanFormState extends State<StepScanForm> with SingleTickerProviderSt
       return;
     }
 
+    //this should always be false
+    bool isPaceMode = false;
     _log.info("Legacy data is valid. Going to scan");
-    // TODO: Implement scan logic
+    _log.info("isPaceMode: $isPaceMode, isDBA: $isDBA");
+    widget.onStepContinueWithParams?.call(isPaceMode, isDBA);
   }
 
   @override
@@ -186,237 +216,262 @@ class _StepScanFormState extends State<StepScanForm> with SingleTickerProviderSt
                     labelColor: AndroidThemeST().getValues().themeValues["STEPPER"]["STEP_SCAN"]["COLOR_TEXT"],
                     unselectedLabelColor: AndroidThemeST().getValues().themeValues["STEPPER"]["STEP_SCAN"]["COLOR_TEXT"].withOpacity(0.5),
                     labelStyle: TextStyle(
-                      fontFamily: 'Outfit',
-                      fontSize: 21,
+                      //fontFamily: 'Outfit',
+                      fontSize: 14,
                       letterSpacing: 0.0,
                     ),
                     unselectedLabelStyle: TextStyle(
-                      fontFamily: 'Outfit',
-                      fontSize: 19,
+                      //fontFamily: 'Outfit',
+                      fontSize: 14,
                       letterSpacing: 0.0,
                       fontWeight: FontWeight.normal,
                     ),
                     indicatorWeight: 4,
                     controller: _tabController,
                     tabs: const [
-                      Tab(text: 'PACE'),
+                      Tab(text: 'CAN'),
                       Tab(text: 'Legacy'),
                     ],
                   ),
                 ),
-                Container(
-                  height: 330,
-                  child: TabBarView(
-                    controller: _tabController,
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  height: _tabHeights.isNotEmpty ? _tabHeights[_currentIndex] : 0,
+                  child: IndexedStack(
+                    index: _currentIndex,
                     children: [
                       // PACE Tab
-                      SingleChildScrollView(
-                        child: Form(
-                          key: _paceFormKey,
-                          autovalidateMode: AutovalidateMode.always,
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 10.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                RichText(
-                                  text: TextSpan(
-                                    style: TextStyle(
-                                      color: AndroidThemeST().getValues().themeValues["STEPPER"]["STEP_SCAN"]["COLOR_TEXT"]
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                              final keyContext = _paceFormKey.currentContext;
+                              if (keyContext != null) {
+                                final box = keyContext.findRenderObject() as RenderBox;
+                                _updateHeight(0, box.size.height);
+                              }
+                          });
+                          return SingleChildScrollView(
+                            child: Form(
+                              key: _paceFormKey,
+                              autovalidateMode: AutovalidateMode.always,
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 10.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    RichText(
+                                      text: TextSpan(
+                                        style: TextStyle(
+                                          color: AndroidThemeST().getValues().themeValues["STEPPER"]["STEP_SCAN"]["COLOR_TEXT"]
+                                        ),
+                                        children: [
+                                          TextSpan(
+                                            text: "Input the 6-digit CAN number, usually right on your passport's page.\n"
+                                          ),
+                                          TextSpan(
+                                            text: "Click here",
+                                            style: TextStyle(
+                                              color: Colors.blue,
+                                              decoration: TextDecoration.underline,
+                                            ),
+                                            recognizer: TapGestureRecognizer()
+                                              ..onTap = () async {
+                                                final Uri url = Uri.parse('https://github.com/ZeroPass/flutter-port-app/blob/master/country-guide.md');
+                                                if (await canLaunchUrl(url)) {
+                                                  await launchUrl(url);
+                                                }
+                                              }
+                                          ),
+                                          TextSpan(
+                                            text: " for the country-specific guide,"
+                                          ),
+                                          TextSpan(
+                                            text: " or use the "
+                                          ),
+                                          TextSpan(
+                                            text: "'Legacy' tab",
+                                            style: TextStyle(
+                                              color: Colors.blue,
+                                              decoration: TextDecoration.underline,
+                                            ),
+                                            recognizer: TapGestureRecognizer()
+                                              ..onTap = () {
+                                                _tabController.animateTo(1); // Switch to Legacy tab
+                                              }
+                                          ),
+                                          TextSpan(
+                                            text: "."
+                                          ),
+                                        ]
+                                      ),
                                     ),
-                                    children: [
-                                      TextSpan(
-                                        text: "Input the 6-digit CAN number, usually right on your passport's page. "
+                                    const SizedBox(height: 10),
+                                    CanCodeWidget(
+                                      controller: _paceCodeController,
+                                      onChanged: (value) {
+                                        StepDataScan storageStepScan = storage.getStorageData(1) as StepDataScan;
+                                        storageStepScan.paceCode = value;
+                                        storage.save();
+                                        stepperBloc.liveModifyHeader(1, context);
+                                      },
+                                      onVerified: (value) {
+                                        StepDataScan storageStepScan = storage.getStorageData(1) as StepDataScan;
+                                        if (value.isEmpty) {
+                                          storageStepScan.paceCode = null;
+                                        } else {
+                                          storageStepScan.paceCode = value;
+                                        }
+                                        storage.save();
+                                        stepperBloc.liveModifyHeader(1, context);
+                                        
+                                        if (value.isEmpty) {
+                                          return 'PACE Code is required';
+                                        }
+                                        return null;
+                                      },
+                                      key: ValueKey('pace_can_code'),
+                                    ),
+                                    const SizedBox(height: 20),
+                                    ElevatedButton(
+                                      onPressed: () => validateAndProceedPACE(stepperBloc, isDBA: false),
+                                      child: Text('Scan with CAN'),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: AndroidThemeST().getValues().themeValues["BUTTON"]["COLOR_BACKGROUND"],
+                                        foregroundColor: AndroidThemeST().getValues().themeValues["BUTTON"]["COLOR"],
                                       ),
-                                      TextSpan(
-                                        text: "Click here",
-                                        style: TextStyle(
-                                          color: Colors.blue,
-                                          decoration: TextDecoration.underline,
-                                        ),
-                                        recognizer: TapGestureRecognizer()
-                                          ..onTap = () async {
-                                            final Uri url = Uri.parse('https://github.com/ZeroPass/flutter-port-app/blob/master/country-guide.md');
-                                            if (await canLaunchUrl(url)) {
-                                              await launchUrl(url);
-                                            }
-                                          }
-                                      ),
-                                      TextSpan(
-                                        text: " for the country-specific guide,"
-                                      ),
-                                      TextSpan(
-                                        text: " or use the \n"
-                                      ),
-                                      TextSpan(
-                                        text: "'Legacy' tab",
-                                        style: TextStyle(
-                                          color: Colors.blue,
-                                          decoration: TextDecoration.underline,
-                                        ),
-                                        recognizer: TapGestureRecognizer()
-                                          ..onTap = () {
-                                            _tabController.animateTo(1); // Switch to Legacy tab
-                                          }
-                                      ),
-                                      TextSpan(
-                                        text: "."
-                                      ),
-                                    ]
-                                  ),
+                                    ),
+                                  ],
                                 ),
-                                const SizedBox(height: 10),
-                                CanCodeWidget(
-                                  controller: _paceCodeController,
-                                  onChanged: (value) {
-                                    StepDataScan storageStepScan = storage.getStorageData(1) as StepDataScan;
-                                    storageStepScan.paceCode = value;
-                                    storage.save();
-                                    stepperBloc.liveModifyHeader(1, context);
-                                  },
-                                  onVerified: (value) {
-                                    StepDataScan storageStepScan = storage.getStorageData(1) as StepDataScan;
-                                    if (value.isEmpty) {
-                                      storageStepScan.paceCode = null;
-                                    } else {
-                                      storageStepScan.paceCode = value;
-                                    }
-                                    storage.save();
-                                    stepperBloc.liveModifyHeader(1, context);
-                                    
-                                    if (value.isEmpty) {
-                                      return 'PACE Code is required';
-                                    }
-                                    return null;
-                                  },
-                                  key: ValueKey('pace_can_code'),
-                                ),
-                                const SizedBox(height: 20),
-                                ElevatedButton(
-                                  onPressed: validateAndProceedPACE,
-                                  child: Text('Scan with PACE'),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: AndroidThemeST().getValues().themeValues["BUTTON"]["COLOR_BACKGROUND"],
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
-                          ),
-                        ),
+                          );
+                        }
                       ),
                       // Legacy Tab
-                      SingleChildScrollView(
-                        child: Form(
-                          key: _legacyFormKey,
-                          autovalidateMode: AutovalidateMode.always,
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 10.0),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                SelectableText(
-                                  'This data is only used to establish secure communication between your device and passport.',
-                                  style: TextStyle(
-                                    color: AndroidThemeST().getValues().themeValues["STEPPER"]["STEP_SCAN"]["COLOR_TEXT"]
-                                  ),
-                                ),
-                                const SizedBox(height: 20),
-                                TextFormField(
-                                  controller: _passportIdTextController,
-                                  decoration: InputDecoration(
-                                    labelText: 'Passport No.',
-                                  ),
-                                  inputFormatters: <TextInputFormatter>[
-                                    FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9]+')),
-                                    LengthLimitingTextInputFormatter(14)
-                                  ],
-                                  textInputAction: TextInputAction.done,
-                                  textCapitalization: TextCapitalization.characters,
-                                  validator: (value) => value != null ? 
-                                    RegExp(r"^[a-zA-Z0-9]*$").hasMatch(value) ? null : "Special characters not allowed."
-                                    : null,
-                                  onChanged: (value) {
-                                    if (_passportIdTextController.text != value.toUpperCase())
-                                      _passportIdTextController.value = _passportIdTextController
-                                          .value
-                                          .copyWith(text: value.toUpperCase());
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                              final keyContext = _legacyFormKey.currentContext;
+                              if (keyContext != null) {
+                                final box = keyContext.findRenderObject() as RenderBox;
+                                _updateHeight(1, box.size.height);
+                              }
+                          });
+                          return SingleChildScrollView(
+                            child: Form(
+                              key: _legacyFormKey,
+                              autovalidateMode: AutovalidateMode.always,
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 10.0),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    SelectableText(
+                                      'Data only used to establish secure communication.',
+                                      style: TextStyle(
+                                        color: AndroidThemeST().getValues().themeValues["STEPPER"]["STEP_SCAN"]["COLOR_TEXT"]
+                                      ),
+                                    ),
+                                    const SizedBox(height: 12),
+                                    TextFormField(
+                                      controller: _passportIdTextController,
+                                      decoration: InputDecoration(
+                                        labelText: 'Passport No.',
+                                      ),
+                                      inputFormatters: <TextInputFormatter>[
+                                        FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9]+')),
+                                        LengthLimitingTextInputFormatter(14)
+                                      ],
+                                      textInputAction: TextInputAction.done,
+                                      textCapitalization: TextCapitalization.characters,
+                                      validator: (value) => value != null ? 
+                                        RegExp(r"^[a-zA-Z0-9]*$").hasMatch(value) ? null : "Special characters not allowed."
+                                        : null,
+                                      onChanged: (value) {
+                                        if (_passportIdTextController.text != value.toUpperCase())
+                                          _passportIdTextController.value = _passportIdTextController
+                                              .value
+                                              .copyWith(text: value.toUpperCase());
 
-                                    StepDataScan storageStepScan = storage.getStorageData(1) as StepDataScan;
-                                    storageStepScan.documentID = _passportIdTextController.text;
-                                    storage.save();
-                                    stepperBloc.liveModifyHeader(1, context);
-                                  },
+                                        StepDataScan storageStepScan = storage.getStorageData(1) as StepDataScan;
+                                        storageStepScan.documentID = _passportIdTextController.text;
+                                        storage.save();
+                                        stepperBloc.liveModifyHeader(1, context);
+                                      },
+                                    ),
+                                    const SizedBox(height: 8),
+                                    CustomDatePicker(
+                                      text: "Date of Birth",
+                                      firstDate: DateTime(DateTime.now().year - 90),
+                                      lastDate: DateTime.now(),
+                                      initialDate: DateTime(DateTime.now().year - 13),
+                                      callbackOnDatePicked: (selectedDate) {
+                                        StepDataScan storageStepScan = storage.getStorageData(1) as StepDataScan;
+                                        storageStepScan.birth = selectedDate;
+                                        storage.save();
+                                        stepperBloc.liveModifyHeader(1, context);
+                                      },
+                                      callbackOnUpdate: (String value) {
+                                        StepDataScan storageStepScan = storage.getStorageData(1) as StepDataScan;
+                                        if (value == "")
+                                          storageStepScan.birth = null;
+                                        else {
+                                          try {
+                                            storageStepScan.birth = CustomDatePicker.parseDateFormated(value);
+                                          } catch (e) {
+                                            print("Converting throws error.");
+                                          }
+                                        }
+                                        storage.save();
+                                        stepperBloc.liveModifyHeader(1, context);
+                                      },
+                                      textEditingController: _birthTextController,
+                                    ),
+                                    const SizedBox(height: 8),
+                                    CustomDatePicker(
+                                      text: "Date of Expiry",
+                                      firstDate: DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day + 1),
+                                      lastDate: DateTime(DateTime.now().year + 30),
+                                      initialDate: DateTime(DateTime.now().year + 1),
+                                      callbackOnDatePicked: (selectedDate) {
+                                        StepDataScan storageStepScan = storage.getStorageData(1) as StepDataScan;
+                                        storageStepScan.validUntil = selectedDate;
+                                        storage.save();
+                                        stepperBloc.liveModifyHeader(1, context);
+                                      },
+                                      callbackOnUpdate: (String value) {
+                                        StepDataScan storageStepScan = storage.getStorageData(1) as StepDataScan;
+                                        if (value == "")
+                                          storageStepScan.validUntil = null;
+                                        else {
+                                          try {
+                                            storageStepScan.validUntil = CustomDatePicker.parseDateFormated(value);
+                                          } catch (e) {
+                                            print("Converting throws error.");
+                                          }
+                                        }
+                                        storage.save();
+                                        stepperBloc.liveModifyHeader(1, context);
+                                      },
+                                      textEditingController: _validUntilTextController,
+                                    ),
+                                    const SizedBox(height: 15),
+                                    ElevatedButton(
+                                      onPressed: () => validateAndProceedLegacy(stepperBloc, isDBA: true),
+                                      child: Text('Scan with Legacy'),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: AndroidThemeST().getValues().themeValues["BUTTON"]["COLOR_BACKGROUND"],
+                                        foregroundColor: AndroidThemeST().getValues().themeValues["BUTTON"]["COLOR"],
+                                      )
+                                    ),
+                                  ],
                                 ),
-                                const SizedBox(height: 20),
-                                CustomDatePicker(
-                                  text: "Date of Birth",
-                                  firstDate: DateTime(DateTime.now().year - 90),
-                                  lastDate: DateTime.now(),
-                                  initialDate: DateTime(DateTime.now().year - 13),
-                                  callbackOnDatePicked: (selectedDate) {
-                                    StepDataScan storageStepScan = storage.getStorageData(1) as StepDataScan;
-                                    storageStepScan.birth = selectedDate;
-                                    storage.save();
-                                    stepperBloc.liveModifyHeader(1, context);
-                                  },
-                                  callbackOnUpdate: (String value) {
-                                    StepDataScan storageStepScan = storage.getStorageData(1) as StepDataScan;
-                                    if (value == "")
-                                      storageStepScan.birth = null;
-                                    else {
-                                      try {
-                                        storageStepScan.birth = CustomDatePicker.parseDateFormated(value);
-                                      } catch (e) {
-                                        print("Converting throws error.");
-                                      }
-                                    }
-                                    storage.save();
-                                    stepperBloc.liveModifyHeader(1, context);
-                                  },
-                                  textEditingController: _birthTextController,
-                                ),
-                                const SizedBox(height: 20),
-                                CustomDatePicker(
-                                  text: "Date of Expiry",
-                                  firstDate: DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day + 1),
-                                  lastDate: DateTime(DateTime.now().year + 30),
-                                  initialDate: DateTime(DateTime.now().year + 1),
-                                  callbackOnDatePicked: (selectedDate) {
-                                    StepDataScan storageStepScan = storage.getStorageData(1) as StepDataScan;
-                                    storageStepScan.validUntil = selectedDate;
-                                    storage.save();
-                                    stepperBloc.liveModifyHeader(1, context);
-                                  },
-                                  callbackOnUpdate: (String value) {
-                                    StepDataScan storageStepScan = storage.getStorageData(1) as StepDataScan;
-                                    if (value == "")
-                                      storageStepScan.validUntil = null;
-                                    else {
-                                      try {
-                                        storageStepScan.validUntil = CustomDatePicker.parseDateFormated(value);
-                                      } catch (e) {
-                                        print("Converting throws error.");
-                                      }
-                                    }
-                                    storage.save();
-                                    stepperBloc.liveModifyHeader(1, context);
-                                  },
-                                  textEditingController: _validUntilTextController,
-                                ),
-                                const SizedBox(height: 20),
-                                ElevatedButton(
-                                  onPressed: validateAndProceedLegacy,
-                                  child: Text('Scan with Legacy'),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: AndroidThemeST().getValues().themeValues["BUTTON"]["COLOR_BACKGROUND"],
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
-                          ),
-                        ),
+                          );
+                        }
                       ),
                     ],
                   ),

@@ -117,7 +117,7 @@ class NfcScanDialog {
                     child: Container(
                         height: MediaQuery.of(context).size.width,
                         child: Padding(
-                            padding: EdgeInsets.all(30.0),
+                            padding: EdgeInsets.all(15.0),
                             child: Center(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -125,7 +125,7 @@ class NfcScanDialog {
                                 children: <Widget>[
                                   Text('Ready to Scan',
                                       style: TextStyle(
-                                          fontSize: 25, color: Colors.grey)),
+                                          fontSize: 22, color: Colors.grey)),
                                   const SizedBox(height: 30),
                                   Container(
                                       width: 100,

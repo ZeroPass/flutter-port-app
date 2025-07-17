@@ -24,6 +24,9 @@ import 'package:port/internal.dart';
 import 'package:port/port.dart';
 import 'dart:math';
 
+import 'package:dmrtd/src/proto/can_key.dart';
+
+
 import '../efdg1_dialog.dart';
 import '../passport_scanner.dart';
 import '../uie/uiutils.dart';
@@ -66,22 +69,24 @@ class Authn /*extends State<Authn>*/ {
   Future<Map<String, dynamic>> _scanPassporRegister({
     required BuildContext context,
     required UserId uid,
-    required String passportID,
-    required DateTime birthDate,
-    required DateTime validUntilDate,
+    required AccessKey accessKey,
+    required bool isDBA,
+    required bool isPaceMode,
     required Future<bool> Function(AuthenticationType) waitingOnConfirmation}) async {
-    final dbaKeys = DBAKey(passportID, birthDate, validUntilDate);
+    
     final data = await PassportScanner(context: context, client: _client).
-                    register(dbaKeys: dbaKeys,
+                    register(accessKey: accessKey,
+                              isPaceMode: isPaceMode,
                               uid: uid,
                               waitingOnConfirmation: waitingOnConfirmation);
-
-    Storage storage = Storage();
-    await storage.getDBAkeyStorage().setDBAKeys(dbaKeys);
+    if(isDBA){
+      Storage storage = Storage();
+      await storage.getDBAkeyStorage().setDBAKeys(accessKey as DBAKey);
+    }
     return data;
   }
 
-  String checkValuesInStorage() {
+  String checkValuesInStorage(bool isPaceMode) {
     String missingValuesText = '';
     Storage storage = Storage();
     StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0) as StepDataEnterAccount;
@@ -92,23 +97,34 @@ class Authn /*extends State<Authn>*/ {
           "- Account name is not valid.\n (Step 'Account')\n\n";
 
     StepDataScan storageStepScan = storage.getStorageData(1) as StepDataScan;
-    if (storageStepScan.isValidDocumentID() == false)
-      missingValuesText +=
-          "- Passport Number is not valid.\n (Step 'Passport Info')\n\n";
-    if (storageStepScan.isValidBirth() == false)
-      missingValuesText +=
-          "- Date of Birth is not valid.\n (Step 'Passport Info')\n\n";
-    if (storageStepScan.isValidValidUntil() == false)
-      missingValuesText +=
-          "- Date of Expiry is not valid.\n (Step 'Passport Info')";
+
+    if (isPaceMode) {
+      if (storageStepScan.getPaceCode() == null)
+        missingValuesText +=
+            "- CAN code is not valid.\n (Step 'Passport Info')\n\n";
+    }
+    else {
+      if (storageStepScan.isValidDocumentID() == false)
+        missingValuesText +=
+            "- Passport Number is not valid.\n (Step 'Passport Info')\n\n";
+      if (storageStepScan.isValidBirth() == false)
+        missingValuesText +=
+            "- Date of Birth is not valid.\n (Step 'Passport Info')\n\n";
+      if (storageStepScan.isValidValidUntil() == false)
+        missingValuesText +=
+            "- Date of Expiry is not valid.\n (Step 'Passport Info')";
+    }
     return missingValuesText;
+    
   }
 
   Future<bool?> startAction(BuildContext context,
                             PortAction action,
                             String accountName,
                             NetworkType networkType,
-                           {bool fakeAuthnData = false,
+                           {required bool isPaceMode,
+                            required bool isDBA,
+                            bool fakeAuthnData = false,
                             bool sendDG1 = false,
                             required ScrollController scrollController,
                             required int maxSteps}) async {
@@ -117,7 +133,7 @@ class Authn /*extends State<Authn>*/ {
     Storage storage = Storage();
 
     //check if the data is filled correctly
-    String checkedValues = checkValuesInStorage();
+    String checkedValues = checkValuesInStorage(isPaceMode);
     if (checkedValues.isNotEmpty) {
       return showAlert<bool?>(
           context: context,
@@ -168,12 +184,18 @@ class Authn /*extends State<Authn>*/ {
         StepDataScan storageStepScan = storage.getStorageData(1) as StepDataScan;
         UserId uid = UserId.fromString(accountName);
         await _hideBusyIndicator();
+        AccessKey accessKey;
+        if(isDBA)
+          accessKey = DBAKey(storageStepScan.getDocumentID(), storageStepScan.getBirth(), storageStepScan.getValidUntil());
+        else
+          accessKey = CanKey(storageStepScan.getPaceCode());
+        
 
         await _scanPassporRegister(context: context,
             uid: uid,
-            passportID: storageStepScan.getDocumentID(),
-            birthDate: storageStepScan.getBirth(),
-            validUntilDate: storageStepScan.getValidUntil(),
+            accessKey: accessKey,
+            isDBA: isDBA,
+            isPaceMode: isPaceMode,
             waitingOnConfirmation: (AuthenticationType type) async{
               await _hideBusyIndicator();
               var e =  showDataToBeSent(type);
@@ -301,22 +323,17 @@ class Authn /*extends State<Authn>*/ {
     }
   }
 
-  Future<bool?> startNFCAction(BuildContext context, RequestType requestType, String accountName, NetworkType networkType,  ScrollController scrollController, int maxSteps) {
+  Future<bool?> startNFCAction(BuildContext context, RequestType requestType, String accountName, bool isPaceMode, bool isDBA, NetworkType networkType,  ScrollController scrollController, int maxSteps) {
     switch (requestType) {
       case RequestType.ATTESTATION_REQUEST:
-        return startAction(context, PortAction.register, accountName, networkType, scrollController: scrollController, maxSteps: maxSteps);
-        break;
+        return startAction(context, PortAction.register, accountName, networkType, isPaceMode: isPaceMode, isDBA: isDBA, scrollController: scrollController, maxSteps: maxSteps);
       case RequestType.PERSONAL_INFORMATION_REQUEST:
-        return startAction(context, PortAction.assertion, accountName, networkType, sendDG1: true, scrollController: scrollController, maxSteps: maxSteps);
-        break;
+        return startAction(context, PortAction.assertion, accountName, networkType, isPaceMode: isPaceMode, isDBA: isDBA, sendDG1: true, scrollController: scrollController, maxSteps: maxSteps);
       case RequestType.FAKE_PERSONAL_INFORMATION_REQUEST:
-        return startAction(context, PortAction.assertion, accountName, networkType,
+        return startAction(context, PortAction.assertion, accountName, networkType, isPaceMode: isPaceMode, isDBA: isDBA,
             fakeAuthnData: true, sendDG1: true, scrollController: scrollController, maxSteps: maxSteps);
-        break;
       case RequestType.LOGIN:
-        return startAction(context, PortAction.assertion, accountName, networkType, scrollController: scrollController, maxSteps: maxSteps);
-        break;
-
+        return startAction(context, PortAction.assertion, accountName, networkType, isPaceMode: isPaceMode, isDBA: isDBA, scrollController: scrollController, maxSteps: maxSteps);
       default:
         throw new Exception("Request type is not known.");
     }

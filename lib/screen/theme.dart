@@ -272,6 +272,7 @@ class AndroidTheme extends CustomTheme{
     this.selectedTheme = 1;
     MaterialColor _primaryColor = CustomColor.createColor(165, 129, 87, 0xFF5768a5);
     return ThemeData(primarySwatch: _primaryColor,
+    scaffoldBackgroundColor: Color(0xFFFAFAFA),
         buttonTheme: ButtonThemeData(
           buttonColor: Color(0xFFa58157),
           textTheme: ButtonTextTheme.primary,

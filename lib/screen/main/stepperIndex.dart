@@ -140,13 +140,15 @@ class _PortStepperWidgetState extends State<PortStepperWidget> with TickerProvid
                   height: 35,
                   child: Image(image: AssetImage('assets/images/port.png'))),*/
               Container(
-                  margin: EdgeInsets.only(left: 0),
-                  width: 50,
-                  height: 35,
-                  child: SvgPicture.asset(
-                      'assets/images/port_text_white.svg',
-                      semanticsLabel: 'Port text'),
-                      ),
+                margin: const EdgeInsets.only(left: 0),
+                width: 50,
+                height: 35,
+                child: SvgPicture.asset(
+                  'assets/images/port_text_brown.svg',
+                  semanticsLabel: 'Port text',
+                  color: null,
+                ),
+              ),
               //Text("     Port",
               //    style: TextStyle(color: Colors.white)),
             ],
@@ -180,7 +182,8 @@ class _PortStepperWidgetState extends State<PortStepperWidget> with TickerProvid
             ],
             child: KeyboardDismisser(
                 gestures:[
-                  GestureType.onPanUpdateRightDirection
+                  GestureType.onPanUpdateRightDirection,
+                  GestureType.onTap,
                 ],
                 child:Scaffold(
                   //resizeToAvoidBottomInset: false,

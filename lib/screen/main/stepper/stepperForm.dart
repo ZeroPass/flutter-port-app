@@ -18,13 +18,13 @@ import 'package:port_mobile_app/screen/main/stepper/stepAttestation/stepAttestat
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:port_mobile_app/utils/storage.dart';
 import 'package:port_mobile_app/utils/structure.dart';
-import "package:port_mobile_app/screen/main/stepper/customStepper.dart";
+import "package:port_mobile_app/screen/main/stepper/customStepper.dart" as custom_stepper;
+
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dmrtd/dmrtd.dart';
 import 'package:port_mobile_app/screen/theme.dart';
 
 import '../../alert.dart';
-import 'customStepper.dart';
 
 List<String> BUTTON_NEXT_TITLE = [
   "Continue",
@@ -75,7 +75,12 @@ class _StepperFormState extends State<StepperForm> {
           isActive: true),
       Step(
           title: StepScanHeaderForm(),
-          content: StepScanForm(),
+          content: StepScanForm(
+            onStepContinueWithParams: (isPaceMode, isDBA) {
+              final stepperBloc = BlocProvider.of<StepperBloc>(context);
+              onStepContinueWithParams(stepperBloc.state, isPaceMode: isPaceMode, isDBA: isDBA);
+            },
+          ),
           state: _getState(1, currentStep),
           isActive: true),
       Step(
@@ -361,7 +366,7 @@ class _StepperFormState extends State<StepperForm> {
         : false);
   }
 
-  Future<bool?> callNFC(BuildContext context, var stepperBloc) async {
+  Future<bool?> callNFC(bool isPaceMode, bool isDBA, BuildContext context, var stepperBloc) async {
     Authn authn = Authn(
         /*show DG1 step*/
         onDG1FileRequested: (EfDG1 dg1) {
@@ -397,7 +402,7 @@ class _StepperFormState extends State<StepperForm> {
                   stepDataEnterAccount.networkType;
 
 
-    await authn.startNFCAction(context, requestType, accountID, networkType, _scrollController, stepperBloc.state.maxSteps).then((bool? successful) {
+    await authn.startNFCAction(context, requestType, accountID, isPaceMode, isDBA, networkType, _scrollController, stepperBloc.state.maxSteps).then((bool? successful) {
       if (successful == null || !successful) {
         stepperBloc.add(StepBackToPrevious());
       } else {
@@ -448,13 +453,30 @@ class _StepperFormState extends State<StepperForm> {
     return Future.value(true);
   }
 
+  void onStepContinueWithParams(StepperState state, {bool isPaceMode = false, bool isDBA = false}) {
+      Storage storage = Storage();
+      final stepperBloc = BlocProvider.of<StepperBloc>(context);
+      
+      //int stepJumps = storage.outsideCall.isOutsideCall && state.step == 1 ? 2 : 1;
+      // after implementing PACE we change it to always jump 2 steps on NFC scanning
+      int stepJumps = state.step == 1 ? 2 : 1;
+
+      if (this.isStepNFC(stepperBloc, stepJumps)) {
+        callNFC(isPaceMode, isDBA, context, stepperBloc);
+      } else {
+        stepperBloc.add(StepContinue(stepsJump: stepJumps, previousStep: state.previousStep));
+      }
+  }
+  
+
+
   @override
   Widget build(BuildContext context) {
     final stepperBloc = BlocProvider.of<StepperBloc>(context);
     return BlocBuilder(
       bloc: stepperBloc,
       builder: (BuildContext context, StepperState state) {
-        return CustomStepper(
+        return custom_stepper.CustomStepper(
           physics: ClampingScrollPhysics(),
             currentStep:state.step, //state.step,
             scrollController: _scrollController,
@@ -467,26 +489,17 @@ class _StepperFormState extends State<StepperForm> {
               if (this.isStepNFC(stepperBloc, 0) &&
                   !isClickedOnNFC(stepperBloc, step))
                 stepperBloc.liveModifyHeader(3, context, dataInStep: false);
+              
               stepperBloc.add(StepTapped(step: step, previousStep: state.previousStep));
               //_scrollController.jumpTo(_scrollController.position.maxScrollExtent);
             },
             onStepCancel: () {
               stepperBloc.add(StepCancelled());
             },
-            onStepContinue: () {
-              Storage storage = Storage();
-
-              int stepJumps = storage.outsideCall.isOutsideCall &&
-                  state.step == 1
-                  ? 2
-                  : 1;
-              if (this.isStepNFC(stepperBloc, stepJumps))
-                callNFC(context, stepperBloc);
-              else
-                stepperBloc.add(StepContinue(stepsJump: stepJumps, previousStep: state.previousStep));
+            onStepContinueWithParams: (bool isPaceMode, bool isDBA) {
+              onStepContinueWithParams(state, isPaceMode: isPaceMode, isDBA: isDBA);
             },
-            controlsBuilder: (BuildContext context, ControlsDetails controls) {
-                //(BuildContext context, {VoidCallback? onStepContinue, VoidCallback? onStepCancel}) {
+            controlsBuilder: (BuildContext context, custom_stepper.ControlsDetails controls) {
               return Visibility(
                   visible: state.step != state.maxSteps,
                   child: Column(

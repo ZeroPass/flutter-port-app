@@ -68,3 +68,7 @@ lib/generated_plugin_registrant.dart
 
 # macOS
 ._*
+
+.cursorrules
+
+devtools_options.yaml
