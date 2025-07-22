@@ -99,7 +99,7 @@ class SettingsUpdateNode extends StatelessWidget {
             PlatformIconButton(
                 cupertino: (_,__) => CupertinoIconButtonData(
                   icon: Icon( // Save icon
-                      const IconData(0xf41F, fontPackage: CupertinoIcons.iconFontPackage, fontFamily: CupertinoIcons.iconFont),
+                      const IconData(0xf41F, fontPackage: CupertinoIcons.iconFontPackage),
                       color: Colors.white,
                       size: 35
                   ),
