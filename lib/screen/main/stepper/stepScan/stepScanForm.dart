@@ -1,3 +1,5 @@
+import 'package:mrz_parser/mrz_parser.dart';
+import 'package:port_mobile_app/screen/readMrz/window.dart';
 import 'package:port_mobile_app/utils/storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -284,10 +286,10 @@ class _StepScanFormState extends State<StepScanForm> with SingleTickerProviderSt
                                               }
                                           ),
                                           TextSpan(
-                                            text: " for the country-specific guide,"
+                                            text: " for the country-specific guide. \n"
                                           ),
                                           TextSpan(
-                                            text: " or use the "
+                                            text: "Or use the "
                                           ),
                                           TextSpan(
                                             text: "'Legacy' tab",
@@ -374,7 +376,7 @@ class _StepScanFormState extends State<StepScanForm> with SingleTickerProviderSt
                                         color: AndroidThemeST().getValues().themeValues["STEPPER"]["STEP_SCAN"]["COLOR_TEXT"]
                                       ),
                                     ),
-                                    const SizedBox(height: 12),
+                                  
                                     TextFormField(
                                       controller: _passportIdTextController,
                                       decoration: InputDecoration(
@@ -456,6 +458,47 @@ class _StepScanFormState extends State<StepScanForm> with SingleTickerProviderSt
                                         stepperBloc.liveModifyHeader(1, context);
                                       },
                                       textEditingController: _validUntilTextController,
+                                    ),
+                                    Align(
+                                      alignment: Alignment.centerRight,
+                                      child: TextButton(
+                                        style: TextButton.styleFrom(
+                                          padding: EdgeInsets.symmetric(vertical: 4),
+                                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                          foregroundColor: AndroidThemeST().getValues().themeValues["STEPPER"]["STEP_SCAN"]["COLOR_TEXT"].withOpacity(0.7),
+                                          textStyle: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.normal,
+                                          )
+                                        ),
+                                        onPressed: () async {
+                                          var mrzResult = await showDialog<MRZResult>(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              return Dialog(
+                                                insetPadding: EdgeInsets.all(10),
+                                                child: ScannerPage(),
+                                              );
+                                            }
+                                          );
+                                
+                                          if(mrzResult != null) {
+                                            _passportIdTextController.text = mrzResult.documentNumber;
+                                            _birthTextController.text = CustomDatePicker.formatDate(mrzResult.birthDate);
+                                            _validUntilTextController.text = CustomDatePicker.formatDate(mrzResult.expiryDate);
+                                          
+                                            StepDataScan storageStepScan = storage.getStorageData(1) as StepDataScan;
+                                            storageStepScan.documentID = _passportIdTextController.text;
+                                            storageStepScan.validUntil = CustomDatePicker.parseDateFormated( _validUntilTextController.text);
+                                            storageStepScan.birth = CustomDatePicker.parseDateFormated( _birthTextController.text);
+                                            storageStepScan.paceCode = null;
+                                
+                                            storage.save();
+                                            stepperBloc.liveModifyHeader(1, context);
+                                          }
+                                        },
+                                        child: Text('Fill fields with camera'),
+                                      )
                                     ),
                                     const SizedBox(height: 15),
                                     ElevatedButton(
