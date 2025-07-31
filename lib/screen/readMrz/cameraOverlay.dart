@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
+import 'dart:math' as math;
 
 class MRZCameraOverlay extends StatelessWidget {
   MRZCameraOverlay({
@@ -17,8 +18,12 @@ class MRZCameraOverlay extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (_, c) {
-        final overlayRect =
-            _calculateOverlaySize(Size(c.maxWidth, c.maxHeight));
+        final overlayRect = _calculateOverlaySize(
+          Size(
+            math.min(c.maxWidth, c.maxHeight),
+            math.max(c.maxWidth, c.maxHeight),
+          ),
+        );
         return Stack(
           children: [
             child,
@@ -32,8 +37,28 @@ class MRZCameraOverlay extends StatelessWidget {
             ),
             _WhiteOverlay(rect: overlayRect),
             Positioned(
-              top: 32,
-              left: 16,
+              //left: 10,
+              right: 26,
+              bottom: 10,
+              height: overlayRect.height,
+              child: const Center(
+                child: RotatedBox(
+                  quarterTurns: 1,
+                  child: Text(
+                    'Scan the first passport page, with bottom in the view.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              top: 16,
+              right: 16,
               child: IconButton(
                 icon: const Icon(Icons.close, color: Colors.white, size: 32),
                 onPressed: () {
@@ -50,19 +75,21 @@ class MRZCameraOverlay extends StatelessWidget {
   }
 
   RRect _calculateOverlaySize(Size size) {
-    double width, height;
-    if (size.height > size.width) {
-      width = size.width * 0.9;
-      height = width / _documentFrameRatio;
-    } else {
-      height = size.height * 0.75;
-      width = height * _documentFrameRatio;
-    }
-    final topOffset = (size.height - height) / 2;
-    final leftOffset = (size.width - width) / 2;
+    double width, height, left, top;
 
-    final rect = RRect.fromLTRBR(leftOffset, topOffset, leftOffset + width,
-        topOffset + height, const Radius.circular(8));
+    double overlayTotalHeightInPercent = 0.95;
+    // In portrait, we can respect the 5% left/right margins.
+    width = size.width * 0.3;
+    left = 20; //size.width * 0.1;
+    height = overlayTotalHeightInPercent * size.height; 
+
+
+    // Position the overlay 5% from the bottom of the screen.
+    final bottom = (height) + ((1 - overlayTotalHeightInPercent) * size.height) * 0.5;
+    top = bottom - height;
+
+    final rect = RRect.fromLTRBR(
+        left, top, left + width, top + height, const Radius.circular(8));
     return rect;
   }
 }

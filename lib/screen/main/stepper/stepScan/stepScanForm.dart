@@ -459,55 +459,53 @@ class _StepScanFormState extends State<StepScanForm> with SingleTickerProviderSt
                                       },
                                       textEditingController: _validUntilTextController,
                                     ),
-                                    Align(
-                                      alignment: Alignment.centerRight,
-                                      child: TextButton(
-                                        style: TextButton.styleFrom(
-                                          padding: EdgeInsets.symmetric(vertical: 4),
-                                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                          foregroundColor: AndroidThemeST().getValues().themeValues["STEPPER"]["STEP_SCAN"]["COLOR_TEXT"].withOpacity(0.7),
-                                          textStyle: TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.normal,
+                                    const SizedBox(height: 15),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: AndroidThemeST().getValues().themeValues["BUTTON"]["COLOR_BACKGROUND"],
+                                            foregroundColor: AndroidThemeST().getValues().themeValues["BUTTON"]["COLOR"],
+                                          ),
+                                          onPressed: () async {
+                                            var mrzResult = await showDialog<MRZResult>(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return Dialog(
+                                                  insetPadding: EdgeInsets.all(10),
+                                                  child: ScannerPage(),
+                                                );
+                                              }
+                                            );
+                                  
+                                            if(mrzResult != null) {
+                                              _passportIdTextController.text = mrzResult.documentNumber;
+                                              _birthTextController.text = CustomDatePicker.formatDate(mrzResult.birthDate);
+                                              _validUntilTextController.text = CustomDatePicker.formatDate(mrzResult.expiryDate);
+                                            
+                                              StepDataScan storageStepScan = storage.getStorageData(1) as StepDataScan;
+                                              storageStepScan.documentID = _passportIdTextController.text;
+                                              storageStepScan.validUntil = CustomDatePicker.parseDateFormated( _validUntilTextController.text);
+                                              storageStepScan.birth = CustomDatePicker.parseDateFormated( _birthTextController.text);
+                                              storageStepScan.paceCode = null;
+                                  
+                                              storage.save();
+                                              stepperBloc.liveModifyHeader(1, context);
+                                            }
+                                          },
+                                          child: Text('Fill fields'),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        ElevatedButton(
+                                          onPressed: () => validateAndProceedLegacy(stepperBloc, isDBA: true),
+                                          child: Text('Scan with Legacy'),
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: AndroidThemeST().getValues().themeValues["BUTTON"]["COLOR_BACKGROUND"],
+                                            foregroundColor: AndroidThemeST().getValues().themeValues["BUTTON"]["COLOR"],
                                           )
                                         ),
-                                        onPressed: () async {
-                                          var mrzResult = await showDialog<MRZResult>(
-                                            context: context,
-                                            builder: (BuildContext context) {
-                                              return Dialog(
-                                                insetPadding: EdgeInsets.all(10),
-                                                child: ScannerPage(),
-                                              );
-                                            }
-                                          );
-                                
-                                          if(mrzResult != null) {
-                                            _passportIdTextController.text = mrzResult.documentNumber;
-                                            _birthTextController.text = CustomDatePicker.formatDate(mrzResult.birthDate);
-                                            _validUntilTextController.text = CustomDatePicker.formatDate(mrzResult.expiryDate);
-                                          
-                                            StepDataScan storageStepScan = storage.getStorageData(1) as StepDataScan;
-                                            storageStepScan.documentID = _passportIdTextController.text;
-                                            storageStepScan.validUntil = CustomDatePicker.parseDateFormated( _validUntilTextController.text);
-                                            storageStepScan.birth = CustomDatePicker.parseDateFormated( _birthTextController.text);
-                                            storageStepScan.paceCode = null;
-                                
-                                            storage.save();
-                                            stepperBloc.liveModifyHeader(1, context);
-                                          }
-                                        },
-                                        child: Text('Fill fields with camera'),
-                                      )
-                                    ),
-                                    const SizedBox(height: 15),
-                                    ElevatedButton(
-                                      onPressed: () => validateAndProceedLegacy(stepperBloc, isDBA: true),
-                                      child: Text('Scan with Legacy'),
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: AndroidThemeST().getValues().themeValues["BUTTON"]["COLOR_BACKGROUND"],
-                                        foregroundColor: AndroidThemeST().getValues().themeValues["BUTTON"]["COLOR"],
-                                      )
+                                      ],
                                     ),
                                   ],
                                 ),
