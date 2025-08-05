@@ -59,5 +59,9 @@
 	<array>
 		<string>A0000002471001</string>
 	</array>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>https</string>
+	</array>
 </dict>
 </plist>

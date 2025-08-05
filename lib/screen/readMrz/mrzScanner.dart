@@ -4,6 +4,7 @@ import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart
 import 'package:mrz_parser/mrz_parser.dart';
 import 'cameraViewfinder.dart';
 import 'mrzHelper.dart';
+import 'dart:typed_data';
 
 typedef MRZController = GlobalKey<MRZScannerState>;
 
@@ -63,8 +64,37 @@ class MRZScannerState extends State<MRZScanner> {
     if (_isBusy) return;
     _isBusy = true;
 
+    final Size imageSize = inputImage.metadata!.size;
+    final int imageWidth = imageSize.width.toInt();
+    final int imageHeight = imageSize.height.toInt();
+    final int imageRotation = inputImage.metadata!.rotation.rawValue;
+    print('image width: $imageWidth, height: $imageHeight, rotation: $imageRotation');
+
     try {
-      final recognizedText = await _textRecognizer.processImage(inputImage);
+      InputImage imageToProcess = inputImage;
+      final imageBytes = inputImage.bytes;
+
+      // Crop the image to the bottom half to focus on the MRZ code.
+      if (imageBytes != null && inputImage.metadata != null) {
+        final int halfHeight = imageHeight ~/ 2;
+        final int bytesPerRow = inputImage.metadata!.bytesPerRow;
+        final int startOffset = halfHeight * bytesPerRow;
+
+        if (startOffset < imageBytes.length) {
+          final Uint8List bottomHalfBytes = imageBytes.sublist(startOffset);
+          imageToProcess = InputImage.fromBytes(
+            bytes: bottomHalfBytes,
+            metadata: InputImageMetadata(
+              size: Size(imageWidth.toDouble(), halfHeight.toDouble()),
+              rotation: inputImage.metadata!.rotation,
+              format: inputImage.metadata!.format,
+              bytesPerRow: bytesPerRow,
+            ),
+          );
+        }
+      }
+
+      final recognizedText = await _textRecognizer.processImage(imageToProcess);
       String fullText = recognizedText.text;
       String trimmedText = fullText.replaceAll(' ', '');
       List allText = trimmedText.split('\n');

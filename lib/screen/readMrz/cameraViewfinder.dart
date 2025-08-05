@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mlkit_commons/google_mlkit_commons.dart';
 import 'cameraOverlay.dart';
+import 'package:image/image.dart' as img;
 
 class MRZCameraView extends StatefulWidget {
   const MRZCameraView({
@@ -155,6 +156,79 @@ class MRZCameraViewState extends State<MRZCameraView> {
     DeviceOrientation.landscapeRight: 270,
   };
 
+
+Future<Uint8List> cropLowerHalfFromInputImageBytes(
+  Uint8List originalBytes,
+) async {
+  final originalImage = img.decodeImage(originalBytes);
+  if (originalImage == null) {
+    throw Exception("Failed to decode image");
+  }
+
+  final cropped = img.copyCrop(
+    originalImage,
+    0,
+    originalImage.height ~/ 2,
+    originalImage.width,
+    originalImage.height ~/ 2,
+  );
+
+  return Uint8List.fromList(img.encodeJpg(cropped)); // or encodePng
+}
+
+  Uint8List? _cropBottomHalf(CameraImage image) {
+    final format = InputImageFormatValue.fromRawValue(image.format.raw);
+    if (format == InputImageFormat.nv21) {
+      // nv21 format for Android.
+      // Y and UV planes are concatenated in a single byte array.
+      final int width = image.width;
+      final int height = image.height;
+      final Uint8List allBytes = image.planes[0].bytes;
+
+      final int newHeight = height ~/ 2;
+      final int newYPlaneSize = width * newHeight;
+      // UV plane is subsampled by 2.
+      final int newUVPlaneSize = (width * newHeight) ~/ 2;
+
+      final Uint8List croppedBytes = Uint8List(newYPlaneSize + newUVPlaneSize);
+
+      // Copy bottom half of Y plane.
+      // The Y plane for the top half is width * newHeight bytes.
+      final int yDataStartOffset = width * newHeight;
+      croppedBytes.setRange(0, newYPlaneSize, allBytes, yDataStartOffset);
+
+      // Copy bottom half of UV plane.
+      // The full UV plane starts after the full Y plane.
+      final int uvDataStartOffset = width * height;
+      // The UV plane for the top half is newUVPlaneSize bytes.
+      final int uvBottomHalfStartOffset = uvDataStartOffset + newUVPlaneSize;
+      croppedBytes.setRange(newYPlaneSize, newYPlaneSize + newUVPlaneSize,
+          allBytes, uvBottomHalfStartOffset);
+
+      return croppedBytes;
+    } else if (format == InputImageFormat.bgra8888) {
+      // bgra8888 format for iOS
+      final int height = image.height;
+      final int bytesPerRow = image.planes[0].bytesPerRow;
+      final Uint8List bytes = image.planes[0].bytes;
+
+      final int newHeight = height ~/ 2;
+      final int offset = newHeight * bytesPerRow;
+
+      final int newSize = bytes.length - offset;
+
+      if (newSize < 0) {
+        return null;
+      }
+
+      final Uint8List croppedBytes = Uint8List(newSize);
+      croppedBytes.setRange(0, newSize, bytes, offset);
+      return croppedBytes;
+    }
+
+    return null;
+  }
+
   InputImage? _inputImageFromCameraImage(CameraImage image) {
     if (_controller == null) return null;
 
@@ -189,7 +263,7 @@ class MRZCameraViewState extends State<MRZCameraView> {
 
     // get image format
     final format = InputImageFormatValue.fromRawValue(image.format.raw);
-    print('format: $format');
+    // print('format: $format');
     // validate format depending on platform
     // only supported formats:
     // * nv21 for Android
@@ -201,12 +275,41 @@ class MRZCameraViewState extends State<MRZCameraView> {
     }
 
     // since format is constraint to nv21 or bgra8888, both only have one plane
-    if (image.planes.length != 1) return null;
-    final plane = image.planes.first;
+    if (image.planes.length < 1) return null;
+    var plane = image.planes.first;
+    // print ('-------------------------------------------');
+    // print('------>rotation: $rotation');
+    // print ('------>format: $format');
+    // print ('------>image.width: ${image.width}');
+    // print ('------>image.height: ${image.height}');
+    // print ('------>plane.bytesPerRow: ${plane.bytesPerRow}');
+    // print ('------>plane.bytes: ${plane.bytes}');
+    // print ('------>plane.bytes.length: ${plane.bytes.length}');
+    // print ('------>plane.bytes.length: ${plane.bytes.length}');
+    // print ('-------------------------------------------');
+
+
+
+    //final croppedBytes = Uint8List.fromList(img.encodeJpg(croppedImage));
+
+    
+    // compose InputImage using bytes
+    final croppedBytes = _cropBottomHalf(image);
+
+    if (croppedBytes == null) {
+      return null;
+    }
+
+    Size size;
+    if (format == InputImageFormat.nv21) {
+      size = Size(image.width.toDouble(), image.height.toDouble() / 2);
+    } else {
+      size = Size(image.width.toDouble(), image.height.toDouble() / 2);
+    }
 
     // compose InputImage using bytes
     return InputImage.fromBytes(
-      bytes: plane.bytes,
+      bytes: plane.bytes, //croppedBytes,
       metadata: InputImageMetadata(
         size: Size(image.width.toDouble(), image.height.toDouble()),
         rotation: rotation, // used only in Android
