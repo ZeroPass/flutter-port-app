@@ -72,12 +72,17 @@ class Authn /*extends State<Authn>*/ {
     required AccessKey accessKey,
     required bool isDBA,
     required bool isPaceMode,
-    required Future<bool> Function(AuthenticationType) waitingOnConfirmation}) async {
-    
+    required bool includeDG1,
+    required bool includeDG2,
+    required Future<bool> Function(AuthenticationType) waitingOnConfirmation
+    }) async {
+      
     final data = await PassportScanner(context: context, client: _client).
                     register(accessKey: accessKey,
                               isPaceMode: isPaceMode,
                               uid: uid,
+                              includeDG1: includeDG1,
+                              includeDG2: includeDG2,
                               waitingOnConfirmation: waitingOnConfirmation);
     if(isDBA){
       Storage storage = Storage();
@@ -124,6 +129,8 @@ class Authn /*extends State<Authn>*/ {
                             NetworkType networkType,
                            {required bool isPaceMode,
                             required bool isDBA,
+                            includeDG1 = false,
+                            includeDG2 = false,
                             bool fakeAuthnData = false,
                             bool sendDG1 = false,
                             required ScrollController scrollController,
@@ -158,7 +165,7 @@ class Authn /*extends State<Authn>*/ {
 
       //get address of server
       ServerCloud? serverCloud = storage.outsideCall.isOutsideCall?
-        ServerCloud(name: "TemporaryServer", host: storage.outsideCall.getStructV1()!.host.host):
+        ServerCloud(name: "TemporaryServer", host: storage.outsideCall.getStructV2()!.host.host):
         storage.getServerCloudSelected(networkTypeServer: NetworkTypeServer.MAIN_SERVER);
 
       if (serverCloud == null)
@@ -196,6 +203,8 @@ class Authn /*extends State<Authn>*/ {
             accessKey: accessKey,
             isDBA: isDBA,
             isPaceMode: isPaceMode,
+            includeDG1: includeDG1,
+            includeDG2: includeDG2,
             waitingOnConfirmation: (AuthenticationType type) async{
               await _hideBusyIndicator();
               var e =  showDataToBeSent(type);
@@ -323,10 +332,10 @@ class Authn /*extends State<Authn>*/ {
     }
   }
 
-  Future<bool?> startNFCAction(BuildContext context, RequestType requestType, String accountName, bool isPaceMode, bool isDBA, NetworkType networkType,  ScrollController scrollController, int maxSteps) {
+  Future<bool?> startNFCAction(BuildContext context, RequestType requestType, String accountName, bool isPaceMode, bool isDBA, NetworkType networkType,  ScrollController scrollController, int maxSteps, {bool includeDG1 = false, bool includeDG2 = false}) {
     switch (requestType) {
       case RequestType.ATTESTATION_REQUEST:
-        return startAction(context, PortAction.register, accountName, networkType, isPaceMode: isPaceMode, isDBA: isDBA, scrollController: scrollController, maxSteps: maxSteps);
+        return startAction(context, PortAction.register, accountName, networkType, isPaceMode: isPaceMode, isDBA: isDBA, includeDG1: includeDG1, includeDG2: includeDG2, scrollController: scrollController, maxSteps: maxSteps);
       case RequestType.PERSONAL_INFORMATION_REQUEST:
         return startAction(context, PortAction.assertion, accountName, networkType, isPaceMode: isPaceMode, isDBA: isDBA, sendDG1: true, scrollController: scrollController, maxSteps: maxSteps);
       case RequestType.FAKE_PERSONAL_INFORMATION_REQUEST:

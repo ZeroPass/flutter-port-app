@@ -25,7 +25,7 @@ class StepReviewNoConnectionState extends StepReviewState {
 class StepReviewWithoutDataState extends StepReviewState {
   RequestType requestType;
   AuthenticationType authType;
-  OutsideCallV0dot1 outsideCall;
+  OutsideCallV0dot2 outsideCall;
   String rawData;
   Function(bool) sendData;
 
@@ -40,7 +40,7 @@ class StepReviewWithDataState extends StepReviewState {
   EfDG1 dg1;
   String msg;
   String rawData;
-  OutsideCallV0dot1 outsideCall;
+  OutsideCallV0dot2 outsideCall;
   Function(bool) sendData;
 
   StepReviewWithDataState({required this.requestType, required this.dg1, required this.msg, required this.rawData, required this.outsideCall, required this.sendData});

@@ -120,7 +120,7 @@ class PassportScanner {
   ///
   /// Function returns [PassportData] with SOD
   /// data in structure.
-  Future<PassportData> getSOD({required Passport passport, required EfCOM efcom}) async{
+  Future<PassportData> getSOD({required Passport passport, required EfCOM efcom, bool includeDG1 = false, bool includeDG2 = false}) async{
     _log.debug("Get SOD from passport");
     final pdata = PassportData();
     _setAlertMessage(formatProgressMsg('Reading data ...', 20));
@@ -145,6 +145,12 @@ class PassportScanner {
     else
       _log.debug("Passport has not DG15 file");
 
+    if (includeDG1) {
+      pdata.dg1 = await _call(() => passport.readEfDG1());
+    }
+    if (includeDG2) {
+      pdata.dg2 = await _call(() => passport.readEfDG2());
+    }
     _setAlertMessage(formatProgressMsg('Reading data ...', 50));
     pdata.sod = await _call(() => passport.readEfSOD());
     _setAlertMessage(formatProgressMsg('Scanning passport completed', 79));
@@ -186,7 +192,10 @@ class PassportScanner {
   Future<Map<String, dynamic>> register({required AccessKey accessKey,
                                         required UserId uid,
                                         required Future<bool> Function(AuthenticationType) waitingOnConfirmation,
-                                        required bool isPaceMode}) async {
+                                        required bool isPaceMode,
+                                        required bool includeDG1,
+                                        required bool includeDG2
+                                        }) async {
     String? errorMsg;
     //bool bottomNFCvisible = true;
     try {
@@ -200,7 +209,7 @@ class PassportScanner {
                                         isPaceMode: isPaceMode);
       _log.debug('Reading efCom completed...');
 
-      PassportData passdata = await getSOD(passport: passport, efcom: efcom);
+      PassportData passdata = await getSOD(passport: passport, efcom: efcom, includeDG1: includeDG1, includeDG2: includeDG2);
       _log.debug('Reading passData completed ...');
 
       Map<String, dynamic> srvResult;
@@ -241,10 +250,21 @@ class PassportScanner {
                         _log.debug("...user said YES");
                         try {
                           _log.debug("Sending 'register' command to the server...");
+                          if (includeDG1) {
+                            srvResult = await this.client.registerWithPersonalData(uid,
+                                passdata.sod!,
+                                dg15: passdata.dg15,
+                                dg14: passdata.dg14,
+                                passdata.dg1!,
+                                dg2: includeDG2 ? passdata.dg2 : null,
+                                );
+                          }
+                          else {
                           srvResult = await this.client.register(uid,
                               passdata.sod!,
-                              dg15: passdata.dg15,
-                              dg14: passdata.dg14);
+                                dg15: passdata.dg15,
+                                dg14: passdata.dg14);
+                          }
                         }
                         catch(e){
                           if (e == PortError.accountAlreadyRegistered) {

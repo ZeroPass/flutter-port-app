@@ -72,7 +72,7 @@ class _PortStepperWidgetState extends State<PortStepperWidget> with TickerProvid
     try {
       Storage storage = Storage();
       ServerCloud? serverCloud = storage.outsideCall.isOutsideCall?
-      ServerCloud(name: "TemporaryServer", host: storage.outsideCall.getStructV1()!.host.host):
+      ServerCloud(name: "TemporaryServer", host: storage.outsideCall.getStructV2()!.host.host):
       storage.getServerCloudSelected(networkTypeServer: NetworkTypeServer.MAIN_SERVER);
 
       if (serverCloud == null)

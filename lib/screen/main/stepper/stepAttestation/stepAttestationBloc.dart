@@ -63,6 +63,7 @@ Map<String, dynamic> _$OutsideCallToJson(OutsideCall instance) => <String, dynam
 
 final _logOutsideCallV0dot1 = Logger("OutsideCallV0dot1");
 
+
 @JsonSerializable()
 class OutsideCallV0dot1 extends OutsideCall{
   late QRserverStructure? _structV1;
@@ -88,6 +89,37 @@ class OutsideCallV0dot1 extends OutsideCall{
 
   set structV1(QRserverStructure value) {
     _structV1 = value;
+  }
+}
+
+
+final _logOutsideCallV0dot2 = Logger("OutsideCallV0dot2");
+
+@JsonSerializable()
+class OutsideCallV0dot2 extends OutsideCall{
+  late QRserverStructure? _structV2;
+
+  OutsideCallV0dot2 () : super(isOutsideCall: false){
+    _logOutsideCallV0dot2.debug("Constructor: setting outside call to false");
+    this._structV2 = null;
+  }
+
+  void setV0dot2({required QRserverStructure qRserverStructure}){
+    _logOutsideCallV0dot2.debug("Setting structure to oustside call");
+    super.set();
+    this.structV2 = qRserverStructure;
+  }
+
+  void remove() {
+    _logOutsideCallV0dot2.debug("Removing outside call v2");
+    super.remove();
+    this._structV2 = null;
+  }
+
+  QRserverStructure? getStructV2() => _structV2;//can be null
+
+  set structV2(QRserverStructure value) {
+    _structV2 = value;
   }
 }
 
@@ -146,7 +178,7 @@ class StepAttestationBloc extends Bloc<StepAttestationEvent, StepAttestationStat
       storage.load(callback: (isAlreadyUpdated, isValid, {String? exc}){
         if (isAlreadyUpdated == true || isValid == true){
           if (storage.outsideCall.isOutsideCall)
-            this.add(AttestationWithDataOutsideCallEvent(requestType: storage.outsideCall.getStructV1()!.requestType));
+            this.add(AttestationWithDataOutsideCallEvent(requestType: storage.outsideCall.getStructV2()!.requestType));
           else {
             StepDataAttestation stepDataAttestation = storage.getStorageData(2) as StepDataAttestation;
             this.add(AttestationWithDataEvent(

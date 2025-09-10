@@ -1,5 +1,6 @@
 import 'package:dmrtd/extensions.dart';
 import 'package:port_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
+import 'package:port_mobile_app/screen/qr/structure.dart';
 import 'package:port_mobile_app/screen/requestType.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,6 +16,7 @@ import 'package:flutter/services.dart';
 import 'package:port_mobile_app/screen/flushbar.dart';
 import 'package:port_mobile_app/screen/dots.dart';
 import 'package:logging/logging.dart';
+import 'package:port_mobile_app/utils/storage.dart';
 import 'package:rive/rive.dart';
 
 
@@ -147,7 +149,7 @@ class _StepReviewFormState extends State<StepReviewForm> {
     super.didUpdateWidget(oldWidget);
   }
 
-  Widget getText(BuildContext context, RequestType requestType, OutsideCallV0dot1 outsideCall)
+  Widget getText(BuildContext context, RequestType requestType, OutsideCallV0dot2 outsideCall)
   {
     bool isPublishedOnChain = AuthenticatorActions[requestType]['IS_PUBLISHED_ON_CHAIN'];
     return Align(
@@ -156,7 +158,7 @@ class _StepReviewFormState extends State<StepReviewForm> {
         Text(
       'Review what data will be sent to ' +
           (outsideCall.isOutsideCall
-              ? outsideCall.getStructV1()!.host.toString()
+              ? outsideCall.getStructV2()!.host.toString()
               : ( isPublishedOnChain?'the blockchain.': 'the server.')),
       style: TextStyle(
           color: AndroidThemeST()
@@ -166,10 +168,29 @@ class _StepReviewFormState extends State<StepReviewForm> {
     ));
   }
 
+  (bool includeDG1, bool includeDG2) includeDG1OrDG2ifExists(Storage storage) {
+    QRserverStructure? qRserverStructure = storage.outsideCall.getStructV2();
+    if (qRserverStructure == null) {
+      return (false, false);
+    }
+    return (qRserverStructure.includeDG1, qRserverStructure.includeDG2);
+  }
+
+
   @override
   Widget build(BuildContext context) {
     final stepReviewBloc = BlocProvider.of<StepReviewBloc>(context);
     StepperBloc stepperBloc = BlocProvider.of<StepperBloc>(context);
+
+    RequestType requestTypeNoDialog = RequestType.ATTESTATION_REQUEST;
+    Storage storage = Storage();
+    var (includeDG1, includeDG2) = includeDG1OrDG2ifExists(storage);
+    if (includeDG1 && includeDG2) {
+      requestTypeNoDialog = RequestType.ATTESTATION_REQUEST_WITH_DG1_AND_DG2;
+    }
+    else if (includeDG1) {
+      requestTypeNoDialog = RequestType.ATTESTATION_REQUEST_WITH_DG1;
+    }
     return BlocBuilder(
         bloc: stepReviewBloc,
         builder: (BuildContext context, StepReviewState state) {
@@ -183,7 +204,7 @@ class _StepReviewFormState extends State<StepReviewForm> {
                         getText(context, state.requestType, state.outsideCall),
                       if (state is StepReviewWithoutDataState)
                         NoEfDG1Dialog(
-                          requestType: RequestType.ATTESTATION_REQUEST,
+                          requestType: requestTypeNoDialog,
                           authType: state.authType,
                           rawData: state.rawData,
                           actions: [

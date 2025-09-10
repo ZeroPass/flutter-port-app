@@ -1,4 +1,4 @@
-enum RequestType{ ATTESTATION_REQUEST, PERSONAL_INFORMATION_REQUEST, FAKE_PERSONAL_INFORMATION_REQUEST, LOGIN}
+enum RequestType{ ATTESTATION_REQUEST, ATTESTATION_REQUEST_WITH_DG1, ATTESTATION_REQUEST_WITH_DG1_AND_DG2, PERSONAL_INFORMATION_REQUEST, FAKE_PERSONAL_INFORMATION_REQUEST, LOGIN}
 
 
 Map<RequestType, dynamic> AuthenticatorActions = {
@@ -16,6 +16,42 @@ Map<RequestType, dynamic> AuthenticatorActions = {
     ],
     "TEXT_ON_SUCCESS": "Well done, you are now anonymously attested!",
     "IS_PUBLISHED_ON_CHAIN": true
+  },
+  RequestType.ATTESTATION_REQUEST_WITH_DG1: {
+    "NAME": "Attest",
+    "DATA": [
+      "Passport authn data & Country (EF.SOD)",
+      "Personal Data (EF.DG1)",
+      "Passport Public Key (EF.DG15)",
+      "Passport Signature"
+    ],
+    "DATA_IN_REVIEW": [
+      "Passport authn data & Country (EF.SOD)",
+      "Personal Data (EF.DG1)",
+      "Passport Public Key (EF.DG15)",
+      "Passport Signature"
+    ],
+    "TEXT_ON_SUCCESS": "Well done, you are now registered!",
+    "IS_PUBLISHED_ON_CHAIN": false
+  },
+  RequestType.ATTESTATION_REQUEST_WITH_DG1_AND_DG2: {
+    "NAME": "Attest",
+    "DATA": [
+      "Passport authn data & Country (EF.SOD)",
+      "Personal Data (EF.DG1)",
+      "Portret (EF.DG2)",
+      "Passport Public Key (EF.DG15)",
+      "Passport Signature"
+    ],
+    "DATA_IN_REVIEW": [
+      "Passport authn data & Country (EF.SOD)",
+      "Personal Data (EF.DG1)",
+      "Portret (EF.DG2)",
+      "Passport Public Key (EF.DG15)",
+      "Passport Signature"
+    ],
+    "TEXT_ON_SUCCESS": "Well done, you are now registered!",
+    "IS_PUBLISHED_ON_CHAIN": false
   },
   RequestType.PERSONAL_INFORMATION_REQUEST: {
     "NAME": "Send Personal Info",
@@ -42,6 +78,8 @@ Map<RequestType, dynamic> AuthenticatorActions = {
 
 Map<int, RequestType> numericToRequestType = {
   1: RequestType.ATTESTATION_REQUEST,
+  2: RequestType.ATTESTATION_REQUEST_WITH_DG1,
+  3: RequestType.ATTESTATION_REQUEST_WITH_DG1_AND_DG2,
   2: RequestType.PERSONAL_INFORMATION_REQUEST,
   3: RequestType.FAKE_PERSONAL_INFORMATION_REQUEST,
   4: RequestType.LOGIN,

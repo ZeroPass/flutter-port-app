@@ -3,7 +3,6 @@ import 'package:port_mobile_app/screen/requestType.dart';
 import 'package:logging/logging.dart';
 import 'package:port_mobile_app/utils/structure.dart';
 import 'package:port_mobile_app/utils/storage.dart';
-import 'package:meta/meta.dart';
 
 var APP_NAME_QR_STRUCTURE = "Port.link";
 
@@ -22,8 +21,10 @@ class QRstructure{
   late String accountID;
   late RequestType requestType;
   late Server host;
+  late bool includeDG1;
+  late bool includeDG2;
 
-  QRstructure({required double version, required String accountID, required RequestType requestType, required Server host})
+  QRstructure({required double version, required String accountID, required RequestType requestType, required Server host, this.includeDG1 = false, this.includeDG2 = false})
   {
     this.appName = APP_NAME_QR_STRUCTURE;
     this.version  = version;
@@ -110,9 +111,20 @@ class QRstructure{
       transformedData['url'] = urlValue;
     }
 
+    // Handle iDG1 and iDG2 conversion to includeDG1 and includeDG2
+    if (data.containsKey('iDG1')) {
+      int? dg1Value = int.tryParse(data['iDG1'].toString());
+      transformedData['includeDG1'] = dg1Value == 1;
+    }
+    
+    if (data.containsKey('iDG2')) {
+      int? dg2Value = int.tryParse(data['iDG2'].toString());
+      transformedData['includeDG2'] = dg2Value == 1;
+    }
+
     // Copy any other parameters as is
     data.forEach((key, value) {
-      if (!['rt', 'uID', 'v', 'url'].contains(key)) {
+      if (!['rt', 'uID', 'v', 'url', 'iDG1', 'iDG2'].contains(key)) {
         transformedData[key] = value;
       }
     });
@@ -128,6 +140,8 @@ QRstructure _$QRstrucutreFromJson(Map<String, dynamic> json) {
     accountID: json['userID'] as String,
     requestType: EnumUtil.fromStringEnum(RequestType.values, json['requestType'].toUpperCase()),
     host: Server(host: Uri.parse(json['url'])),
+    includeDG1: json['includeDG1'] as bool? ?? false,
+    includeDG2: json['includeDG2'] as bool? ?? false,
   );
 }
 
@@ -137,6 +151,8 @@ Map<String, dynamic> _$QRstrucutreToJson(QRstructure instance) => <String, dynam
   'userID': instance.accountID,
   'requestType': StringUtil.getWithoutTypeName(instance.requestType),
   'url': instance.host.host.toString(),
+  'includeDG1': instance.includeDG1,
+  'includeDG2': instance.includeDG2,
 };
 
 var VERSION_QR_SERVER_STRUCTURE = 0.1;
@@ -144,12 +160,14 @@ var VERSION_QR_SERVER_STRUCTURE = 0.1;
 final _log = Logger("QRserverStructure");
 class QRserverStructure extends QRstructure {
   QRserverStructure(
-      {required String accountID, required RequestType requestType, required Server host})
+      {required String accountID, required RequestType requestType, required Server host, bool includeDG1 = false, bool includeDG2 = false})
       :
         super(version: VERSION_QR_SERVER_STRUCTURE,
           accountID: accountID,
           requestType: requestType,
-          host: host);
+          host: host,
+          includeDG1: includeDG1,
+          includeDG2: includeDG2);
 
   static QRserverStructure? parseDynamicLink(String data){
     try{
@@ -174,6 +192,7 @@ class QRserverStructure extends QRstructure {
     }
     catch(e){
       _log.debug("Error while parsing dynamic link: " + e.toString());
+      return null;
     }
 
   }
@@ -210,6 +229,8 @@ QRserverStructure _$QRserverStrucutreFromJson(Map<String, dynamic> json) {
     accountID: json['userID'] as String,
     requestType: EnumUtil.fromStringEnum(RequestType.values, json['requestType'].toUpperCase()),
     host: Server(host: Uri.parse(json['url'])),
+    includeDG1: json['includeDG1'] as bool? ?? false,
+    includeDG2: json['includeDG2'] as bool? ?? false,
   );
   _log.info('QRserverStrucutreFromJson: $qr');
   return qr;
@@ -221,4 +242,6 @@ Map<String, dynamic> _$QRserverStrucutreToJson(QRserverStructure instance) => <S
   'userID': instance.accountID.toLowerCase(),
   'requestType': StringUtil.getWithoutTypeName(instance.requestType),
   'url': instance.host.host.toString(),
+  'includeDG1': instance.includeDG1,
+  'includeDG2': instance.includeDG2,
 };

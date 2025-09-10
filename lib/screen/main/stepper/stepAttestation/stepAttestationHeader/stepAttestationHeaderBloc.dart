@@ -25,7 +25,7 @@ class StepAttestationHeaderBloc extends Bloc<StepAttestationHeaderEvent, StepAtt
         StepDataAttestation storageAttestation = storage.getStorageData(2) as StepDataAttestation;
 
         if (storage.outsideCall.isOutsideCall)
-          this.add(AttestationHeaderWithDataOutsideCallEvent(requestType: storage.outsideCall.getStructV1()!.requestType));
+          this.add(AttestationHeaderWithDataOutsideCallEvent(requestType: storage.outsideCall.getStructV2()!.requestType));
         else
           this.add(AttestationHeaderWithDataEvent(requestType: storageAttestation.requestType));
       }

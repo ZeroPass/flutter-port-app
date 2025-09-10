@@ -856,7 +856,7 @@ class StorageData {
   late CanData _canData;
 
   //should not be stored on disc
-  late OutsideCallV0dot1 _outsideCall;
+  late OutsideCallV0dot2 _outsideCall;
   late DBAkeyStorage dbAkeyStorage;
 
 
@@ -878,7 +878,7 @@ class StorageData {
       StepDataAttestation()//2
     ]);
 
-    this._outsideCall = OutsideCallV0dot1();
+    this._outsideCall = OutsideCallV0dot2();
   }
 
   bool get isUpdatedInCurrentSession => _isUpdatedInCurrentSession;
@@ -933,9 +933,9 @@ class StorageData {
     _loggingEnabled = value;
   }
 
-  OutsideCallV0dot1 get outsideCall => _outsideCall;
+  OutsideCallV0dot2 get outsideCall => _outsideCall;
 
-  set outsideCall(OutsideCallV0dot1 value) {
+  set outsideCall(OutsideCallV0dot2 value) {
     _outsideCall = value;
   }
 

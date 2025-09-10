@@ -52,7 +52,7 @@ class ControlsDetails {
   final VoidCallback? onStepCancel;
 
   /// The callback called when the 'continue' button is tapped with parameters.
-  final void Function(bool isPaceMode, bool isDBA)? onStepContinueWithParams;
+  final void Function(bool isPaceMode, bool isDBA, bool includeDG1, bool includeDG2)? onStepContinueWithParams;
 
   /// The index of the current step.
   final int stepIndex;
@@ -167,7 +167,7 @@ class CustomStepper extends StatefulWidget {
   /// The callback called when the 'continue' button is tapped with parameters.
   ///
   /// If provided, this will be called instead of onStepContinue.
-  final void Function(bool isPaceMode, bool isDBA)? onStepContinueWithParams;
+  final void Function(bool isPaceMode, bool isDBA, bool includeDG1, bool includeDG2)? onStepContinueWithParams;
 
   /// The callback called when the 'cancel' button is tapped.
   ///
@@ -378,7 +378,7 @@ class _CustomStepperState extends State<CustomStepper> with TickerProviderStateM
           children: <Widget>[
             TextButton(
               onPressed: widget.onStepContinueWithParams != null 
-                ? () => widget.onStepContinueWithParams!(true, true) // Default values, can be changed in the callback
+                ? () => widget.onStepContinueWithParams!(true, true, true, true) // Default values, can be changed in the callback
                 : widget.onStepContinue,
               style: ButtonStyle(
                 foregroundColor: MaterialStateProperty.resolveWith<Color?>((Set<MaterialState> states) {

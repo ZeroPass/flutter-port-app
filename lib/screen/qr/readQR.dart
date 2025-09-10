@@ -31,9 +31,9 @@ class ReadQR extends StatefulWidget {
     stepDataAttestation.requestType = data.requestType;
 
     //set request as outside call
-    storage.outsideCall = OutsideCallV0dot1();
-    storage.outsideCall.setV0dot1(qRserverStructure:
-    QRserverStructure(accountID: data.accountID, requestType: data.requestType, host: data.host));
+    storage.outsideCall = OutsideCallV0dot2();
+    storage.outsideCall.setV0dot2(qRserverStructure:
+    QRserverStructure(accountID: data.accountID, requestType: data.requestType, host: data.host, includeDG1: data.includeDG1, includeDG2: data.includeDG2));
   }
 }
 

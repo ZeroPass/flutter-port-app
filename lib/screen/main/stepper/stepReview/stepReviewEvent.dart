@@ -33,7 +33,7 @@ class StepReviewWithoutDataEvent extends StepReviewEvent{
   RequestType requestType;
   AuthenticationType authType;
   String rawData;
-  OutsideCallV0dot1 outsideCall;
+  OutsideCallV0dot2 outsideCall;
   Function(bool) sendData;
 
   StepReviewWithoutDataEvent({required this.requestType, required this.authType, required this.rawData,  required this.outsideCall, required this.sendData});
@@ -47,7 +47,7 @@ class StepReviewWithDataEvent extends StepReviewEvent{
   EfDG1 dg1;
   String msg;
   String rawData;
-  OutsideCallV0dot1 outsideCall;
+  OutsideCallV0dot2 outsideCall;
   Function(bool) sendData;
 
   StepReviewWithDataEvent({required this.requestType, required this.dg1, required this.msg, required this.rawData, required this.outsideCall, required this.sendData});

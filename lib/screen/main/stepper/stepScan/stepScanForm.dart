@@ -1,4 +1,5 @@
 import 'package:mrz_parser/mrz_parser.dart';
+import 'package:port_mobile_app/screen/qr/structure.dart';
 import 'package:port_mobile_app/screen/readMrz/window.dart';
 import 'package:port_mobile_app/utils/storage.dart';
 import 'package:flutter/material.dart';
@@ -17,15 +18,6 @@ import 'package:flutter/gestures.dart';
 import 'package:port_mobile_app/can_code.dart';
 import 'dart:math';
 
-
-///temp
-///
-///
-///
-///
-///
-/////
-///
 class DebugTextEditingController extends TextEditingController {
   final String identifier;
 
@@ -42,7 +34,7 @@ class DebugTextEditingController extends TextEditingController {
 }
 
 class StepScanForm extends StatefulWidget {
-  final void Function(bool isPaceMode, bool isDBA)? onStepContinueWithParams;
+  final void Function(bool isPaceMode, bool isDBA, bool includeDG1, bool includeDG2)? onStepContinueWithParams;
   StepScanForm({this.onStepContinueWithParams}) : super();
 
   @override
@@ -152,7 +144,17 @@ class _StepScanFormState extends State<StepScanForm> with SingleTickerProviderSt
     }
   }
 
-  void validateAndProceedPACE(StepperBloc stepperBloc, {required bool isDBA}) {
+
+  (bool includeDG1, bool includeDG2) includeDG1OrDG2ifExists(Storage storage) {
+    QRserverStructure? qRserverStructure = storage.outsideCall.getStructV2();
+    if (qRserverStructure == null) {
+      return (false, false);
+    }
+    return (qRserverStructure.includeDG1, qRserverStructure.includeDG2);
+  }
+
+
+  void validateAndProceedPACE(StepperBloc stepperBloc, {required bool isDBA, bool includeDG1 = false, bool includeDG2 = false}) {
     _log.info('Validating PACE input data');
     if (_paceCodeController.text.isEmpty) {
       _log.info('PACE code is required');
@@ -164,10 +166,11 @@ class _StepScanFormState extends State<StepScanForm> with SingleTickerProviderSt
     //this should always be true
     bool isPaceMode = true;
     _log.info("isPaceMode: $isPaceMode, isDBA: $isDBA");
-    widget.onStepContinueWithParams?.call(isPaceMode, isDBA);
+    _log.info("includeDG1: $includeDG1, includeDG2: $includeDG2");
+    widget.onStepContinueWithParams?.call(isPaceMode, isDBA, includeDG1, includeDG2);
   }
 
-  void validateAndProceedLegacy(StepperBloc stepperBloc, {required bool isDBA}) {
+  void validateAndProceedLegacy(StepperBloc stepperBloc, {required bool isDBA, bool includeDG1 = false, bool includeDG2 = false}) {
     _log.info('Validating Legacy input data');
     if (_passportIdTextController.text.isEmpty) {
       _log.info('Passport number is required');
@@ -189,7 +192,8 @@ class _StepScanFormState extends State<StepScanForm> with SingleTickerProviderSt
     bool isPaceMode = false;
     _log.info("Legacy data is valid. Going to scan");
     _log.info("isPaceMode: $isPaceMode, isDBA: $isDBA");
-    widget.onStepContinueWithParams?.call(isPaceMode, isDBA);
+    _log.info("includeDG1: $includeDG1, includeDG2: $includeDG2");
+    widget.onStepContinueWithParams?.call(isPaceMode, isDBA, includeDG1, includeDG2);
   }
 
   @override
@@ -197,6 +201,9 @@ class _StepScanFormState extends State<StepScanForm> with SingleTickerProviderSt
     Storage storage = Storage();
     final stepScanBloc = BlocProvider.of<StepScanBloc>(context);
     final stepperBloc = BlocProvider.of<StepperBloc>(context);
+
+    //get includeDG1 and includeDG2 if exists
+    var (includeDG1, includeDG2) = includeDG1OrDG2ifExists(storage);
 
     return BlocBuilder(
       bloc: stepScanBloc,
@@ -336,7 +343,7 @@ class _StepScanFormState extends State<StepScanForm> with SingleTickerProviderSt
                                     ),
                                     const SizedBox(height: 20),
                                     ElevatedButton(
-                                      onPressed: () => validateAndProceedPACE(stepperBloc, isDBA: false),
+                                      onPressed: () => validateAndProceedPACE(stepperBloc, isDBA: false, includeDG1: includeDG1, includeDG2: includeDG2),
                                       child: Text('Scan with CAN'),
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: AndroidThemeST().getValues().themeValues["BUTTON"]["COLOR_BACKGROUND"],
@@ -498,7 +505,7 @@ class _StepScanFormState extends State<StepScanForm> with SingleTickerProviderSt
                                         ),
                                         const SizedBox(width: 8),
                                         ElevatedButton(
-                                          onPressed: () => validateAndProceedLegacy(stepperBloc, isDBA: true),
+                                          onPressed: () => validateAndProceedLegacy(stepperBloc, isDBA: true, includeDG1: includeDG1, includeDG2: includeDG2),
                                           child: Text('Scan with Legacy'),
                                           style: ElevatedButton.styleFrom(
                                             backgroundColor: AndroidThemeST().getValues().themeValues["BUTTON"]["COLOR_BACKGROUND"],

@@ -76,9 +76,9 @@ class _StepperFormState extends State<StepperForm> {
       Step(
           title: StepScanHeaderForm(),
           content: StepScanForm(
-            onStepContinueWithParams: (isPaceMode, isDBA) {
+            onStepContinueWithParams: (isPaceMode, isDBA, includeDG1, includeDG2) {
               final stepperBloc = BlocProvider.of<StepperBloc>(context);
-              onStepContinueWithParams(stepperBloc.state, isPaceMode: isPaceMode, isDBA: isDBA);
+              onStepContinueWithParams(stepperBloc.state, isPaceMode: isPaceMode, isDBA: isDBA, includeDG1: includeDG1, includeDG2: includeDG2);
             },
           ),
           state: _getState(1, currentStep),
@@ -366,7 +366,7 @@ class _StepperFormState extends State<StepperForm> {
         : false);
   }
 
-  Future<bool?> callNFC(bool isPaceMode, bool isDBA, BuildContext context, var stepperBloc) async {
+  Future<bool?> callNFC(bool isPaceMode, bool isDBA, BuildContext context, var stepperBloc, bool includeDG1, bool includeDG2) async {
     Authn authn = Authn(
         /*show DG1 step*/
         onDG1FileRequested: (EfDG1 dg1) {
@@ -394,7 +394,7 @@ class _StepperFormState extends State<StepperForm> {
     bool isPublishedOnChain = AuthenticatorActions[requestType]['IS_PUBLISHED_ON_CHAIN'];
 
     String accountID = storage.outsideCall.isOutsideCall?
-                  storage.outsideCall.getStructV1()!.accountID:
+                  storage.outsideCall.getStructV2()!.accountID:
                   stepDataEnterAccount.accountID;
 
     NetworkType networkType = storage.outsideCall.isOutsideCall?
@@ -402,7 +402,7 @@ class _StepperFormState extends State<StepperForm> {
                   stepDataEnterAccount.networkType;
 
 
-    await authn.startNFCAction(context, requestType, accountID, isPaceMode, isDBA, networkType, _scrollController, stepperBloc.state.maxSteps).then((bool? successful) {
+    await authn.startNFCAction(context, requestType, accountID, isPaceMode, isDBA, networkType, _scrollController, stepperBloc.state.maxSteps, includeDG1: includeDG1, includeDG2: includeDG2).then((bool? successful) {
       if (successful == null || !successful) {
         stepperBloc.add(StepBackToPrevious());
       } else {
@@ -453,7 +453,7 @@ class _StepperFormState extends State<StepperForm> {
     return Future.value(true);
   }
 
-  void onStepContinueWithParams(StepperState state, {bool isPaceMode = false, bool isDBA = false}) {
+  void onStepContinueWithParams(StepperState state, {bool isPaceMode = false, bool isDBA = false, bool includeDG1 = false, bool includeDG2 = false}) {
       Storage storage = Storage();
       final stepperBloc = BlocProvider.of<StepperBloc>(context);
       
@@ -462,7 +462,7 @@ class _StepperFormState extends State<StepperForm> {
       int stepJumps = state.step == 1 ? 2 : 1;
 
       if (this.isStepNFC(stepperBloc, stepJumps)) {
-        callNFC(isPaceMode, isDBA, context, stepperBloc);
+        callNFC(isPaceMode, isDBA, context, stepperBloc, includeDG1, includeDG2);
       } else {
         stepperBloc.add(StepContinue(stepsJump: stepJumps, previousStep: state.previousStep));
       }
@@ -496,8 +496,8 @@ class _StepperFormState extends State<StepperForm> {
             onStepCancel: () {
               stepperBloc.add(StepCancelled());
             },
-            onStepContinueWithParams: (bool isPaceMode, bool isDBA) {
-              onStepContinueWithParams(state, isPaceMode: isPaceMode, isDBA: isDBA);
+            onStepContinueWithParams: (bool isPaceMode, bool isDBA, bool includeDG1, bool includeDG2) {
+              onStepContinueWithParams(state, isPaceMode: isPaceMode, isDBA: isDBA, includeDG1: includeDG1, includeDG2: includeDG2);
             },
             controlsBuilder: (BuildContext context, custom_stepper.ControlsDetails controls) {
               return Visibility(

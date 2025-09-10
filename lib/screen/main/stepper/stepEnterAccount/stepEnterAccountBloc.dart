@@ -107,9 +107,9 @@ class StepEnterAccountBloc extends Bloc<StepEnterAccountEvent, StepEnterAccountS
           StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0) as StepDataEnterAccount;
           if (storage.outsideCall.isOutsideCall) {
             //updating network type:custom ; set the name of server
-            NetworkChains.updateNetworkChainCustomAdd(url: storage.outsideCall.getStructV1()!.host.host);
+            NetworkChains.updateNetworkChainCustomAdd(url: storage.outsideCall.getStructV2()!.host.host);
             this.add(AccountConfirmationOutsideCall(
-                accountID: storage.outsideCall.getStructV1()!.accountID,
+                accountID: storage.outsideCall.getStructV2()!.accountID,
                 networkType: NetworkType.CUSTOM));
           }
           else if (storageStepEnterAccount.accountID != null)

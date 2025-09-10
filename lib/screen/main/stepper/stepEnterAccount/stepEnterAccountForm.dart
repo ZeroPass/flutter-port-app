@@ -32,7 +32,7 @@ class _StepEnterAccountFormState extends State<StepEnterAccountForm> {
     var storage = Storage();
 
     if (storage.outsideCall.isOutsideCall)
-      _accountTextController.text = storage.outsideCall.getStructV1()!.accountID;
+      _accountTextController.text = storage.outsideCall.getStructV2()!.accountID;
     else {
       StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0) as StepDataEnterAccount;
       _accountTextController.text =
