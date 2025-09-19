@@ -11,6 +11,7 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:port_mobile_app/screen/main/stepper/stepper.dart';
 import 'package:port_mobile_app/utils/storage.dart';
 //import 'package:port_mobile_app/utils/logging/loggerHandler.dart' as LH;
+import 'package:port_mobile_app/screen/alert.dart';
 
 import 'package:port_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccount.dart';
 import 'package:port_mobile_app/screen/main/stepper/stepEnterAccount/stepEnterAccountHeader/stepEnterAccountHeader.dart';
@@ -20,6 +21,7 @@ import 'package:port_mobile_app/screen/main/stepper/stepAttestation/stepAttestat
 import 'package:port_mobile_app/screen/main/stepper/stepAttestation/stepAttestationHeader/stepAttestationHeader.dart';
 import 'package:port_mobile_app/screen/main/stepper/stepReview/stepReview.dart';
 import 'package:port_mobile_app/screen/main/stepper/stepReview/stepReviewHeader/stepReviewHeader.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_svg/svg.dart';
 
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
@@ -27,6 +29,9 @@ import 'package:logging/logging.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:port/internal.dart';
 import 'package:port/port.dart';
+//import 'package:flutter_nfc_kit/flutter_nfc_kit.dart';
+import 'package:dmrtd/dmrtd.dart';
+
 
 import '../flushbar.dart';
 
@@ -67,6 +72,75 @@ class PortStepperWidget extends StatefulWidget {
 class _PortStepperWidgetState extends State<PortStepperWidget> with TickerProviderStateMixin {
   final _log = Logger("main");
 
+Future<bool> _updateNfcStatus() async {
+  bool isNfcAvailable;
+  try {
+    var status = await NfcProvider.nfcStatus;
+    isNfcAvailable = (status == NfcStatus.enabled);
+    
+    if (!isNfcAvailable) {
+      // Show dialog when NFC is not available
+      await showAlert<bool?>(
+        context: context,
+        title: Text('NFC Not Available'),
+        content: Text('NFC is required for this feature but it appears to be disabled or not available on your device.\n\nWould you like to open settings to enable NFC?'),
+        actions: [
+          PlatformDialogAction(
+            child: PlatformText(
+              'Cancel',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.secondary,
+                fontWeight: FontWeight.normal
+              )
+            ),
+            onPressed: () => Navigator.pop(context, false)
+          ),
+          PlatformDialogAction(
+            child: PlatformText(
+              'Open Settings',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.primary,
+                fontWeight: FontWeight.bold
+              )
+            ),
+            onPressed: () async {
+              Navigator.pop(context, true);
+              try {
+                await openAppSettings();
+                showFlushbar(context, "Settings", "Please enable NFC and return to the app.", Icons.settings);
+              } catch (e) {
+                showFlushbar(context, "Error", "Unable to open settings. Please enable NFC manually.", Icons.error);
+              }
+            }
+          )
+        ]
+      );
+      return false;
+    }
+    
+    return true;
+  } on PlatformException catch (e) {
+    // Show dialog for platform exceptions (e.g., device doesn't support NFC)
+    await showAlert<bool?>(
+      context: context,
+      title: Text('NFC Error'),
+      content: Text('There was an error accessing NFC functionality. This device may not support NFC or there may be a system error.\n\nError: ${e.message}'),
+      actions: [
+        PlatformDialogAction(
+          child: PlatformText(
+            'OK',
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.primary,
+              fontWeight: FontWeight.bold
+            )
+          ),
+          onPressed: () => Navigator.pop(context)
+        )
+      ]
+    );
+    return false;
+  }
+}
 
   void checkConnection(BuildContext context) async {
     try {
@@ -99,8 +173,6 @@ class _PortStepperWidgetState extends State<PortStepperWidget> with TickerProvid
 
     //clean old logger handler
     Logger.root.level = Level.ALL;
-    //LH.LoggerHandler loggerHandler = LH.LoggerHandler();
-    //loggerHandler.cleanLegacyLogs();
 
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
@@ -117,6 +189,8 @@ class _PortStepperWidgetState extends State<PortStepperWidget> with TickerProvid
   Widget build(BuildContext context) {
     _SCAFFOLD_KEY = GlobalKey<ScaffoldState>();
 
+    //check if NFC is available
+    _updateNfcStatus();
     //if there is no connection show flushbar
     checkConnection(context);
 
@@ -134,11 +208,6 @@ class _PortStepperWidgetState extends State<PortStepperWidget> with TickerProvid
             child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-              /*Container(
-                  //color: Colors.cyan,
-                  width: 35,
-                  height: 35,
-                  child: Image(image: AssetImage('assets/images/port.png'))),*/
               Container(
                 margin: const EdgeInsets.only(left: 0),
                 width: 50,
@@ -149,8 +218,6 @@ class _PortStepperWidgetState extends State<PortStepperWidget> with TickerProvid
                   color: null,
                 ),
               ),
-              //Text("     Port",
-              //    style: TextStyle(color: Colors.white)),
             ],
           ),
           )

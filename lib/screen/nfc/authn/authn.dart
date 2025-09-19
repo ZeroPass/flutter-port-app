@@ -334,7 +334,7 @@ class Authn /*extends State<Authn>*/ {
 
   Future<bool?> startNFCAction(BuildContext context, RequestType requestType, String accountName, bool isPaceMode, bool isDBA, NetworkType networkType,  ScrollController scrollController, int maxSteps, {bool includeDG1 = false, bool includeDG2 = false}) {
     switch (requestType) {
-      case RequestType.ATTESTATION_REQUEST:
+      case RequestType.ATTESTATION_REQUEST || RequestType.ATTESTATION_REQUEST_WITH_DG1 || RequestType.ATTESTATION_REQUEST_WITH_DG1_AND_DG2:
         return startAction(context, PortAction.register, accountName, networkType, isPaceMode: isPaceMode, isDBA: isDBA, includeDG1: includeDG1, includeDG2: includeDG2, scrollController: scrollController, maxSteps: maxSteps);
       case RequestType.PERSONAL_INFORMATION_REQUEST:
         return startAction(context, PortAction.assertion, accountName, networkType, isPaceMode: isPaceMode, isDBA: isDBA, sendDG1: true, scrollController: scrollController, maxSteps: maxSteps);

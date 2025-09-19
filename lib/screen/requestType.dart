@@ -18,7 +18,7 @@ Map<RequestType, dynamic> AuthenticatorActions = {
     "IS_PUBLISHED_ON_CHAIN": true
   },
   RequestType.ATTESTATION_REQUEST_WITH_DG1: {
-    "NAME": "Attest",
+    "NAME": "Personal Informations",
     "DATA": [
       "Passport authn data & Country (EF.SOD)",
       "Personal Data (EF.DG1)",
@@ -35,7 +35,7 @@ Map<RequestType, dynamic> AuthenticatorActions = {
     "IS_PUBLISHED_ON_CHAIN": false
   },
   RequestType.ATTESTATION_REQUEST_WITH_DG1_AND_DG2: {
-    "NAME": "Attest",
+    "NAME": "Personal Info & Picture",
     "DATA": [
       "Passport authn data & Country (EF.SOD)",
       "Personal Data (EF.DG1)",
@@ -80,8 +80,8 @@ Map<int, RequestType> numericToRequestType = {
   1: RequestType.ATTESTATION_REQUEST,
   2: RequestType.ATTESTATION_REQUEST_WITH_DG1,
   3: RequestType.ATTESTATION_REQUEST_WITH_DG1_AND_DG2,
-  2: RequestType.PERSONAL_INFORMATION_REQUEST,
-  3: RequestType.FAKE_PERSONAL_INFORMATION_REQUEST,
-  4: RequestType.LOGIN,
+  4: RequestType.PERSONAL_INFORMATION_REQUEST,
+  5: RequestType.FAKE_PERSONAL_INFORMATION_REQUEST,
+  6: RequestType.LOGIN,
 };
 

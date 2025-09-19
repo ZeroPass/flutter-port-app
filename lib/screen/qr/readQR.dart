@@ -9,6 +9,7 @@ import 'package:port_mobile_app/screen/main/stepper/stepperBloc.dart';
 //import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:port_mobile_app/screen/requestType.dart';
 import 'package:qr_code_scanner_plus/qr_code_scanner_plus.dart';
 import 'package:logging/logging.dart';
 import 'package:port_mobile_app/screen/customButton.dart';
@@ -30,10 +31,21 @@ class ReadQR extends StatefulWidget {
     StepDataAttestation stepDataAttestation = storage.getStorageData(2) as StepDataAttestation;
     stepDataAttestation.requestType = data.requestType;
 
+    if (data.requestType == RequestType.ATTESTATION_REQUEST){
+      if (data.includeDG1 && data.includeDG2) {
+      stepDataAttestation.requestType = RequestType.ATTESTATION_REQUEST_WITH_DG1_AND_DG2;
+    }
+    else if (data.includeDG1) {
+      stepDataAttestation.requestType = RequestType.ATTESTATION_REQUEST_WITH_DG1;
+    }
+    }
+
+
+
     //set request as outside call
     storage.outsideCall = OutsideCallV0dot2();
     storage.outsideCall.setV0dot2(qRserverStructure:
-    QRserverStructure(accountID: data.accountID, requestType: data.requestType, host: data.host, includeDG1: data.includeDG1, includeDG2: data.includeDG2));
+    QRserverStructure(accountID: data.accountID, requestType: stepDataAttestation.requestType, host: data.host, includeDG1: data.includeDG1, includeDG2: data.includeDG2));
   }
 }
 

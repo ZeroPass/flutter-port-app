@@ -2,7 +2,7 @@ import 'package:dmrtd/extensions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:port_mobile_app/screen/theme.dart';
-//import 'package:port_mobile_app/utils/logging/loggerHandler.dart';
+import 'package:port_mobile_app/utils/logging/loggerHandler.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:port_mobile_app/screen/flushbar.dart' as CustomFlushbar;
 import 'package:card_settings/card_settings.dart';
@@ -137,12 +137,12 @@ class _LoggingScreen extends State<LoggingScreen> {
                             visible: widget.enableLogging,
                             //visible: enableLogging != true? false: true,
                             onPressed: () {
-                              //LoggerHandler loggerHandler = LoggerHandler();
-                              //loggerHandler.export(showError: () {
-                              //  CustomFlushbar.showFlushbar(context, "Logging",
-                              //      "Cannot export the log.", Icons.error);
-                              //}); temp block
-                              //Share.shareFiles(['${directory.path}/image.jpg'], text: 'Great picture');
+                              LoggerHandler loggerHandler = LoggerHandler();
+                              loggerHandler.export(showError: () {
+                                CustomFlushbar.showFlushbar(context, "Logging",
+                                    "Cannot export the log.", Icons.error);
+                              });
+                              Share.shareFiles(['${directory.path}/image.jpg'], text: 'Great picture');
                             }),
                         CustomCardSettingsButton(
                             bottomSpacing: 0.0,

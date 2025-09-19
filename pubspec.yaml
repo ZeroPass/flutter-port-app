@@ -15,7 +15,7 @@ description: Port Mobile App
 # This version is used _only_ for the Runner app, which is used if you just do
 # a `flutter run` or a `flutter make-host-app-editable`. It has no impact
 # on any other native host app that you embed your Flutter project into.
-version: 2.0.3+20
+version: 2.0.6+23
 
 environment:
   sdk: ^3.6.0
@@ -65,10 +65,12 @@ dependencies:
   logging: ^1.1.0
   flutter_logs: ^2.2.1
   open_file_safe_plus: ^0.0.5
+  open_file_plus: ^3.4.1+1
   permission_handler: ^11.3.1
   qr_code_scanner_plus: ^2.0.6
   url_launcher: ^6.2.5
   app_links: ^6.4.0
+  share_plus: ^12.0.0
 
   mrz_parser: ^2.0.0
   google_mlkit_text_recognition: ^0.15.0
