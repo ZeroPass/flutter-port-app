@@ -259,7 +259,7 @@ packages:
     source: hosted
     version: "3.1.2"
   cross_file:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: cross_file
       sha256: "7caf6a750a0c04effbb52a676dce9a4a592e10ad35c34d6d2d0e4811160d5670"
@@ -471,14 +471,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.0.0"
-  flutter_logs:
-    dependency: "direct main"
-    description:
-      name: flutter_logs
-      sha256: "46880b3da87bf66d10c69505fd8dec1ef78fe1793fc909169ddb9aa9fe34f164"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.2.1"
   flutter_material_pickers:
     dependency: transitive
     description:
@@ -761,6 +753,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.17.0"
+  mime:
+    dependency: transitive
+    description:
+      name: mime
+      sha256: "41a20518f0cb1256669420fdba0cd90d21561e560ac240f26ef8322e45bb7ed6"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.0"
   mrz_parser:
     dependency: "direct main"
     description:
@@ -793,14 +793,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.5.0"
-  open_file_safe_plus:
-    dependency: "direct main"
-    description:
-      name: open_file_safe_plus
-      sha256: "38a76b139f600c6dfee71c78f4a0197920d3285bd1d3a95ab62efff348b86002"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.6"
   package_config:
     dependency: transitive
     description:
@@ -850,7 +842,7 @@ packages:
     source: hosted
     version: "1.1.0"
   path_provider:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: path_provider
       sha256: "50c5dd5b6e1aaf6fb3a78b33f6aa3afca52bf903a8a5298f53101fdaee55bbcd"
@@ -1048,6 +1040,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.4.15"
+  share_plus:
+    dependency: "direct main"
+    description:
+      name: share_plus
+      sha256: "3424e9d5c22fd7f7590254ba09465febd6f8827c8b19a44350de4ac31d92d3a6"
+      url: "https://pub.dev"
+    source: hosted
+    version: "12.0.0"
+  share_plus_platform_interface:
+    dependency: transitive
+    description:
+      name: share_plus_platform_interface
+      sha256: "88023e53a13429bd65d8e85e11a9b484f49d4c190abbd96c7932b74d6927cc9a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.1.0"
   shared_preferences:
     dependency: "direct main"
     description:

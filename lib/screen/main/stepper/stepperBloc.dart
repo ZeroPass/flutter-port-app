@@ -8,11 +8,8 @@ import 'package:port_mobile_app/screen/main/stepper/stepAttestation/stepAttestat
 import 'package:port_mobile_app/screen/main/stepper/stepReview/stepReviewHeader/stepReviewHeader.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'dart:async';
-import 'package:flutter/material.dart';
+// removed unused imports
 import 'package:port_mobile_app/utils/storage.dart';
-import 'package:flutter_logs/flutter_logs.dart';
-import 'package:logging/logging.dart';
 
 
 //every step should extend this class to handle if step is filled correctly
@@ -42,7 +39,7 @@ abstract class StepData{
 class StepperBloc extends Bloc<StepperEvent, StepperState> {
   final int maxSteps;
   late bool isReviewLocked;
-  final _log = Logger('passid.StepperBloc');
+  // removed unused logger
 
   //StepperBloc():super();
 
@@ -95,7 +92,7 @@ class StepperBloc extends Bloc<StepperEvent, StepperState> {
           final stepEnterAccountHeaderBloc = BlocProvider.of<StepEnterAccountHeaderBloc>(context);
           StepDataEnterAccount storageStepEnterAccount = storage.getStorageData(0) as StepDataEnterAccount;
           //show data on header if there is valid value
-          if (storageStepEnterAccount.accountID == null || storageStepEnterAccount.accountID == "")
+          if (storageStepEnterAccount.accountID == "")
             stepEnterAccountHeaderBloc.add(WithoutAccountIDEvent(networkType: storageStepEnterAccount.networkType));
           else {
             stepEnterAccountHeaderBloc.add(WithAccountIDEvent(
