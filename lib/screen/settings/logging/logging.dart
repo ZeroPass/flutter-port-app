@@ -11,7 +11,7 @@ import 'package:port_mobile_app/screen/settings/custom/customCardSettingsButton.
 // removed unused import
 
 // removed unused import
-
+import 'package:port_mobile_app/screen/settings/logging/log_viewer.dart';
 class LoggingScreen extends StatefulWidget {
   late bool enableLogging;
   late bool switch_valid;
@@ -141,8 +141,8 @@ class _LoggingScreen extends State<LoggingScreen> {
                             enabled: widget.enableLogging,
                             visible: widget.enableLogging,
                             onPressed: () {
-                              //LoggerHandler loggerHandler = LoggerHandler();
-                              //loggerHandler.export(open: true); temp block
+                              Navigator.of(context).push(
+                                  MaterialPageRoute(builder: (context) => const LogViewerScreen()));
                             }),
                       ]),
                 ]))));

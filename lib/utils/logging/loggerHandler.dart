@@ -120,6 +120,18 @@ class LoggerHandlerInstance{
       }
     }
   }
+
+  Future<String> readLog() async {
+    await _ensureLogFileInitialized();
+    if (_logFile!.existsSync()) {
+      try {
+        return await _logFile!.readAsString();
+      } catch (_) {
+        return '';
+      }
+    }
+    return '';
+  }
 }
 
 //singelton class
