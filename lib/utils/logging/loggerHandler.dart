@@ -112,7 +112,7 @@ class LoggerHandlerInstance{
 
       // Prefer sharing flow for cross-device compatibility; if open requested,
       // still share the file so users can choose an app to open it.
-      await Share.shareXFiles([XFile(_logFile!.path)], text: 'PassIdLog (' + DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()) + ')');
+      await Share.shareXFiles([XFile(_logFile!.path)], text: 'PortLog (' + DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()) + ')');
     }
     catch(e){
       if (showError != null) {

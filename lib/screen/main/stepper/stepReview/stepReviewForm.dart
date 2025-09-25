@@ -1,4 +1,3 @@
-import 'package:dmrtd/extensions.dart';
 import 'package:port_mobile_app/screen/main/stepper/stepAttestation/stepAttestation.dart';
 import 'package:port_mobile_app/screen/qr/structure.dart';
 import 'package:port_mobile_app/screen/requestType.dart';
@@ -13,14 +12,9 @@ import 'package:port_mobile_app/screen/nfc/efdg1_dialog.dart';
 import 'package:port_mobile_app/screen/nfc/noEfdg1Dialog.dart';
 import 'package:port_mobile_app/screen/theme.dart';
 import 'package:flutter/services.dart';
-import 'package:port_mobile_app/screen/flushbar.dart';
 import 'package:port_mobile_app/screen/dots.dart';
-import 'package:logging/logging.dart';
 import 'package:port_mobile_app/utils/storage.dart';
-import 'package:rive/rive.dart';
 
-
-final _log = Logger('StepReviewForm');
 
 class StepReviewForm extends StatefulWidget {
 
@@ -65,11 +59,8 @@ Widget noConnectionState(BuildContext context){
 Widget successfullySend(BuildContext context,
                         RequestType requestType,
                         String transactionId,
-                        String rawData,
-                        Artboard riveArtboard,
-                        RiveAnimationController animationController) {
+                        String rawData) {
   String successText = AuthenticatorActions[requestType]['TEXT_ON_SUCCESS'];
-  bool isPublishedOnChain = AuthenticatorActions[requestType]['IS_PUBLISHED_ON_CHAIN'];
 
 
   return Padding(
@@ -78,16 +69,14 @@ Widget successfullySend(BuildContext context,
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-          GestureDetector(
-          onTap: (){
-            riveArtboard.addController(animationController = SimpleAnimation('checkmarks'));
-          },
-            child:Container(
-                margin: EdgeInsets.only(top: 30, bottom: 50),
-                width: 250,
-                height: 50,
-                child: Rive(artboard: riveArtboard, alignment: Alignment.centerLeft),
-            )),
+          Container(
+              margin: EdgeInsets.only(top: 30, bottom: 50),
+              width: 250,
+              height: 50,
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Icon(Icons.check_circle, color: Color(0xFF4CAF50), size: 36),
+              )),
             SelectableText(successText),
             const SizedBox(height: 20),
             /*if (isPublishedOnChain)
@@ -119,28 +108,10 @@ Widget successfullySend(BuildContext context,
 }
 
 class _StepReviewFormState extends State<StepReviewForm> {
-  late Artboard _riveArtboard;
-  late RiveAnimationController _animationController;
+  
 
   @override
   void initState() {
-    rootBundle.load('assets/anim/checkmarks.riv').then(
-          (data) async {
-            try {
-              // Load the RiveFile from the binary data.
-              final file = RiveFile.import(data);
-              final artboard = file.mainArtboard;
-
-              artboard.addController(
-                  _animationController = SimpleAnimation('checkmarks'));
-                  setState(() => _riveArtboard = artboard);
-            }
-            catch(exception){
-              _log.debug("Problem occured when loading rive file: " + exception.toString());
-            }
-      },
-    );
-
     super.initState();
   }
 
@@ -249,7 +220,7 @@ class _StepReviewFormState extends State<StepReviewForm> {
                             ]),
                       if (state is StepReviewCompletedState)
                         successfullySend(context, state.requestType, state.transactionID,
-                            state.rawData, _riveArtboard, _animationController)
+                            state.rawData)
                     ],
                   )));
         });

@@ -26,6 +26,6 @@ class _QRscreenBodyState extends State<QRscreenBody> {
         appBar: PlatformAppBar(
           title: Text("Scanning QR code"),
         ),
-        body: Container(child: Form(key: _formKey, child: ReadQR())));
+        body: SafeArea(child: Container(child: Form(key: _formKey, child: ReadQR()))));
   }
 }

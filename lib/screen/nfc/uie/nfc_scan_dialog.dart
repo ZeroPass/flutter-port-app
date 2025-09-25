@@ -3,15 +3,14 @@ import 'package:async/async.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:rive/rive.dart';
+// import 'package:rive/rive.dart';
 import 'uiutils.dart';
 
 /// Class displays BottomSheet dialog which
 /// shows to the user NFC scanning state via [message].
 class NfcScanDialog {
   final BuildContext context;
-  Artboard? _riveArtboard;
-  late RiveAnimationController _animationController;
+  // Rive removed in migration
 
   // Get or set currently displayed message
   String get message => _msg;
@@ -24,20 +23,7 @@ class NfcScanDialog {
 
     _showCancelButton = _onCancelCB != null;
 
-    rootBundle.load(_IconAnimations.animationName).then(
-          (data) async {
-        try {
-          // Load the RiveFile from the binary data.
-          final file = RiveFile.import(data);
-          _riveArtboard = file.mainArtboard;
-            _riveArtboard!.addController(
-                _animationController = SimpleAnimation('nfc'));
-        }
-        catch(exception){
-          print("Problem occured when loading rive file: " + exception.toString());
-        }
-      },
-    );
+    // Rive loading removed
   }
 
   /// Shows bottom dialog with optionally [message] string.
@@ -85,7 +71,7 @@ class NfcScanDialog {
   void _setMessage(final String msg) {
     if (_sheetSetter != null) {
       _sheetSetter!(() {
-        _riveArtboard!.addController(_animationController = SimpleAnimation(_IconAnimations.animScanning));
+        // Rive animation removed
         _msg = msg;
       });
     } else {
@@ -99,7 +85,7 @@ class NfcScanDialog {
     }
 
     _showCancelButton = _onCancelCB != null;
-        _animationController = SimpleAnimation(_IconAnimations.animWaiting);
+        // Rive animation removed
     _msg = msg ?? '';
     return showModalBottomSheet(
         context: context,
@@ -128,11 +114,10 @@ class NfcScanDialog {
                                           fontSize: 22, color: Colors.grey)),
                                   const SizedBox(height: 30),
                                   Container(
-                                      width: 100,
-                                      height: 100,
-                                      child: _riveArtboard == null?
-                                        Text('loading'):
-                                        Rive(artboard: _riveArtboard!, alignment: Alignment.centerLeft),
+                                    width: 100,
+                                    height: 100,
+                                    alignment: Alignment.center,
+                                    child: Icon(Icons.nfc, size: 64, color: Theme.of(context).primaryColor),
                                   ),
                                   const SizedBox(height: 15),
                                   ConstrainedBox(
@@ -171,10 +156,8 @@ class NfcScanDialog {
           _showCancelButton = false;
           if (errorMessage != null) {
             _msg = errorMessage;
-            _riveArtboard!.addController(_animationController = SimpleAnimation(_IconAnimations.animError));
           } else if (message != null) {
             _msg = message;
-            _riveArtboard!.addController(_animationController = SimpleAnimation(_IconAnimations.animSuccess));
           }
         });
 

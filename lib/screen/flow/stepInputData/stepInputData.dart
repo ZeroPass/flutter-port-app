@@ -16,7 +16,7 @@ import 'package:port_mobile_app/data/data.dart';
 import 'package:port_mobile_app/screen/alert.dart';
 import 'package:dmrtd/extensions.dart';
 import 'package:logging/logging.dart';
-import 'package:rive/rive.dart';
+// import 'package:rive/rive.dart';
 import 'package:port_mobile_app/can_code.dart';
 import 'package:port_mobile_app/utils/color.dart';
 
@@ -86,20 +86,6 @@ class _StepInputData extends State<StepInputData>
 
   Future<bool> showCANdialog() async {
     _log.info('Show showCANdialog');
-    Artboard? _riveArtboard;
-    RiveAnimationController _animationController;
-
-    try {
-      final data = await rootBundle.load('assets/anim/checkmarks.riv');
-      final file = RiveFile.import(data);
-      _riveArtboard = file.mainArtboard;
-      _animationController = SimpleAnimation('assets/anim/checkmarks.riv');
-      _riveArtboard.addController(_animationController);
-      _riveArtboard.advance(0);
-    } catch (e) {
-      _log.severe('Failed to load Rive file: $e');
-      return false; // Early return if Rive fails to load
-    }
 
     bool? response = await showAlert<bool>(
       context: context,
@@ -120,11 +106,8 @@ class _StepInputData extends State<StepInputData>
           Container(
             height: 100,
             width: 100,
-            child: Rive(artboard: _riveArtboard, alignment: Alignment.centerLeft),
-            /*const RiveAnimation.asset(
-              'assets/anim/nfc.riv',
-              fit: BoxFit.contain,
-            ),*/
+            alignment: Alignment.center,
+            child: Icon(Icons.help, size: 64, color: Theme.of(context).primaryColor),
           ),
         ],
       ),

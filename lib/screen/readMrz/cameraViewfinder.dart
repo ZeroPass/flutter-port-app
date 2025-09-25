@@ -167,10 +167,10 @@ Future<Uint8List> cropLowerHalfFromInputImageBytes(
 
   final cropped = img.copyCrop(
     originalImage,
-    0,
-    originalImage.height ~/ 2,
-    originalImage.width,
-    originalImage.height ~/ 2,
+    x: 0,
+    y: originalImage.height ~/ 2,
+    width: originalImage.width,
+    height: originalImage.height ~/ 2,
   );
 
   return Uint8List.fromList(img.encodeJpg(cropped)); // or encodePng

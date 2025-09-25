@@ -8,7 +8,6 @@ plugins {
 android {
     namespace = "com.port_mobile_app"
     compileSdk = 36
-    ndkVersion = "27.0.12077973"
 
     compileOptions {
         coreLibraryDesugaringEnabled = true
@@ -30,6 +29,13 @@ android {
         versionCode = flutter.versionCode
         versionName = flutter.versionName
         multiDexEnabled = true
+    }
+
+    // Ensure modern packaging for native libraries to preserve 16 KB alignment
+    packaging {
+        jniLibs {
+            useLegacyPackaging = false
+        }
     }
 
     signingConfigs {
@@ -54,6 +60,17 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    packagingOptions {
+        jniLibs {
+            excludes += [
+                "lib/**/libtextrecognition_chinese.so",
+                "lib/**/libtextrecognition_japanese.so",
+                "lib/**/libtextrecognition_korean.so",
+                "lib/**/libtextrecognition_devanagari.so"
+            ]
+        }
+    }
 }
 
 /*configurations.all {
@@ -64,11 +81,6 @@ android {
 
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
-
-    implementation 'com.google.mlkit:text-recognition-chinese:16.0.0-beta3'
-    implementation 'com.google.mlkit:text-recognition-japanese:16.0.0-beta3'
-    implementation 'com.google.mlkit:text-recognition-korean:16.0.0-beta3'
-    implementation 'com.google.mlkit:text-recognition-devanagari:16.0.0-beta3'
 }
 
 flutter {

@@ -18,7 +18,7 @@ Map<RequestType, dynamic> AuthenticatorActions = {
     "IS_PUBLISHED_ON_CHAIN": true
   },
   RequestType.ATTESTATION_REQUEST_WITH_DG1: {
-    "NAME": "Personal Informations",
+    "NAME": "Personal Info",
     "DATA": [
       "Passport authn data & Country (EF.SOD)",
       "Personal Data (EF.DG1)",
