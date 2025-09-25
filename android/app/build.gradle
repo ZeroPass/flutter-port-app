@@ -61,16 +61,7 @@ android {
         }
     }
 
-    packagingOptions {
-        jniLibs {
-            excludes += [
-                "lib/**/libtextrecognition_chinese.so",
-                "lib/**/libtextrecognition_japanese.so",
-                "lib/**/libtextrecognition_korean.so",
-                "lib/**/libtextrecognition_devanagari.so"
-            ]
-        }
-    }
+    // Remove ML Kit text-recognition native library exclusions so classes and .so are packaged
 }
 
 /*configurations.all {
