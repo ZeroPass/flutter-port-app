@@ -3,14 +3,16 @@ import 'package:async/async.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-// import 'package:rive/rive.dart';
+import 'package:rive/rive.dart';
 import 'uiutils.dart';
 
 /// Class displays BottomSheet dialog which
 /// shows to the user NFC scanning state via [message].
 class NfcScanDialog {
   final BuildContext context;
-  // Rive removed in migration
+  Artboard? _riveArtboard;
+  late SingleAnimationPainter _painter;
+  late RiveWidgetController _animationController;
 
   // Get or set currently displayed message
   String get message => _msg;
@@ -20,10 +22,25 @@ class NfcScanDialog {
   /// [onCancel] callback which is called when user presses cancel button.
   /// If callback [onCancel] is not provided or null the cancel button will be hidden.
   NfcScanDialog(this.context, {Function()? onCancel}) : _onCancelCB = onCancel {
-
+    
+    
     _showCancelButton = _onCancelCB != null;
-
-    // Rive loading removed
+    rootBundle.load(_IconAnimations.animationName).then(
+          (data) async {
+        try {
+          // Load the RiveFile from the binary data.
+          final file = await File.decode(data.buffer.asUint8List(), riveFactory: Factory.rive);
+          //_riveArtboard = file?.defaultArtboard();
+          _painter = SingleAnimationPainter(_IconAnimations.animWaiting);
+          _riveArtboard = file?.defaultArtboard();
+          //  _riveArtboard!.addController(
+          //      _animationController = SingleAnimationPainter ('nfc'));
+        }
+        catch(exception){
+          print("Problem occured when loading rive file: " + exception.toString());
+        }
+      },
+    );
   }
 
   /// Shows bottom dialog with optionally [message] string.
@@ -71,8 +88,12 @@ class NfcScanDialog {
   void _setMessage(final String msg) {
     if (_sheetSetter != null) {
       _sheetSetter!(() {
-        // Rive animation removed
-        _msg = msg;
+        _painter = SingleAnimationPainter(_IconAnimations.animScanning);
+        _painter.artboardChanged(_riveArtboard!);
+        //_riveArtboard.animationByName(_IconAnimations.animSuccess)!
+        //_riveArtboard!.addController(_animationController =
+        //    SimpleAnimation(_IconAnimations.animScanning));
+        //_msg = msg;
       });
     } else {
       _msg = msg;
@@ -81,11 +102,13 @@ class NfcScanDialog {
 
   Future<T?>? _showBottomSheet<T>(String? msg) {
     if (_sheetSetter != null) {
+      _painter = SingleAnimationPainter(_IconAnimations.animWaiting);
+      _painter.artboardChanged(_riveArtboard!);
       return null;
     }
 
     _showCancelButton = _onCancelCB != null;
-        // Rive animation removed
+
     _msg = msg ?? '';
     return showModalBottomSheet(
         context: context,
@@ -117,7 +140,11 @@ class NfcScanDialog {
                                     width: 100,
                                     height: 100,
                                     alignment: Alignment.center,
-                                    child: Icon(Icons.nfc, size: 64, color: Theme.of(context).primaryColor),
+                                    child: RiveArtboardWidget(
+                                      artboard: _riveArtboard!,
+                                      painter: _painter,
+                                      //fit: BoxFit.contain,
+                                    ),
                                   ),
                                   const SizedBox(height: 15),
                                   ConstrainedBox(
@@ -156,8 +183,12 @@ class NfcScanDialog {
           _showCancelButton = false;
           if (errorMessage != null) {
             _msg = errorMessage;
+            _painter = SingleAnimationPainter(_IconAnimations.animError);
+            _painter.artboardChanged(_riveArtboard!);
           } else if (message != null) {
             _msg = message;
+            _painter = SingleAnimationPainter(_IconAnimations.animSuccess);
+            _painter.artboardChanged(_riveArtboard!);
           }
         });
 

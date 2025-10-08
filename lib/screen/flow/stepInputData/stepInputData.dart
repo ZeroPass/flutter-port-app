@@ -16,7 +16,7 @@ import 'package:port_mobile_app/data/data.dart';
 import 'package:port_mobile_app/screen/alert.dart';
 import 'package:dmrtd/extensions.dart';
 import 'package:logging/logging.dart';
-// import 'package:rive/rive.dart';
+//import 'package:rive/rive.dart';
 import 'package:port_mobile_app/can_code.dart';
 import 'package:port_mobile_app/utils/color.dart';
 
@@ -32,6 +32,9 @@ class StepInputData extends StatefulWidget {
 }
 
 enum CANorLegacy { CAN, Legacy }
+//Artboard? _riveArtboard;
+//late SingleAnimationPainter _painter;
+//RiveWidgetController? _animationController;
 
 class _StepInputData extends State<StepInputData>
     with SingleTickerProviderStateMixin {
@@ -45,6 +48,7 @@ class _StepInputData extends State<StepInputData>
   final TextEditingController _birthTextController = TextEditingController();
   final TextEditingController _validUntilTextController = TextEditingController();
   final TextEditingController _pinController = TextEditingController();
+
 
 
   @override
@@ -87,6 +91,19 @@ class _StepInputData extends State<StepInputData>
   Future<bool> showCANdialog() async {
     _log.info('Show showCANdialog');
 
+
+    /*try {
+      final data = await rootBundle.load('assets/anim/checkmarks.riv');
+      final file = await File.decode(data.buffer.asUint8List(), riveFactory: Factory.rive);
+      _riveArtboard = file?.defaultArtboard();
+      //_animationController = SimpleAnimation('assets/anim/checkmarks.riv');
+      //_riveArtboard.addController(_animationController);
+      //_riveArtboard.advance(0);
+    } catch (e) {
+      _log.severe('Failed to load Rive file: $e');
+      return false; // Early return if Rive fails to load
+    }*/
+
     bool? response = await showAlert<bool>(
       context: context,
       title: Column(
@@ -107,7 +124,11 @@ class _StepInputData extends State<StepInputData>
             height: 100,
             width: 100,
             alignment: Alignment.center,
-            child: Icon(Icons.help, size: 64, color: Theme.of(context).primaryColor),
+            child: Icon(
+              Icons.ac_unit,
+              size: 50,
+              color: Theme.of(context).primaryColor,
+            ),
           ),
         ],
       ),

@@ -28,6 +28,7 @@ class MRZCameraViewState extends State<MRZCameraView> {
   CameraController? _controller;
   int _cameraIndex = 1;
   List<CameraDescription> cameras = [];
+  bool _isProcessing = false;
 
   @override
   void initState() {
@@ -118,35 +119,64 @@ class MRZCameraViewState extends State<MRZCameraView> {
   }
 
   Future _startLiveFeed() async {
-    final camera = cameras[_cameraIndex];
-    _controller = CameraController(
-      camera,
-      ResolutionPreset.high,
-      enableAudio: false,
-      imageFormatGroup: Platform.isAndroid
-          ? ImageFormatGroup.nv21
-          : ImageFormatGroup.bgra8888,
-    );
-    _controller?.initialize().then((_) {
+    try {
+      final camera = cameras[_cameraIndex];
+      _controller = CameraController(
+        camera,
+        ResolutionPreset.medium, // Use medium instead of high to reduce buffer load
+        enableAudio: false,
+        imageFormatGroup: Platform.isAndroid
+            ? ImageFormatGroup.nv21
+            : ImageFormatGroup.bgra8888,
+      );
+      
+      await _controller?.initialize();
       if (!mounted) {
         return;
       }
 
-      _controller?.startImageStream(_processCameraImage);
-      setState(() {});
-    });
+      await _controller?.startImageStream(_processCameraImage);
+      if (mounted) {
+        setState(() {});
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error starting camera live feed: $e');
+      }
+    }
   }
 
   Future _stopLiveFeed() async {
-    await _controller?.stopImageStream();
-    await _controller?.dispose();
-    _controller = null;
+    try {
+      _isProcessing = false;
+      if (_controller?.value.isStreamingImages == true) {
+        await _controller?.stopImageStream();
+      }
+      await _controller?.dispose();
+      _controller = null;
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error stopping camera live feed: $e');
+      }
+    }
   }
 
   Future _processCameraImage(CameraImage image) async {
-    final inputImage = _inputImageFromCameraImage(image);
-    if (inputImage == null) return;
-    widget.onImage(inputImage);
+    // Prevent buffer overflow by throttling image processing
+    if (_isProcessing) return;
+    
+    _isProcessing = true;
+    try {
+      final inputImage = _inputImageFromCameraImage(image);
+      if (inputImage == null) return;
+      await widget.onImage(inputImage);
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error processing camera image: $e');
+      }
+    } finally {
+      _isProcessing = false;
+    }
   }
 
   final _orientations = {
@@ -300,18 +330,13 @@ Future<Uint8List> cropLowerHalfFromInputImageBytes(
       return null;
     }
 
-    Size size;
-    if (format == InputImageFormat.nv21) {
-      size = Size(image.width.toDouble(), image.height.toDouble() / 2);
-    } else {
-      size = Size(image.width.toDouble(), image.height.toDouble() / 2);
-    }
+    final size = Size(image.width.toDouble(), image.height.toDouble());
 
     // compose InputImage using bytes
     return InputImage.fromBytes(
       bytes: plane.bytes, //croppedBytes,
       metadata: InputImageMetadata(
-        size: Size(image.width.toDouble(), image.height.toDouble()),
+        size: size,
         rotation: rotation, // used only in Android
         format: format, // used only in iOS
         bytesPerRow: plane.bytesPerRow, // used only in iOS

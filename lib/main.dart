@@ -21,6 +21,7 @@ import 'package:logging/logging.dart';
 import 'package:port_mobile_app/connection/tools/eosio/eosio.dart';
 import 'package:port_mobile_app/screen/qr/readQR.dart';
 import 'package:port_mobile_app/screen/index/index.dart';
+import 'package:rive/rive.dart';
 
 var RUN_IN_DEVICE_PREVIEW_MODE = false;
 final _logStorage = Logger('Storage initialization');
@@ -44,6 +45,9 @@ void main() async{
     
       // Configure logging first
       configureLogging();
+      
+      // Initialize Rive Native for version 0.14.0+
+      await RiveNative.init();
       
       final rawSrvCrt = await rootBundle.load('assets/certs/port_server.cer');
       ServerSecurityContext.init(rawSrvCrt.buffer.asUint8List());

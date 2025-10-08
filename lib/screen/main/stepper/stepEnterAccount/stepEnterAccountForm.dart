@@ -105,13 +105,19 @@ class _StepEnterAccountFormState extends State<StepEnterAccountForm> {
                   fontSize: AndroidThemeST().getValues().themeValues["TILE_BAR"]
                       ["SIZE_TEXT"]),
             ),
-            Text(selectNetworkText(state),
+            Flexible(
+              child: Text(
+                selectNetworkText(state),
                 style: TextStyle(
                     fontSize: AndroidThemeST()
                         .getValues()
                         .themeValues["TILE_BAR"]["SIZE_TEXT"],
                     color: AndroidThemeST().getValues().themeValues["TILE_BAR"]
-                        ["COLOR_TEXT"]))
+                    ["COLOR_TEXT"]),
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.end,
+              ),
+            )
           ]),
       trailing: (!(state is FullStateOutsideCall))?Icon(Icons.expand_more) : null,
       onTap: () {

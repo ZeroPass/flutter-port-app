@@ -183,8 +183,15 @@ class _ReadQRState extends State<ReadQR> {
   }
   void redirect(){
     _log.debug("Redirecting to new screen. Also clearing stack of screens.");
-    //Navigator.of(context).pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
-    Navigator.pushNamed(context, '/home');
+    // Option 1: Replace current screen (remove from stack)
+    Navigator.pushReplacementNamed(context, '/home');
+    
+    // Option 2: Clear entire stack and go to home
+    // Navigator.pushNamedAndRemoveUntil(context, '/home', (Route<dynamic> route) => false);
+    
+    // Option 3: Pop all screens and go to home
+    // Navigator.popUntil(context, (Route<dynamic> route) => false);
+    // Navigator.pushNamed(context, '/home');
   }
 
 
@@ -201,8 +208,12 @@ class _ReadQRState extends State<ReadQR> {
           this.isCaptured = true;
           bool continueProcess = await this.readQR(scanData);
 
-
-          continueProcess ? redirect(): controller.resumeCamera();
+          if (continueProcess) {
+            controller.stopCamera();
+            redirect();
+          } else {
+            controller.resumeCamera();
+          }
 
         }
         catch (e){
@@ -216,7 +227,7 @@ class _ReadQRState extends State<ReadQR> {
 
   @override
   void dispose() {
-    controller?.dispose();
+     controller?.dispose();
     super.dispose();
   }
 }

@@ -1,4 +1,5 @@
 import 'package:camera/camera.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:mrz_parser/mrz_parser.dart';
@@ -62,6 +63,7 @@ class MRZScannerState extends State<MRZScanner> {
   Future<void> _processImage(InputImage inputImage) async {
     if (!_canProcess) return;
     if (_isBusy) return;
+    
     _isBusy = true;
 
     final Size imageSize = inputImage.metadata!.size;
@@ -112,10 +114,16 @@ class MRZScannerState extends State<MRZScanner> {
       } else {
         _isBusy = false;
       }
-    }
-    catch (e) {
-      print('Error processing image: $e');
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error processing MRZ image: $e');
+      }
       _isBusy = false;
+    } finally {
+      // Ensure _isBusy is reset even if an exception occurs
+      if (_isBusy && !_canProcess) {
+        _isBusy = false;
+      }
     }
   }
 }

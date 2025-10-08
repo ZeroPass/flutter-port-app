@@ -33,7 +33,7 @@ dependency_overrides:
 
 dependencies:
   #file_picker: ^10.1.9
-  rive: ^0.14.0-dev.8 #^0.13.20
+  rive: ^0.14.0-dev.8
   bloc: ^8.1.4
   card_settings:
     git:

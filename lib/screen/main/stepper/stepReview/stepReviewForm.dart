@@ -14,6 +14,7 @@ import 'package:port_mobile_app/screen/theme.dart';
 import 'package:flutter/services.dart';
 import 'package:port_mobile_app/screen/dots.dart';
 import 'package:port_mobile_app/utils/storage.dart';
+import 'package:rive/rive.dart';
 
 
 class StepReviewForm extends StatefulWidget {
@@ -56,7 +57,55 @@ Widget noConnectionState(BuildContext context){
   );
 }
 
-Widget successfullySend(BuildContext context,
+
+
+class _StepReviewFormState extends State<StepReviewForm> {
+  Artboard? _riveArtboard;
+  late SingleAnimationPainter _painter;
+  late RiveWidgetController _animationController;
+  bool _isRiveLoaded = false;
+
+  @override
+  void initState() {
+
+    rootBundle.load('assets/anim/checkmarks.riv').then(
+          (data) async {
+      try {
+          // Load the RiveFile from the binary data.
+          final file = await File.decode(data.buffer.asUint8List(), riveFactory: Factory.rive);
+          if (file != null) {
+            setState(() {
+              _painter = SingleAnimationPainter('checkmarks');
+              _riveArtboard = file.defaultArtboard();
+              _isRiveLoaded = true;
+              print("Rive file is loaded!");
+            });
+          }
+        }
+        catch(exception){
+          print("Problem occured when loading rive file: " + exception.toString());
+          setState(() {
+            _isRiveLoaded = false;
+          });
+        }
+      },
+    );
+
+    super.initState();
+  }
+
+  void _onRiveAnimationTap() {
+    // Reset and replay the animation by recreating the painter
+    if (_riveArtboard != null) {
+      setState(() {
+        _painter = SingleAnimationPainter('checkmarks');
+        _painter.artboardChanged(_riveArtboard!);
+      });
+      print("Animation triggered!");
+    }
+  }
+
+  Widget successfullySend(BuildContext context,
                         RequestType requestType,
                         String transactionId,
                         String rawData) {
@@ -73,10 +122,16 @@ Widget successfullySend(BuildContext context,
               margin: EdgeInsets.only(top: 30, bottom: 50),
               width: 250,
               height: 50,
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Icon(Icons.check_circle, color: Color(0xFF4CAF50), size: 36),
-              )),
+              child: _isRiveLoaded && _riveArtboard != null
+                ? GestureDetector( //test zone
+                    onTap: _onRiveAnimationTap,
+                    child: RiveArtboardWidget(
+                      artboard: _riveArtboard!,
+                      painter: _painter,
+                      //fit: BoxFit.contain,
+                    ),
+                  )
+                : SizedBox.shrink()),
             SelectableText(successText),
             const SizedBox(height: 20),
             /*if (isPublishedOnChain)
@@ -106,14 +161,6 @@ Widget successfullySend(BuildContext context,
                 ]),*/
           ]));
 }
-
-class _StepReviewFormState extends State<StepReviewForm> {
-  
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   void didUpdateWidget(StepReviewForm oldWidget) {

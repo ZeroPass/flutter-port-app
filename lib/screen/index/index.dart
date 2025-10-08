@@ -4,10 +4,7 @@ import 'package:logging/logging.dart';
 import 'package:port_mobile_app/screen/nfc/uie/uiutils.dart';
 import 'package:port_mobile_app/screen/qr/readQR.dart';
 import 'package:port_mobile_app/screen/qr/structure.dart';
-import 'package:port_mobile_app/screen/requestType.dart';
 import 'package:port_mobile_app/screen/settings/settings.dart';
-import 'package:port_mobile_app/services/deep_link_service.dart';
-//import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:port_mobile_app/screen/theme.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
@@ -16,6 +13,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:rive/rive.dart';
 import 'package:app_links/app_links.dart';
 import '../slideToSideRoute.dart';
+import 'package:flutter/services.dart';
 
 final _log = Logger('DeepLinkService');
 
@@ -61,15 +59,17 @@ class _IndexState extends State<Index> {
       _log.info('onAppLink: $uri');
       _log.info('queryParameters: ${uri.queryParameters}');
       _handleDynamicLink(context, uri);
-      //var queryParams = uri.queryParameters;
-      //var qr = QRserverStructure.fromJson(queryParams);
-      //var wer = 9;
     });
   }
 
   @override
+  void dispose() {
+    _linkSubscription?.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    //this._initDeepLinks(context);
     return IndexScreen();
   }
 }
@@ -81,9 +81,18 @@ class IndexScreen extends StatefulWidget {
 
 class _IndexScreenState extends State<IndexScreen> {
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     showNavigationBar();
-    var _SCAFFOLD_KEY = GlobalKey<ScaffoldState>();
 
     return PlatformScaffold(
       appBar: PlatformAppBar(
@@ -128,30 +137,7 @@ class _IndexScreenState extends State<IndexScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Align(
-            alignment: Alignment.topRight,
-            // child: Container(
-            //     width: 45,
-            //     height: 45,
-            //     color: Colors.green,
-            //     // decoration: BoxDecoration(
-            //     //   color: Color(0x00EEEEEE),
-            //     // ),
-            //     child: PlatformIconButton(
-            //         // cupertino: (_, __) => CupertinoIconButtonData(
-            //         //       icon: Icon(Icons.settings_rounded,
-            //         //           color: Colors.grey, size: 30),
-            //         //       padding: EdgeInsets.all(0),
-            //         //     ),
-            //         materialIcon: Icon(Icons.settings_rounded,
-            //             size: 30.0, color: Colors.grey),
-            //         material: (_, __) =>
-            //             MaterialIconButtonData(tooltip: 'Settings'),
-            //         onPressed: () {
-            //           final page = Settings();
-            //           Navigator.of(context).push(SlideToSideRoute(page));
-            //         })),
-          ),
+          Align(alignment: Alignment.topRight),
           Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
