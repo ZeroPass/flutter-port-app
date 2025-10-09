@@ -90,10 +90,7 @@ class NfcScanDialog {
       _sheetSetter!(() {
         _painter = SingleAnimationPainter(_IconAnimations.animScanning);
         _painter.artboardChanged(_riveArtboard!);
-        //_riveArtboard.animationByName(_IconAnimations.animSuccess)!
-        //_riveArtboard!.addController(_animationController =
-        //    SimpleAnimation(_IconAnimations.animScanning));
-        //_msg = msg;
+        _msg = msg;
       });
     } else {
       _msg = msg;
